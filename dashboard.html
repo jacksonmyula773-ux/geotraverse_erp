@@ -30,19 +30,19 @@
         body.dark-mode .border-gray-100, body.dark-mode .border-gray-200 { border-color: #334155; }
         body.dark-mode .stat-card, body.dark-mode .bg-white.rounded-xl { background-color: #1e293b; }
         body.dark-mode .nav-item:hover:not(.active) { background-color: #334155; }
-        body.dark-mode .nav-item.active { background-color: #1e3a5f; border-left-color: #3b82f6; }
+        body.dark-mode .nav-item.active { background-color: #1e3a5f; border-left-color: #60a5fa; }
         body.dark-mode .employee-row:hover { background-color: #334155; }
-        body.dark-mode .modal-content { background-color: #1e293b; }
         
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: #e4e4e7; border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: #a1a1aa; border-radius: 10px; }
         
+        /* Sidebar Base Styles */
+        .sidebar { transition: background-color 0.3s ease; }
         .nav-item { transition: all 0.2s ease; border-left: 3px solid transparent; }
-        .nav-item.active { background-color: #1e3a5f; border-left-color: #60a5fa; color: white; }
+        .nav-item.active { background-color: rgba(255,255,255,0.15); border-left-color: #60a5fa; color: white; }
         .nav-item.active i { color: #60a5fa; }
-        .nav-item:hover:not(.active) { background-color: #334155; color: white; }
-        .nav-item:hover:not(.active) i { color: #94a3b8; }
+        .nav-item:hover:not(.active) { background-color: rgba(255,255,255,0.1); color: white; }
         
         .stat-card { transition: all 0.2s ease; }
         .stat-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); }
@@ -69,45 +69,31 @@
         .project-image { width: 100%; height: 200px; object-fit: cover; border-radius: 12px; cursor: pointer; transition: transform 0.3s; }
         .project-image:hover { transform: scale(1.02); }
         
-        .project-card { transition: all 0.3s ease; cursor: pointer; }
-        .project-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.15); }
-        
         .invoice-status { padding: 4px 8px; border-radius: 20px; font-size: 12px; font-weight: 500; }
         .status-pending { background-color: #fef3c7; color: #d97706; }
         .status-paid { background-color: #d1fae5; color: #059669; }
         
-        .order-card { transition: all 0.2s; cursor: pointer; }
-        .order-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        .ad-img { width: 100px; height: 100px; object-fit: cover; border-radius: 8px; cursor: pointer; }
+        .function-list { list-style: none; padding-left: 0; }
+        .function-list li { padding: 8px 0; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; gap: 10px; }
+        .function-list li:last-child { border-bottom: none; }
+        .function-list li i { width: 24px; color: #0f74ba; }
         
-        .ad-img { width: 100px; height: 100px; object-fit: cover; border-radius: 8px; cursor: pointer; transition: transform 0.2s; }
-        .ad-img:hover { transform: scale(1.05); }
+        .color-option { width: 40px; height: 40px; border-radius: 50%; cursor: pointer; transition: transform 0.2s; border: 2px solid transparent; }
+        .color-option:hover { transform: scale(1.1); }
+        .color-option.selected { border-color: white; box-shadow: 0 0 0 2px #333; }
         
-        .appointment-item { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #e5e7eb; }
-        .appointment-item:last-child { border-bottom: none; }
-        
-        .message-item { transition: all 0.2s; cursor: pointer; }
-        .message-item:hover { background-color: #f3f4f6; }
-        body.dark-mode .message-item:hover { background-color: #334155; }
-        
-        .message-unread { border-left: 3px solid #3b82f6; background-color: #eff6ff; }
-        body.dark-mode .message-unread { background-color: #1e3a5f; }
-        
-        .task-checkbox { width: 20px; height: 20px; cursor: pointer; }
-        
-        .setting-section { border-bottom: 1px solid #e5e7eb; }
-        .setting-section:last-child { border-bottom: none; }
-        
-        .website-link-btn { transition: all 0.2s ease; }
-        .website-link-btn:hover { transform: translateX(2px); }
+        .setting-card { transition: all 0.2s; cursor: pointer; }
+        .setting-card:hover { transform: translateY(-3px); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
 
 <div class="flex h-screen overflow-hidden">
     
-    <!-- SIDEBAR -->
-    <aside class="w-64 bg-gradient-to-b from-blue-900 to-blue-800 shadow-xl flex flex-col z-20">
-        <div class="px-6 py-6 border-b border-blue-700">
+    <!-- SIDEBAR - Dynamic Color -->
+    <aside id="sidebar" class="w-64 shadow-xl flex flex-col z-20 sidebar" style="background-color: #0f74ba;">
+        <div class="px-6 py-6 border-b border-white/20">
             <div class="flex items-center space-x-3">
                 <img src="https://i.postimg.cc/MT6jTVHh/weblogo.png" alt="Logo" class="logo-image w-10 h-10 rounded-lg object-cover">
                 <span class="text-xl font-bold text-white">GeoTraverse</span>
@@ -115,18 +101,18 @@
         </div>
         
         <nav class="flex-1 px-3 py-6 space-y-1">
-            <a href="#" class="nav-item active flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white font-medium" data-section="dashboard"><i class="fas fa-tachometer-alt w-5 text-blue-300"></i><span>Dashboard</span></a>
-            <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-gray-200" data-section="departments" id="departmentsLink"><i class="fas fa-building w-5 text-blue-300"></i><span>Departments</span></a>
-            <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-gray-200" data-section="employees" id="employeeTableLink"><i class="fas fa-users w-5 text-blue-300"></i><span>Employees</span></a>
-            <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-gray-200" data-section="tasks" id="tasksLink"><i class="fas fa-tasks w-5 text-blue-300"></i><span>Tasks</span><span class="ml-auto bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full" id="pendingTasksBadge">0</span></a>
-            <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-gray-200" data-section="messages" id="messagesLink"><i class="fas fa-envelope w-5 text-blue-300"></i><span>Messages</span><span class="ml-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full" id="unreadMessagesBadge">0</span></a>
-            <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-gray-200" data-section="settings" id="settingsLink"><i class="fas fa-cog w-5 text-blue-300"></i><span>Settings</span></a>
+            <a href="#" class="nav-item active flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white font-medium" data-section="dashboard"><i class="fas fa-tachometer-alt w-5 text-white/70"></i><span>Dashboard</span></a>
+            <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white" data-section="departments" id="departmentsLink"><i class="fas fa-building w-5 text-white/70"></i><span>Departments</span></a>
+            <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white" data-section="employees" id="employeeTableLink"><i class="fas fa-users w-5 text-white/70"></i><span>Employees</span></a>
+            <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white" data-section="tasks" id="tasksLink"><i class="fas fa-tasks w-5 text-white/70"></i><span>Tasks</span><span class="ml-auto bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full" id="pendingTasksBadge">0</span></a>
+            <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white" data-section="messages" id="messagesLink"><i class="fas fa-envelope w-5 text-white/70"></i><span>Messages</span><span class="ml-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full" id="unreadMessagesBadge">0</span></a>
+            <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white" data-section="settings" id="settingsLink"><i class="fas fa-cog w-5 text-white/70"></i><span>Settings</span></a>
         </nav>
         
-        <div class="p-4 border-t border-blue-700">
+        <div class="p-4 border-t border-white/20">
             <div class="flex items-center space-x-3 mb-3">
                 <div class="w-9 h-9 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full flex items-center justify-center"><i class="fas fa-user text-white text-sm"></i></div>
-                <div class="flex-1"><p class="text-sm font-semibold text-white">Admin User</p><p class="text-xs text-blue-200">admin@geotraverse.com</p></div>
+                <div class="flex-1"><p class="text-sm font-semibold text-white">Admin User</p><p class="text-xs text-white/70">admin@geotraverse.com</p></div>
             </div>
             <button id="logoutBtn" class="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg text-sm transition flex items-center justify-center space-x-2"><i class="fas fa-sign-out-alt"></i><span>Logout</span></button>
         </div>
@@ -142,7 +128,7 @@
                     <div class="h-6 w-px bg-gray-300"></div>
                     <a href="https://geotraverse.com" target="_blank" class="text-blue-600 hover:text-blue-800 font-medium flex items-center space-x-1"><i class="fas fa-external-link-alt text-sm"></i><span>Main Website</span></a>
                 </div>
-                <div class="flex-1 max-w-md mx-4"><div class="relative"><i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i><input type="text" id="searchInput" placeholder="Search..." class="search-input w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"></div></div>
+                <div class="flex-1 max-w-md mx-4"><div class="relative"><i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i><input type="text" id="searchInput" placeholder="Search employees, tasks, messages..." class="search-input w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"></div></div>
                 <button id="darkModeToggle" class="dark-mode-toggle text-gray-600 hover:text-blue-600 transition"><i id="darkModeIcon" class="fas fa-moon text-xl"></i></button>
             </div>
         </header>
@@ -170,80 +156,54 @@
                 </div>
             </div>
             
-            <!-- DEPARTMENTS SECTION with Website Links -->
+            <!-- DEPARTMENTS SECTION -->
             <div id="departmentsSection" class="hidden">
                 <div class="mb-6"><h2 class="text-2xl font-bold text-gray-800">Departments</h2><p class="text-gray-500 mt-1">Manage and view all company departments</p></div>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <!-- Managers Dept -->
-                    <div class="dept-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"><div class="bg-gradient-to-r from-purple-600 to-purple-700 p-4"><div class="flex items-center justify-between"><i class="fas fa-user-tie text-white text-3xl"></i><span class="bg-white/20 text-white px-2 py-1 rounded-lg text-sm">Management</span></div><h3 class="text-white text-xl font-bold mt-3">Managers</h3></div><div class="p-4"><div class="flex items-center justify-between mb-3"><span class="text-gray-500 text-sm">Employees</span><span class="text-2xl font-bold text-gray-800" id="deptMgmtCount">0</span></div><div class="space-y-2"><button onclick="openDepartmentDashboard('Managers')" class="w-full bg-purple-50 text-purple-600 py-2 rounded-lg text-sm font-medium hover:bg-purple-100 transition"><i class="fas fa-chalkboard-user"></i> View Department Dashboard</button><a href="https://geotraverse.com/departments/management" target="_blank" class="w-full bg-gray-50 text-gray-600 py-2 rounded-lg text-sm font-medium hover:bg-gray-100 transition flex items-center justify-center space-x-1 website-link-btn"><i class="fas fa-external-link-alt"></i><span>Visit Department Website</span></a></div></div></div>
-                    
-                    <!-- Finance Dept -->
-                    <div class="dept-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"><div class="bg-gradient-to-r from-green-600 to-green-700 p-4"><div class="flex items-center justify-between"><i class="fas fa-calculator text-white text-3xl"></i><span class="bg-white/20 text-white px-2 py-1 rounded-lg text-sm">Finance</span></div><h3 class="text-white text-xl font-bold mt-3">Finance & Accounting</h3></div><div class="p-4"><div class="flex items-center justify-between mb-3"><span class="text-gray-500 text-sm">Employees</span><span class="text-2xl font-bold text-gray-800" id="deptFinanceCount">0</span></div><div class="space-y-2"><button onclick="openDepartmentDashboard('Finance')" class="w-full bg-green-50 text-green-600 py-2 rounded-lg text-sm font-medium hover:bg-green-100 transition"><i class="fas fa-chalkboard-user"></i> View Department Dashboard</button><a href="https://geotraverse.com/departments/finance" target="_blank" class="w-full bg-gray-50 text-gray-600 py-2 rounded-lg text-sm font-medium hover:bg-gray-100 transition flex items-center justify-center space-x-1 website-link-btn"><i class="fas fa-external-link-alt"></i><span>Visit Department Website</span></a></div></div></div>
-                    
-                    <!-- Sales & Marketing Dept -->
-                    <div class="dept-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"><div class="bg-gradient-to-r from-orange-600 to-orange-700 p-4"><div class="flex items-center justify-between"><i class="fas fa-chart-line text-white text-3xl"></i><span class="bg-white/20 text-white px-2 py-1 rounded-lg text-sm">Sales</span></div><h3 class="text-white text-xl font-bold mt-3">Sales & Marketing</h3></div><div class="p-4"><div class="flex items-center justify-between mb-3"><span class="text-gray-500 text-sm">Employees</span><span class="text-2xl font-bold text-gray-800" id="deptSalesCount">0</span></div><div class="space-y-2"><button onclick="openDepartmentDashboard('Sales')" class="w-full bg-orange-50 text-orange-600 py-2 rounded-lg text-sm font-medium hover:bg-orange-100 transition"><i class="fas fa-chalkboard-user"></i> View Department Dashboard</button><a href="https://geotraverse.com/departments/sales" target="_blank" class="w-full bg-gray-50 text-gray-600 py-2 rounded-lg text-sm font-medium hover:bg-gray-100 transition flex items-center justify-center space-x-1 website-link-btn"><i class="fas fa-external-link-alt"></i><span>Visit Department Website</span></a></div></div></div>
-                    
-                    <!-- Secretary Dept -->
-                    <div class="dept-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"><div class="bg-gradient-to-r from-red-600 to-red-700 p-4"><div class="flex items-center justify-between"><i class="fas fa-envelope text-white text-3xl"></i><span class="bg-white/20 text-white px-2 py-1 rounded-lg text-sm">Admin</span></div><h3 class="text-white text-xl font-bold mt-3">Secretary</h3></div><div class="p-4"><div class="flex items-center justify-between mb-3"><span class="text-gray-500 text-sm">Employees</span><span class="text-2xl font-bold text-gray-800" id="deptSecretaryCount">0</span></div><div class="space-y-2"><button onclick="openDepartmentDashboard('Secretary')" class="w-full bg-red-50 text-red-600 py-2 rounded-lg text-sm font-medium hover:bg-red-100 transition"><i class="fas fa-chalkboard-user"></i> View Department Dashboard</button><a href="https://geotraverse.com/departments/secretary" target="_blank" class="w-full bg-gray-50 text-gray-600 py-2 rounded-lg text-sm font-medium hover:bg-gray-100 transition flex items-center justify-center space-x-1 website-link-btn"><i class="fas fa-external-link-alt"></i><span>Visit Department Website</span></a></div></div></div>
+                    <div class="dept-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"><div class="bg-purple-600 p-4 text-white"><div class="flex items-center justify-between"><i class="fas fa-user-tie text-3xl"></i><span class="bg-white/20 px-2 py-1 rounded text-sm">Management</span></div><h3 class="text-xl font-bold mt-3">Managers</h3></div><div class="p-4"><div class="flex justify-between mb-3"><span class="text-gray-500 text-sm">Employees</span><span class="text-2xl font-bold" id="deptMgmtCount">0</span></div><button onclick="openDepartmentDashboard('Managers')" class="w-full bg-purple-50 text-purple-600 py-2 rounded-lg text-sm font-medium hover:bg-purple-100 transition"><i class="fas fa-chalkboard-user"></i> View Department Dashboard</button><a href="/departments/management/login.html" target="_blank" class="w-full mt-2 bg-gray-50 text-gray-600 py-2 rounded-lg text-sm font-medium hover:bg-gray-100 transition flex items-center justify-center space-x-1"><i class="fas fa-external-link-alt"></i><span>Visit Department Website</span></a></div></div>
+                    <div class="dept-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"><div class="bg-green-600 p-4 text-white"><div class="flex items-center justify-between"><i class="fas fa-calculator text-3xl"></i><span class="bg-white/20 px-2 py-1 rounded text-sm">Finance</span></div><h3 class="text-xl font-bold mt-3">Finance & Accounting</h3></div><div class="p-4"><div class="flex justify-between mb-3"><span class="text-gray-500 text-sm">Employees</span><span class="text-2xl font-bold" id="deptFinanceCount">0</span></div><button onclick="openDepartmentDashboard('Finance')" class="w-full bg-green-50 text-green-600 py-2 rounded-lg text-sm font-medium hover:bg-green-100 transition"><i class="fas fa-chalkboard-user"></i> View Department Dashboard</button><a href="/departments/finance/login.html" target="_blank" class="w-full mt-2 bg-gray-50 text-gray-600 py-2 rounded-lg text-sm font-medium hover:bg-gray-100 transition flex items-center justify-center space-x-1"><i class="fas fa-external-link-alt"></i><span>Visit Department Website</span></a></div></div>
+                    <div class="dept-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"><div class="bg-orange-600 p-4 text-white"><div class="flex items-center justify-between"><i class="fas fa-chart-line text-3xl"></i><span class="bg-white/20 px-2 py-1 rounded text-sm">Sales</span></div><h3 class="text-xl font-bold mt-3">Sales & Marketing</h3></div><div class="p-4"><div class="flex justify-between mb-3"><span class="text-gray-500 text-sm">Employees</span><span class="text-2xl font-bold" id="deptSalesCount">0</span></div><button onclick="openDepartmentDashboard('Sales')" class="w-full bg-orange-50 text-orange-600 py-2 rounded-lg text-sm font-medium hover:bg-orange-100 transition"><i class="fas fa-chalkboard-user"></i> View Department Dashboard</button><a href="/departments/sales/login.html" target="_blank" class="w-full mt-2 bg-gray-50 text-gray-600 py-2 rounded-lg text-sm font-medium hover:bg-gray-100 transition flex items-center justify-center space-x-1"><i class="fas fa-external-link-alt"></i><span>Visit Department Website</span></a></div></div>
+                    <div class="dept-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"><div class="bg-red-600 p-4 text-white"><div class="flex items-center justify-between"><i class="fas fa-envelope text-3xl"></i><span class="bg-white/20 px-2 py-1 rounded text-sm">Admin</span></div><h3 class="text-xl font-bold mt-3">Secretary</h3></div><div class="p-4"><div class="flex justify-between mb-3"><span class="text-gray-500 text-sm">Employees</span><span class="text-2xl font-bold" id="deptSecretaryCount">0</span></div><button onclick="openDepartmentDashboard('Secretary')" class="w-full bg-red-50 text-red-600 py-2 rounded-lg text-sm font-medium hover:bg-red-100 transition"><i class="fas fa-chalkboard-user"></i> View Department Dashboard</button><a href="/departments/secretary/login.html" target="_blank" class="w-full mt-2 bg-gray-50 text-gray-600 py-2 rounded-lg text-sm font-medium hover:bg-gray-100 transition flex items-center justify-center space-x-1"><i class="fas fa-external-link-alt"></i><span>Visit Department Website</span></a></div></div>
                 </div>
             </div>
             
-            <!-- ==================== MANAGERS DASHBOARD ==================== -->
+            <!-- MANAGERS DASHBOARD -->
             <div id="managersDashboard" class="hidden">
-                <div class="mb-6 flex items-center justify-between"><div><button onclick="goBackToDepartments()" class="back-button text-gray-500 hover:text-blue-600 mb-2"><i class="fas fa-arrow-left"></i> Back to Departments</button><h2 class="text-2xl font-bold text-gray-800">Managers Dashboard</h2><p class="text-gray-500">Housing Projects & Land Survey Management</p></div><div class="w-14 h-14 rounded-xl bg-purple-600 flex items-center justify-center"><i class="fas fa-home text-white text-2xl"></i></div></div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
-                    <div class="stat-card bg-white rounded-xl p-5 shadow-sm cursor-pointer" onclick="showProjects('completed')"><div><p class="text-gray-500 text-sm">Completed Projects</p><p class="text-3xl font-bold text-green-600">6</p></div></div>
-                    <div class="stat-card bg-white rounded-xl p-5 shadow-sm cursor-pointer" onclick="showProjects('inprogress')"><div><p class="text-gray-500 text-sm">In Progress</p><p class="text-3xl font-bold text-orange-600">4</p></div></div>
-                    <div class="stat-card bg-white rounded-xl p-5 shadow-sm cursor-pointer" onclick="showProjects('approved')"><div><p class="text-gray-500 text-sm">Approved Projects</p><p class="text-3xl font-bold text-blue-600">5</p></div></div>
+                <div class="mb-6"><button onclick="goBackToDepartments()" class="back-button text-gray-500 hover:text-blue-600 mb-2"><i class="fas fa-arrow-left"></i> Back to Departments</button><h2 class="text-2xl font-bold text-gray-800">Managers Dashboard</h2><p class="text-gray-500">Housing Projects & Land Survey Management</p></div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="bg-white rounded-xl shadow-sm p-5"><h3 class="text-lg font-semibold text-purple-600 mb-4"><i class="fas fa-list-check mr-2"></i> Department Functions</h3><ul class="function-list"><li><i class="fas fa-plus-circle"></i> Add New Project</li><li><i class="fas fa-edit"></i> Edit Project Details</li><li><i class="fas fa-trash-alt"></i> Delete Project</li><li><i class="fas fa-images"></i> Upload Project Images</li><li><i class="fas fa-chart-line"></i> Update Project Status</li><li><i class="fas fa-users"></i> Manage Client Records</li><li><i class="fas fa-chart-simple"></i> View Budget Reports</li><li><i class="fas fa-file-alt"></i> Generate Project Report</li><li><i class="fas fa-map-marked-alt"></i> Record Land Survey</li><li><i class="fas fa-tasks"></i> Assign Site Visits</li></ul></div>
+                    <div class="lg:col-span-2 bg-white rounded-xl shadow-sm p-5"><h3 class="text-lg font-semibold mb-4">Recent Projects</h3><div class="grid md:grid-cols-2 gap-4"><div class="border rounded-lg p-3"><img src="https://picsum.photos/id/106/400/200" class="w-full h-32 object-cover rounded mb-2"><p class="font-bold">Modern Villa - Kigamboni</p><p class="text-sm text-green-600">Completed</p></div><div class="border rounded-lg p-3"><img src="https://picsum.photos/id/12/400/200" class="w-full h-32 object-cover rounded mb-2"><p class="font-bold">Commercial Complex - Pwani</p><p class="text-sm text-orange-600">In Progress (40%)</p></div></div></div>
                 </div>
-                
-                <div id="projectsDisplay" class="bg-white rounded-xl shadow-sm p-5"><h3 id="projectsTitle" class="font-semibold mb-4">Projects</h3><div id="projectsGrid" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div></div>
             </div>
             
-            <!-- ==================== FINANCE DASHBOARD ==================== -->
+            <!-- FINANCE DASHBOARD -->
             <div id="financeDashboard" class="hidden">
-                <div class="mb-6"><button onclick="goBackToDepartments()" class="back-button text-gray-500 hover:text-blue-600 mb-2"><i class="fas fa-arrow-left"></i> Back to Departments</button><h2 class="text-2xl font-bold text-gray-800">Finance Dashboard</h2></div>
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
-                    <div class="bg-white rounded-xl p-5"><h3 class="font-semibold mb-3">Pending Invoices</h3><div id="pendingInvoices"></div></div>
-                    <div class="bg-white rounded-xl p-5"><h3 class="font-semibold mb-3">Paid Invoices</h3><div id="paidInvoices"></div></div>
+                <div class="mb-6"><button onclick="goBackToDepartments()" class="back-button text-gray-500 hover:text-blue-600 mb-2"><i class="fas fa-arrow-left"></i> Back to Departments</button><h2 class="text-2xl font-bold text-gray-800">Finance Dashboard</h2><p class="text-gray-500">Financial management & accounting</p></div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="bg-white rounded-xl shadow-sm p-5"><h3 class="text-lg font-semibold text-green-600 mb-4"><i class="fas fa-list-check mr-2"></i> Department Functions</h3><ul class="function-list"><li><i class="fas fa-file-invoice"></i> Create New Invoice</li><li><i class="fas fa-edit"></i> Edit Invoice Details</li><li><i class="fas fa-trash-alt"></i> Delete Invoice</li><li><i class="fas fa-check-circle"></i> Mark Invoice as Paid</li><li><i class="fas fa-chart-line"></i> Record Income Transaction</li><li><i class="fas fa-chart-simple"></i> Record Expense Transaction</li><li><i class="fas fa-chart-pie"></i> View Profit/Loss Report</li><li><i class="fas fa-file-pdf"></i> Generate Financial Report</li><li><i class="fas fa-wallet"></i> View Budget vs Actual</li><li><i class="fas fa-calculator"></i> Process Payroll</li></ul></div>
+                    <div class="lg:col-span-2 bg-white rounded-xl shadow-sm p-5"><h3 class="text-lg font-semibold mb-4">Recent Invoices</h3><div class="space-y-3"><div class="flex justify-between items-center p-3 bg-gray-50 rounded"><div><p class="font-bold">INV-001 - Modern Villa</p><p class="text-sm">John Doe - TZS 5,000,000</p></div><span class="status-pending px-3 py-1 rounded">Pending</span></div><div class="flex justify-between items-center p-3 bg-gray-50 rounded"><div><p class="font-bold">INV-002 - Land Survey</p><p class="text-sm">Mary Smith - TZS 2,500,000</p></div><span class="status-pending px-3 py-1 rounded">Pending</span></div></div><div class="mt-4 p-3 bg-green-50 rounded"><div class="flex justify-between"><span class="font-bold">Total Income:</span><span class="text-green-600 font-bold">TZS 28,750,000</span></div><div class="flex justify-between mt-1"><span class="font-bold">Total Expenses:</span><span class="text-red-600 font-bold">TZS 18,250,000</span></div><div class="flex justify-between mt-2 pt-2 border-t"><span class="font-bold">Profit:</span><span class="text-green-600 font-bold">TZS 10,500,000</span></div></div></div>
                 </div>
-                <div class="bg-white rounded-xl p-5 mb-6"><h3 class="font-semibold mb-4">Income vs Expenses</h3><table class="w-full"><thead class="bg-gray-50"><tr><th class="px-4 py-2 text-left">Category</th><th class="px-4 py-2 text-right">Amount</th></tr></thead><tbody><tr><td class="px-4 py-2 text-green-600">Total Income</td><td class="px-4 py-2 text-right text-green-600 font-bold">TZS 28,750,000</td></tr><tr><td class="px-4 py-2 text-red-600">Total Expenses</td><td class="px-4 py-2 text-right text-red-600 font-bold">TZS 18,250,000</td></tr><tr class="bg-gray-50"><td class="px-4 py-2 font-bold">Profit</td><td class="px-4 py-2 text-right font-bold text-green-600">TZS 10,500,000</td></tr></tbody></table></div>
-                <div class="flex justify-end"><button class="bg-green-600 text-white px-4 py-2 rounded-lg"><i class="fas fa-file-pdf"></i> Generate Report</button></div>
             </div>
             
-            <!-- ==================== SALES & MARKETING DASHBOARD ==================== -->
+            <!-- SALES DASHBOARD -->
             <div id="salesDashboard" class="hidden">
                 <div class="mb-6"><button onclick="goBackToDepartments()" class="back-button text-gray-500 hover:text-blue-600 mb-2"><i class="fas fa-arrow-left"></i> Back to Departments</button><h2 class="text-2xl font-bold text-gray-800">Sales & Marketing Dashboard</h2><p class="text-gray-500">Track promotions and customer engagements</p></div>
-                
-                <!-- Marketing Channels Section -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 mb-6">
-                    <h3 class="text-base font-semibold text-gray-800 mb-4">Marketing & Promotion Channels</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="border rounded-lg p-4"><div class="flex items-center space-x-2 mb-3"><i class="fas fa-globe text-blue-500 text-xl"></i><h4 class="font-semibold text-lg">Online Marketing</h4></div><div class="space-y-3"><div class="bg-blue-50 p-3 rounded-lg"><p class="font-medium">Social Media Ads</p><p class="text-sm text-gray-600">Facebook & Instagram campaigns - Reach: 50,000+</p><span class="text-xs text-green-600">Active</span></div><div class="bg-blue-50 p-3 rounded-lg"><p class="font-medium">Google Ads</p><p class="text-sm text-gray-600">Search & Display campaigns - Clicks: 2,500 this month</p><span class="text-xs text-green-600">Active</span></div><button onclick="openOnlineMarketingForm()" class="w-full mt-2 bg-blue-600 text-white py-1 rounded text-sm">+ Add Online Campaign</button></div></div>
-                        <div class="border rounded-lg p-4"><div class="flex items-center space-x-2 mb-3"><i class="fas fa-store text-orange-500 text-xl"></i><h4 class="font-semibold text-lg">Physical Marketing</h4></div><div class="space-y-3"><div class="bg-orange-50 p-3 rounded-lg"><p class="font-medium">Site Visits</p><p class="text-sm text-gray-600">Visited: Kigamboni, Masaki, Mikocheni - 25 potential buyers</p><span class="text-xs text-green-600">Completed</span></div><div class="bg-orange-50 p-3 rounded-lg"><p class="font-medium">Property Expo</p><p class="text-sm text-gray-600">Location: Mlimani City - Date: April 20-22</p><span class="text-xs text-yellow-600">Upcoming</span></div><button onclick="openPhysicalMarketingForm()" class="w-full mt-2 bg-orange-600 text-white py-1 rounded text-sm">+ Add Physical Visit</button></div></div>
-                    </div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="bg-white rounded-xl shadow-sm p-5"><h3 class="text-lg font-semibold text-orange-600 mb-4"><i class="fas fa-list-check mr-2"></i> Department Functions</h3><ul class="function-list"><li><i class="fas fa-shopping-cart"></i> Add New Order</li><li><i class="fas fa-edit"></i> Update Order Status</li><li><i class="fas fa-file-alt"></i> View Customer Forms</li><li><i class="fas fa-reply"></i> Reply to Customer Inquiry</li><li><i class="fas fa-chart-line"></i> View Sales Reports</li><li><i class="fas fa-ad"></i> Add Advertisement Photo</li><li><i class="fas fa-globe"></i> Manage Online Campaigns</li><li><i class="fas fa-store"></i> Record Physical Visits</li><li><i class="fas fa-users"></i> Manage Customer Database</li><li><i class="fas fa-chart-simple"></i> Generate Marketing Report</li></ul></div>
+                    <div class="lg:col-span-2 bg-white rounded-xl shadow-sm p-5"><h3 class="text-lg font-semibold mb-4">Recent Orders</h3><div class="space-y-3"><div class="p-3 bg-gray-50 rounded"><p class="font-bold">John Doe - Modern Villa</p><p class="text-sm">Amount: TZS 150,000,000 | Status: Pending</p></div><div class="p-3 bg-gray-50 rounded"><p class="font-bold">Mary Smith - Land Survey</p><p class="text-sm">Amount: TZS 2,500,000 | Status: Approved</p></div></div></div>
                 </div>
-                
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 mb-6"><h3 class="text-base font-semibold text-gray-800 mb-3">Orders Posted by Sales Teams</h3><div id="salesOrders" class="space-y-2"></div><button onclick="openAddOrderForm()" class="mt-3 bg-green-600 text-white px-4 py-2 rounded-lg text-sm">+ Add New Order</button></div>
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5"><h3 class="text-base font-semibold text-gray-800 mb-3">Customer Inquiry Forms</h3><div id="customerForms"></div></div>
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 mt-6"><h3 class="text-base font-semibold text-gray-800 mb-3">Property & Land Ads</h3><div class="grid grid-cols-2 md:grid-cols-5 gap-3" id="adPhotos"></div></div>
             </div>
             
-            <!-- ==================== SECRETARY DASHBOARD ==================== -->
+            <!-- SECRETARY DASHBOARD -->
             <div id="secretaryDashboard" class="hidden">
-                <div class="mb-6"><button onclick="goBackToDepartments()" class="back-button text-gray-500 hover:text-blue-600 mb-2"><i class="fas fa-arrow-left"></i> Back to Departments</button><h2 class="text-2xl font-bold text-gray-800">Secretary Dashboard</h2></div>
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-6">
-                    <div class="stat-card bg-white rounded-xl p-5"><div><p class="text-gray-500 text-sm">Orders Received</p><p class="text-3xl font-bold text-blue-600">18</p></div></div>
-                    <div class="stat-card bg-white rounded-xl p-5"><div><p class="text-gray-500 text-sm">Unread Messages</p><p class="text-3xl font-bold text-red-600">12</p></div></div>
-                    <div class="stat-card bg-white rounded-xl p-5"><div><p class="text-gray-500 text-sm">Upcoming Meetings</p><p class="text-3xl font-bold text-purple-600">7</p></div></div>
+                <div class="mb-6"><button onclick="goBackToDepartments()" class="back-button text-gray-500 hover:text-blue-600 mb-2"><i class="fas fa-arrow-left"></i> Back to Departments</button><h2 class="text-2xl font-bold text-gray-800">Secretary Dashboard</h2><p class="text-gray-500">Administration & communication management</p></div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="bg-white rounded-xl shadow-sm p-5"><h3 class="text-lg font-semibold text-red-600 mb-4"><i class="fas fa-list-check mr-2"></i> Department Functions</h3><ul class="function-list"><li><i class="fas fa-envelope"></i> View All Messages</li><li><i class="fas fa-reply"></i> Reply to Messages</li><li><i class="fas fa-calendar-plus"></i> Create Appointment</li><li><i class="fas fa-calendar-alt"></i> Manage Schedule</li><li><i class="fas fa-box"></i> Process Orders Received</li><li><i class="fas fa-file-alt"></i> Record Meeting Minutes</li><li><i class="fas fa-folder-open"></i> Manage Documents</li><li><i class="fas fa-print"></i> Print Documents</li><li><i class="fas fa-users"></i> Manage Visitor Log</li><li><i class="fas fa-chart-simple"></i> Generate Activity Report</li></ul></div>
+                    <div class="lg:col-span-2 bg-white rounded-xl shadow-sm p-5"><h3 class="text-lg font-semibold mb-4">Recent Messages</h3><div class="space-y-3"><div class="flex items-start space-x-3 p-3 bg-gray-50 rounded"><div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center"><i class="fas fa-user text-blue-600"></i></div><div><p class="font-bold">John Doe (Client)</p><p class="text-sm">Interested in Modern Villa - Request site visit</p></div><button class="ml-auto text-blue-600 text-sm">Reply</button></div></div><div class="mt-4 p-3 bg-blue-50 rounded"><div class="flex justify-between"><span class="font-bold">Appointments Today:</span><span>Site Visit - Kigamboni at 2:00 PM</span></div></div></div>
                 </div>
-                <div class="bg-white rounded-xl p-5 mb-6"><h3 class="font-semibold mb-3">Orders Received</h3><div id="secretaryOrders"></div></div>
-                <div class="bg-white rounded-xl p-5 mb-6"><h3 class="font-semibold mb-3">Messages & Communication</h3><div id="secretaryMessages"></div></div>
-                <div class="bg-white rounded-xl p-5"><h3 class="font-semibold mb-3">Appointments Schedule</h3><div id="secretaryAppointments"></div></div>
             </div>
             
-            <!-- ==================== TASKS SECTION ==================== -->
+            <!-- TASKS SECTION -->
             <div id="tasksSection" class="hidden">
                 <div class="mb-6"><h2 class="text-2xl font-bold text-gray-800">Task Management</h2><p class="text-gray-500">Tasks from all departments - Complete or pending</p></div>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -253,7 +213,7 @@
                 <div class="mt-4 flex justify-end"><button onclick="openAddTaskModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg"><i class="fas fa-plus"></i> Add New Task</button></div>
             </div>
             
-            <!-- ==================== MESSAGES SECTION ==================== -->
+            <!-- MESSAGES SECTION -->
             <div id="messagesSection" class="hidden">
                 <div class="mb-6"><h2 class="text-2xl font-bold text-gray-800">Messages from Departments</h2><p class="text-gray-500">View and reply to messages from all departments</p></div>
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -262,45 +222,62 @@
                 </div>
             </div>
             
-            <!-- ==================== SETTINGS SECTION ==================== -->
+            <!-- SETTINGS SECTION with Color Change and Settings Functions Inside -->
             <div id="settingsSection" class="hidden">
                 <div class="mb-6"><h2 class="text-2xl font-bold text-gray-800">Settings</h2><p class="text-gray-500">Manage your application preferences</p></div>
-                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-                    <div class="setting-section p-5 border-b"><div class="flex items-center justify-between"><div><h3 class="font-semibold">General Settings</h3><p class="text-sm text-gray-500">Company name, logo, timezone</p></div><button onclick="showSetting('general')" class="text-blue-600">Configure →</button></div></div>
-                    <div class="setting-section p-5 border-b"><div class="flex items-center justify-between"><div><h3 class="font-semibold">Department Settings</h3><p class="text-sm text-gray-500">Manage department permissions</p></div><button onclick="showSetting('departments')" class="text-blue-600">Configure →</button></div></div>
-                    <div class="setting-section p-5 border-b"><div class="flex items-center justify-between"><div><h3 class="font-semibold">User Management</h3><p class="text-sm text-gray-500">Add, edit, or remove users</p></div><button onclick="showSetting('users')" class="text-blue-600">Configure →</button></div></div>
-                    <div class="setting-section p-5 border-b"><div class="flex items-center justify-between"><div><h3 class="font-semibold">Notification Settings</h3><p class="text-sm text-gray-500">Email, push notifications</p></div><button onclick="showSetting('notifications')" class="text-blue-600">Configure →</button></div></div>
-                    <div class="setting-section p-5"><div class="flex items-center justify-between"><div><h3 class="font-semibold">Security Settings</h3><p class="text-sm text-gray-500">Password, 2FA, sessions</p></div><button onclick="showSetting('security')" class="text-blue-600">Configure →</button></div></div>
+                
+                <!-- Sidebar Color Change -->
+                <div class="bg-white rounded-xl shadow-sm p-5 mb-6">
+                    <h3 class="text-lg font-semibold mb-4"><i class="fas fa-palette mr-2 text-blue-600"></i> Sidebar Color Change</h3>
+                    <div class="flex space-x-3">
+                        <div class="color-option selected" style="background-color: #0f74ba;" onclick="changeSidebarColor('#0f74ba', this)"></div>
+                        <div class="color-option" style="background-color: #1e3a5f;" onclick="changeSidebarColor('#1e3a5f', this)"></div>
+                        <div class="color-option" style="background-color: #7c3aed;" onclick="changeSidebarColor('#7c3aed', this)"></div>
+                        <div class="color-option" style="background-color: #059669;" onclick="changeSidebarColor('#059669', this)"></div>
+                        <div class="color-option" style="background-color: #dc2626;" onclick="changeSidebarColor('#dc2626', this)"></div>
+                        <div class="color-option" style="background-color: #d97706;" onclick="changeSidebarColor('#d97706', this)"></div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-3">Click on any color to change sidebar background</p>
+                </div>
+                
+                <!-- Settings Functions -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    <div class="setting-card bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition cursor-pointer" onclick="showSetting('general')"><div class="flex items-center space-x-3 mb-3"><i class="fas fa-globe text-2xl text-blue-600"></i><h3 class="font-bold text-lg">General Settings</h3></div><p class="text-sm text-gray-500">Company name, logo, timezone, language</p></div>
+                    <div class="setting-card bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition cursor-pointer" onclick="showSetting('backup')"><div class="flex items-center space-x-3 mb-3"><i class="fas fa-database text-2xl text-blue-600"></i><h3 class="font-bold text-lg">Backup & Restore</h3></div><p class="text-sm text-gray-500">Backup database, restore from backup, schedule backups</p></div>
+                    <div class="setting-card bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition cursor-pointer" onclick="showSetting('logs')"><div class="flex items-center space-x-3 mb-3"><i class="fas fa-history text-2xl text-blue-600"></i><h3 class="font-bold text-lg">System Logs</h3></div><p class="text-sm text-gray-500">View activity logs, user actions, login attempts</p></div>
+                    <div class="setting-card bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition cursor-pointer" onclick="showSetting('email')"><div class="flex items-center space-x-3 mb-3"><i class="fas fa-envelope text-2xl text-blue-600"></i><h3 class="font-bold text-lg">Email Configuration</h3></div><p class="text-sm text-gray-500">SMTP settings, email templates, test email</p></div>
+                    <div class="setting-card bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition cursor-pointer" onclick="showSetting('roles')"><div class="flex items-center space-x-3 mb-3"><i class="fas fa-user-shield text-2xl text-blue-600"></i><h3 class="font-bold text-lg">Role Management</h3></div><p class="text-sm text-gray-500">Create roles, assign permissions, access levels</p></div>
+                    <div class="setting-card bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition cursor-pointer" onclick="showSetting('api')"><div class="flex items-center space-x-3 mb-3"><i class="fas fa-key text-2xl text-blue-600"></i><h3 class="font-bold text-lg">API Keys</h3></div><p class="text-sm text-gray-500">Generate API keys, manage integrations, webhooks</p></div>
+                    <div class="setting-card bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition cursor-pointer" onclick="showSetting('maintenance')"><div class="flex items-center space-x-3 mb-3"><i class="fas fa-tools text-2xl text-blue-600"></i><h3 class="font-bold text-lg">Maintenance Mode</h3></div><p class="text-sm text-gray-500">Enable/disable maintenance mode, whitelist IPs</p></div>
+                    <div class="setting-card bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition cursor-pointer" onclick="showSetting('cache')"><div class="flex items-center space-x-3 mb-3"><i class="fas fa-rocket text-2xl text-blue-600"></i><h3 class="font-bold text-lg">Cache Management</h3></div><p class="text-sm text-gray-500">Clear cache, optimize performance, CDN settings</p></div>
+                    <div class="setting-card bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition cursor-pointer" onclick="showSetting('localization')"><div class="flex items-center space-x-3 mb-3"><i class="fas fa-language text-2xl text-blue-600"></i><h3 class="font-bold text-lg">Localization</h3></div><p class="text-sm text-gray-500">Languages, currencies, date formats, timezone</p></div>
+                    <div class="setting-card bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition cursor-pointer" onclick="showSetting('audit')"><div class="flex items-center space-x-3 mb-3"><i class="fas fa-clipboard-list text-2xl text-blue-600"></i><h3 class="font-bold text-lg">Audit Trail</h3></div><p class="text-sm text-gray-500">View all system changes, user activities, modifications</p></div>
+                    <div class="setting-card bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition cursor-pointer" onclick="showSetting('notifications')"><div class="flex items-center space-x-3 mb-3"><i class="fas fa-bell text-2xl text-blue-600"></i><h3 class="font-bold text-lg">Notification Settings</h3></div><p class="text-sm text-gray-500">Email, push notifications, alerts preferences</p></div>
+                    <div class="setting-card bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition cursor-pointer" onclick="showSetting('security')"><div class="flex items-center space-x-3 mb-3"><i class="fas fa-lock text-2xl text-blue-600"></i><h3 class="font-bold text-lg">Security Settings</h3></div><p class="text-sm text-gray-500">Password policy, 2FA, session timeout, IP whitelist</p></div>
                 </div>
             </div>
             
             <!-- EMPLOYEE SECTION -->
             <div id="employeeSection" class="hidden">
-                <div class="bg-white rounded-xl shadow-sm"><div class="px-5 py-4 border-b flex justify-between"><h3 class="font-semibold">Employee Management</h3><button onclick="openAddEmployeeModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm">+ Add Employee</button></div><div class="overflow-x-auto"><table class="w-full"><thead class="bg-gray-50"><tr><th class="px-5 py-3 text-left text-xs">ID</th><th class="px-5 py-3 text-left text-xs">Name</th><th class="px-5 py-3 text-left text-xs">Email</th><th class="px-5 py-3 text-left text-xs">Role</th><th class="px-5 py-3 text-left text-xs">Department</th><th class="px-5 py-3 text-left text-xs">Status</th><th class="px-5 py-3 text-left text-xs">Actions</th></tr></thead><tbody id="employeeTableBody"></tbody></table></div></div>
+                <div class="bg-white rounded-xl shadow-sm"><div class="px-5 py-4 border-b flex justify-between"><h3 class="font-semibold">Employee Management</h3><button onclick="openAddEmployeeModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm">+ Add Employee</button></div><div class="overflow-x-auto"><table class="w-full"><thead class="bg-gray-50"><tr><th class="px-5 py-3 text-left text-xs">ID</th><th class="px-5 py-3 text-left text-xs">Name</th><th class="px-5 py-3 text-left text-xs">Email</th><th class="px-5 py-3 text-left text-xs">Phone</th><th class="px-5 py-3 text-left text-xs">Role</th><th class="px-5 py-3 text-left text-xs">Department</th><th class="px-5 py-3 text-left text-xs">Salary</th><th class="px-5 py-3 text-left text-xs">Status</th><th class="px-5 py-3 text-left text-xs">Actions</th></tr></thead><tbody id="employeeTableBody"></tbody></table></div></div>
             </div>
         </div>
     </main>
 </div>
 
 <!-- MODALS -->
-<div id="employeeModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"><div class="bg-white rounded-xl w-full max-w-md modal-pop"><div class="px-6 py-4 border-b"><h3 id="modalTitle">Add Employee</h3><button onclick="closeModal()" class="float-right"><i class="fas fa-times"></i></button></div><form id="employeeForm"><input type="hidden" id="employeeId"><div class="px-6 py-4 space-y-3"><input type="text" id="empName" placeholder="Full Name" class="w-full p-2 border rounded"><input type="email" id="empEmail" placeholder="Email" class="w-full p-2 border rounded"><input type="password" id="empPassword" placeholder="Password" class="w-full p-2 border rounded"><select id="empRole" class="w-full p-2 border rounded"><option value="Manager">Manager</option><option value="Accountant">Accountant</option><option value="Sales Executive">Sales Executive</option><option value="Secretary">Secretary</option></select><select id="empDepartment" class="w-full p-2 border rounded"><option value="Management">Management</option><option value="Finance">Finance</option><option value="Sales & Marketing">Sales & Marketing</option><option value="Administration">Secretary</option></select></div><div class="px-6 py-4 border-t flex space-x-3"><button type="submit" class="flex-1 bg-blue-600 text-white py-2 rounded">Save</button><button type="button" onclick="closeModal()" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></form></div></div>
+<div id="employeeModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"><div class="bg-white rounded-xl w-full max-w-md modal-pop"><div class="px-6 py-4 border-b"><h3 id="modalTitle">Add Employee</h3><button onclick="closeModal()" class="float-right"><i class="fas fa-times"></i></button></div><form id="employeeForm"><input type="hidden" id="employeeId"><div class="px-6 py-4 space-y-3"><input type="text" id="empName" placeholder="Full Name" class="w-full p-2 border rounded"><input type="email" id="empEmail" placeholder="Email" class="w-full p-2 border rounded"><input type="tel" id="empPhone" placeholder="Phone Number" class="w-full p-2 border rounded"><input type="password" id="empPassword" placeholder="Password" class="w-full p-2 border rounded"><select id="empRole" class="w-full p-2 border rounded"><option value="Manager">Manager</option><option value="Accountant">Accountant</option><option value="Sales Executive">Sales Executive</option><option value="Secretary">Secretary</option></select><select id="empDepartment" class="w-full p-2 border rounded"><option value="Management">Management</option><option value="Finance">Finance</option><option value="Sales & Marketing">Sales & Marketing</option><option value="Administration">Secretary</option></select><input type="number" id="empSalary" placeholder="Salary (TZS)" class="w-full p-2 border rounded"></div><div class="px-6 py-4 border-t flex space-x-3"><button type="submit" class="flex-1 bg-blue-600 text-white py-2 rounded">Save</button><button type="button" onclick="closeModal()" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></form></div></div>
 
 <div id="addTaskModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"><div class="bg-white rounded-xl w-full max-w-md modal-pop"><div class="px-6 py-4 border-b"><h3>Add New Task</h3><button onclick="closeTaskModal()" class="float-right"><i class="fas fa-times"></i></button></div><div class="px-6 py-4"><input type="text" id="taskTitle" placeholder="Task Title" class="w-full p-2 border rounded mb-3"><select id="taskDepartment" class="w-full p-2 border rounded mb-3"><option value="Managers">Managers Dept</option><option value="Finance">Finance Dept</option><option value="Sales">Sales Dept</option><option value="Secretary">Secretary Dept</option></select><textarea id="taskDescription" rows="3" placeholder="Task Description" class="w-full p-2 border rounded"></textarea></div><div class="px-6 py-4 border-t flex space-x-3"><button onclick="addNewTask()" class="flex-1 bg-blue-600 text-white py-2 rounded">Add Task</button><button onclick="closeTaskModal()" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
 
-<div id="onlineMarketingModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"><div class="bg-white rounded-xl w-full max-w-md modal-pop"><div class="px-6 py-4 border-b"><h3>Add Online Marketing Campaign</h3><button onclick="closeOnlineModal()" class="float-right"><i class="fas fa-times"></i></button></div><div class="px-6 py-4"><input type="text" id="onlineCampaignName" placeholder="Campaign Name" class="w-full p-2 border rounded mb-3"><input type="text" id="onlinePlatform" placeholder="Platform (Facebook, Google, etc)" class="w-full p-2 border rounded mb-3"><textarea id="onlineDetails" rows="3" placeholder="Campaign Details" class="w-full p-2 border rounded"></textarea><input type="text" id="onlineBudget" placeholder="Budget" class="w-full p-2 border rounded mt-3"></div><div class="px-6 py-4 border-t flex space-x-3"><button onclick="addOnlineCampaign()" class="flex-1 bg-blue-600 text-white py-2 rounded">Add Campaign</button><button onclick="closeOnlineModal()" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
-
-<div id="physicalMarketingModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"><div class="bg-white rounded-xl w-full max-w-md modal-pop"><div class="px-6 py-4 border-b"><h3>Add Physical Marketing Activity</h3><button onclick="closePhysicalModal()" class="float-right"><i class="fas fa-times"></i></button></div><div class="px-6 py-4"><input type="text" id="physicalActivityName" placeholder="Activity Name" class="w-full p-2 border rounded mb-3"><input type="text" id="physicalLocation" placeholder="Location Visited" class="w-full p-2 border rounded mb-3"><textarea id="physicalDetails" rows="3" placeholder="Details of visit / activity" class="w-full p-2 border rounded"></textarea><input type="text" id="physicalPeopleMet" placeholder="Number of people met" class="w-full p-2 border rounded mt-3"></div><div class="px-6 py-4 border-t flex space-x-3"><button onclick="addPhysicalActivity()" class="flex-1 bg-orange-600 text-white py-2 rounded">Add Activity</button><button onclick="closePhysicalModal()" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
-
-<div id="addOrderModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"><div class="bg-white rounded-xl w-full max-w-md modal-pop"><div class="px-6 py-4 border-b"><h3>Add New Order</h3><button onclick="closeOrderModal()" class="float-right"><i class="fas fa-times"></i></button></div><div class="px-6 py-4"><input type="text" id="orderCustomer" placeholder="Customer Name" class="w-full p-2 border rounded mb-3"><input type="text" id="orderPhone" placeholder="Phone Number" class="w-full p-2 border rounded mb-3"><input type="text" id="orderProject" placeholder="Project Type" class="w-full p-2 border rounded mb-3"><textarea id="orderDescription" rows="2" placeholder="Description" class="w-full p-2 border rounded"></textarea><input type="text" id="orderAmount" placeholder="Amount" class="w-full p-2 border rounded mt-3"></div><div class="px-6 py-4 border-t flex space-x-3"><button onclick="addNewOrder()" class="flex-1 bg-green-600 text-white py-2 rounded">Add Order</button><button onclick="closeOrderModal()" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
-
 <script>
-    // ==================== DATA STORES ====================
+    // Employee Data
     let employees = [
-        { id: 1, name: "John Doe", email: "john@geotraverse.com", role: "Manager", department: "Management", status: "Active", password: "password123" },
-        { id: 2, name: "Mary Smith", email: "mary@geotraverse.com", role: "Accountant", department: "Finance", status: "Active", password: "password123" },
-        { id: 3, name: "David Kim", email: "david@geotraverse.com", role: "Sales Executive", department: "Sales & Marketing", status: "Active", password: "password123" },
-        { id: 4, name: "Sarah Lee", email: "sarah@geotraverse.com", role: "Secretary", department: "Administration", status: "Active", password: "password123" },
-        { id: 5, name: "Mark Wilson", email: "mark@geotraverse.com", role: "Manager", department: "Management", status: "Active", password: "password123" }
+        { id: 1, name: "John Doe", email: "john@geotraverse.com", phone: "+255 712 345 678", role: "Manager", department: "Management", salary: "2,500,000", status: "Active", password: "password123" },
+        { id: 2, name: "Mary Smith", email: "mary@geotraverse.com", phone: "+255 755 123 456", role: "Accountant", department: "Finance", salary: "1,800,000", status: "Active", password: "password123" },
+        { id: 3, name: "David Kim", email: "david@geotraverse.com", phone: "+255 784 567 890", role: "Sales Executive", department: "Sales & Marketing", salary: "1,500,000", status: "Active", password: "password123" },
+        { id: 4, name: "Sarah Lee", email: "sarah@geotraverse.com", phone: "+255 713 987 654", role: "Secretary", department: "Administration", salary: "1,200,000", status: "Active", password: "password123" },
+        { id: 5, name: "Mark Wilson", email: "mark@geotraverse.com", phone: "+255 768 345 210", role: "Manager", department: "Management", salary: "2,800,000", status: "Active", password: "password123" }
     ];
     
     let tasks = [
@@ -317,31 +294,10 @@
         { id: 4, fromDept: "Secretary", subject: "Meeting Request", message: "Please confirm board meeting for April 25", timestamp: new Date(), read: false, replies: [] }
     ];
     
-    let salesOrders = [
-        { id: 1, customer: "John Doe", phone: "0712345678", project: "Modern Villa", description: "4 bedroom villa in Kigamboni", amount: "TZS 150,000,000", status: "Pending", postedBy: "James (Sales Team)" },
-        { id: 2, customer: "Mary Smith", phone: "0755123456", project: "Land Survey", description: "10 acres land survey", amount: "TZS 2,500,000", status: "Approved", postedBy: "Peter (Sales Team)" }
-    ];
-    
-    let customerForms = [
-        { id: 1, name: "John Doe", projectType: "Modern Villa", description: "5 bedroom luxury villa with pool", cost: "TZS 180,000,000" },
-        { id: 2, name: "Mary Smith", projectType: "Land Survey", description: "15 acres agricultural land", cost: "TZS 3,500,000" },
-        { id: 3, name: "David Kim", projectType: "Commercial Building", description: "10 story office building", cost: "TZS 350,000,000" }
-    ];
-    
-    let onlineCampaigns = [
-        { name: "Social Media Ads", platform: "Facebook/Instagram", details: "Campaigns running - Reach: 50,000+", budget: "TZS 2,000,000" },
-        { name: "Google Ads", platform: "Google", details: "Search & Display campaigns - Clicks: 2,500", budget: "TZS 1,500,000" }
-    ];
-    
-    let physicalActivities = [
-        { name: "Site Visits", location: "Kigamboni, Masaki, Mikocheni", details: "25 potential buyers met", peopleMet: "25" },
-        { name: "Property Expo", location: "Mlimani City", details: "Exhibition booth - April 20-22", peopleMet: "Expected 500+" }
-    ];
-    
     let nextId = 6;
     let nextTaskId = 5;
     let nextMessageId = 5;
-    let nextOrderId = 3;
+    let currentSearchTerm = '';
     
     const departmentMap = { 'Management': 'Managers', 'Finance': 'Finance', 'Sales & Marketing': 'Sales', 'Administration': 'Secretary' };
     
@@ -357,9 +313,6 @@
         updateCounts();
         renderTasks();
         renderMessagesList();
-        renderSalesDashboard();
-        renderSecretaryDashboard();
-        renderFinanceDashboard();
     }
     
     function saveData() { localStorage.setItem('geotraverse_employees', JSON.stringify(employees)); }
@@ -393,7 +346,10 @@
         const tbody = document.getElementById('employeeTableBody');
         tbody.innerHTML = '';
         employees.forEach(emp => {
-            tbody.innerHTML += `<tr class="border-b"><td class="px-5 py-3">${emp.id}</td><td class="px-5 py-3">${emp.name}</td><td class="px-5 py-3">${emp.email}</td><td class="px-5 py-3"><span class="px-2 py-1 text-xs rounded-full ${getRoleBadge(emp.role)}">${emp.role}</span></td><td class="px-5 py-3">${departmentMap[emp.department]}</td><td class="px-5 py-3"><span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">${emp.status}</span></td><td class="px-5 py-3"><button onclick="editEmployee(${emp.id})" class="text-blue-600">Edit</button> <button onclick="deleteEmployee(${emp.id})" class="text-red-600">Delete</button></td></tr>`;
+            if (currentSearchTerm && !emp.name.toLowerCase().includes(currentSearchTerm) && !emp.email.toLowerCase().includes(currentSearchTerm) && !emp.phone.includes(currentSearchTerm)) {
+                return;
+            }
+            tbody.innerHTML += `<tr class="border-b"><td class="px-5 py-3">${emp.id}</td><td class="px-5 py-3">${emp.name}</td><td class="px-5 py-3">${emp.email}</td><td class="px-5 py-3">${emp.phone}</td><td class="px-5 py-3"><span class="px-2 py-1 text-xs rounded-full ${getRoleBadge(emp.role)}">${emp.role}</span></td><td class="px-5 py-3">${departmentMap[emp.department]}</td><td class="px-5 py-3">TZS ${emp.salary}</td><td class="px-5 py-3"><span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">${emp.status}</span></td><td class="px-5 py-3"><button onclick="editEmployee(${emp.id})" class="text-blue-600">Edit</button> <button onclick="deleteEmployee(${emp.id})" class="text-red-600">Delete</button></td></tr>`;
         });
         saveData();
     }
@@ -405,6 +361,9 @@
         completedDiv.innerHTML = '';
         
         tasks.forEach(task => {
+            if (currentSearchTerm && !task.title.toLowerCase().includes(currentSearchTerm) && !task.description.toLowerCase().includes(currentSearchTerm)) {
+                return;
+            }
             const taskHtml = `<div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg"><div><input type="checkbox" class="task-checkbox mr-3" onchange="toggleTask(${task.id})" ${task.completed ? 'checked' : ''}><span class="${task.completed ? 'line-through text-gray-400' : ''}">${task.title}</span><p class="text-xs text-gray-500 mt-1">From: ${task.department} Dept - ${task.description}</p></div></div>`;
             if(task.completed) completedDiv.innerHTML += taskHtml;
             else incompleteDiv.innerHTML += taskHtml;
@@ -420,6 +379,9 @@
         const convDiv = document.getElementById('conversationsList');
         convDiv.innerHTML = '';
         messages.forEach(msg => {
+            if (currentSearchTerm && !msg.fromDept.toLowerCase().includes(currentSearchTerm) && !msg.subject.toLowerCase().includes(currentSearchTerm)) {
+                return;
+            }
             convDiv.innerHTML += `<div class="message-item p-3 rounded-lg ${!msg.read ? 'message-unread' : ''}" onclick="viewConversation(${msg.id})"><div class="flex justify-between"><span class="font-semibold">${msg.fromDept} Dept</span><span class="text-xs text-gray-400">${msg.timestamp.toLocaleTimeString()}</span></div><p class="text-sm truncate">${msg.subject}</p><p class="text-xs text-gray-400">${msg.replies.length} replies</p></div>`;
         });
         if(messages.length === 0) convDiv.innerHTML = '<p class="text-gray-500 text-center py-4">No messages yet</p>';
@@ -441,54 +403,6 @@
         if(msg) { msg.replies.push(replyText); renderMessagesList(); showToast(`Reply sent to ${msg.fromDept} department`); viewConversation(msgId); }
     }
     
-    function renderFinanceDashboard() {
-        const pendingDiv = document.getElementById('pendingInvoices');
-        pendingDiv.innerHTML = `<div class="flex justify-between p-3 border-b"><div><p class="font-medium">INV-001 - Modern Villa</p><p class="text-sm text-gray-500">John Doe - TZS 5,000,000</p></div><span class="status-pending px-2 py-1 rounded">Pending</span></div><div class="flex justify-between p-3 border-b"><div><p class="font-medium">INV-002 - Land Survey</p><p class="text-sm text-gray-500">Mary Smith - TZS 2,500,000</p></div><span class="status-pending px-2 py-1 rounded">Pending</span></div>`;
-        
-        const paidDiv = document.getElementById('paidInvoices');
-        paidDiv.innerHTML = `<div class="flex justify-between p-3 border-b"><div><p class="font-medium">INV-099 - Residential Plot</p><p class="text-sm text-gray-500">Sarah Lee - TZS 3,000,000</p></div><span class="status-paid px-2 py-1 rounded">Paid</span></div><div class="flex justify-between p-3"><div><p class="font-medium">INV-100 - House Construction</p><p class="text-sm text-gray-500">Mark Wilson - TZS 4,500,000</p></div><span class="status-paid px-2 py-1 rounded">Paid</span></div>`;
-    }
-    
-    function renderSalesDashboard() {
-        const ordersDiv = document.getElementById('salesOrders');
-        ordersDiv.innerHTML = '';
-        salesOrders.forEach(order => { ordersDiv.innerHTML += `<div class="order-card flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><p class="font-medium">${order.customer} - ${order.project}</p><p class="text-sm text-gray-500">Amount: ${order.amount} | Status: ${order.status}</p><p class="text-xs text-gray-400">Posted by: ${order.postedBy}</p></div><button class="text-blue-600 text-sm">View</button></div>`; });
-        
-        const formsDiv = document.getElementById('customerForms');
-        formsDiv.innerHTML = '';
-        customerForms.forEach(form => { formsDiv.innerHTML += `<div class="border rounded-lg p-3 mb-2"><div class="flex justify-between"><div><p class="font-bold">${form.name}</p><p class="text-sm">${form.projectType}</p><p class="text-sm text-gray-600">${form.description}</p><p class="text-green-600 font-semibold">${form.cost}</p></div><button class="bg-blue-600 text-white px-3 py-1 rounded text-sm">Contact</button></div></div>`; });
-        
-        const adsDiv = document.getElementById('adPhotos');
-        adsDiv.innerHTML = '';
-        for(let i=1; i<=5; i++) { adsDiv.innerHTML += `<img src="https://picsum.photos/id/${100+i}/100/100" class="ad-img">`; }
-    }
-    
-    function renderSecretaryDashboard() {
-        const ordersDiv = document.getElementById('secretaryOrders');
-        ordersDiv.innerHTML = '<div class="flex justify-between p-3 bg-gray-50 rounded mb-2"><div><p>Office Supplies Order - Qty: 50 items</p></div><button class="text-blue-600">Process</button></div><div class="flex justify-between p-3 bg-gray-50 rounded"><div><p>IT Equipment Request - 10 laptops</p></div><button class="text-blue-600">Process</button></div>';
-        
-        const messagesDiv = document.getElementById('secretaryMessages');
-        messagesDiv.innerHTML = '<div class="flex items-start space-x-3 p-3 border-b"><div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center"><i class="fas fa-user text-blue-600"></i></div><div><p class="font-medium">John Doe (Client)</p><p class="text-sm">Interested in Modern Villa - Request site visit</p></div><button class="text-blue-600 text-sm">Reply</button></div><div class="flex items-start space-x-3 p-3"><div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center"><i class="fas fa-user text-green-600"></i></div><div><p class="font-medium">Mary Smith (Client)</p><p class="text-sm">Land survey inquiry - Need quote</p></div><button class="text-blue-600 text-sm">Reply</button></div>';
-        
-        const appDiv = document.getElementById('secretaryAppointments');
-        appDiv.innerHTML = '<div class="appointment-item"><div class="w-12"><i class="fas fa-calendar-day text-blue-500"></i></div><div class="flex-1"><p class="font-medium">Site Visit - Modern Villa</p><p class="text-sm text-gray-500">Today, 2:00 PM</p></div><span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">Confirmed</span></div><div class="appointment-item"><div class="w-12"><i class="fas fa-users text-purple-500"></i></div><div class="flex-1"><p class="font-medium">Land Survey Meeting</p><p class="text-sm text-gray-500">Tomorrow, 10:00 AM</p></div><span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded">Pending</span></div>';
-    }
-    
-    function showProjects(type) {
-        const title = document.getElementById('projectsTitle');
-        const grid = document.getElementById('projectsGrid');
-        if(type === 'completed') {
-            title.innerText = 'Completed Projects - Modern Houses';
-            grid.innerHTML = `<div class="project-card border rounded-lg p-2"><img src="https://picsum.photos/id/106/400/300" class="project-image"><p class="font-semibold mt-2">Modern Villa - Kigamboni</p><p class="text-sm text-gray-500">Luxury 4 bedroom villa with pool</p></div><div class="project-card border rounded-lg p-2"><img src="https://picsum.photos/id/107/400/300" class="project-image"><p class="font-semibold mt-2">Contemporary House - Masaki</p><p class="text-sm text-gray-500">Ocean view, modern finishing</p></div><div class="project-card border rounded-lg p-2"><img src="https://picsum.photos/id/108/400/300" class="project-image"><p class="font-semibold mt-2">Smart Home - Mikocheni</p><p class="text-sm text-gray-500">Fully automated smart home</p></div>`;
-        } else if(type === 'inprogress') {
-            title.innerText = 'In Progress Projects - Under Construction';
-            grid.innerHTML = `<div class="project-card border rounded-lg p-2"><img src="https://picsum.photos/id/12/400/300" class="project-image"><p class="font-semibold mt-2">Under Construction - Kibaha</p><p class="text-sm text-gray-500">60% complete</p></div><div class="project-card border rounded-lg p-2"><img src="https://picsum.photos/id/13/400/300" class="project-image"><p class="font-semibold mt-2">Commercial Complex - Pwani</p><p class="text-sm text-gray-500">40% complete</p></div>`;
-        } else {
-            title.innerText = 'Approved Projects - Client Details';
-            grid.innerHTML = `<div class="project-card border rounded-lg p-3"><p class="font-bold">Mr. John M.</p><p class="text-sm"><i class="fas fa-phone"></i> +255 712 345 678</p><p class="text-sm mt-1">Modern Villa with 5 bedrooms, swimming pool</p><p class="text-green-600 font-bold mt-2">TZS 180,000,000</p></div><div class="project-card border rounded-lg p-3"><p class="font-bold">Ms. Sarah K.</p><p class="text-sm"><i class="fas fa-phone"></i> +255 755 123 456</p><p class="text-sm mt-1">Land survey for 15 acres agricultural land</p><p class="text-green-600 font-bold mt-2">TZS 3,500,000</p></div><div class="project-card border rounded-lg p-3"><p class="font-bold">Dr. James P.</p><p class="text-sm"><i class="fas fa-phone"></i> +255 784 567 890</p><p class="text-sm mt-1">Commercial building - 8 story office space</p><p class="text-green-600 font-bold mt-2">TZS 350,000,000</p></div>`;
-        }
-    }
-    
     function openDepartmentDashboard(dept) {
         document.getElementById('departmentsSection').classList.add('hidden');
         document.getElementById('employeeSection').classList.add('hidden');
@@ -501,7 +415,7 @@
         document.getElementById('salesDashboard').classList.add('hidden');
         document.getElementById('secretaryDashboard').classList.add('hidden');
         
-        if(dept === 'Managers') { document.getElementById('managersDashboard').classList.remove('hidden'); showProjects('completed'); }
+        if(dept === 'Managers') document.getElementById('managersDashboard').classList.remove('hidden');
         else if(dept === 'Finance') document.getElementById('financeDashboard').classList.remove('hidden');
         else if(dept === 'Sales') document.getElementById('salesDashboard').classList.remove('hidden');
         else if(dept === 'Secretary') document.getElementById('secretaryDashboard').classList.remove('hidden');
@@ -515,6 +429,14 @@
         document.getElementById('departmentsSection').classList.remove('hidden');
     }
     
+    function changeSidebarColor(color, element) {
+        document.getElementById('sidebar').style.backgroundColor = color;
+        document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
+        element.classList.add('selected');
+        localStorage.setItem('sidebarColor', color);
+        showToast(`Sidebar color changed to ${color}`);
+    }
+    
     function openAddTaskModal() { document.getElementById('addTaskModal').classList.remove('hidden'); document.getElementById('addTaskModal').classList.add('flex'); }
     function closeTaskModal() { document.getElementById('addTaskModal').classList.add('hidden'); document.getElementById('addTaskModal').classList.remove('flex'); }
     function addNewTask() {
@@ -526,27 +448,33 @@
         renderTasks(); updateCounts(); showToast('New task added!'); closeTaskModal();
     }
     
-    function openOnlineMarketingForm() { document.getElementById('onlineMarketingModal').classList.remove('hidden'); document.getElementById('onlineMarketingModal').classList.add('flex'); }
-    function closeOnlineModal() { document.getElementById('onlineMarketingModal').classList.add('hidden'); document.getElementById('onlineMarketingModal').classList.remove('flex'); }
-    function addOnlineCampaign() { showToast('Online campaign added!'); closeOnlineModal(); }
+    function showSetting(type) { showToast(`Opening ${type} settings - Configuration panel will appear here`); }
     
-    function openPhysicalMarketingForm() { document.getElementById('physicalMarketingModal').classList.remove('hidden'); document.getElementById('physicalMarketingModal').classList.add('flex'); }
-    function closePhysicalModal() { document.getElementById('physicalMarketingModal').classList.add('hidden'); document.getElementById('physicalMarketingModal').classList.remove('flex'); }
-    function addPhysicalActivity() { showToast('Physical activity added!'); closePhysicalModal(); }
-    
-    function openAddOrderForm() { document.getElementById('addOrderModal').classList.remove('hidden'); document.getElementById('addOrderModal').classList.add('flex'); }
-    function closeOrderModal() { document.getElementById('addOrderModal').classList.add('hidden'); document.getElementById('addOrderModal').classList.remove('flex'); }
-    function addNewOrder() {
-        const customer = document.getElementById('orderCustomer').value;
-        if(!customer) { alert('Enter customer name'); return; }
-        salesOrders.push({ id: nextOrderId++, customer: customer, phone: document.getElementById('orderPhone').value, project: document.getElementById('orderProject').value, description: document.getElementById('orderDescription').value, amount: document.getElementById('orderAmount').value, status: 'Pending', postedBy: 'Sales Team' });
-        renderSalesDashboard(); showToast('New order added!'); closeOrderModal();
+    // Search Function
+    function performSearch() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        currentSearchTerm = searchTerm;
+        
+        const currentSection = document.querySelector('.nav-item.active').getAttribute('data-section');
+        
+        if (currentSection === 'employees') {
+            renderEmployeeTable();
+        } else if (currentSection === 'tasks') {
+            renderTasks();
+        } else if (currentSection === 'messages') {
+            renderMessagesList();
+        }
+        
+        if (searchTerm === '') {
+            currentSearchTerm = '';
+            renderEmployeeTable();
+            renderTasks();
+            renderMessagesList();
+        }
     }
     
-    function showSetting(type) { showToast(`Opening ${type} settings - Feature coming soon`); }
-    
     window.openAddEmployeeModal = () => { document.getElementById('modalTitle').innerText = 'Add Employee'; document.getElementById('employeeForm').reset(); document.getElementById('employeeId').value = ''; document.getElementById('employeeModal').classList.remove('hidden'); document.getElementById('employeeModal').classList.add('flex'); };
-    window.editEmployee = (id) => { const emp = employees.find(e => e.id === id); if(emp) { document.getElementById('modalTitle').innerText = 'Edit Employee'; document.getElementById('employeeId').value = emp.id; document.getElementById('empName').value = emp.name; document.getElementById('empEmail').value = emp.email; document.getElementById('empRole').value = emp.role; document.getElementById('empDepartment').value = emp.department; document.getElementById('empPassword').value = ''; document.getElementById('employeeModal').classList.remove('hidden'); document.getElementById('employeeModal').classList.add('flex'); } };
+    window.editEmployee = (id) => { const emp = employees.find(e => e.id === id); if(emp) { document.getElementById('modalTitle').innerText = 'Edit Employee'; document.getElementById('employeeId').value = emp.id; document.getElementById('empName').value = emp.name; document.getElementById('empEmail').value = emp.email; document.getElementById('empPhone').value = emp.phone; document.getElementById('empRole').value = emp.role; document.getElementById('empDepartment').value = emp.department; document.getElementById('empSalary').value = emp.salary.replace(/,/g, ''); document.getElementById('empPassword').value = ''; document.getElementById('employeeModal').classList.remove('hidden'); document.getElementById('employeeModal').classList.add('flex'); } };
     window.deleteEmployee = (id) => { if(confirm('Delete employee?')) { employees = employees.filter(e => e.id !== id); renderEmployeeTable(); updateCounts(); showToast('Employee deleted'); } };
     window.closeModal = () => { document.getElementById('employeeModal').classList.add('hidden'); document.getElementById('employeeModal').classList.remove('flex'); };
     
@@ -555,10 +483,12 @@
         const id = document.getElementById('employeeId').value;
         const name = document.getElementById('empName').value;
         const email = document.getElementById('empEmail').value;
+        const phone = document.getElementById('empPhone').value;
         const role = document.getElementById('empRole').value;
         const department = document.getElementById('empDepartment').value;
-        if(id) { const idx = employees.findIndex(e => e.id == id); if(idx !== -1) employees[idx] = { ...employees[idx], name, email, role, department }; }
-        else employees.push({ id: nextId++, name, email, role, department, status: 'Active', password: 'default123' });
+        const salary = document.getElementById('empSalary').value;
+        if(id) { const idx = employees.findIndex(e => e.id == id); if(idx !== -1) employees[idx] = { ...employees[idx], name, email, phone, role, department, salary: parseInt(salary).toLocaleString() }; }
+        else employees.push({ id: nextId++, name, email, phone, role, department, salary: parseInt(salary).toLocaleString(), status: 'Active', password: 'default123' });
         renderEmployeeTable(); updateCounts(); closeModal(); showToast('Employee saved');
     });
     
@@ -582,11 +512,16 @@
     let isDark = false;
     document.getElementById('darkModeToggle').addEventListener('click', () => { isDark = !isDark; if(isDark) { document.body.classList.add('dark-mode'); document.getElementById('darkModeIcon').classList.remove('fa-moon'); document.getElementById('darkModeIcon').classList.add('fa-sun'); } else { document.body.classList.remove('dark-mode'); document.getElementById('darkModeIcon').classList.remove('fa-sun'); document.getElementById('darkModeIcon').classList.add('fa-moon'); } });
     
+    // Search input listener
+    document.getElementById('searchInput').addEventListener('input', performSearch);
+    
     // Charts
     new Chart(document.getElementById('revenueChart'), { type: 'line', data: { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'], datasets: [{ label: 'Revenue', data: [10, 18, 22, 25, 28, 30, 35], borderColor: '#3b82f6', fill: true }, { label: 'Expenses', data: [8, 12, 15, 18, 20, 22, 25], borderColor: '#ef4444', fill: true }] }, options: { responsive: true, plugins: { legend: { position: 'bottom' } } } });
-    new Chart(document.getElementById('pieChart'), { type: 'doughnut', data: { labels: ['Managers', 'Finance', 'Sales', 'Secretary'], datasets: [{ data: [2, 2, 2, 2], backgroundColor: ['#8b5cf6', '#10b981', '#f59e0b', '#ef4444'] }] }, options: { responsive: true, plugins: { legend: { position: 'bottom' } } } });
+    new Chart(document.getElementById('pieChart'), { type: 'doughnut', data: { labels: ['Managers', 'Finance', 'Sales', 'Secretary'], datasets: [{ data: [2, 1, 1, 1], backgroundColor: ['#8b5cf6', '#10b981', '#f59e0b', '#ef4444'] }] }, options: { responsive: true, plugins: { legend: { position: 'bottom' } } } });
     
-    document.getElementById('searchInput').addEventListener('input', function(e) { const term = e.target.value.toLowerCase(); document.querySelectorAll('#employeeTableBody tr').forEach(row => { row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none'; }); });
+    // Load saved sidebar color
+    const savedColor = localStorage.getItem('sidebarColor');
+    if(savedColor) { document.getElementById('sidebar').style.backgroundColor = savedColor; }
     
     loadData();
     document.querySelectorAll('.nav-item[data-section]').forEach(item => { if(item.id !== 'employeeTableLink' && item.id !== 'departmentsLink' && item.id !== 'tasksLink' && item.id !== 'messagesLink' && item.id !== 'settingsLink') { item.addEventListener('click', (e) => { e.preventDefault(); deptSec.classList.add('hidden'); empSec.classList.add('hidden'); tasksSec.classList.add('hidden'); msgSec.classList.add('hidden'); settingsSec.classList.add('hidden'); mgmtDash.classList.add('hidden'); finDash.classList.add('hidden'); salesDash.classList.add('hidden'); secDash.classList.add('hidden'); ds.classList.remove('hidden'); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); item.classList.add('active'); }); } });
