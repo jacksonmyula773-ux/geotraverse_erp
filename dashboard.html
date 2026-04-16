@@ -26,7 +26,7 @@
     <style>
         * { font-family: 'Inter', sans-serif; }
         
-        body { background: linear-gradient(135deg, #f5f7fa 0%, #e9edf2 100%); transition: background 0.3s ease; }
+        body { background: linear-gradient(135deg, #f5f7fa 0%, #e9edf2 100%); }
         
         body.dark-mode { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
         body.dark-mode .bg-white { background-color: #1e293b; border-color: #334155; }
@@ -38,80 +38,80 @@
         body.dark-mode .nav-item:hover:not(.active) { background-color: #334155; }
         body.dark-mode .nav-item.active { background-color: #1e3a5f; border-left-color: #60a5fa; }
         body.dark-mode .employee-row:hover { background-color: #334155; }
-        body.dark-mode .report-tab.active { background-color: #0f74ba; }
+        body.dark-mode .activity-item:hover { background-color: #334155; }
+        body.dark-mode .dept-card { background-color: #1e293b; }
+        body.dark-mode .setting-card { background-color: #1e293b; }
         body.dark-mode .report-tab:hover:not(.active) { background-color: #374151; }
-        body.dark-mode .modal-content { background-color: #1e293b; }
+        body.dark-mode .function-list li:hover { background-color: #334155; }
+        body.dark-mode .project-card { background-color: #1e293b; border-color: #334155; }
+        body.dark-mode .message-item:hover { background-color: #334155; }
+        body.dark-mode .reply-bubble { background-color: #1e3a5f; }
         
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: #e4e4e7; border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: #a1a1aa; border-radius: 10px; }
         
-        .sidebar { transition: background-color 0.3s ease; background-color: #0f74ba; }
+        .sidebar { background-color: #0f74ba; }
         .nav-item { transition: all 0.2s ease; border-left: 3px solid transparent; }
         .nav-item.active { background-color: rgba(255,255,255,0.15); border-left-color: #60a5fa; color: white; }
         .nav-item.active i { color: #60a5fa; }
         .nav-item:hover:not(.active) { background-color: rgba(255,255,255,0.1); color: white; }
         
-        .stat-card { transition: all 0.3s ease; cursor: pointer; border: none; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
-        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
+        .stat-card { transition: all 0.3s ease; cursor: pointer; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
         
-        .employee-row:hover { background-color: #f8fafc; }
-        body.dark-mode .employee-row:hover { background-color: #334155; }
+        .activity-item { transition: all 0.2s; cursor: pointer; border-radius: 12px; padding: 10px; }
+        .activity-item:hover { background-color: #f8fafc; transform: translateX(5px); }
+        
+        .toast-notification { position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 12px 20px; border-radius: 8px; z-index: 1000; animation: slideInRight 0.3s ease; }
+        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        
+        .logo-image { max-width: 32px; max-height: 32px; object-fit: contain; }
+        .gradient-text { background: linear-gradient(135deg, #0f74ba, #60a5fa); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        
+        .dept-card { transition: all 0.3s ease; cursor: pointer; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .dept-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        
+        .setting-card { transition: all 0.3s ease; cursor: pointer; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .setting-card:hover { transform: translateY(-3px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
         
         @keyframes modalPop { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         .modal-pop { animation: modalPop 0.2s ease-out; }
         
-        .search-input:focus { outline: none; box-shadow: 0 0 0 3px rgba(59,130,246,0.5); }
-        .dark-mode-toggle { transition: transform 0.3s ease; }
-        .dark-mode-toggle:hover { transform: rotate(15deg); }
+        .project-image { width: 100%; height: 180px; object-fit: cover; border-radius: 12px; }
+        .invoice-status { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+        .status-pending { background-color: #fef3c7; color: #d97706; }
+        .status-paid { background-color: #d1fae5; color: #059669; }
         
-        .toast-notification { position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 12px 20px; border-radius: 8px; z-index: 1000; animation: slideInRight 0.3s ease; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
-        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        
-        .logo-image { max-width: 32px; max-height: 32px; object-fit: contain; }
-        .dept-card { transition: all 0.3s ease; cursor: pointer; border: none; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-        .dept-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
-        .back-button { transition: all 0.2s ease; }
-        .back-button:hover { transform: translateX(-3px); }
+        .report-tab { cursor: pointer; transition: all 0.2s; padding: 12px 24px; border-radius: 8px 8px 0 0; }
+        .report-tab.active { background-color: #0f74ba; color: white; }
+        .report-tab.active i { color: white; }
+        .report-tab:hover:not(.active) { background-color: #e5e7eb; }
         
         .color-option { width: 40px; height: 40px; border-radius: 50%; cursor: pointer; transition: transform 0.2s; border: 2px solid transparent; }
         .color-option:hover { transform: scale(1.1); }
         .color-option.selected { border-color: white; box-shadow: 0 0 0 2px #333; }
         
-        .setting-card { transition: all 0.3s ease; cursor: pointer; border: none; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-        .setting-card:hover { transform: translateY(-3px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        .project-card { transition: all 0.2s; cursor: pointer; border-radius: 12px; overflow: hidden; border: 1px solid #e5e7eb; }
+        .project-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
         
-        .function-btn { transition: all 0.2s; cursor: pointer; }
-        .function-btn:hover { transform: translateX(5px); color: #3b82f6; }
+        .message-item { transition: all 0.2s; cursor: pointer; padding: 12px; border-radius: 12px; margin-bottom: 8px; }
+        .message-item:hover { background-color: #f8fafc; transform: translateX(3px); }
+        .message-unread { background-color: #eff6ff; border-left: 3px solid #3b82f6; }
         
-        .activity-item { transition: all 0.2s; }
-        .activity-item:hover { background-color: #f8fafc; transform: translateX(5px); }
-        body.dark-mode .activity-item:hover { background-color: #334155; }
-        
-        .report-tab { cursor: pointer; transition: all 0.2s; padding: 12px 24px; border-radius: 8px 8px 0 0; }
-        .report-tab.active { background-color: #0f74ba; color: white; box-shadow: 0 -2px 5px rgba(0,0,0,0.05); }
-        .report-tab.active i { color: white; }
-        .report-tab:hover:not(.active) { background-color: #e5e7eb; }
-        body.dark-mode .report-tab:hover:not(.active) { background-color: #374151; }
-        
-        .project-image { width: 100%; height: 200px; object-fit: cover; border-radius: 12px; cursor: pointer; transition: transform 0.3s; }
-        .project-image:hover { transform: scale(1.02); }
-        
-        .invoice-status { padding: 4px 8px; border-radius: 20px; font-size: 12px; font-weight: 500; }
-        .status-pending { background-color: #fef3c7; color: #d97706; }
-        .status-paid { background-color: #d1fae5; color: #059669; }
+        .reply-bubble { background-color: #e0e7ff; padding: 10px 14px; border-radius: 12px; margin-bottom: 8px; max-width: 80%; }
+        .admin-reply { background-color: #d1fae5; margin-left: auto; }
         
         @media print {
-            .sidebar, header, .report-tab, .export-buttons, .back-button, .nav-item, .dark-mode-toggle, .search-input, #homeButton, .toast-notification {
-                display: none !important;
-            }
+            .sidebar, header, .report-tab, .export-buttons, .back-button, .nav-item, .dark-mode-toggle, .search-input, #homeButton, .toast-notification { display: none !important; }
             body, .bg-white, .rounded-xl, .shadow-sm { background: white !important; color: black !important; box-shadow: none !important; }
-            .container, .p-6, .m-0 { padding: 0 !important; margin: 0 !important; }
         }
         
-        .gradient-text { background: linear-gradient(135deg, #0f74ba, #60a5fa); -webkit-background-clip: text; background-clip: text; color: transparent; }
-        .restore-btn { cursor: pointer; transition: all 0.2s; }
-        .restore-btn:hover { color: #10b981; transform: scale(1.05); }
+        .function-list { list-style: none; padding-left: 0; margin: 0; }
+        .function-list li { padding: 12px 0; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: all 0.2s; border-radius: 8px; }
+        .function-list li:hover { transform: translateX(5px); background-color: #f8fafc; }
+        .function-list li:last-child { border-bottom: none; }
+        .function-list li i { width: 28px; font-size: 18px; }
     </style>
 </head>
 <body>
@@ -119,7 +119,7 @@
 <div class="flex h-screen overflow-hidden">
     
     <!-- SIDEBAR -->
-    <aside id="sidebar" class="w-64 shadow-xl flex flex-col z-20 sidebar" style="background-color: #0f74ba;">
+    <aside id="sidebar" class="w-64 shadow-xl flex flex-col z-20 sidebar">
         <div class="px-6 py-6 border-b border-white/20">
             <div class="flex items-center space-x-3">
                 <img src="https://i.postimg.cc/MT6jTVHh/weblogo.png" alt="Logo" class="logo-image w-10 h-10 rounded-lg object-cover">
@@ -142,7 +142,7 @@
                 <div class="w-9 h-9 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full flex items-center justify-center"><i class="fas fa-user text-white text-sm"></i></div>
                 <div class="flex-1"><p class="text-sm font-semibold text-white">Admin User</p><p class="text-xs text-white/70">admin@geotraverse.com</p></div>
             </div>
-            <button id="logoutBtn" class="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg text-sm transition flex items-center justify-center space-x-2"><i class="fas fa-sign-out-alt"></i><span>Logout</span></button>
+            <button id="logoutBtn" class="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg text-sm transition"><i class="fas fa-sign-out-alt"></i> Logout</button>
         </div>
     </aside>
     
@@ -152,12 +152,12 @@
         <header class="bg-white/80 backdrop-blur-sm shadow-sm px-6 py-3 sticky top-0 z-10 border-b border-gray-200">
             <div class="flex items-center justify-between flex-wrap gap-3">
                 <div class="flex items-center space-x-4">
-                    <button id="homeButton" class="text-gray-600 hover:text-blue-600 transition"><i class="fas fa-home text-xl"></i></button>
+                    <button id="homeButton" class="text-gray-600 hover:text-blue-600"><i class="fas fa-home text-xl"></i></button>
                     <div class="h-6 w-px bg-gray-300"></div>
-                    <a href="https://geotraverse.com" target="_blank" class="text-blue-600 hover:text-blue-800 font-medium flex items-center space-x-1"><i class="fas fa-external-link-alt text-sm"></i><span>Main Website</span></a>
+                    <a href="https://geotraverse.com" target="_blank" class="text-blue-600 hover:text-blue-800 font-medium"><i class="fas fa-external-link-alt text-sm"></i> Main Website</a>
                 </div>
-                <div class="flex-1 max-w-md mx-4"><div class="relative"><i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i><input type="text" id="searchInput" placeholder="Search employees, tasks, messages..." class="search-input w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"></div></div>
-                <button id="darkModeToggle" class="dark-mode-toggle text-gray-600 hover:text-blue-600 transition"><i id="darkModeIcon" class="fas fa-moon text-xl"></i></button>
+                <div class="flex-1 max-w-md mx-4"><div class="relative"><i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i><input type="text" id="searchInput" placeholder="Search..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"></div></div>
+                <button id="darkModeToggle" class="text-gray-600 hover:text-blue-600"><i id="darkModeIcon" class="fas fa-moon text-xl"></i></button>
             </div>
         </header>
         
@@ -166,6 +166,7 @@
             <!-- DASHBOARD SECTION -->
             <div id="dashboardSection">
                 <div class="mb-6"><h2 class="text-2xl font-bold gradient-text">Dashboard</h2><p class="text-gray-500 mt-1">Welcome back, Admin! Here's what's happening today.</p></div>
+                
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
                     <div class="stat-card bg-white rounded-2xl p-5"><div class="flex justify-between items-start"><div><p class="text-gray-500 text-sm mb-1">Total Employees</p><p class="text-3xl font-bold text-gray-800" id="totalEmployees">0</p><p class="text-green-600 text-sm mt-1"><i class="fas fa-arrow-up"></i> +2 this month</p></div><div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center"><i class="fas fa-users text-blue-500 text-xl"></i></div></div></div>
                     <div class="stat-card bg-white rounded-2xl p-5"><div class="flex justify-between items-start"><div><p class="text-gray-500 text-sm mb-1">Monthly Revenue</p><p class="text-3xl font-bold text-gray-800">TZS 12.5M</p><p class="text-green-600 text-sm mt-1"><i class="fas fa-arrow-up"></i> 8.2%</p></div><div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center"><i class="fas fa-chart-line text-green-500 text-xl"></i></div></div></div>
@@ -194,8 +195,25 @@
             <div id="managersDashboard" class="hidden">
                 <div class="mb-6"><button onclick="goBackToDepartments()" class="back-button text-gray-500 hover:text-blue-600 mb-2"><i class="fas fa-arrow-left"></i> Back to Departments</button><h2 class="text-2xl font-bold gradient-text">Managers Dashboard</h2><p class="text-gray-500">Housing Projects & Land Survey Management</p></div>
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="bg-white rounded-2xl shadow-sm p-5"><h3 class="text-lg font-semibold text-purple-600 mb-4"><i class="fas fa-list-check mr-2"></i> Department Functions</h3><div class="space-y-2"><div onclick="showFunctionToast('Add New Project')" class="function-btn flex items-center space-x-3 p-2 rounded hover:bg-purple-50"><i class="fas fa-plus-circle text-purple-500 w-6"></i><span>Add New Project</span></div><div onclick="showFunctionToast('Edit Project Details')" class="function-btn flex items-center space-x-3 p-2 rounded hover:bg-purple-50"><i class="fas fa-edit text-purple-500 w-6"></i><span>Edit Project Details</span></div><div onclick="showFunctionToast('Delete Project')" class="function-btn flex items-center space-x-3 p-2 rounded hover:bg-purple-50"><i class="fas fa-trash-alt text-purple-500 w-6"></i><span>Delete Project</span></div><div onclick="showFunctionToast('Upload Project Images')" class="function-btn flex items-center space-x-3 p-2 rounded hover:bg-purple-50"><i class="fas fa-images text-purple-500 w-6"></i><span>Upload Project Images</span></div><div onclick="showFunctionToast('Update Project Status')" class="function-btn flex items-center space-x-3 p-2 rounded hover:bg-purple-50"><i class="fas fa-chart-line text-purple-500 w-6"></i><span>Update Project Status</span></div><div onclick="showFunctionToast('Manage Client Records')" class="function-btn flex items-center space-x-3 p-2 rounded hover:bg-purple-50"><i class="fas fa-users text-purple-500 w-6"></i><span>Manage Client Records</span></div><div onclick="showFunctionToast('View Budget Reports')" class="function-btn flex items-center space-x-3 p-2 rounded hover:bg-purple-50"><i class="fas fa-chart-simple text-purple-500 w-6"></i><span>View Budget Reports</span></div><div onclick="showFunctionToast('Generate Project Report')" class="function-btn flex items-center space-x-3 p-2 rounded hover:bg-purple-50"><i class="fas fa-file-alt text-purple-500 w-6"></i><span>Generate Project Report</span></div><div onclick="showFunctionToast('Record Land Survey')" class="function-btn flex items-center space-x-3 p-2 rounded hover:bg-purple-50"><i class="fas fa-map-marked-alt text-purple-500 w-6"></i><span>Record Land Survey</span></div><div onclick="showFunctionToast('Assign Site Visits')" class="function-btn flex items-center space-x-3 p-2 rounded hover:bg-purple-50"><i class="fas fa-tasks text-purple-500 w-6"></i><span>Assign Site Visits</span></div></div></div>
-                    <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm p-5"><h3 class="text-lg font-semibold mb-4">Recent Projects</h3><div class="grid md:grid-cols-2 gap-4" id="managersProjectsGrid"></div></div>
+                    <div class="bg-white rounded-2xl shadow-sm p-5">
+                        <h3 class="text-lg font-semibold text-purple-600 mb-4"><i class="fas fa-list-check mr-2"></i> Department Functions (10)</h3>
+                        <ul class="function-list">
+                            <li onclick="showFunctionToast('Add New Project')"><i class="fas fa-plus-circle text-purple-500"></i> Add New Project</li>
+                            <li onclick="showFunctionToast('Edit Project Details')"><i class="fas fa-edit text-purple-500"></i> Edit Project Details</li>
+                            <li onclick="showFunctionToast('Delete Project')"><i class="fas fa-trash-alt text-purple-500"></i> Delete Project</li>
+                            <li onclick="showFunctionToast('Upload Project Images')"><i class="fas fa-images text-purple-500"></i> Upload Project Images</li>
+                            <li onclick="showFunctionToast('Update Project Status')"><i class="fas fa-chart-line text-purple-500"></i> Update Project Status</li>
+                            <li onclick="showFunctionToast('Manage Client Records')"><i class="fas fa-users text-purple-500"></i> Manage Client Records</li>
+                            <li onclick="showFunctionToast('View Budget Reports')"><i class="fas fa-chart-simple text-purple-500"></i> View Budget Reports</li>
+                            <li onclick="showFunctionToast('Generate Project Report')"><i class="fas fa-file-alt text-purple-500"></i> Generate Project Report</li>
+                            <li onclick="showFunctionToast('Record Land Survey')"><i class="fas fa-map-marked-alt text-purple-500"></i> Record Land Survey</li>
+                            <li onclick="showFunctionToast('Assign Site Visits')"><i class="fas fa-tasks text-purple-500"></i> Assign Site Visits</li>
+                        </ul>
+                    </div>
+                    <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm p-5">
+                        <h3 class="text-lg font-semibold mb-4"><i class="fas fa-project-diagram mr-2 text-purple-600"></i> Recent Projects (3)</h3>
+                        <div class="grid md:grid-cols-2 gap-4" id="managersProjectsGrid"></div>
+                    </div>
                 </div>
             </div>
             
@@ -203,8 +221,30 @@
             <div id="financeDashboard" class="hidden">
                 <div class="mb-6"><button onclick="goBackToDepartments()" class="back-button text-gray-500 hover:text-blue-600 mb-2"><i class="fas fa-arrow-left"></i> Back to Departments</button><h2 class="text-2xl font-bold gradient-text">Finance Dashboard</h2><p class="text-gray-500">Financial management & accounting</p></div>
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="bg-white rounded-2xl shadow-sm p-5"><h3 class="text-lg font-semibold text-green-600 mb-4"><i class="fas fa-list-check mr-2"></i> Department Functions</h3><div class="space-y-2"><div onclick="showFunctionToast('Create New Invoice')" class="function-btn flex items-center space-x-3 p-2 rounded hover:bg-green-50"><i class="fas fa-file-invoice text-green-500 w-6"></i><span>Create New Invoice</span></div><div onclick="showFunctionToast('Edit Invoice Details')" class="function-btn flex items-center space-x-3 p-2 rounded hover:bg-green-50"><i class="fas fa-edit text-green-500 w-6"></i><span>Edit Invoice Details</span></div><div onclick="showFunctionToast('Delete Invoice')" class="function-btn flex items-center space-x-3 p-2 rounded hover:bg-green-50"><i class="fas fa-trash-alt text-green-500 w-6"></i><span>Delete Invoice</span></div><div onclick="showFunctionToast('Mark Invoice as Paid')" class="function-btn flex items-center space-x-3 p-2 rounded hover:bg-green-50"><i class="fas fa-check-circle text-green-500 w-6"></i><span>Mark Invoice as Paid</span></div><div onclick="showFunctionToast('Record Income Transaction')" class="function-btn flex items-center space-x-3 p-2 rounded hover:bg-green-50"><i class="fas fa-chart-line text-green-500 w-6"></i><span>Record Income Transaction</span></div><div onclick="showFunctionToast('Record Expense Transaction')" class="function-btn flex items-center space-x-3 p-2 rounded hover:bg-green-50"><i class="fas fa-chart-simple text-green-500 w-6"></i><span>Record Expense Transaction</span></div><div onclick="showFunctionToast('View Profit/Loss Report')" class="function-btn flex items-center space-x-3 p-2 rounded hover:bg-green-50"><i class="fas fa-chart-pie text-green-500 w-6"></i><span>View Profit/Loss Report</span></div><div onclick="showFunctionToast('Generate Financial Report')" class="function-btn flex items-center space-x-3 p-2 rounded hover:bg-green-50"><i class="fas fa-file-pdf text-green-500 w-6"></i><span>Generate Financial Report</span></div><div onclick="showFunctionToast('View Budget vs Actual')" class="function-btn flex items-center space-x-3 p-2 rounded hover:bg-green-50"><i class="fas fa-wallet text-green-500 w-6"></i><span>View Budget vs Actual</span></div><div onclick="showFunctionToast('Process Payroll')" class="function-btn flex items-center space-x-3 p-2 rounded hover:bg-green-50"><i class="fas fa-calculator text-green-500 w-6"></i><span>Process Payroll</span></div></div></div>
-                    <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm p-5"><h3 class="text-lg font-semibold mb-4">Recent Invoices</h3><div class="space-y-3" id="financeInvoicesList"></div><div class="mt-4 p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl"><div class="flex justify-between"><span class="font-bold">Total Income:</span><span class="text-green-600 font-bold">TZS 28,750,000</span></div><div class="flex justify-between mt-1"><span class="font-bold">Total Expenses:</span><span class="text-red-600 font-bold">TZS 18,250,000</span></div><div class="flex justify-between mt-2 pt-2 border-t"><span class="font-bold">Profit:</span><span class="text-green-600 font-bold">TZS 10,500,000</span></div></div></div>
+                    <div class="bg-white rounded-2xl shadow-sm p-5">
+                        <h3 class="text-lg font-semibold text-green-600 mb-4"><i class="fas fa-list-check mr-2"></i> Department Functions (10)</h3>
+                        <ul class="function-list">
+                            <li onclick="showFunctionToast('Create New Invoice')"><i class="fas fa-file-invoice text-green-500"></i> Create New Invoice</li>
+                            <li onclick="showFunctionToast('Edit Invoice Details')"><i class="fas fa-edit text-green-500"></i> Edit Invoice Details</li>
+                            <li onclick="showFunctionToast('Delete Invoice')"><i class="fas fa-trash-alt text-green-500"></i> Delete Invoice</li>
+                            <li onclick="showFunctionToast('Mark Invoice as Paid')"><i class="fas fa-check-circle text-green-500"></i> Mark Invoice as Paid</li>
+                            <li onclick="showFunctionToast('Record Income Transaction')"><i class="fas fa-chart-line text-green-500"></i> Record Income Transaction</li>
+                            <li onclick="showFunctionToast('Record Expense Transaction')"><i class="fas fa-chart-simple text-green-500"></i> Record Expense Transaction</li>
+                            <li onclick="showFunctionToast('View Profit/Loss Report')"><i class="fas fa-chart-pie text-green-500"></i> View Profit/Loss Report</li>
+                            <li onclick="showFunctionToast('Generate Financial Report')"><i class="fas fa-file-pdf text-green-500"></i> Generate Financial Report</li>
+                            <li onclick="showFunctionToast('View Budget vs Actual')"><i class="fas fa-wallet text-green-500"></i> View Budget vs Actual</li>
+                            <li onclick="showFunctionToast('Process Payroll')"><i class="fas fa-calculator text-green-500"></i> Process Payroll</li>
+                        </ul>
+                    </div>
+                    <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm p-5">
+                        <h3 class="text-lg font-semibold mb-4"><i class="fas fa-file-invoice-dollar mr-2 text-green-600"></i> Recent Invoices & Transactions</h3>
+                        <div class="space-y-3" id="financeInvoicesList"></div>
+                        <div class="mt-4 p-3 bg-green-50 rounded-xl">
+                            <div class="flex justify-between"><span class="font-bold">Total Income:</span><span class="text-green-600 font-bold">TZS 28,750,000</span></div>
+                            <div class="flex justify-between mt-1"><span class="font-bold">Total Expenses:</span><span class="text-red-600 font-bold">TZS 18,250,000</span></div>
+                            <div class="flex justify-between mt-2 pt-2 border-t"><span class="font-bold">Profit:</span><span class="text-green-600 font-bold">TZS 10,500,000</span></div>
+                        </div>
+                    </div>
                 </div>
             </div>
             
@@ -212,8 +252,25 @@
             <div id="salesDashboard" class="hidden">
                 <div class="mb-6"><button onclick="goBackToDepartments()" class="back-button text-gray-500 hover:text-blue-600 mb-2"><i class="fas fa-arrow-left"></i> Back to Departments</button><h2 class="text-2xl font-bold gradient-text">Sales & Marketing Dashboard</h2><p class="text-gray-500">Track promotions and customer engagements</p></div>
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="bg-white rounded-2xl shadow-sm p-5"><h3 class="text-lg font-semibold text-orange-600 mb-4"><i class="fas fa-list-check mr-2"></i> Department Functions</h3><div class="space-y-2"><div onclick="showFunctionToast('Add New Order')" class="function-btn flex items-center space-x-3 p-2 rounded hover:bg-orange-50"><i class="fas fa-shopping-cart text-orange-500 w-6"></i><span>Add New Order</span></div><div onclick="showFunctionToast('Update Order Status')" class="function-btn flex items-center space-x-3 p-2 rounded hover:bg-orange-50"><i class="fas fa-edit text-orange-500 w-6"></i><span>Update Order Status</span></div><div onclick="showFunctionToast('View Customer Forms')" class="function-btn flex items-center space-x-3 p-2 rounded hover:bg-orange-50"><i class="fas fa-file-alt text-orange-500 w-6"></i><span>View Customer Forms</span></div><div onclick="showFunctionToast('Reply to Customer Inquiry')" class="function-btn flex items-center space-x-3 p-2 rounded hover:bg-orange-50"><i class="fas fa-reply text-orange-500 w-6"></i><span>Reply to Customer Inquiry</span></div><div onclick="showFunctionToast('View Sales Reports')" class="function-btn flex items-center space-x-3 p-2 rounded hover:bg-orange-50"><i class="fas fa-chart-line text-orange-500 w-6"></i><span>View Sales Reports</span></div><div onclick="showFunctionToast('Add Advertisement Photo')" class="function-btn flex items-center space-x-3 p-2 rounded hover:bg-orange-50"><i class="fas fa-ad text-orange-500 w-6"></i><span>Add Advertisement Photo</span></div><div onclick="showFunctionToast('Manage Online Campaigns')" class="function-btn flex items-center space-x-3 p-2 rounded hover:bg-orange-50"><i class="fas fa-globe text-orange-500 w-6"></i><span>Manage Online Campaigns</span></div><div onclick="showFunctionToast('Record Physical Visits')" class="function-btn flex items-center space-x-3 p-2 rounded hover:bg-orange-50"><i class="fas fa-store text-orange-500 w-6"></i><span>Record Physical Visits</span></div><div onclick="showFunctionToast('Manage Customer Database')" class="function-btn flex items-center space-x-3 p-2 rounded hover:bg-orange-50"><i class="fas fa-users text-orange-500 w-6"></i><span>Manage Customer Database</span></div><div onclick="showFunctionToast('Generate Marketing Report')" class="function-btn flex items-center space-x-3 p-2 rounded hover:bg-orange-50"><i class="fas fa-chart-simple text-orange-500 w-6"></i><span>Generate Marketing Report</span></div></div></div>
-                    <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm p-5"><h3 class="text-lg font-semibold mb-4">Recent Orders</h3><div class="space-y-3" id="salesOrdersList"></div></div>
+                    <div class="bg-white rounded-2xl shadow-sm p-5">
+                        <h3 class="text-lg font-semibold text-orange-600 mb-4"><i class="fas fa-list-check mr-2"></i> Department Functions (10)</h3>
+                        <ul class="function-list">
+                            <li onclick="showFunctionToast('Add New Order')"><i class="fas fa-shopping-cart text-orange-500"></i> Add New Order</li>
+                            <li onclick="showFunctionToast('Update Order Status')"><i class="fas fa-edit text-orange-500"></i> Update Order Status</li>
+                            <li onclick="showFunctionToast('View Customer Forms')"><i class="fas fa-file-alt text-orange-500"></i> View Customer Forms</li>
+                            <li onclick="showFunctionToast('Reply to Customer Inquiry')"><i class="fas fa-reply text-orange-500"></i> Reply to Customer Inquiry</li>
+                            <li onclick="showFunctionToast('View Sales Reports')"><i class="fas fa-chart-line text-orange-500"></i> View Sales Reports</li>
+                            <li onclick="showFunctionToast('Add Advertisement Photo')"><i class="fas fa-ad text-orange-500"></i> Add Advertisement Photo</li>
+                            <li onclick="showFunctionToast('Manage Online Campaigns')"><i class="fas fa-globe text-orange-500"></i> Manage Online Campaigns</li>
+                            <li onclick="showFunctionToast('Record Physical Visits')"><i class="fas fa-store text-orange-500"></i> Record Physical Visits</li>
+                            <li onclick="showFunctionToast('Manage Customer Database')"><i class="fas fa-users text-orange-500"></i> Manage Customer Database</li>
+                            <li onclick="showFunctionToast('Generate Marketing Report')"><i class="fas fa-chart-simple text-orange-500"></i> Generate Marketing Report</li>
+                        </ul>
+                    </div>
+                    <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm p-5">
+                        <h3 class="text-lg font-semibold mb-4"><i class="fas fa-chart-line mr-2 text-orange-600"></i> Recent Orders (3)</h3>
+                        <div class="space-y-3" id="salesOrdersList"></div>
+                    </div>
                 </div>
             </div>
             
@@ -221,36 +278,45 @@
             <div id="secretaryDashboard" class="hidden">
                 <div class="mb-6"><button onclick="goBackToDepartments()" class="back-button text-gray-500 hover:text-blue-600 mb-2"><i class="fas fa-arrow-left"></i> Back to Departments</button><h2 class="text-2xl font-bold gradient-text">Secretary Dashboard</h2><p class="text-gray-500">Administration & communication management</p></div>
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="bg-white rounded-2xl shadow-sm p-5"><h3 class="text-lg font-semibold text-red-600 mb-4"><i class="fas fa-list-check mr-2"></i> Department Functions</h3><div class="space-y-2"><div onclick="showFunctionToast('View All Messages')" class="function-btn flex items-center space-x-3 p-2 rounded hover:bg-red-50"><i class="fas fa-envelope text-red-500 w-6"></i><span>View All Messages</span></div><div onclick="showFunctionToast('Reply to Messages')" class="function-btn flex items-center space-x-3 p-2 rounded hover:bg-red-50"><i class="fas fa-reply text-red-500 w-6"></i><span>Reply to Messages</span></div><div onclick="showFunctionToast('Create Appointment')" class="function-btn flex items-center space-x-3 p-2 rounded hover:bg-red-50"><i class="fas fa-calendar-plus text-red-500 w-6"></i><span>Create Appointment</span></div><div onclick="showFunctionToast('Manage Schedule')" class="function-btn flex items-center space-x-3 p-2 rounded hover:bg-red-50"><i class="fas fa-calendar-alt text-red-500 w-6"></i><span>Manage Schedule</span></div><div onclick="showFunctionToast('Process Orders Received')" class="function-btn flex items-center space-x-3 p-2 rounded hover:bg-red-50"><i class="fas fa-box text-red-500 w-6"></i><span>Process Orders Received</span></div><div onclick="showFunctionToast('Record Meeting Minutes')" class="function-btn flex items-center space-x-3 p-2 rounded hover:bg-red-50"><i class="fas fa-file-alt text-red-500 w-6"></i><span>Record Meeting Minutes</span></div><div onclick="showFunctionToast('Manage Documents')" class="function-btn flex items-center space-x-3 p-2 rounded hover:bg-red-50"><i class="fas fa-folder-open text-red-500 w-6"></i><span>Manage Documents</span></div><div onclick="showFunctionToast('Print Documents')" class="function-btn flex items-center space-x-3 p-2 rounded hover:bg-red-50"><i class="fas fa-print text-red-500 w-6"></i><span>Print Documents</span></div><div onclick="showFunctionToast('Manage Visitor Log')" class="function-btn flex items-center space-x-3 p-2 rounded hover:bg-red-50"><i class="fas fa-users text-red-500 w-6"></i><span>Manage Visitor Log</span></div><div onclick="showFunctionToast('Generate Activity Report')" class="function-btn flex items-center space-x-3 p-2 rounded hover:bg-red-50"><i class="fas fa-chart-simple text-red-500 w-6"></i><span>Generate Activity Report</span></div></div></div>
-                    <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm p-5"><h3 class="text-lg font-semibold mb-4">Recent Messages</h3><div class="space-y-3" id="secretaryMessagesList"></div><div class="mt-4 p-3 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl"><div class="flex justify-between"><span class="font-bold">Appointments Today:</span><span>Site Visit - Kigamboni at 2:00 PM</span><button onclick="showFunctionToast('View Appointment')" class="text-blue-600 text-sm">View</button></div></div></div>
+                    <div class="bg-white rounded-2xl shadow-sm p-5">
+                        <h3 class="text-lg font-semibold text-red-600 mb-4"><i class="fas fa-list-check mr-2"></i> Department Functions (10)</h3>
+                        <ul class="function-list">
+                            <li onclick="showFunctionToast('View All Messages')"><i class="fas fa-envelope text-red-500"></i> View All Messages</li>
+                            <li onclick="showFunctionToast('Reply to Messages')"><i class="fas fa-reply text-red-500"></i> Reply to Messages</li>
+                            <li onclick="showFunctionToast('Create Appointment')"><i class="fas fa-calendar-plus text-red-500"></i> Create Appointment</li>
+                            <li onclick="showFunctionToast('Manage Schedule')"><i class="fas fa-calendar-alt text-red-500"></i> Manage Schedule</li>
+                            <li onclick="showFunctionToast('Process Orders Received')"><i class="fas fa-box text-red-500"></i> Process Orders Received</li>
+                            <li onclick="showFunctionToast('Record Meeting Minutes')"><i class="fas fa-file-alt text-red-500"></i> Record Meeting Minutes</li>
+                            <li onclick="showFunctionToast('Manage Documents')"><i class="fas fa-folder-open text-red-500"></i> Manage Documents</li>
+                            <li onclick="showFunctionToast('Print Documents')"><i class="fas fa-print text-red-500"></i> Print Documents</li>
+                            <li onclick="showFunctionToast('Manage Visitor Log')"><i class="fas fa-users text-red-500"></i> Manage Visitor Log</li>
+                            <li onclick="showFunctionToast('Generate Activity Report')"><i class="fas fa-chart-simple text-red-500"></i> Generate Activity Report</li>
+                        </ul>
+                    </div>
+                    <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm p-5">
+                        <h3 class="text-lg font-semibold mb-4"><i class="fas fa-clock mr-2 text-red-600"></i> Recent Messages & Appointments</h3>
+                        <div class="space-y-3" id="secretaryMessagesList"></div>
+                        <div class="mt-4 p-3 bg-blue-50 rounded-xl">
+                            <div class="flex justify-between"><span class="font-bold">Appointments Today:</span><span>Site Visit - Kigamboni at 2:00 PM</span></div>
+                        </div>
+                    </div>
                 </div>
             </div>
             
-            <!-- REPORTS SECTION -->
+            <!-- REPORTS SECTION with Export PDF & Excel -->
             <div id="reportsSection" class="hidden">
                 <div class="mb-6"><h2 class="text-2xl font-bold gradient-text">Reports Dashboard</h2><p class="text-gray-500 mt-1">Generate and view department reports</p></div>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8" id="reportDepartmentsGrid">
-                    <div class="bg-white rounded-2xl shadow-sm border-l-4 border-purple-500 p-5 cursor-pointer hover:shadow-lg transition" onclick="openDepartmentReports('Managers')"><div class="flex items-center space-x-3"><div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center"><i class="fas fa-user-tie text-purple-600 text-xl"></i></div><div><h3 class="font-bold text-lg">Managers</h3><p class="text-sm text-gray-500">Housing & Land Survey</p></div></div><div class="mt-3 flex justify-between text-sm"><span class="text-gray-500">Reports Available</span><span class="font-semibold bg-purple-100 px-2 py-1 rounded">4 Types</span></div></div>
-                    <div class="bg-white rounded-2xl shadow-sm border-l-4 border-green-500 p-5 cursor-pointer hover:shadow-lg transition" onclick="openDepartmentReports('Finance')"><div class="flex items-center space-x-3"><div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center"><i class="fas fa-calculator text-green-600 text-xl"></i></div><div><h3 class="font-bold text-lg">Finance & Accounting</h3><p class="text-sm text-gray-500">Financial Management</p></div></div><div class="mt-3 flex justify-between text-sm"><span class="text-gray-500">Reports Available</span><span class="font-semibold bg-green-100 px-2 py-1 rounded">4 Types</span></div></div>
-                    <div class="bg-white rounded-2xl shadow-sm border-l-4 border-orange-500 p-5 cursor-pointer hover:shadow-lg transition" onclick="openDepartmentReports('Sales')"><div class="flex items-center space-x-3"><div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center"><i class="fas fa-chart-line text-orange-600 text-xl"></i></div><div><h3 class="font-bold text-lg">Sales & Marketing</h3><p class="text-sm text-gray-500">Orders & Campaigns</p></div></div><div class="mt-3 flex justify-between text-sm"><span class="text-gray-500">Reports Available</span><span class="font-semibold bg-orange-100 px-2 py-1 rounded">4 Types</span></div></div>
-                    <div class="bg-white rounded-2xl shadow-sm border-l-4 border-red-500 p-5 cursor-pointer hover:shadow-lg transition" onclick="openDepartmentReports('Secretary')"><div class="flex items-center space-x-3"><div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center"><i class="fas fa-envelope text-red-600 text-xl"></i></div><div><h3 class="font-bold text-lg">Secretary</h3><p class="text-sm text-gray-500">Administration</p></div></div><div class="mt-3 flex justify-between text-sm"><span class="text-gray-500">Reports Available</span><span class="font-semibold bg-red-100 px-2 py-1 rounded">4 Types</span></div></div>
-                </div>
-                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8" id="reportDepartmentsGrid"></div>
                 <div id="departmentReportView" class="hidden">
-                    <button onclick="closeDepartmentReport()" class="back-button text-gray-500 hover:text-blue-600 mb-4 flex items-center space-x-1"><i class="fas fa-arrow-left"></i><span>Back to Departments</span></button>
+                    <button onclick="closeDepartmentReport()" class="back-button text-gray-500 hover:text-blue-600 mb-4"><i class="fas fa-arrow-left"></i> Back to Departments</button>
                     <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
-                        <div class="bg-gradient-to-r from-blue-600 to-blue-700 p-5 text-white"><h3 id="reportDeptTitle" class="text-xl font-bold">Managers Department Reports</h3><p id="reportDeptDesc" class="text-blue-200 mt-1">Housing Projects & Land Survey Management Reports</p></div>
-                        <div class="flex border-b">
-                            <button onclick="loadReport('daily')" id="tabDaily" class="report-tab text-sm font-medium flex items-center space-x-2 active"><i class="fas fa-calendar-day"></i><span>Daily Report</span></button>
-                            <button onclick="loadReport('weekly')" id="tabWeekly" class="report-tab text-sm font-medium flex items-center space-x-2"><i class="fas fa-calendar-week"></i><span>Weekly Report</span></button>
-                            <button onclick="loadReport('monthly')" id="tabMonthly" class="report-tab text-sm font-medium flex items-center space-x-2"><i class="fas fa-calendar-alt"></i><span>Monthly Report</span></button>
-                            <button onclick="loadReport('annual')" id="tabAnnual" class="report-tab text-sm font-medium flex items-center space-x-2"><i class="fas fa-calendar-year"></i><span>Annual Report</span></button>
-                        </div>
+                        <div class="bg-gradient-to-r from-blue-600 to-blue-700 p-5 text-white"><h3 id="reportDeptTitle" class="text-xl font-bold">Department Reports</h3><p id="reportDeptDesc" class="text-blue-200 mt-1">Department Reports</p></div>
+                        <div class="flex border-b"><button onclick="loadReport('daily')" id="tabDaily" class="report-tab active"><i class="fas fa-calendar-day"></i> Daily Report</button><button onclick="loadReport('weekly')" id="tabWeekly" class="report-tab"><i class="fas fa-calendar-week"></i> Weekly Report</button><button onclick="loadReport('monthly')" id="tabMonthly" class="report-tab"><i class="fas fa-calendar-alt"></i> Monthly Report</button><button onclick="loadReport('annual')" id="tabAnnual" class="report-tab"><i class="fas fa-calendar-year"></i> Annual Report</button></div>
                         <div id="reportContent" class="p-6"></div>
                         <div class="px-6 py-4 border-t bg-gray-50 flex justify-end space-x-3 export-buttons">
-                            <button onclick="exportToPDF()" class="bg-red-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-red-700 transition"><i class="fas fa-file-pdf"></i> Export PDF</button>
-                            <button onclick="exportToExcel()" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-700 transition"><i class="fas fa-file-excel"></i> Export Excel</button>
-                            <button onclick="window.print()" class="bg-gray-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-gray-700 transition"><i class="fas fa-print"></i> Print</button>
+                            <button onclick="exportToPDF()" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"><i class="fas fa-file-pdf"></i> Export PDF</button>
+                            <button onclick="exportToExcel()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"><i class="fas fa-file-excel"></i> Export Excel</button>
+                            <button onclick="window.print()" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition"><i class="fas fa-print"></i> Print</button>
                         </div>
                     </div>
                 </div>
@@ -270,106 +336,35 @@
             <div id="messagesSection" class="hidden">
                 <div class="mb-6"><h2 class="text-2xl font-bold gradient-text">Messages from Departments</h2><p class="text-gray-500 mt-1">View and reply to messages from all departments</p></div>
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="lg:col-span-1 bg-white rounded-2xl shadow-sm p-4"><h3 class="font-semibold mb-3">Conversations</h3><div id="conversationsList" class="space-y-2"></div></div>
-                    <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm p-4"><div id="messageDetailView"><p class="text-gray-500 text-center py-10">Select a conversation to view messages</p></div></div>
+                    <div class="lg:col-span-1 bg-white rounded-2xl shadow-sm p-4"><h3 class="font-semibold mb-3"><i class="fas fa-comments mr-2 text-blue-500"></i> Conversations</h3><div id="conversationsList" class="space-y-2"></div></div>
+                    <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm p-4"><div id="messageDetailView"><div class="flex flex-col items-center justify-center py-12 text-gray-400"><i class="fas fa-envelope-open-text text-5xl mb-3"></i><p class="text-center">Select a conversation from the left<br>to view and reply to messages</p></div></div></div>
                 </div>
             </div>
             
-            <!-- SETTINGS SECTION - Back to Original Layout -->
+            <!-- SETTINGS SECTION -->
             <div id="settingsSection" class="hidden">
                 <div class="mb-6"><h2 class="text-2xl font-bold gradient-text">Settings</h2><p class="text-gray-500 mt-1">Manage your application preferences</p></div>
-                
-                <!-- Settings Cards Grid -->
+                <div class="bg-white rounded-2xl shadow-sm p-5 mb-6"><h3 class="text-lg font-semibold mb-4"><i class="fas fa-key mr-2 text-blue-600"></i> Admin Password Change</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><input type="password" id="currentPassword" placeholder="Current Password" class="p-2 border rounded-lg"><input type="password" id="newAdminPassword" placeholder="New Password" class="p-2 border rounded-lg"><input type="password" id="confirmAdminPassword" placeholder="Confirm Password" class="p-2 border rounded-lg"><button onclick="changeAdminPassword()" class="bg-blue-600 text-white px-4 py-2 rounded-lg">Change Password</button></div></div>
+                <div class="bg-white rounded-2xl shadow-sm p-5 mb-6"><h3 class="text-lg font-semibold mb-4"><i class="fas fa-palette mr-2 text-blue-600"></i> Sidebar Color Change</h3><div class="flex space-x-3"><div class="color-option selected" style="background-color: #0f74ba;" onclick="changeSidebarColor('#0f74ba', this)"></div><div class="color-option" style="background-color: #1e3a5f;" onclick="changeSidebarColor('#1e3a5f', this)"></div><div class="color-option" style="background-color: #7c3aed;" onclick="changeSidebarColor('#7c3aed', this)"></div><div class="color-option" style="background-color: #059669;" onclick="changeSidebarColor('#059669', this)"></div><div class="color-option" style="background-color: #dc2626;" onclick="changeSidebarColor('#dc2626', this)"></div><div class="color-option" style="background-color: #d97706;" onclick="changeSidebarColor('#d97706', this)"></div></div></div>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                    <!-- General Settings Card -->
-                    <div class="setting-card bg-white rounded-2xl shadow-sm p-5" onclick="openSettingModal('general')">
-                        <div class="flex items-center space-x-3 mb-3"><i class="fas fa-globe text-2xl text-blue-600"></i><h3 class="font-bold text-lg">General Settings</h3></div>
-                        <p class="text-sm text-gray-500">Company name, logo, timezone, language</p>
-                        <div class="mt-3 text-blue-600 text-sm">Click to configure →</div>
-                    </div>
-                    
-                    <!-- Backup & Restore Card -->
-                    <div class="setting-card bg-white rounded-2xl shadow-sm p-5" onclick="openSettingModal('backup')">
-                        <div class="flex items-center space-x-3 mb-3"><i class="fas fa-database text-2xl text-blue-600"></i><h3 class="font-bold text-lg">Backup & Restore</h3></div>
-                        <p class="text-sm text-gray-500">Backup database, restore from backup</p>
-                        <div class="mt-3 text-blue-600 text-sm">Click to configure →</div>
-                    </div>
-                    
-                    <!-- System Logs Card -->
-                    <div class="setting-card bg-white rounded-2xl shadow-sm p-5" onclick="openSettingModal('logs')">
-                        <div class="flex items-center space-x-3 mb-3"><i class="fas fa-history text-2xl text-blue-600"></i><h3 class="font-bold text-lg">System Logs</h3></div>
-                        <p class="text-sm text-gray-500">View activity logs, user actions, login attempts</p>
-                        <div class="mt-3 text-blue-600 text-sm">Click to configure →</div>
-                    </div>
-                    
-                    <!-- Email Configuration Card -->
-                    <div class="setting-card bg-white rounded-2xl shadow-sm p-5" onclick="openSettingModal('email')">
-                        <div class="flex items-center space-x-3 mb-3"><i class="fas fa-envelope text-2xl text-blue-600"></i><h3 class="font-bold text-lg">Email Configuration</h3></div>
-                        <p class="text-sm text-gray-500">SMTP settings, email templates, test email</p>
-                        <div class="mt-3 text-blue-600 text-sm">Click to configure →</div>
-                    </div>
-                    
-                    <!-- Security Settings Card -->
-                    <div class="setting-card bg-white rounded-2xl shadow-sm p-5" onclick="openSettingModal('security')">
-                        <div class="flex items-center space-x-3 mb-3"><i class="fas fa-lock text-2xl text-blue-600"></i><h3 class="font-bold text-lg">Security Settings</h3></div>
-                        <p class="text-sm text-gray-500">Password policy, 2FA, session timeout</p>
-                        <div class="mt-3 text-blue-600 text-sm">Click to configure →</div>
-                    </div>
-                    
-                    <!-- Notification Settings Card -->
-                    <div class="setting-card bg-white rounded-2xl shadow-sm p-5" onclick="openSettingModal('notifications')">
-                        <div class="flex items-center space-x-3 mb-3"><i class="fas fa-bell text-2xl text-blue-600"></i><h3 class="font-bold text-lg">Notification Settings</h3></div>
-                        <p class="text-sm text-gray-500">Email, push notifications, alerts preferences</p>
-                        <div class="mt-3 text-blue-600 text-sm">Click to configure →</div>
-                    </div>
-                    
-                    <!-- Admin Password Card -->
-                    <div class="setting-card bg-white rounded-2xl shadow-sm p-5" onclick="openSettingModal('adminPassword')">
-                        <div class="flex items-center space-x-3 mb-3"><i class="fas fa-key text-2xl text-blue-600"></i><h3 class="font-bold text-lg">Admin Password</h3></div>
-                        <p class="text-sm text-gray-500">Change your administrator password</p>
-                        <div class="mt-3 text-blue-600 text-sm">Click to configure →</div>
-                    </div>
-                    
-                    <!-- Sidebar Color Card -->
-                    <div class="setting-card bg-white rounded-2xl shadow-sm p-5" onclick="openSettingModal('sidebarColor')">
-                        <div class="flex items-center space-x-3 mb-3"><i class="fas fa-palette text-2xl text-blue-600"></i><h3 class="font-bold text-lg">Sidebar Color</h3></div>
-                        <p class="text-sm text-gray-500">Change sidebar background color</p>
-                        <div class="mt-3 text-blue-600 text-sm">Click to configure →</div>
-                    </div>
-                    
-                    <!-- Department Settings Card -->
-                    <div class="setting-card bg-white rounded-2xl shadow-sm p-5" onclick="openSettingModal('departments')">
-                        <div class="flex items-center space-x-3 mb-3"><i class="fas fa-building text-2xl text-blue-600"></i><h3 class="font-bold text-lg">Department Settings</h3></div>
-                        <p class="text-sm text-gray-500">Manage department permissions and modules</p>
-                        <div class="mt-3 text-blue-600 text-sm">Click to configure →</div>
-                    </div>
+                    <div class="setting-card bg-white rounded-2xl shadow-sm p-5" onclick="openSettingModal('general')"><div class="flex items-center space-x-3 mb-3"><i class="fas fa-globe text-2xl text-blue-600"></i><h3 class="font-bold text-lg">General Settings</h3></div><p class="text-sm text-gray-500">Company name, logo, timezone, language</p><div class="mt-2 text-blue-600 text-sm">Click to configure →</div></div>
+                    <div class="setting-card bg-white rounded-2xl shadow-sm p-5" onclick="openSettingModal('backup')"><div class="flex items-center space-x-3 mb-3"><i class="fas fa-database text-2xl text-blue-600"></i><h3 class="font-bold text-lg">Backup & Restore</h3></div><p class="text-sm text-gray-500">Backup database, restore from backup</p><div class="mt-2 text-blue-600 text-sm">Click to configure →</div></div>
+                    <div class="setting-card bg-white rounded-2xl shadow-sm p-5" onclick="openSettingModal('logs')"><div class="flex items-center space-x-3 mb-3"><i class="fas fa-history text-2xl text-blue-600"></i><h3 class="font-bold text-lg">System Logs</h3></div><p class="text-sm text-gray-500">View activity logs, user actions</p><div class="mt-2 text-blue-600 text-sm">Click to configure →</div></div>
+                    <div class="setting-card bg-white rounded-2xl shadow-sm p-5" onclick="openSettingModal('email')"><div class="flex items-center space-x-3 mb-3"><i class="fas fa-envelope text-2xl text-blue-600"></i><h3 class="font-bold text-lg">Email Configuration</h3></div><p class="text-sm text-gray-500">SMTP settings, email templates</p><div class="mt-2 text-blue-600 text-sm">Click to configure →</div></div>
+                    <div class="setting-card bg-white rounded-2xl shadow-sm p-5" onclick="openSettingModal('security')"><div class="flex items-center space-x-3 mb-3"><i class="fas fa-lock text-2xl text-blue-600"></i><h3 class="font-bold text-lg">Security Settings</h3></div><p class="text-sm text-gray-500">Password policy, 2FA, session timeout</p><div class="mt-2 text-blue-600 text-sm">Click to configure →</div></div>
+                    <div class="setting-card bg-white rounded-2xl shadow-sm p-5" onclick="openSettingModal('notifications')"><div class="flex items-center space-x-3 mb-3"><i class="fas fa-bell text-2xl text-blue-600"></i><h3 class="font-bold text-lg">Notification Settings</h3></div><p class="text-sm text-gray-500">Email, push notifications, alerts</p><div class="mt-2 text-blue-600 text-sm">Click to configure →</div></div>
                 </div>
             </div>
             
             <!-- EMPLOYEE SECTION -->
             <div id="employeeSection" class="hidden">
-                <div class="bg-white rounded-2xl shadow-sm"><div class="px-5 py-4 border-b flex justify-between"><h3 class="font-semibold">Employee Management</h3><button onclick="openAddEmployeeModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition"><i class="fas fa-plus"></i> Add Employee</button></div><div class="overflow-x-auto"><table class="w-full"><thead class="bg-gray-50"><tr><th class="px-5 py-3 text-left text-xs">ID</th><th class="px-5 py-3 text-left text-xs">Name</th><th class="px-5 py-3 text-left text-xs">Email</th><th class="px-5 py-3 text-left text-xs">Phone</th><th class="px-5 py-3 text-left text-xs">Role</th><th class="px-5 py-3 text-left text-xs">Department</th><th class="px-5 py-3 text-left text-xs">Salary</th><th class="px-5 py-3 text-left text-xs">Status</th><th class="px-5 py-3 text-left text-xs">Actions</th></tr></thead><tbody id="employeeTableBody"></tbody></table></div></div>
+                <div class="bg-white rounded-2xl shadow-sm"><div class="px-5 py-4 border-b flex justify-between"><h3 class="font-semibold">Employee Management</h3><button onclick="openAddEmployeeModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm">+ Add Employee</button></div><div class="overflow-x-auto"><table class="w-full"><thead class="bg-gray-50"><tr><th class="px-5 py-3 text-left text-xs">ID</th><th class="px-5 py-3 text-left text-xs">Name</th><th class="px-5 py-3 text-left text-xs">Email</th><th class="px-5 py-3 text-left text-xs">Phone</th><th class="px-5 py-3 text-left text-xs">Role</th><th class="px-5 py-3 text-left text-xs">Department</th><th class="px-5 py-3 text-left text-xs">Salary</th><th class="px-5 py-3 text-left text-xs">Status</th><th class="px-5 py-3 text-left text-xs">Actions</th></tr></thead><tbody id="employeeTableBody"></tbody></table></div></div>
             </div>
         </div>
     </main>
 </div>
 
-<!-- SETTING MODAL -->
-<div id="settingModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-    <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl modal-pop max-h-[90vh] overflow-y-auto">
-        <div class="px-6 py-4 border-b flex justify-between items-center sticky top-0 bg-white">
-            <h3 id="settingModalTitle" class="text-xl font-bold text-gray-800">Setting Title</h3>
-            <button onclick="closeSettingModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
-        </div>
-        <div id="settingModalContent" class="p-6"></div>
-        <div class="px-6 py-4 border-t flex justify-end space-x-3 sticky bottom-0 bg-white">
-            <button onclick="closeSettingModal()" class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition">Cancel</button>
-            <button onclick="saveSetting()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Save Changes</button>
-        </div>
-    </div>
-</div>
-
-<!-- OTHER MODALS -->
+<!-- MODALS -->
 <div id="employeeModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"><div class="bg-white rounded-2xl w-full max-w-md modal-pop"><div class="px-6 py-4 border-b"><h3 id="modalTitle">Add Employee</h3><button onclick="closeModal()" class="float-right"><i class="fas fa-times"></i></button></div><form id="employeeForm"><input type="hidden" id="employeeId"><div class="px-6 py-4 space-y-3"><input type="text" id="empName" placeholder="Full Name" class="w-full p-2 border rounded-lg"><input type="email" id="empEmail" placeholder="Email" class="w-full p-2 border rounded-lg"><input type="tel" id="empPhone" placeholder="Phone Number" class="w-full p-2 border rounded-lg"><input type="password" id="empPassword" placeholder="Password" class="w-full p-2 border rounded-lg"><select id="empRole" class="w-full p-2 border rounded-lg"><option value="Manager">Manager</option><option value="Accountant">Accountant</option><option value="Sales Executive">Sales Executive</option><option value="Secretary">Secretary</option></select><select id="empDepartment" class="w-full p-2 border rounded-lg"><option value="Management">Management</option><option value="Finance">Finance</option><option value="Sales & Marketing">Sales & Marketing</option><option value="Administration">Secretary</option></select><input type="number" id="empSalary" placeholder="Salary (TZS)" class="w-full p-2 border rounded-lg"></div><div class="px-6 py-4 border-t flex space-x-3"><button type="submit" class="flex-1 bg-blue-600 text-white py-2 rounded-lg">Save</button><button type="button" onclick="closeModal()" class="flex-1 bg-gray-200 py-2 rounded-lg">Cancel</button></div></form></div></div>
 
 <div id="editEmployeeModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"><div class="bg-white rounded-2xl w-full max-w-md modal-pop"><div class="px-6 py-4 border-b"><h3>Edit Employee</h3><button onclick="closeEditModal()" class="float-right"><i class="fas fa-times"></i></button></div><form id="editEmployeeForm"><input type="hidden" id="editEmpId"><div class="px-6 py-4 space-y-3"><input type="text" id="editEmpName" placeholder="Full Name" class="w-full p-2 border rounded-lg"><input type="email" id="editEmpEmail" placeholder="Email" class="w-full p-2 border rounded-lg"><input type="tel" id="editEmpPhone" placeholder="Phone Number" class="w-full p-2 border rounded-lg"><select id="editEmpRole" class="w-full p-2 border rounded-lg"><option value="Manager">Manager</option><option value="Accountant">Accountant</option><option value="Sales Executive">Sales Executive</option><option value="Secretary">Secretary</option></select><select id="editEmpDepartment" class="w-full p-2 border rounded-lg"><option value="Management">Management</option><option value="Finance">Finance</option><option value="Sales & Marketing">Sales & Marketing</option><option value="Administration">Secretary</option></select><input type="number" id="editEmpSalary" placeholder="Salary (TZS)" class="w-full p-2 border rounded-lg"></div><div class="px-6 py-4 border-t flex space-x-3"><button type="submit" class="flex-1 bg-blue-600 text-white py-2 rounded-lg">Update Employee</button><button type="button" onclick="closeEditModal()" class="flex-1 bg-gray-200 py-2 rounded-lg">Cancel</button></div></form></div></div>
@@ -377,6 +372,8 @@
 <div id="changePwdModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"><div class="bg-white rounded-2xl w-full max-w-md modal-pop"><div class="px-6 py-4 border-b"><h3>Change Employee Password</h3><button onclick="closePwdModal()" class="float-right"><i class="fas fa-times"></i></button></div><form id="changePwdForm"><input type="hidden" id="pwdEmpId"><div class="px-6 py-4 space-y-3"><input type="text" id="pwdEmpName" placeholder="Employee Name" class="w-full p-2 border rounded-lg bg-gray-100" readonly><input type="password" id="newPassword" placeholder="New Password" class="w-full p-2 border rounded-lg"><input type="password" id="confirmNewPassword" placeholder="Confirm Password" class="w-full p-2 border rounded-lg"></div><div class="px-6 py-4 border-t flex space-x-3"><button type="submit" class="flex-1 bg-blue-600 text-white py-2 rounded-lg">Change Password</button><button type="button" onclick="closePwdModal()" class="flex-1 bg-gray-200 py-2 rounded-lg">Cancel</button></div></form></div></div>
 
 <div id="addTaskModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"><div class="bg-white rounded-2xl w-full max-w-md modal-pop"><div class="px-6 py-4 border-b"><h3>Add New Task</h3><button onclick="closeTaskModal()" class="float-right"><i class="fas fa-times"></i></button></div><div class="px-6 py-4"><input type="text" id="taskTitle" placeholder="Task Title" class="w-full p-2 border rounded-lg mb-3"><select id="taskDepartment" class="w-full p-2 border rounded-lg mb-3"><option value="Managers">Managers Dept</option><option value="Finance">Finance Dept</option><option value="Sales">Sales Dept</option><option value="Secretary">Secretary Dept</option></select><textarea id="taskDescription" rows="3" placeholder="Task Description" class="w-full p-2 border rounded-lg"></textarea></div><div class="px-6 py-4 border-t flex space-x-3"><button onclick="addNewTask()" class="flex-1 bg-blue-600 text-white py-2 rounded-lg">Add Task</button><button onclick="closeTaskModal()" class="flex-1 bg-gray-200 py-2 rounded-lg">Cancel</button></div></div></div>
+
+<div id="settingModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"><div class="bg-white rounded-2xl w-full max-w-2xl modal-pop max-h-[90vh] overflow-y-auto"><div class="px-6 py-4 border-b flex justify-between items-center sticky top-0 bg-white"><h3 id="settingModalTitle" class="text-xl font-bold text-gray-800">Setting Title</h3><button onclick="closeSettingModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button></div><div id="settingModalContent" class="p-6"></div><div class="px-6 py-4 border-t flex justify-end space-x-3 sticky bottom-0 bg-white"><button onclick="closeSettingModal()" class="px-4 py-2 bg-gray-200 rounded-lg">Cancel</button><button onclick="saveSetting()" class="px-4 py-2 bg-blue-600 text-white rounded-lg">Save Changes</button></div></div></div>
 
 <script>
     // ==================== DATA STORES ====================
@@ -402,23 +399,23 @@
     ];
     
     let messages = [
-        { id: 1, fromDept: "Managers", subject: "Project Update", message: "Completed 2 new modern houses this month", timestamp: new Date(), read: false, replies: [] },
-        { id: 2, fromDept: "Finance", subject: "Invoice Payment", message: "Client paid TZS 5,000,000", timestamp: new Date(), read: false, replies: [] },
-        { id: 3, fromDept: "Sales", subject: "New Customer Inquiry", message: "Customer interested in land survey", timestamp: new Date(), read: true, replies: [] },
-        { id: 4, fromDept: "Secretary", subject: "Meeting Request", message: "Please confirm board meeting", timestamp: new Date(), read: false, replies: [] }
+        { id: 1, fromDept: "Managers", subject: "Project Update", message: "We have completed 2 new modern houses this month. The projects are ready for handover. Please review the completion reports.", timestamp: new Date(Date.now() - 2*60*60*1000), read: false, replies: [] },
+        { id: 2, fromDept: "Finance", subject: "Invoice Payment", message: "Client John Doe has paid TZS 5,000,000 for the Modern Villa project. The payment has been confirmed and receipt issued.", timestamp: new Date(Date.now() - 5*60*60*1000), read: false, replies: [] },
+        { id: 3, fromDept: "Sales", subject: "New Customer Inquiry", message: "We have received a new inquiry from a customer interested in a 5-acre land survey in Kigamboni area. Please provide pricing and availability.", timestamp: new Date(Date.now() - 1*24*60*60*1000), read: true, replies: [] },
+        { id: 4, fromDept: "Secretary", subject: "Meeting Request", message: "Please confirm the board meeting schedule for next week. Proposed date: April 25, 2024 at 10:00 AM. Kindly advise if this works.", timestamp: new Date(Date.now() - 2*24*60*60*1000), read: false, replies: [] }
     ];
     
     let activities = [
-        { id: 1, message: "Admin added new employee John Doe", time: "5 min ago", icon: "fa-user-plus", color: "green", type: "employee", itemId: 1, action: "add" },
-        { id: 2, message: "Admin updated Mary Smith's details", time: "20 min ago", icon: "fa-edit", color: "blue", type: "employee", itemId: 2, action: "edit" },
-        { id: 3, message: "Admin deleted employee Mark Wilson", time: "1 hour ago", icon: "fa-user-minus", color: "red", type: "employee", itemId: 5, action: "delete" }
+        { id: 1, message: "Admin added new employee John Doe", time: "5 min ago", icon: "fa-user-plus", color: "green" },
+        { id: 2, message: "Admin updated Mary Smith's details", time: "20 min ago", icon: "fa-edit", color: "blue" },
+        { id: 3, message: "Admin deleted employee Mark Wilson", time: "1 hour ago", icon: "fa-user-minus", color: "red" },
+        { id: 4, message: "New project 'Modern Villa' was added", time: "2 hours ago", icon: "fa-building", color: "purple" },
+        { id: 5, message: "Invoice INV-001 was paid", time: "3 hours ago", icon: "fa-file-invoice", color: "green" }
     ];
     
     let backups = [];
-    let deletedItems = [];
     let nextId = 6;
     let nextTaskId = 5;
-    let nextActivityId = 4;
     let currentDept = '';
     let currentReportType = 'daily';
     let currentReportData = null;
@@ -432,101 +429,54 @@
         { name: "Secretary", displayName: "Secretary", color: "red", icon: "fa-envelope", website: "/departments/secretary/login.html" }
     ];
     
-    // ==================== BACKUP & RESTORE FUNCTIONS ====================
+    const reportDepartments = [
+        { name: "Managers", displayName: "Managers", color: "purple", icon: "fa-user-tie" },
+        { name: "Finance & Accounting", displayName: "Finance", color: "green", icon: "fa-calculator" },
+        { name: "Sales & Marketing", displayName: "Sales", color: "orange", icon: "fa-chart-line" },
+        { name: "Secretary", displayName: "Secretary", color: "red", icon: "fa-envelope" }
+    ];
+    
+    // ==================== BACKUP FUNCTIONS ====================
     function createBackup() {
-        const backup = {
-            id: Date.now(),
-            timestamp: new Date().toLocaleString(),
-            data: {
-                employees: JSON.parse(JSON.stringify(employees)),
-                projects: JSON.parse(JSON.stringify(projects)),
-                tasks: JSON.parse(JSON.stringify(tasks)),
-                messages: JSON.parse(JSON.stringify(messages)),
-                activities: JSON.parse(JSON.stringify(activities)),
-                deletedItems: JSON.parse(JSON.stringify(deletedItems))
-            }
-        };
+        const backup = { id: Date.now(), timestamp: new Date().toLocaleString(), data: { employees: JSON.parse(JSON.stringify(employees)), projects: JSON.parse(JSON.stringify(projects)), tasks: JSON.parse(JSON.stringify(tasks)), messages: JSON.parse(JSON.stringify(messages)), activities: JSON.parse(JSON.stringify(activities)) } };
         backups.unshift(backup);
         if (backups.length > 10) backups.pop();
         localStorage.setItem('geotraverse_backups', JSON.stringify(backups));
-        addActivityLog('System backup created successfully', 'backup');
         showToast('Backup created successfully!');
+        if (currentSetting === 'backup') document.getElementById('backupListModal').innerHTML = renderBackupList();
     }
     
     function restoreBackup(backupId) {
-        let backup;
-        if (backupId) {
-            backup = backups.find(b => b.id == backupId);
-        } else {
-            if (backups.length === 0) { showToast('No backups available'); return; }
-            backup = backups[0];
-        }
-        if (backup && confirm('Restore from this backup? Current data will be overwritten.')) {
+        let backup = backups.find(b => b.id == backupId) || backups[0];
+        if (backup && confirm('Restore from this backup?')) {
             employees = JSON.parse(JSON.stringify(backup.data.employees));
             projects = JSON.parse(JSON.stringify(backup.data.projects));
             tasks = JSON.parse(JSON.stringify(backup.data.tasks));
             messages = JSON.parse(JSON.stringify(backup.data.messages));
             activities = JSON.parse(JSON.stringify(backup.data.activities));
-            deletedItems = JSON.parse(JSON.stringify(backup.data.deletedItems));
             nextId = Math.max(...employees.map(e => e.id), 0) + 1;
             nextTaskId = Math.max(...tasks.map(t => t.id), 0) + 1;
             saveAllData();
-            renderEmployeeTable();
-            renderTasks();
-            renderMessagesList();
-            renderActivities();
-            updateCounts();
-            addActivityLog(`System restored from backup (${backup.timestamp})`, 'restore');
+            renderEmployeeTable(); renderTasks(); renderMessagesList(); renderActivities(); updateCounts();
+            renderManagersProjects(); renderFinanceInvoices(); renderSalesOrders(); renderSecretaryMessages();
             showToast('Backup restored successfully!');
+            if (currentSetting === 'backup') document.getElementById('backupListModal').innerHTML = renderBackupList();
+            if (currentSetting === 'logs') document.getElementById('systemLogsModal').innerHTML = renderSystemLogs();
         }
     }
     
     function renderBackupList() {
         if (backups.length === 0) return '<p class="text-gray-500 text-sm">No backups available.</p>';
-        return backups.map(b => `<div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg mb-2"><div><i class="fas fa-database text-blue-500 mr-2"></i><span class="font-medium">Backup ${new Date(b.timestamp).toLocaleString()}</span></div><button onclick="restoreBackup(${b.id})" class="restore-btn text-green-600 hover:text-green-800"><i class="fas fa-undo-alt"></i> Restore</button></div>`).join('');
+        return backups.map(b => `<div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg mb-2"><div><i class="fas fa-database text-blue-500 mr-2"></i>Backup ${new Date(b.timestamp).toLocaleString()}</div><button onclick="restoreBackup(${b.id})" class="text-green-600 text-sm">Restore</button></div>`).join('');
     }
     
     function renderSystemLogs() {
         if (activities.length === 0) return '<p class="text-gray-500 text-center py-4">No activity logs available</p>';
-        return activities.map(a => `<div class="flex items-center justify-between p-3 border-b"><div class="flex items-center space-x-3"><i class="fas ${a.icon} text-${a.color}-500"></i><div><p class="text-sm">${a.message}</p><p class="text-xs text-gray-400">${a.time}</p></div></div>${a.action === 'delete' ? `<button onclick="restoreDeletedItem(${a.itemId}, '${a.type}')" class="restore-btn text-green-600 text-sm"><i class="fas fa-undo-alt"></i> Restore</button>` : ''}</div>`).join('');
-    }
-    
-    function restoreDeletedItem(itemId, type) {
-        const deleted = deletedItems.find(d => d.id === itemId && d.type === type);
-        if (deleted) {
-            if (type === 'employee') employees.push(deleted.data);
-            else if (type === 'project') projects.push(deleted.data);
-            else if (type === 'task') tasks.push(deleted.data);
-            deletedItems = deletedItems.filter(d => !(d.id === itemId && d.type === type));
-            addActivityLog(`Restored deleted ${type}: ${deleted.data.name || deleted.data.title}`, 'restore');
-            renderEmployeeTable();
-            renderTasks();
-            saveAllData();
-            showToast(`${type} restored successfully!`);
-        }
-    }
-    
-    function addDeletedItem(type, item) {
-        deletedItems.push({ id: item.id, type: type, data: JSON.parse(JSON.stringify(item)), deletedAt: new Date() });
-        if (deletedItems.length > 50) deletedItems.shift();
-        saveAllData();
-    }
-    
-    function addActivityLog(message, action) {
-        const newActivity = { id: nextActivityId++, message: message, time: "Just now", icon: action === 'delete' ? 'fa-trash-alt' : (action === 'add' ? 'fa-plus-circle' : 'fa-edit'), color: action === 'delete' ? 'red' : (action === 'add' ? 'green' : 'blue'), type: 'system', action: action };
-        activities.unshift(newActivity);
-        if (activities.length > 50) activities.pop();
-        renderActivities();
-        saveAllData();
+        return activities.map(a => `<div class="flex items-center justify-between p-3 border-b"><div><i class="fas ${a.icon} text-${a.color}-500 mr-2"></i>${a.message}<div class="text-xs text-gray-400">${a.time}</div></div></div>`).join('');
     }
     
     function clearAllLogs() {
-        if (confirm('Are you sure you want to clear all activity logs?')) {
-            activities = [];
-            renderActivities();
-            saveAllData();
-            showToast('All logs cleared');
-        }
+        if (confirm('Clear all logs?')) { activities = []; renderActivities(); showToast('Logs cleared'); if (currentSetting === 'logs') document.getElementById('systemLogsModal').innerHTML = renderSystemLogs(); }
     }
     
     function saveAllData() {
@@ -535,156 +485,470 @@
         localStorage.setItem('geotraverse_tasks', JSON.stringify(tasks));
         localStorage.setItem('geotraverse_messages', JSON.stringify(messages));
         localStorage.setItem('geotraverse_activities', JSON.stringify(activities));
-        localStorage.setItem('geotraverse_deleted', JSON.stringify(deletedItems));
         localStorage.setItem('geotraverse_backups', JSON.stringify(backups));
     }
     
     function loadAllData() {
-        const storedEmp = localStorage.getItem('geotraverse_employees');
-        if(storedEmp) employees = JSON.parse(storedEmp);
-        const storedProjects = localStorage.getItem('geotraverse_projects');
-        if(storedProjects) projects = JSON.parse(storedProjects);
-        const storedTasks = localStorage.getItem('geotraverse_tasks');
-        if(storedTasks) tasks = JSON.parse(storedTasks);
-        const storedMessages = localStorage.getItem('geotraverse_messages');
-        if(storedMessages) messages = JSON.parse(storedMessages);
-        const storedActivities = localStorage.getItem('geotraverse_activities');
-        if(storedActivities) activities = JSON.parse(storedActivities);
-        const storedDeleted = localStorage.getItem('geotraverse_deleted');
-        if(storedDeleted) deletedItems = JSON.parse(storedDeleted);
-        const storedBackups = localStorage.getItem('geotraverse_backups');
-        if(storedBackups) backups = JSON.parse(storedBackups);
+        const stored = localStorage.getItem('geotraverse_employees'); if(stored) employees = JSON.parse(stored);
+        const storedProjects = localStorage.getItem('geotraverse_projects'); if(storedProjects) projects = JSON.parse(storedProjects);
+        const storedTasks = localStorage.getItem('geotraverse_tasks'); if(storedTasks) tasks = JSON.parse(storedTasks);
+        const storedMessages = localStorage.getItem('geotraverse_messages'); if(storedMessages) messages = JSON.parse(storedMessages);
+        const storedActivities = localStorage.getItem('geotraverse_activities'); if(storedActivities) activities = JSON.parse(storedActivities);
+        const storedBackups = localStorage.getItem('geotraverse_backups'); if(storedBackups) backups = JSON.parse(storedBackups);
         nextId = Math.max(...employees.map(e => e.id), 0) + 1;
         nextTaskId = Math.max(...tasks.map(t => t.id), 0) + 1;
-        nextActivityId = Math.max(...activities.map(a => a.id), 0) + 1;
     }
     
-    // ==================== SETTING MODAL FUNCTIONS ====================
-    function openSettingModal(settingType) {
-        currentSetting = settingType;
-        const modal = document.getElementById('settingModal');
-        const title = document.getElementById('settingModalTitle');
-        const content = document.getElementById('settingModalContent');
+    // ==================== REPORT FUNCTIONS ====================
+    function generateReportData(dept, type) {
+        const today = new Date();
+        const weekStart = new Date(today); weekStart.setDate(today.getDate() - today.getDay());
+        const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+        const yearStart = new Date(today.getFullYear(), 0, 1);
+        const reports = {
+            'Managers': {
+                daily: { title: "Daily Projects Report", date: today.toDateString(), completed: 1, inProgress: 1, approved: 1, revenue: "TZS 0" },
+                weekly: { title: "Weekly Projects Report", period: `${weekStart.toDateString()} - ${today.toDateString()}`, completed: 3, inProgress: 2, approved: 2, revenue: "TZS 180,000,000" },
+                monthly: { title: "Monthly Projects Report", period: monthStart.toDateString() + " - " + today.toDateString(), completed: 6, inProgress: 5, approved: 4, revenue: "TZS 450,000,000" },
+                annual: { title: "Annual Projects Report", period: yearStart.toDateString() + " - " + today.toDateString(), completed: 18, inProgress: 12, approved: 12, revenue: "TZS 1,250,000,000" }
+            },
+            'Finance': {
+                daily: { title: "Daily Financial Report", date: today.toDateString(), income: "TZS 2,500,000", expenses: "TZS 1,200,000", profit: "TZS 1,300,000" },
+                weekly: { title: "Weekly Financial Report", period: `${weekStart.toDateString()} - ${today.toDateString()}`, income: "TZS 8,750,000", expenses: "TZS 4,250,000", profit: "TZS 4,500,000" },
+                monthly: { title: "Monthly Financial Report", period: monthStart.toDateString() + " - " + today.toDateString(), income: "TZS 28,750,000", expenses: "TZS 18,250,000", profit: "TZS 10,500,000" },
+                annual: { title: "Annual Financial Report", period: yearStart.toDateString() + " - " + today.toDateString(), income: "TZS 125,000,000", expenses: "TZS 85,000,000", profit: "TZS 40,000,000" }
+            },
+            'Sales': {
+                daily: { title: "Daily Sales Report", date: today.toDateString(), orders: 3, revenue: "TZS 2,500,000", leads: 5, conversions: 2 },
+                weekly: { title: "Weekly Sales Report", period: `${weekStart.toDateString()} - ${today.toDateString()}`, orders: 12, revenue: "TZS 15,500,000", leads: 18, conversions: 8 },
+                monthly: { title: "Monthly Sales Report", period: monthStart.toDateString() + " - " + today.toDateString(), orders: 28, revenue: "TZS 45,000,000", leads: 45, conversions: 22 },
+                annual: { title: "Annual Sales Report", period: yearStart.toDateString() + " - " + today.toDateString(), orders: 156, revenue: "TZS 250,000,000", leads: 220, conversions: 98 }
+            },
+            'Secretary': {
+                daily: { title: "Daily Administration Report", date: today.toDateString(), messages: 8, appointments: 3, documents: 12 },
+                weekly: { title: "Weekly Administration Report", period: `${weekStart.toDateString()} - ${today.toDateString()}`, messages: 35, appointments: 12, documents: 45 },
+                monthly: { title: "Monthly Administration Report", period: monthStart.toDateString() + " - " + today.toDateString(), messages: 120, appointments: 28, documents: 156 },
+                annual: { title: "Annual Administration Report", period: yearStart.toDateString() + " - " + today.toDateString(), messages: 450, appointments: 98, documents: 520 }
+            }
+        };
+        currentReportData = reports[dept]?.[type] || reports['Managers']['daily'];
+        return currentReportData;
+    }
+    
+    function renderReportContent(dept, type) {
+        const data = generateReportData(dept, type);
+        const content = document.getElementById('reportContent');
+        let html = `<div class="mb-6" id="reportPrintArea"><h2 class="text-xl font-bold text-gray-800">${data.title}</h2><p class="text-gray-500">${data.period || data.date || ''}</p></div>`;
+        html += `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">`;
+        if (dept === 'Managers') {
+            html += `<div class="bg-green-50 p-4 rounded-xl"><p class="text-sm">Completed Projects</p><p class="text-2xl font-bold text-green-600">${data.completed}</p></div>`;
+            html += `<div class="bg-orange-50 p-4 rounded-xl"><p class="text-sm">In Progress</p><p class="text-2xl font-bold text-orange-600">${data.inProgress}</p></div>`;
+            html += `<div class="bg-blue-50 p-4 rounded-xl"><p class="text-sm">Approved Projects</p><p class="text-2xl font-bold text-blue-600">${data.approved}</p></div>`;
+            html += `<div class="bg-purple-50 p-4 rounded-xl"><p class="text-sm">Revenue</p><p class="text-2xl font-bold text-purple-600">${data.revenue}</p></div>`;
+        } else if (dept === 'Finance') {
+            html += `<div class="bg-green-50 p-4 rounded-xl"><p class="text-sm">Income</p><p class="text-2xl font-bold text-green-600">${data.income}</p></div>`;
+            html += `<div class="bg-red-50 p-4 rounded-xl"><p class="text-sm">Expenses</p><p class="text-2xl font-bold text-red-600">${data.expenses}</p></div>`;
+            html += `<div class="bg-blue-50 p-4 rounded-xl"><p class="text-sm">Profit</p><p class="text-2xl font-bold text-blue-600">${data.profit}</p></div>`;
+        } else if (dept === 'Sales') {
+            html += `<div class="bg-blue-50 p-4 rounded-xl"><p class="text-sm">Orders</p><p class="text-2xl font-bold text-blue-600">${data.orders}</p></div>`;
+            html += `<div class="bg-green-50 p-4 rounded-xl"><p class="text-sm">Revenue</p><p class="text-2xl font-bold text-green-600">${data.revenue}</p></div>`;
+            html += `<div class="bg-purple-50 p-4 rounded-xl"><p class="text-sm">Leads</p><p class="text-2xl font-bold text-purple-600">${data.leads}</p></div>`;
+            html += `<div class="bg-orange-50 p-4 rounded-xl"><p class="text-sm">Conversions</p><p class="text-2xl font-bold text-orange-600">${data.conversions}</p></div>`;
+        } else if (dept === 'Secretary') {
+            html += `<div class="bg-blue-50 p-4 rounded-xl"><p class="text-sm">Messages</p><p class="text-2xl font-bold text-blue-600">${data.messages}</p></div>`;
+            html += `<div class="bg-green-50 p-4 rounded-xl"><p class="text-sm">Appointments</p><p class="text-2xl font-bold text-green-600">${data.appointments}</p></div>`;
+            html += `<div class="bg-purple-50 p-4 rounded-xl"><p class="text-sm">Documents</p><p class="text-2xl font-bold text-purple-600">${data.documents}</p></div>`;
+        }
+        html += `</div><div class="border-t pt-4"><p class="text-gray-600">This ${type} report shows the performance of the ${dept} department.</p><p class="text-gray-500 text-sm mt-2">Generated on: ${new Date().toLocaleString()}</p></div>`;
+        content.innerHTML = html;
+    }
+    
+    function exportToPDF() {
+        const element = document.getElementById('reportContent');
+        const opt = { margin: [0.5,0.5,0.5,0.5], filename: `${currentDept}_${currentReportType}_report_${new Date().toISOString().slice(0,10)}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'a4' } };
+        html2pdf().set(opt).from(element).save();
+        showToast('PDF downloaded successfully!');
+    }
+    
+    function exportToExcel() {
+        const data = currentReportData;
+        if (!data) return;
+        let worksheetData = [];
+        worksheetData.push([data.title]);
+        worksheetData.push([data.period || data.date || '']);
+        worksheetData.push([]);
         
-        if (settingType === 'general') {
-            title.innerText = 'General Settings';
-            content.innerHTML = `
-                <div class="space-y-4">
-                    <div><label class="block text-sm font-medium mb-1">Company Name</label><input type="text" id="companyName" value="GeoTraverse" class="w-full p-2 border rounded-lg"></div>
-                    <div><label class="block text-sm font-medium mb-1">Company Email</label><input type="email" id="companyEmail" value="info@geotraverse.com" class="w-full p-2 border rounded-lg"></div>
-                    <div><label class="block text-sm font-medium mb-1">Company Phone</label><input type="text" id="companyPhone" value="+255 123 456 789" class="w-full p-2 border rounded-lg"></div>
-                    <div><label class="block text-sm font-medium mb-1">Timezone</label><select id="timezone" class="w-full p-2 border rounded-lg"><option>Africa/Dar_es_Salaam</option><option>Africa/Nairobi</option></select></div>
-                    <div><label class="block text-sm font-medium mb-1">Language</label><select id="language" class="w-full p-2 border rounded-lg"><option>English</option><option>Swahili</option></select></div>
-                    <div><label class="block text-sm font-medium mb-1">Date Format</label><select id="dateFormat" class="w-full p-2 border rounded-lg"><option>DD/MM/YYYY</option><option>MM/DD/YYYY</option></select></div>
-                </div>`;
-        } else if (settingType === 'backup') {
-            title.innerText = 'Backup & Restore';
-            content.innerHTML = `
-                <div class="space-y-4">
-                    <div class="grid grid-cols-2 gap-4"><button onclick="createBackup()" class="bg-green-600 text-white px-4 py-2 rounded-lg"><i class="fas fa-download"></i> Create Backup</button><button onclick="restoreBackup()" class="bg-orange-600 text-white px-4 py-2 rounded-lg"><i class="fas fa-upload"></i> Restore from Backup</button></div>
-                    <div class="border-t pt-4"><h4 class="font-semibold mb-2">Available Backups</h4><div id="backupListModal">${renderBackupList()}</div></div>
-                </div>`;
-        } else if (settingType === 'logs') {
-            title.innerText = 'System Logs';
-            content.innerHTML = `
-                <div class="space-y-4">
-                    <div class="max-h-96 overflow-y-auto" id="systemLogsModal">${renderSystemLogs()}</div>
-                    <div class="flex justify-end"><button onclick="clearAllLogs()" class="bg-red-600 text-white px-4 py-2 rounded-lg"><i class="fas fa-trash"></i> Clear All Logs</button></div>
-                </div>`;
-        } else if (settingType === 'email') {
-            title.innerText = 'Email Configuration';
-            content.innerHTML = `<div class="space-y-4"><div><label class="block text-sm font-medium mb-1">SMTP Server</label><input type="text" id="smtpServer" value="smtp.gmail.com" class="w-full p-2 border rounded-lg"></div><div><label class="block text-sm font-medium mb-1">SMTP Port</label><input type="text" id="smtpPort" value="587" class="w-full p-2 border rounded-lg"></div><div><label class="block text-sm font-medium mb-1">Encryption</label><select id="encryption" class="w-full p-2 border rounded-lg"><option>TLS</option><option>SSL</option></select></div><div><label class="block text-sm font-medium mb-1">Sender Email</label><input type="email" id="senderEmail" value="noreply@geotraverse.com" class="w-full p-2 border rounded-lg"></div><button onclick="testEmailConfig()" class="bg-blue-600 text-white px-4 py-2 rounded-lg">Test Email</button></div>`;
-        } else if (settingType === 'security') {
-            title.innerText = 'Security Settings';
-            content.innerHTML = `<div class="space-y-4"><div><label class="block text-sm font-medium mb-1">Session Timeout (minutes)</label><input type="number" id="sessionTimeout" value="30" class="w-full p-2 border rounded-lg"></div><div><label class="flex items-center space-x-2"><input type="checkbox" id="twoFactorAuth"> <span>Enable Two-Factor Authentication</span></label></div><div><label class="block text-sm font-medium mb-1">Max Login Attempts</label><input type="number" id="maxLoginAttempts" value="5" class="w-full p-2 border rounded-lg"></div></div>`;
-        } else if (settingType === 'notifications') {
-            title.innerText = 'Notification Settings';
-            content.innerHTML = `<div class="space-y-3"><label class="flex items-center space-x-2"><input type="checkbox" id="emailAlerts" checked> <span>Email Alerts</span></label><label class="flex items-center space-x-2"><input type="checkbox" id="pushNotifications" checked> <span>Push Notifications</span></label><label class="flex items-center space-x-2"><input type="checkbox" id="taskReminders" checked> <span>Task Reminders</span></label></div>`;
-        } else if (settingType === 'adminPassword') {
-            title.innerText = 'Change Admin Password';
-            content.innerHTML = `<div class="space-y-4"><div><label class="block text-sm font-medium mb-1">Current Password</label><input type="password" id="currentPwd" class="w-full p-2 border rounded-lg"></div><div><label class="block text-sm font-medium mb-1">New Password</label><input type="password" id="newPwd" class="w-full p-2 border rounded-lg"></div><div><label class="block text-sm font-medium mb-1">Confirm Password</label><input type="password" id="confirmPwd" class="w-full p-2 border rounded-lg"></div><button onclick="changeAdminPassword()" class="bg-blue-600 text-white px-4 py-2 rounded-lg">Change Password</button></div>`;
-        } else if (settingType === 'sidebarColor') {
-            title.innerText = 'Sidebar Color';
-            content.innerHTML = `<div class="space-y-4"><div class="flex space-x-3"><div class="color-option" style="background-color: #0f74ba;" onclick="changeSidebarColor('#0f74ba', this)"></div><div class="color-option" style="background-color: #1e3a5f;" onclick="changeSidebarColor('#1e3a5f', this)"></div><div class="color-option" style="background-color: #7c3aed;" onclick="changeSidebarColor('#7c3aed', this)"></div><div class="color-option" style="background-color: #059669;" onclick="changeSidebarColor('#059669', this)"></div><div class="color-option" style="background-color: #dc2626;" onclick="changeSidebarColor('#dc2626', this)"></div><div class="color-option" style="background-color: #d97706;" onclick="changeSidebarColor('#d97706', this)"></div></div><p class="text-sm text-gray-500 mt-3">Click on any color to change sidebar background</p></div>`;
-        } else {
-            title.innerText = settingType.charAt(0).toUpperCase() + settingType.slice(1) + ' Settings';
-            content.innerHTML = `<div class="p-8 text-center"><i class="fas fa-cog fa-spin text-5xl text-blue-600 mb-4"></i><p class="text-gray-600">Configuration panel for ${settingType} settings</p><p class="text-sm text-gray-500 mt-2">This feature is coming soon...</p></div>`;
+        if (currentDept === 'Managers') {
+            worksheetData.push(['Metric', 'Value']);
+            worksheetData.push(['Completed Projects', data.completed]);
+            worksheetData.push(['In Progress', data.inProgress]);
+            worksheetData.push(['Approved Projects', data.approved]);
+            worksheetData.push(['Revenue', data.revenue]);
+        } else if (currentDept === 'Finance') {
+            worksheetData.push(['Metric', 'Value']);
+            worksheetData.push(['Income', data.income]);
+            worksheetData.push(['Expenses', data.expenses]);
+            worksheetData.push(['Profit', data.profit]);
+        } else if (currentDept === 'Sales') {
+            worksheetData.push(['Metric', 'Value']);
+            worksheetData.push(['Orders', data.orders]);
+            worksheetData.push(['Revenue', data.revenue]);
+            worksheetData.push(['Leads', data.leads]);
+            worksheetData.push(['Conversions', data.conversions]);
+        } else if (currentDept === 'Secretary') {
+            worksheetData.push(['Metric', 'Value']);
+            worksheetData.push(['Messages', data.messages]);
+            worksheetData.push(['Appointments', data.appointments]);
+            worksheetData.push(['Documents', data.documents]);
         }
         
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
+        worksheetData.push([]);
+        worksheetData.push([`Generated on: ${new Date().toLocaleString()}`]);
         
-        // Re-attach event listeners for dynamic content
-        if (settingType === 'backup') {
-            setTimeout(() => {
-                const backupList = document.getElementById('backupListModal');
-                if (backupList) backupList.innerHTML = renderBackupList();
-                const systemLogs = document.getElementById('systemLogsModal');
-                if (systemLogs) systemLogs.innerHTML = renderSystemLogs();
-            }, 100);
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.aoa_to_sheet(worksheetData);
+        ws['!cols'] = [{wch:25}, {wch:20}];
+        XLSX.utils.book_append_sheet(wb, ws, `${currentDept}_${currentReportType}_Report`);
+        XLSX.writeFile(wb, `${currentDept}_${currentReportType}_report_${new Date().toISOString().slice(0,10)}.xlsx`);
+        showToast('Excel file downloaded successfully!');
+    }
+    
+    function openDepartmentReports(dept) {
+        currentDept = dept;
+        document.getElementById('reportDeptTitle').innerText = `${dept} Department Reports`;
+        document.getElementById('reportDeptDesc').innerText = `${dept} department performance reports`;
+        document.getElementById('departmentReportView').classList.remove('hidden');
+        document.getElementById('reportDepartmentsGrid').classList.add('hidden');
+        loadReport('daily');
+    }
+    
+    function loadReport(type) {
+        currentReportType = type;
+        document.querySelectorAll('.report-tab').forEach(t => t.classList.remove('active'));
+        document.getElementById(`tab${type.charAt(0).toUpperCase() + type.slice(1)}`).classList.add('active');
+        renderReportContent(currentDept, type);
+    }
+    
+    function closeDepartmentReport() {
+        document.getElementById('departmentReportView').classList.add('hidden');
+        document.getElementById('reportDepartmentsGrid').classList.remove('hidden');
+        renderReportDepartmentsGrid();
+    }
+    
+    function renderReportDepartmentsGrid() {
+        const grid = document.getElementById('reportDepartmentsGrid');
+        if(!grid) return;
+        grid.innerHTML = '';
+        reportDepartments.forEach(dept => {
+            grid.innerHTML += `<div class="bg-white rounded-2xl shadow-sm border-l-4 border-${dept.color}-500 p-5 cursor-pointer hover:shadow-lg transition" onclick="openDepartmentReports('${dept.displayName}')">
+                <div class="flex items-center space-x-3"><div class="w-12 h-12 bg-${dept.color}-100 rounded-full flex items-center justify-center"><i class="fas ${dept.icon} text-${dept.color}-600 text-xl"></i></div><div><h3 class="font-bold text-lg">${dept.name}</h3><p class="text-sm text-gray-500">Department Reports</p></div></div>
+                <div class="mt-3 flex justify-between text-sm"><span class="text-gray-500">Reports Available</span><span class="font-semibold bg-${dept.color}-100 px-2 py-1 rounded">4 Types</span></div>
+            </div>`;
+        });
+    }
+    
+    // ==================== MESSAGES FUNCTIONS ====================
+    function renderMessagesList() {
+        const convDiv = document.getElementById('conversationsList');
+        if(!convDiv) return;
+        convDiv.innerHTML = '';
+        messages.forEach(msg => {
+            const unreadClass = !msg.read ? 'message-unread' : '';
+            convDiv.innerHTML += `
+                <div class="message-item ${unreadClass}" onclick="viewConversation(${msg.id})">
+                    <div class="flex justify-between items-start">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas ${msg.fromDept === 'Managers' ? 'fa-user-tie' : (msg.fromDept === 'Finance' ? 'fa-calculator' : (msg.fromDept === 'Sales' ? 'fa-chart-line' : 'fa-envelope'))} text-gray-500"></i>
+                            <span class="font-semibold">${msg.fromDept} Department</span>
+                        </div>
+                        <span class="text-xs text-gray-400">${formatTime(msg.timestamp)}</span>
+                    </div>
+                    <p class="text-sm font-medium mt-1">${msg.subject}</p>
+                    <p class="text-xs text-gray-500 mt-1">${msg.message.substring(0, 60)}${msg.message.length > 60 ? '...' : ''}</p>
+                    ${msg.replies.length > 0 ? `<p class="text-xs text-blue-500 mt-1"><i class="fas fa-reply-all"></i> ${msg.replies.length} ${msg.replies.length === 1 ? 'reply' : 'replies'}</p>` : ''}
+                </div>
+            `;
+        });
+        updateUnreadCount();
+    }
+    
+    function viewConversation(id) {
+        const msg = messages.find(m => m.id === id);
+        if(msg && !msg.read) {
+            msg.read = true;
+            renderMessagesList();
+            updateUnreadCount();
         }
-        if (settingType === 'logs') {
-            setTimeout(() => {
-                const systemLogs = document.getElementById('systemLogsModal');
-                if (systemLogs) systemLogs.innerHTML = renderSystemLogs();
-            }, 100);
+        
+        const detailView = document.getElementById('messageDetailView');
+        
+        let repliesHtml = '';
+        if(msg.replies && msg.replies.length > 0) {
+            repliesHtml = '<div class="mt-4"><h4 class="font-semibold text-sm text-gray-500 mb-2"><i class="fas fa-reply-all mr-1"></i>Previous Replies</h4>';
+            msg.replies.forEach(reply => {
+                repliesHtml += `
+                    <div class="admin-reply reply-bubble">
+                        <p class="text-sm">${reply.message}</p>
+                        <p class="text-xs text-gray-500 mt-1">${reply.timestamp}</p>
+                    </div>
+                `;
+            });
+            repliesHtml += '</div>';
+        }
+        
+        detailView.innerHTML = `
+            <div class="mb-4 pb-4 border-b">
+                <div class="flex justify-between items-start mb-3">
+                    <div>
+                        <div class="flex items-center space-x-2 mb-2">
+                            <i class="fas ${msg.fromDept === 'Managers' ? 'fa-user-tie' : (msg.fromDept === 'Finance' ? 'fa-calculator' : (msg.fromDept === 'Sales' ? 'fa-chart-line' : 'fa-envelope'))} text-xl text-gray-600"></i>
+                            <h3 class="font-bold text-lg">${msg.fromDept} Department</h3>
+                        </div>
+                        <p class="text-sm text-gray-500">Received: ${formatTime(msg.timestamp)}</p>
+                    </div>
+                    <span class="text-xs bg-gray-100 px-2 py-1 rounded-full">${msg.subject}</span>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-xl mt-3">
+                    <p class="text-gray-700">${msg.message}</p>
+                </div>
+                ${repliesHtml}
+            </div>
+            
+            <div class="mt-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Reply to ${msg.fromDept} Department</label>
+                <textarea id="replyMessage" rows="4" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Type your reply here..."></textarea>
+                <div class="flex justify-end mt-3 space-x-3">
+                    <button onclick="sendReply(${msg.id})" class="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition">
+                        <i class="fas fa-paper-plane mr-2"></i>Send Reply
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+    
+    function sendReply(msgId) {
+        const replyText = document.getElementById('replyMessage')?.value;
+        if(!replyText || replyText.trim() === '') {
+            showToast('Please enter a reply message');
+            return;
+        }
+        
+        const msg = messages.find(m => m.id === msgId);
+        if(msg) {
+            const reply = {
+                message: replyText,
+                timestamp: new Date().toLocaleString()
+            };
+            msg.replies.push(reply);
+            saveAllData();
+            renderMessagesList();
+            viewConversation(msgId);
+            addActivityLog(`Replied to message from ${msg.fromDept} department`, 'reply');
+            showToast(`Reply sent to ${msg.fromDept} department!`);
         }
     }
     
-    function closeSettingModal() {
-        document.getElementById('settingModal').classList.add('hidden');
-        document.getElementById('settingModal').classList.remove('flex');
+    function formatTime(date) {
+        const now = new Date();
+        const diff = now - date;
+        const minutes = Math.floor(diff / 60000);
+        const hours = Math.floor(diff / 3600000);
+        const days = Math.floor(diff / 86400000);
+        
+        if (minutes < 60) return `${minutes} min ago`;
+        if (hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+        return `${days} day${days > 1 ? 's' : ''} ago`;
     }
     
-    function saveSetting() {
-        if (currentSetting === 'general') {
-            showToast('General settings saved successfully!');
-            addActivityLog('General settings updated', 'edit');
-        } else if (currentSetting === 'email') {
-            showToast('Email settings saved successfully!');
-        } else if (currentSetting === 'security') {
-            showToast('Security settings saved successfully!');
-        } else if (currentSetting === 'notifications') {
-            showToast('Notification settings saved successfully!');
-        } else if (currentSetting === 'adminPassword') {
-            changeAdminPassword();
-        } else {
-            showToast('Settings saved successfully!');
-        }
-        closeSettingModal();
+    function updateUnreadCount() {
+        const unread = messages.filter(m => !m.read).length;
+        document.getElementById('unreadMessagesCount').innerText = unread;
+        document.getElementById('unreadMessagesBadge').innerText = unread;
     }
     
-    function testEmailConfig() { showToast('Test email sent successfully!'); }
-    
-    function changeAdminPassword() {
-        const currentPwd = document.getElementById('currentPwd')?.value;
-        const newPwd = document.getElementById('newPwd')?.value;
-        const confirmPwd = document.getElementById('confirmPwd')?.value;
-        if (!currentPwd || !newPwd || !confirmPwd) { alert('Please fill all fields'); return; }
-        if (newPwd !== confirmPwd) { alert('Passwords do not match'); return; }
-        showToast('Admin password changed successfully');
-        addActivityLog('Admin password changed', 'security');
-        closeSettingModal();
+    // ==================== HELPER FUNCTIONS ====================
+    function getRoleBadge(role) {
+        const badges = { 'Manager': 'bg-purple-100 text-purple-700', 'Accountant': 'bg-green-100 text-green-700', 'Sales Executive': 'bg-blue-100 text-blue-700', 'Secretary': 'bg-red-100 text-red-700' };
+        return badges[role] || 'bg-gray-100 text-gray-700';
     }
     
-    function changeSidebarColor(color, element) {
-        document.getElementById('sidebar').style.backgroundColor = color;
-        document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
-        if(element) element.classList.add('selected');
-        showToast('Sidebar color changed');
-        closeSettingModal();
+    function saveData() { localStorage.setItem('geotraverse_employees', JSON.stringify(employees)); }
+    
+    function loadData() {
+        loadAllData();
+        renderEmployeeTable(); updateCounts(); renderTasks(); renderMessagesList(); renderActivities(); renderDepartmentsGrid(); renderReportDepartmentsGrid();
+        renderManagersProjects(); renderFinanceInvoices(); renderSalesOrders(); renderSecretaryMessages();
     }
     
-    // ==================== EMPLOYEE FUNCTIONS ====================
+    function renderActivities() {
+        const feed = document.getElementById('activityFeed');
+        if(feed) feed.innerHTML = activities.map(a => `<div class="activity-item flex items-start space-x-3 p-2 rounded-xl"><div class="w-2 h-2 bg-${a.color}-500 rounded-full mt-2"></div><div class="flex-1"><p class="text-sm text-gray-700">${a.message}</p><p class="text-xs text-gray-400">${a.time}</p></div><i class="fas ${a.icon} text-${a.color}-500"></i></div>`).join('');
+    }
+    
+    function updateCounts() {
+        const mgmt = employees.filter(e => e.department === 'Management').length;
+        const finance = employees.filter(e => e.department === 'Finance').length;
+        const sales = employees.filter(e => e.department === 'Sales & Marketing').length;
+        const secretary = employees.filter(e => e.department === 'Administration').length;
+        document.getElementById('mgmtCount').innerText = mgmt;
+        document.getElementById('financeCount').innerText = finance;
+        document.getElementById('salesCount').innerText = sales;
+        document.getElementById('secretaryCount').innerText = secretary;
+        document.getElementById('totalEmployees').innerText = employees.length;
+        document.getElementById('pendingTasksCount').innerText = tasks.filter(t => !t.completed).length;
+        document.getElementById('pendingTasksBadge').innerText = tasks.filter(t => !t.completed).length;
+        updateUnreadCount();
+    }
+    
     function renderEmployeeTable() {
         const tbody = document.getElementById('employeeTableBody');
         if(!tbody) return;
         tbody.innerHTML = '';
         employees.forEach(emp => {
-            tbody.innerHTML += `<tr class="employee-row border-b"><td class="px-5 py-3">${emp.id}</td><td class="px-5 py-3">${emp.name}</td><td class="px-5 py-3">${emp.email}</td><td class="px-5 py-3">${emp.phone}</td><td class="px-5 py-3"><span class="px-2 py-1 text-xs rounded-full ${getRoleBadge(emp.role)}">${emp.role}</span></td><td class="px-5 py-3">${departmentMap[emp.department]}</td><td class="px-5 py-3">TZS ${emp.salary}</td><td class="px-5 py-3"><span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">${emp.status}</span></td><td class="px-5 py-3 space-x-2"><button onclick="openEditEmployeeModal(${emp.id})" class="text-blue-600 hover:text-blue-800"><i class="fas fa-edit"></i> Edit</button> <button onclick="deleteEmployee(${emp.id})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i> Delete</button> <button onclick="openChangePwdModal(${emp.id})" class="text-orange-600 hover:text-orange-800"><i class="fas fa-key"></i> Change Password</button></td></tr>`;
+            tbody.innerHTML += `<tr class="employee-row border-b"><td class="px-5 py-3">${emp.id}</td><td class="px-5 py-3">${emp.name}</td><td class="px-5 py-3">${emp.email}</td><td class="px-5 py-3">${emp.phone}</td><td class="px-5 py-3"><span class="px-2 py-1 text-xs rounded-full ${getRoleBadge(emp.role)}">${emp.role}</span></td><td class="px-5 py-3">${departmentMap[emp.department]}</td><td class="px-5 py-3">TZS ${emp.salary}</td><td class="px-5 py-3"><span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">${emp.status}</span></td><td class="px-5 py-3 space-x-2"><button onclick="openEditEmployeeModal(${emp.id})" class="text-blue-600"><i class="fas fa-edit"></i> Edit</button> <button onclick="deleteEmployee(${emp.id})" class="text-red-600"><i class="fas fa-trash"></i> Delete</button> <button onclick="openChangePwdModal(${emp.id})" class="text-orange-600"><i class="fas fa-key"></i> Change Password</button> </td> </td>`;
         });
-        document.getElementById('totalEmployees').innerText = employees.length;
-        updateDepartmentCounts();
+        saveData();
+    }
+    
+    function renderDepartmentsGrid() {
+        const grid = document.getElementById('departmentsGrid');
+        if(!grid) return;
+        grid.innerHTML = '';
+        departmentsData.forEach(dept => {
+            const empCount = employees.filter(e => departmentMap[e.department] === dept.displayName).length;
+            grid.innerHTML += `<div class="dept-card bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="bg-${dept.color}-600 p-4 text-white"><div class="flex items-center justify-between"><i class="fas ${dept.icon} text-3xl"></i><span class="bg-white/20 px-2 py-1 rounded-lg text-sm">${dept.displayName}</span></div><h3 class="text-xl font-bold mt-3">${dept.name}</h3></div>
+                <div class="p-4"><div class="flex justify-between mb-3"><span class="text-gray-500 text-sm">Employees</span><span class="text-2xl font-bold">${empCount}</span></div>
+                <button onclick="openDepartmentDashboard('${dept.displayName}')" class="w-full bg-${dept.color}-50 text-${dept.color}-600 py-2 rounded-lg text-sm font-medium hover:bg-${dept.color}-100 transition"><i class="fas fa-chalkboard-user"></i> View Department Dashboard</button>
+                <a href="${dept.website}" target="_blank" class="w-full mt-2 bg-gray-50 text-gray-600 py-2 rounded-lg text-sm font-medium hover:bg-gray-100 transition flex items-center justify-center space-x-1"><i class="fas fa-external-link-alt"></i><span>Visit Department Website</span></a></div></div>`;
+        });
+    }
+    
+    function renderManagersProjects() {
+        const grid = document.getElementById('managersProjectsGrid');
+        if(!grid) return;
+        grid.innerHTML = '';
+        projects.forEach(project => {
+            const statusClass = project.type === 'completed' ? 'text-green-600' : (project.type === 'in_progress' ? 'text-orange-600' : 'text-blue-600');
+            const statusText = project.type === 'completed' ? 'Completed' : (project.type === 'in_progress' ? 'In Progress' : 'Approved');
+            grid.innerHTML += `
+                <div class="project-card bg-white dark:bg-gray-800 p-3">
+                    <img src="${project.image}" class="project-image mb-2">
+                    <p class="font-bold text-gray-800 dark:text-white">${project.name}</p>
+                    <p class="text-sm text-gray-500">Client: ${project.client}</p>
+                    <p class="text-sm ${statusClass} font-semibold mt-1">${statusText}</p>
+                    <p class="text-sm text-purple-600 font-bold mt-1">TZS ${project.amount}</p>
+                    <button onclick="showFunctionToast('View Project Details')" class="mt-2 text-purple-600 text-sm hover:underline">View Details →</button>
+                </div>
+            `;
+        });
+    }
+    
+    function renderFinanceInvoices() {
+        const div = document.getElementById('financeInvoicesList');
+        if(!div) return;
+        div.innerHTML = `
+            <div class="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
+                <div><p class="font-bold">INV-001 - Modern Villa</p><p class="text-sm">John Doe - TZS 5,000,000</p></div>
+                <span class="status-pending">Pending</span>
+                <button onclick="showFunctionToast('Pay Now')" class="text-green-600 text-sm">Pay</button>
+            </div>
+            <div class="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
+                <div><p class="font-bold">INV-002 - Land Survey</p><p class="text-sm">Mary Smith - TZS 2,500,000</p></div>
+                <span class="status-pending">Pending</span>
+                <button onclick="showFunctionToast('Pay Now')" class="text-green-600 text-sm">Pay</button>
+            </div>
+            <div class="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
+                <div><p class="font-bold">INV-099 - Residential Plot</p><p class="text-sm">Sarah Lee - TZS 3,000,000</p></div>
+                <span class="status-paid">Paid</span>
+                <button onclick="showFunctionToast('View')" class="text-blue-600 text-sm">View</button>
+            </div>
+        `;
+    }
+    
+    function renderSalesOrders() {
+        const div = document.getElementById('salesOrdersList');
+        if(!div) return;
+        div.innerHTML = `
+            <div class="p-3 bg-gray-50 rounded-xl">
+                <p class="font-bold">John Doe - Modern Villa</p>
+                <p class="text-sm">Amount: TZS 150,000,000 | Status: Pending</p>
+                <button onclick="showFunctionToast('Process Order')" class="mt-1 text-orange-600 text-sm">Process →</button>
+            </div>
+            <div class="p-3 bg-gray-50 rounded-xl">
+                <p class="font-bold">Mary Smith - Land Survey</p>
+                <p class="text-sm">Amount: TZS 2,500,000 | Status: Approved</p>
+                <button onclick="showFunctionToast('View Order')" class="mt-1 text-orange-600 text-sm">View →</button>
+            </div>
+            <div class="p-3 bg-gray-50 rounded-xl">
+                <p class="font-bold">David Kim - Commercial Building</p>
+                <p class="text-sm">Amount: TZS 250,000,000 | Status: Processing</p>
+                <button onclick="showFunctionToast('Track Order')" class="mt-1 text-orange-600 text-sm">Track →</button>
+            </div>
+        `;
+    }
+    
+    function renderSecretaryMessages() {
+        const div = document.getElementById('secretaryMessagesList');
+        if(!div) return;
+        div.innerHTML = `
+            <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-xl">
+                <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center"><i class="fas fa-user text-blue-600"></i></div>
+                <div><p class="font-bold">John Doe (Client)</p><p class="text-sm">Interested in Modern Villa - Request site visit</p></div>
+                <button onclick="showFunctionToast('Reply')" class="ml-auto text-blue-600 text-sm">Reply</button>
+            </div>
+            <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-xl">
+                <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center"><i class="fas fa-user text-green-600"></i></div>
+                <div><p class="font-bold">Mary Smith (Client)</p><p class="text-sm">Land survey inquiry - Need quote</p></div>
+                <button onclick="showFunctionToast('Reply')" class="ml-auto text-blue-600 text-sm">Reply</button>
+            </div>
+            <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-xl">
+                <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center"><i class="fas fa-user text-purple-600"></i></div>
+                <div><p class="font-bold">Peter O. (Contractor)</p><p class="text-sm">Meeting request for site visit</p></div>
+                <button onclick="showFunctionToast('Reply')" class="ml-auto text-blue-600 text-sm">Reply</button>
+            </div>
+        `;
+    }
+    
+    function renderTasks() {
+        const incompleteDiv = document.getElementById('incompleteTasksList');
+        const completedDiv = document.getElementById('completedTasksList');
+        if(incompleteDiv) {
+            incompleteDiv.innerHTML = tasks.filter(t => !t.completed).map(t => `<div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl"><div><input type="checkbox" class="mr-3" onchange="toggleTask(${t.id})"><span>${t.title}</span><p class="text-xs text-gray-500 mt-1">From: ${t.department} Dept - ${t.description}</p></div></div>`).join('');
+            completedDiv.innerHTML = tasks.filter(t => t.completed).map(t => `<div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl"><div><input type="checkbox" class="mr-3" checked disabled><span class="line-through text-gray-400">${t.title}</span><p class="text-xs text-gray-500 mt-1">From: ${t.department} Dept - ${t.description}</p></div></div>`).join('');
+        }
+    }
+    
+    function toggleTask(id) {
+        const task = tasks.find(t => t.id === id);
+        if(task) { task.completed = !task.completed; renderTasks(); updateCounts(); showToast(task.completed ? 'Task completed!' : 'Task marked incomplete'); }
+    }
+    
+    function openDepartmentDashboard(dept) {
+        document.getElementById('departmentsSection').classList.add('hidden');
+        document.getElementById('employeeSection').classList.add('hidden');
+        document.getElementById('dashboardSection').classList.add('hidden');
+        document.getElementById('tasksSection').classList.add('hidden');
+        document.getElementById('messagesSection').classList.add('hidden');
+        document.getElementById('settingsSection').classList.add('hidden');
+        document.getElementById('reportsSection').classList.add('hidden');
+        document.getElementById('managersDashboard').classList.add('hidden');
+        document.getElementById('financeDashboard').classList.add('hidden');
+        document.getElementById('salesDashboard').classList.add('hidden');
+        document.getElementById('secretaryDashboard').classList.add('hidden');
+        if(dept === 'Managers') document.getElementById('managersDashboard').classList.remove('hidden');
+        else if(dept === 'Finance') document.getElementById('financeDashboard').classList.remove('hidden');
+        else if(dept === 'Sales') document.getElementById('salesDashboard').classList.remove('hidden');
+        else if(dept === 'Secretary') document.getElementById('secretaryDashboard').classList.remove('hidden');
+    }
+    
+    function goBackToDepartments() {
+        document.getElementById('managersDashboard').classList.add('hidden');
+        document.getElementById('financeDashboard').classList.add('hidden');
+        document.getElementById('salesDashboard').classList.add('hidden');
+        document.getElementById('secretaryDashboard').classList.add('hidden');
+        document.getElementById('departmentsSection').classList.remove('hidden');
+        renderDepartmentsGrid();
     }
     
     function openEditEmployeeModal(id) {
@@ -703,14 +967,9 @@
     }
     
     function deleteEmployee(id) {
-        if(confirm('Are you sure you want to delete this employee?')) {
-            const emp = employees.find(e => e.id === id);
-            addDeletedItem('employee', emp);
+        if(confirm('Delete employee?')) {
             employees = employees.filter(e => e.id !== id);
-            renderEmployeeTable();
-            addActivityLog(`Deleted employee: ${emp.name}`, 'delete');
-            updateCounts();
-            showToast('Employee deleted successfully');
+            renderEmployeeTable(); updateCounts(); showToast('Employee deleted');
         }
     }
     
@@ -730,33 +989,79 @@
         const id = parseInt(document.getElementById('pwdEmpId').value);
         const newPwd = document.getElementById('newPassword').value;
         const confirmPwd = document.getElementById('confirmNewPassword').value;
-        if(!newPwd) { alert('Please enter new password'); return; }
-        if(newPwd !== confirmPwd) { alert('Passwords do not match'); return; }
+        if(!newPwd || newPwd !== confirmPwd) { alert('Passwords do not match'); return; }
         const emp = employees.find(e => e.id === id);
-        if(emp) {
-            emp.password = newPwd;
-            saveAllData();
-            addActivityLog(`Changed password for employee: ${emp.name}`, 'edit');
-            showToast(`Password changed for ${emp.name}`);
-            closePwdModal();
-        }
+        if(emp) { emp.password = newPwd; saveData(); showToast(`Password changed for ${emp.name}`); closePwdModal(); }
     }
     
-    function openAddEmployeeModal() { document.getElementById('modalTitle').innerText = 'Add Employee'; document.getElementById('employeeForm').reset(); document.getElementById('employeeId').value = ''; document.getElementById('employeeModal').classList.remove('hidden'); document.getElementById('employeeModal').classList.add('flex'); }
+    function changeAdminPassword() {
+        const newPwd = document.getElementById('newAdminPassword').value;
+        const confirmPwd = document.getElementById('confirmAdminPassword').value;
+        if(!newPwd || newPwd !== confirmPwd) { alert('Passwords do not match'); return; }
+        showToast('Admin password changed'); 
+        document.getElementById('currentPassword').value = '';
+        document.getElementById('newAdminPassword').value = '';
+        document.getElementById('confirmAdminPassword').value = '';
+    }
+    
+    function changeSidebarColor(color, element) {
+        document.getElementById('sidebar').style.backgroundColor = color;
+        document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
+        element.classList.add('selected');
+        showToast('Sidebar color changed');
+    }
+    
+    function openAddEmployeeModal() { document.getElementById('employeeModal').classList.remove('hidden'); document.getElementById('employeeModal').classList.add('flex'); }
     function closeModal() { document.getElementById('employeeModal').classList.add('hidden'); document.getElementById('employeeModal').classList.remove('flex'); }
     function closeEditModal() { document.getElementById('editEmployeeModal').classList.add('hidden'); document.getElementById('editEmployeeModal').classList.remove('flex'); }
     function closePwdModal() { document.getElementById('changePwdModal').classList.add('hidden'); document.getElementById('changePwdModal').classList.remove('flex'); }
+    function openAddTaskModal() { document.getElementById('addTaskModal').classList.remove('hidden'); document.getElementById('addTaskModal').classList.add('flex'); }
+    function closeTaskModal() { document.getElementById('addTaskModal').classList.add('hidden'); document.getElementById('addTaskModal').classList.remove('flex'); }
+    
+    function addNewTask() {
+        const title = document.getElementById('taskTitle')?.value;
+        if(!title) return;
+        tasks.push({ id: nextTaskId++, title: title, description: document.getElementById('taskDescription')?.value, department: document.getElementById('taskDepartment')?.value, completed: false });
+        renderTasks(); updateCounts(); showToast('Task added'); closeTaskModal();
+    }
+    
+    function openSettingModal(settingType) {
+        currentSetting = settingType;
+        const modal = document.getElementById('settingModal');
+        const title = document.getElementById('settingModalTitle');
+        const content = document.getElementById('settingModalContent');
+        if (settingType === 'general') {
+            title.innerText = 'General Settings';
+            content.innerHTML = `<div class="space-y-4"><div><label class="block text-sm font-medium mb-1">Company Name</label><input type="text" id="companyName" value="GeoTraverse" class="w-full p-2 border rounded"></div><div><label class="block text-sm font-medium mb-1">Company Email</label><input type="email" id="companyEmail" value="info@geotraverse.com" class="w-full p-2 border rounded"></div><div><label class="block text-sm font-medium mb-1">Company Phone</label><input type="text" id="companyPhone" value="+255 123 456 789" class="w-full p-2 border rounded"></div><div><label class="block text-sm font-medium mb-1">Timezone</label><select id="timezone" class="w-full p-2 border rounded"><option>Africa/Dar_es_Salaam</option><option>Africa/Nairobi</option></select></div><div><label class="block text-sm font-medium mb-1">Language</label><select id="language" class="w-full p-2 border rounded"><option>English</option><option>Swahili</option></select></div><div><label class="block text-sm font-medium mb-1">Date Format</label><select id="dateFormat" class="w-full p-2 border rounded"><option>DD/MM/YYYY</option><option>MM/DD/YYYY</option></select></div></div>`;
+        } else if (settingType === 'backup') {
+            title.innerText = 'Backup & Restore';
+            content.innerHTML = `<div class="space-y-4"><div class="grid grid-cols-2 gap-4"><button onclick="createBackup()" class="bg-green-600 text-white px-4 py-2 rounded"><i class="fas fa-download"></i> Create Backup</button><button onclick="restoreBackup()" class="bg-orange-600 text-white px-4 py-2 rounded"><i class="fas fa-upload"></i> Restore Latest</button></div><div class="border-t pt-4"><h4 class="font-semibold mb-2">Available Backups</h4><div id="backupListModal">${renderBackupList()}</div></div></div>`;
+        } else if (settingType === 'logs') {
+            title.innerText = 'System Logs';
+            content.innerHTML = `<div class="space-y-4"><div class="max-h-96 overflow-y-auto" id="systemLogsModal">${renderSystemLogs()}</div><div class="flex justify-end"><button onclick="clearAllLogs()" class="bg-red-600 text-white px-4 py-2 rounded">Clear All Logs</button></div></div>`;
+        } else if (settingType === 'email') {
+            title.innerText = 'Email Configuration';
+            content.innerHTML = `<div class="space-y-4"><div><label class="block text-sm font-medium mb-1">SMTP Server</label><input type="text" id="smtpServer" value="smtp.gmail.com" class="w-full p-2 border rounded"></div><div><label class="block text-sm font-medium mb-1">SMTP Port</label><input type="text" id="smtpPort" value="587" class="w-full p-2 border rounded"></div><div><label class="block text-sm font-medium mb-1">Encryption</label><select id="encryption" class="w-full p-2 border rounded"><option>TLS</option><option>SSL</option></select></div><div><label class="block text-sm font-medium mb-1">Sender Email</label><input type="email" id="senderEmail" value="noreply@geotraverse.com" class="w-full p-2 border rounded"></div><button onclick="showToast('Test email sent')" class="bg-blue-600 text-white px-4 py-2 rounded">Test Email</button></div>`;
+        } else if (settingType === 'security') {
+            title.innerText = 'Security Settings';
+            content.innerHTML = `<div class="space-y-4"><div><label class="block text-sm font-medium mb-1">Session Timeout</label><input type="number" id="sessionTimeout" value="30" class="w-full p-2 border rounded"></div><div><label class="flex items-center space-x-2"><input type="checkbox" id="twoFactorAuth"> <span>Enable 2FA</span></label></div><div><label class="block text-sm font-medium mb-1">Max Login Attempts</label><input type="number" id="maxLoginAttempts" value="5" class="w-full p-2 border rounded"></div></div>`;
+        } else if (settingType === 'notifications') {
+            title.innerText = 'Notification Settings';
+            content.innerHTML = `<div class="space-y-3"><label class="flex items-center space-x-2"><input type="checkbox" id="emailAlerts" checked> Email Alerts</label><label class="flex items-center space-x-2"><input type="checkbox" id="pushNotifications" checked> Push Notifications</label><label class="flex items-center space-x-2"><input type="checkbox" id="taskReminders" checked> Task Reminders</label></div>`;
+        }
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+    
+    function closeSettingModal() { document.getElementById('settingModal').classList.add('hidden'); document.getElementById('settingModal').classList.remove('flex'); currentSetting = ''; }
+    function saveSetting() { showToast('Settings saved successfully!'); closeSettingModal(); }
     
     document.getElementById('employeeForm')?.addEventListener('submit', function(e) {
         e.preventDefault();
         const name = document.getElementById('empName')?.value;
-        if(!name) { alert('Please enter name'); return; }
-        const newEmployee = { id: nextId++, name: name, email: document.getElementById('empEmail')?.value, phone: document.getElementById('empPhone')?.value, role: document.getElementById('empRole')?.value, department: document.getElementById('empDepartment')?.value, salary: document.getElementById('empSalary')?.value, status: 'Active', password: 'default123' };
-        employees.push(newEmployee);
-        renderEmployeeTable();
-        addActivityLog(`Added new employee: ${name}`, 'add');
-        closeModal();
-        showToast('Employee added successfully');
+        if(!name) return;
+        employees.push({ id: nextId++, name: name, email: document.getElementById('empEmail')?.value, phone: document.getElementById('empPhone')?.value, role: document.getElementById('empRole')?.value, department: document.getElementById('empDepartment')?.value, salary: document.getElementById('empSalary')?.value, status: 'Active', password: 'default123' });
+        renderEmployeeTable(); updateCounts(); closeModal(); showToast('Employee added');
     });
     
     document.getElementById('editEmployeeForm')?.addEventListener('submit', function(e) {
@@ -764,327 +1069,32 @@
         const id = parseInt(document.getElementById('editEmpId').value);
         const emp = employees.find(e => e.id === id);
         if(emp) {
-            const oldName = emp.name;
             emp.name = document.getElementById('editEmpName').value;
             emp.email = document.getElementById('editEmpEmail').value;
             emp.phone = document.getElementById('editEmpPhone').value;
             emp.role = document.getElementById('editEmpRole').value;
             emp.department = document.getElementById('editEmpDepartment').value;
             emp.salary = parseInt(document.getElementById('editEmpSalary').value).toLocaleString();
-            renderEmployeeTable();
-            addActivityLog(`Updated employee: ${oldName} → ${emp.name}`, 'edit');
-            showToast('Employee updated successfully');
-            closeEditModal();
+            renderEmployeeTable(); showToast('Employee updated'); closeEditModal();
         }
     });
     
-    document.getElementById('changePwdForm')?.addEventListener('submit', function(e) {
-        e.preventDefault();
-        changeEmployeePassword();
-    });
+    document.getElementById('changePwdForm')?.addEventListener('submit', function(e) { e.preventDefault(); changeEmployeePassword(); });
     
-    // ==================== REPORT FUNCTIONS ====================
-    function generateReportData(dept, type) {
-        const today = new Date();
-        const weekStart = new Date(today);
-        weekStart.setDate(today.getDate() - today.getDay());
-        const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
-        const yearStart = new Date(today.getFullYear(), 0, 1);
-        
-        const reports = {
-            'Managers': {
-                daily: { title: "Daily Projects Report", date: today.toDateString(), totalProjects: 5, completed: 1, inProgress: 2, approved: 2, revenue: "TZS 0" },
-                weekly: { title: "Weekly Projects Report", period: `${weekStart.toDateString()} - ${today.toDateString()}`, totalProjects: 8, completed: 3, inProgress: 3, approved: 2, revenue: "TZS 180,000,000" },
-                monthly: { title: "Monthly Projects Report", period: monthStart.toDateString() + " - " + today.toDateString(), totalProjects: 15, completed: 6, inProgress: 5, approved: 4, revenue: "TZS 450,000,000" },
-                annual: { title: "Annual Projects Report", period: yearStart.toDateString() + " - " + today.toDateString(), totalProjects: 42, completed: 18, inProgress: 12, approved: 12, revenue: "TZS 1,250,000,000" }
-            },
-            'Finance': {
-                daily: { title: "Daily Financial Report", date: today.toDateString(), income: "TZS 2,500,000", expenses: "TZS 1,200,000", profit: "TZS 1,300,000", pendingInvoices: 3, paidInvoices: 1 },
-                weekly: { title: "Weekly Financial Report", period: `${weekStart.toDateString()} - ${today.toDateString()}`, income: "TZS 8,750,000", expenses: "TZS 4,250,000", profit: "TZS 4,500,000", pendingInvoices: 5, paidInvoices: 4 },
-                monthly: { title: "Monthly Financial Report", period: monthStart.toDateString() + " - " + today.toDateString(), income: "TZS 28,750,000", expenses: "TZS 18,250,000", profit: "TZS 10,500,000", pendingInvoices: 8, paidInvoices: 12 },
-                annual: { title: "Annual Financial Report", period: yearStart.toDateString() + " - " + today.toDateString(), income: "TZS 125,000,000", expenses: "TZS 85,000,000", profit: "TZS 40,000,000", pendingInvoices: 15, paidInvoices: 45 }
-            },
-            'Sales': {
-                daily: { title: "Daily Sales Report", date: today.toDateString(), orders: 3, revenue: "TZS 2,500,000", leads: 5, conversions: 2 },
-                weekly: { title: "Weekly Sales Report", period: `${weekStart.toDateString()} - ${today.toDateString()}`, orders: 12, revenue: "TZS 15,500,000", leads: 18, conversions: 8 },
-                monthly: { title: "Monthly Sales Report", period: monthStart.toDateString() + " - " + today.toDateString(), orders: 28, revenue: "TZS 45,000,000", leads: 45, conversions: 22 },
-                annual: { title: "Annual Sales Report", period: yearStart.toDateString() + " - " + today.toDateString(), orders: 156, revenue: "TZS 250,000,000", leads: 220, conversions: 98 }
-            },
-            'Secretary': {
-                daily: { title: "Daily Administration Report", date: today.toDateString(), messages: 8, appointments: 3, ordersProcessed: 5, documents: 12 },
-                weekly: { title: "Weekly Administration Report", period: `${weekStart.toDateString()} - ${today.toDateString()}`, messages: 35, appointments: 12, ordersProcessed: 18, documents: 45 },
-                monthly: { title: "Monthly Administration Report", period: monthStart.toDateString() + " - " + today.toDateString(), messages: 120, appointments: 28, ordersProcessed: 42, documents: 156 },
-                annual: { title: "Annual Administration Report", period: yearStart.toDateString() + " - " + today.toDateString(), messages: 450, appointments: 98, ordersProcessed: 180, documents: 520 }
-            }
-        };
-        currentReportData = reports[dept]?.[type] || reports['Managers']['daily'];
-        return currentReportData;
+    function addActivityLog(message, action) {
+        const newActivity = { id: Date.now(), message: message, time: "Just now", icon: action === 'reply' ? 'fa-reply' : 'fa-edit', color: 'blue' };
+        activities.unshift(newActivity);
+        if (activities.length > 20) activities.pop();
+        renderActivities();
+        saveAllData();
     }
     
-    function renderReportContent(dept, type) {
-        const data = generateReportData(dept, type);
-        const content = document.getElementById('reportContent');
-        let html = `<div class="mb-6" id="reportPrintArea"><h2 class="text-xl font-bold text-gray-800">${data.title}</h2><p class="text-gray-500">${data.period || data.date || ''}</p></div>`;
-        html += `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">`;
-        
-        if (dept === 'Managers') {
-            html += `<div class="bg-green-50 p-4 rounded-xl"><p class="text-sm text-gray-500">Completed Projects</p><p class="text-2xl font-bold text-green-600">${data.completed}</p></div>`;
-            html += `<div class="bg-orange-50 p-4 rounded-xl"><p class="text-sm text-gray-500">In Progress</p><p class="text-2xl font-bold text-orange-600">${data.inProgress}</p></div>`;
-            html += `<div class="bg-blue-50 p-4 rounded-xl"><p class="text-sm text-gray-500">Approved Projects</p><p class="text-2xl font-bold text-blue-600">${data.approved}</p></div>`;
-            html += `<div class="bg-purple-50 p-4 rounded-xl"><p class="text-sm text-gray-500">Revenue</p><p class="text-2xl font-bold text-purple-600">${data.revenue}</p></div>`;
-        } else if (dept === 'Finance') {
-            html += `<div class="bg-green-50 p-4 rounded-xl"><p class="text-sm text-gray-500">Income</p><p class="text-2xl font-bold text-green-600">${data.income}</p></div>`;
-            html += `<div class="bg-red-50 p-4 rounded-xl"><p class="text-sm text-gray-500">Expenses</p><p class="text-2xl font-bold text-red-600">${data.expenses}</p></div>`;
-            html += `<div class="bg-blue-50 p-4 rounded-xl"><p class="text-sm text-gray-500">Profit</p><p class="text-2xl font-bold text-blue-600">${data.profit}</p></div>`;
-            html += `<div class="bg-yellow-50 p-4 rounded-xl"><p class="text-sm text-gray-500">Pending Invoices</p><p class="text-2xl font-bold text-yellow-600">${data.pendingInvoices}</p></div>`;
-        } else if (dept === 'Sales') {
-            html += `<div class="bg-blue-50 p-4 rounded-xl"><p class="text-sm text-gray-500">Orders</p><p class="text-2xl font-bold text-blue-600">${data.orders}</p></div>`;
-            html += `<div class="bg-green-50 p-4 rounded-xl"><p class="text-sm text-gray-500">Revenue</p><p class="text-2xl font-bold text-green-600">${data.revenue}</p></div>`;
-            html += `<div class="bg-purple-50 p-4 rounded-xl"><p class="text-sm text-gray-500">Leads</p><p class="text-2xl font-bold text-purple-600">${data.leads}</p></div>`;
-            html += `<div class="bg-orange-50 p-4 rounded-xl"><p class="text-sm text-gray-500">Conversions</p><p class="text-2xl font-bold text-orange-600">${data.conversions}</p></div>`;
-        } else if (dept === 'Secretary') {
-            html += `<div class="bg-blue-50 p-4 rounded-xl"><p class="text-sm text-gray-500">Messages</p><p class="text-2xl font-bold text-blue-600">${data.messages}</p></div>`;
-            html += `<div class="bg-green-50 p-4 rounded-xl"><p class="text-sm text-gray-500">Appointments</p><p class="text-2xl font-bold text-green-600">${data.appointments}</p></div>`;
-            html += `<div class="bg-orange-50 p-4 rounded-xl"><p class="text-sm text-gray-500">Orders Processed</p><p class="text-2xl font-bold text-orange-600">${data.ordersProcessed}</p></div>`;
-            html += `<div class="bg-purple-50 p-4 rounded-xl"><p class="text-sm text-gray-500">Documents</p><p class="text-2xl font-bold text-purple-600">${data.documents}</p></div>`;
-        }
-        
-        html += `</div><div class="border-t pt-4"><h3 class="font-semibold mb-3">Detailed Summary</h3><p class="text-gray-600">This ${type} report shows the performance of the ${dept} department. All figures are based on actual data recorded in the system.</p>`;
-        html += `<p class="text-gray-500 text-sm mt-2">Generated on: ${new Date().toLocaleString()}</p></div>`;
-        content.innerHTML = html;
-    }
-    
-    function exportToPDF() {
-        const element = document.getElementById('reportContent');
-        const opt = { margin: [0.5, 0.5, 0.5, 0.5], filename: `${currentDept}_${currentReportType}_report_${new Date().toISOString().slice(0,10)}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' } };
-        html2pdf().set(opt).from(element).save();
-        showToast('PDF downloaded successfully!');
-    }
-    
-    function exportToExcel() {
-        const data = currentReportData;
-        if (!data) return;
-        let worksheetData = [];
-        worksheetData.push([data.title]);
-        worksheetData.push([data.period || data.date || '']);
-        worksheetData.push([]);
-        
-        if (currentDept === 'Managers') {
-            worksheetData.push(['Metric', 'Value']);
-            worksheetData.push(['Completed Projects', data.completed]);
-            worksheetData.push(['In Progress', data.inProgress]);
-            worksheetData.push(['Approved Projects', data.approved]);
-            worksheetData.push(['Revenue', data.revenue]);
-            worksheetData.push(['Total Projects', data.totalProjects]);
-        } else if (currentDept === 'Finance') {
-            worksheetData.push(['Metric', 'Value']);
-            worksheetData.push(['Income', data.income]);
-            worksheetData.push(['Expenses', data.expenses]);
-            worksheetData.push(['Profit', data.profit]);
-            worksheetData.push(['Pending Invoices', data.pendingInvoices]);
-            worksheetData.push(['Paid Invoices', data.paidInvoices]);
-        } else if (currentDept === 'Sales') {
-            worksheetData.push(['Metric', 'Value']);
-            worksheetData.push(['Orders', data.orders]);
-            worksheetData.push(['Revenue', data.revenue]);
-            worksheetData.push(['Leads', data.leads]);
-            worksheetData.push(['Conversions', data.conversions]);
-        } else if (currentDept === 'Secretary') {
-            worksheetData.push(['Metric', 'Value']);
-            worksheetData.push(['Messages', data.messages]);
-            worksheetData.push(['Appointments', data.appointments]);
-            worksheetData.push(['Orders Processed', data.ordersProcessed]);
-            worksheetData.push(['Documents', data.documents]);
-        }
-        
-        worksheetData.push([]);
-        worksheetData.push([`Generated on: ${new Date().toLocaleString()}`]);
-        
-        const wb = XLSX.utils.book_new();
-        const ws = XLSX.utils.aoa_to_sheet(worksheetData);
-        ws['!cols'] = [{wch:25}, {wch:20}];
-        XLSX.utils.book_append_sheet(wb, ws, `${currentDept}_${currentReportType}_Report`);
-        XLSX.writeFile(wb, `${currentDept}_${currentReportType}_report_${new Date().toISOString().slice(0,10)}.xlsx`);
-        showToast('Excel file downloaded successfully!');
-    }
-    
-    function openDepartmentReports(dept) {
-        currentDept = dept;
-        document.getElementById('reportDeptTitle').innerText = `${dept} Department Reports`;
-        document.getElementById('reportDeptDesc').innerText = dept === 'Managers' ? 'Housing Projects & Land Survey Management Reports' : (dept === 'Finance' ? 'Financial Management Reports' : (dept === 'Sales' ? 'Sales & Marketing Reports' : 'Administration Reports'));
-        document.getElementById('departmentReportView').classList.remove('hidden');
-        document.getElementById('reportDepartmentsGrid').classList.add('hidden');
-        loadReport('daily');
-    }
-    
-    function loadReport(type) {
-        currentReportType = type;
-        document.querySelectorAll('.report-tab').forEach(tab => tab.classList.remove('active'));
-        document.getElementById(`tab${type.charAt(0).toUpperCase() + type.slice(1)}`).classList.add('active');
-        renderReportContent(currentDept, type);
-    }
-    
-    function closeDepartmentReport() {
-        document.getElementById('departmentReportView').classList.add('hidden');
-        document.getElementById('reportDepartmentsGrid').classList.remove('hidden');
-    }
-    
-    // ==================== HELPER FUNCTIONS ====================
-    function getRoleBadge(role) {
-        const badges = { 'Manager': 'bg-purple-100 text-purple-700', 'Accountant': 'bg-green-100 text-green-700', 'Sales Executive': 'bg-blue-100 text-blue-700', 'Secretary': 'bg-red-100 text-red-700' };
-        return badges[role] || 'bg-gray-100 text-gray-700';
-    }
-    
-    function renderDepartmentsGrid() {
-        const grid = document.getElementById('departmentsGrid');
-        if(!grid) return;
-        grid.innerHTML = '';
-        departmentsData.forEach(dept => {
-            const empCount = employees.filter(e => departmentMap[e.department] === dept.displayName).length;
-            grid.innerHTML += `<div class="dept-card bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <div class="bg-${dept.color}-600 p-4 text-white"><div class="flex items-center justify-between"><i class="fas ${dept.icon} text-3xl"></i><span class="bg-white/20 px-2 py-1 rounded-lg text-sm">${dept.displayName}</span></div><h3 class="text-xl font-bold mt-3">${dept.name}</h3></div>
-                <div class="p-4"><div class="flex justify-between mb-3"><span class="text-gray-500 text-sm">Employees</span><span class="text-2xl font-bold">${empCount}</span></div>
-                <button onclick="openDepartmentDashboard('${dept.displayName}')" class="w-full bg-${dept.color}-50 text-${dept.color}-600 py-2 rounded-lg text-sm font-medium hover:bg-${dept.color}-100 transition"><i class="fas fa-chalkboard-user"></i> View Department Dashboard</button>
-                <a href="${dept.website}" target="_blank" class="w-full mt-2 bg-gray-50 text-gray-600 py-2 rounded-lg text-sm font-medium hover:bg-gray-100 transition flex items-center justify-center space-x-1"><i class="fas fa-external-link-alt"></i><span>Visit Department Website</span></a></div></div>`;
-        });
-    }
-    
-    function renderManagersProjects() {
-        const grid = document.getElementById('managersProjectsGrid');
-        if(grid) grid.innerHTML = projects.map(p => `<div class="border rounded-xl p-3 hover:shadow-md transition"><img src="${p.image}" class="w-full h-32 object-cover rounded-lg mb-2"><p class="font-bold">${p.name}</p><p class="text-sm ${p.type === 'completed' ? 'text-green-600' : (p.type === 'in_progress' ? 'text-orange-600' : 'text-blue-600')}">${p.type === 'completed' ? 'Completed' : (p.type === 'in_progress' ? 'In Progress' : 'Approved')}</p><button onclick="showFunctionToast('View Project Details')" class="mt-2 text-purple-600 text-sm">View Details →</button></div>`).join('');
-    }
-    
-    function renderFinanceInvoices() {
-        const div = document.getElementById('financeInvoicesList');
-        if(div) div.innerHTML = `<div class="flex justify-between items-center p-3 bg-gray-50 rounded-xl"><div><p class="font-bold">INV-001 - Modern Villa</p><p class="text-sm">John Doe - TZS 5,000,000</p></div><span class="status-pending px-3 py-1 rounded">Pending</span><button onclick="showFunctionToast('Process Payment')" class="text-green-600 text-sm">Pay Now</button></div><div class="flex justify-between items-center p-3 bg-gray-50 rounded-xl"><div><p class="font-bold">INV-002 - Land Survey</p><p class="text-sm">Mary Smith - TZS 2,500,000</p></div><span class="status-pending px-3 py-1 rounded">Pending</span><button onclick="showFunctionToast('Process Payment')" class="text-green-600 text-sm">Pay Now</button></div>`;
-    }
-    
-    function renderSalesOrders() {
-        const div = document.getElementById('salesOrdersList');
-        if(div) div.innerHTML = `<div class="p-3 bg-gray-50 rounded-xl"><p class="font-bold">John Doe - Modern Villa</p><p class="text-sm">Amount: TZS 150,000,000 | Status: Pending</p><button onclick="showFunctionToast('Process Order')" class="mt-1 text-orange-600 text-sm">Process Order →</button></div><div class="p-3 bg-gray-50 rounded-xl"><p class="font-bold">Mary Smith - Land Survey</p><p class="text-sm">Amount: TZS 2,500,000 | Status: Approved</p><button onclick="showFunctionToast('View Order Details')" class="mt-1 text-orange-600 text-sm">View Details →</button></div>`;
-    }
-    
-    function renderSecretaryMessages() {
-        const div = document.getElementById('secretaryMessagesList');
-        if(div) div.innerHTML = `<div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-xl"><div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center"><i class="fas fa-user text-blue-600"></i></div><div><p class="font-bold">John Doe (Client)</p><p class="text-sm">Interested in Modern Villa - Request site visit</p></div><button onclick="showFunctionToast('Reply to Message')" class="ml-auto text-blue-600 text-sm">Reply</button></div>`;
-    }
-    
-    function renderTasks() {
-        const incompleteDiv = document.getElementById('incompleteTasksList');
-        const completedDiv = document.getElementById('completedTasksList');
-        if(incompleteDiv) {
-            incompleteDiv.innerHTML = tasks.filter(t => !t.completed).map(t => `<div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl"><div><input type="checkbox" class="mr-3" onchange="toggleTask(${t.id})"><span>${t.title}</span><p class="text-xs text-gray-500 mt-1">From: ${t.department} Dept - ${t.description}</p></div></div>`).join('');
-            completedDiv.innerHTML = tasks.filter(t => t.completed).map(t => `<div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl"><div><input type="checkbox" class="mr-3" checked disabled><span class="line-through text-gray-400">${t.title}</span><p class="text-xs text-gray-500 mt-1">From: ${t.department} Dept - ${t.description}</p></div></div>`).join('');
-        }
-        document.getElementById('pendingTasksCount').innerText = tasks.filter(t => !t.completed).length;
-        document.getElementById('pendingTasksBadge').innerText = tasks.filter(t => !t.completed).length;
-        document.getElementById('unreadMessagesCount').innerText = messages.filter(m => !m.read).length;
-        document.getElementById('unreadMessagesBadge').innerText = messages.filter(m => !m.read).length;
-        updateDepartmentCounts();
-    }
-    
-    function renderMessagesList() {
-        const convDiv = document.getElementById('conversationsList');
-        if(convDiv) convDiv.innerHTML = messages.map(m => `<div class="message-item p-3 rounded-xl ${!m.read ? 'bg-blue-50 border-l-4 border-blue-500' : ''}" onclick="viewConversation(${m.id})"><div class="flex justify-between"><span class="font-semibold">${m.fromDept} Dept</span><span class="text-xs text-gray-400">${m.timestamp.toLocaleTimeString()}</span></div><p class="text-sm truncate">${m.subject}</p><p class="text-xs text-gray-400">${m.replies.length} replies</p></div>`).join('');
-    }
-    
-    function renderActivities() {
-        const feed = document.getElementById('activityFeed');
-        if(feed) feed.innerHTML = activities.slice(0,5).map(a => `<div class="activity-item flex items-start space-x-3 p-2 rounded-xl"><div class="w-2 h-2 bg-${a.color}-500 rounded-full mt-2"></div><div class="flex-1"><p class="text-sm text-gray-700">${a.message}</p><p class="text-xs text-gray-400">${a.time}</p></div><i class="fas ${a.icon} text-${a.color}-500"></i></div>`).join('');
-    }
-    
-    function updateDepartmentCounts() {
-        const mgmt = employees.filter(e => e.department === 'Management').length;
-        const finance = employees.filter(e => e.department === 'Finance').length;
-        const sales = employees.filter(e => e.department === 'Sales & Marketing').length;
-        const secretary = employees.filter(e => e.department === 'Administration').length;
-        document.getElementById('mgmtCount').innerText = mgmt;
-        document.getElementById('financeCount').innerText = finance;
-        document.getElementById('salesCount').innerText = sales;
-        document.getElementById('secretaryCount').innerText = secretary;
-    }
-    
-    function updateCounts() {
-        updateDepartmentCounts();
-        document.getElementById('totalEmployees').innerText = employees.length;
-        document.getElementById('pendingTasksCount').innerText = tasks.filter(t => !t.completed).length;
-        document.getElementById('pendingTasksBadge').innerText = tasks.filter(t => !t.completed).length;
-        document.getElementById('unreadMessagesCount').innerText = messages.filter(m => !m.read).length;
-        document.getElementById('unreadMessagesBadge').innerText = messages.filter(m => !m.read).length;
-    }
-    
-    function toggleTask(id) {
-        const task = tasks.find(t => t.id === id);
-        if(task) { task.completed = !task.completed; renderTasks(); updateCounts(); showToast(task.completed ? 'Task completed!' : 'Task marked incomplete'); addActivityLog(`Task "${task.title}" marked as ${task.completed ? 'completed' : 'incomplete'}`, 'edit'); }
-    }
-    
-    function viewConversation(id) {
-        const msg = messages.find(m => m.id === id);
-        if(msg) { msg.read = true; renderMessagesList(); updateCounts(); }
-        const detailView = document.getElementById('messageDetailView');
-        let repliesHtml = '';
-        msg.replies.forEach(reply => { repliesHtml += `<div class="bg-gray-100 p-3 rounded-xl mb-2"><p class="text-sm font-semibold">Admin replied:</p><p class="text-sm">${reply}</p></div>`; });
-        detailView.innerHTML = `<div class="mb-4"><h3 class="font-bold">From: ${msg.fromDept} Department</h3><p class="text-sm text-gray-500">${msg.timestamp.toLocaleString()}</p><p class="font-semibold mt-2">Subject: ${msg.subject}</p><p class="mt-2">${msg.message}</p></div>${repliesHtml}<div class="mt-4"><textarea id="replyText" rows="3" placeholder="Type your reply..." class="w-full p-2 border rounded-xl"></textarea><button onclick="sendReplyFromView(${msg.id})" class="mt-2 bg-blue-600 text-white px-4 py-2 rounded-xl">Send Reply</button></div>`;
-    }
-    
-    function sendReplyFromView(msgId) {
-        const replyText = document.getElementById('replyText')?.value;
-        if(!replyText) { alert('Please enter a reply'); return; }
-        const msg = messages.find(m => m.id === msgId);
-        if(msg) { msg.replies.push(replyText); renderMessagesList(); showToast(`Reply sent to ${msg.fromDept} department`); viewConversation(msgId); addActivityLog(`Replied to message from ${msg.fromDept} department`, 'reply'); }
-    }
-    
-    function openDepartmentDashboard(dept) {
-        document.getElementById('departmentsSection').classList.add('hidden');
-        document.getElementById('employeeSection').classList.add('hidden');
-        document.getElementById('dashboardSection').classList.add('hidden');
-        document.getElementById('tasksSection').classList.add('hidden');
-        document.getElementById('messagesSection').classList.add('hidden');
-        document.getElementById('settingsSection').classList.add('hidden');
-        document.getElementById('reportsSection').classList.add('hidden');
-        document.getElementById('managersDashboard').classList.add('hidden');
-        document.getElementById('financeDashboard').classList.add('hidden');
-        document.getElementById('salesDashboard').classList.add('hidden');
-        document.getElementById('secretaryDashboard').classList.add('hidden');
-        
-        if(dept === 'Managers') { document.getElementById('managersDashboard').classList.remove('hidden'); renderManagersProjects(); }
-        else if(dept === 'Finance') { document.getElementById('financeDashboard').classList.remove('hidden'); renderFinanceInvoices(); }
-        else if(dept === 'Sales') { document.getElementById('salesDashboard').classList.remove('hidden'); renderSalesOrders(); }
-        else if(dept === 'Secretary') { document.getElementById('secretaryDashboard').classList.remove('hidden'); renderSecretaryMessages(); }
-    }
-    
-    function goBackToDepartments() {
-        document.getElementById('managersDashboard').classList.add('hidden');
-        document.getElementById('financeDashboard').classList.add('hidden');
-        document.getElementById('salesDashboard').classList.add('hidden');
-        document.getElementById('secretaryDashboard').classList.add('hidden');
-        document.getElementById('departmentsSection').classList.remove('hidden');
-    }
-    
-    function openAddTaskModal() { document.getElementById('addTaskModal').classList.remove('hidden'); document.getElementById('addTaskModal').classList.add('flex'); }
-    function closeTaskModal() { document.getElementById('addTaskModal').classList.add('hidden'); document.getElementById('addTaskModal').classList.remove('flex'); }
-    function addNewTask() {
-        const title = document.getElementById('taskTitle')?.value;
-        if(!title) { alert('Please enter task title'); return; }
-        tasks.push({ id: nextTaskId++, title: title, description: document.getElementById('taskDescription')?.value, department: document.getElementById('taskDepartment')?.value, completed: false });
-        renderTasks(); updateCounts(); showToast('New task added'); addActivityLog(`Added new task: ${title}`, 'add'); closeTaskModal();
-    }
-    
-    function showFunctionToast(func) { showToast(`${func} - Feature will be available soon`); }
+    function showFunctionToast(func) { showToast(`${func} - Feature coming soon`); }
     function showToast(msg) { const t = document.createElement('div'); t.className = 'toast-notification'; t.innerHTML = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 3000); }
     
-    function performSearch() {
-        const term = document.getElementById('searchInput')?.value.toLowerCase();
-        if(!term) { renderEmployeeTable(); renderTasks(); renderMessagesList(); return; }
-        const filteredEmployees = employees.filter(e => e.name.toLowerCase().includes(term) || e.email.toLowerCase().includes(term));
-        const tbody = document.getElementById('employeeTableBody');
-        if(tbody) {
-            tbody.innerHTML = '';
-            filteredEmployees.forEach(emp => {
-                tbody.innerHTML += `<tr class="border-b"><td class="px-5 py-3">${emp.id}</td><td class="px-5 py-3">${emp.name}</td><td class="px-5 py-3">${emp.email}</td><td class="px-5 py-3">${emp.phone}</td><td class="px-5 py-3">${emp.role}</td><td class="px-5 py-3">${departmentMap[emp.department]}</td><td class="px-5 py-3">TZS ${emp.salary}</td><td class="px-5 py-3">${emp.status}</td><td class="px-5 py-3"><button class="text-blue-600">Edit</button></td></tr>`;
-            });
-        }
-    }
+    // Dark mode
+    let isDark = false;
+    document.getElementById('darkModeToggle')?.addEventListener('click', () => { isDark = !isDark; document.body.classList.toggle('dark-mode', isDark); document.getElementById('darkModeIcon').classList.toggle('fa-sun', isDark); document.getElementById('darkModeIcon').classList.toggle('fa-moon', !isDark); });
     
     // Navigation
     const sections = ['dashboardSection', 'departmentsSection', 'employeeSection', 'reportsSection', 'tasksSection', 'messagesSection', 'settingsSection'];
@@ -1093,33 +1103,31 @@
     document.getElementById('homeButton')?.addEventListener('click', () => showSection('dashboardSection'));
     document.getElementById('departmentsLink')?.addEventListener('click', (e) => { e.preventDefault(); showSection('departmentsSection'); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); e.target.closest('.nav-item').classList.add('active'); renderDepartmentsGrid(); });
     document.getElementById('employeeTableLink')?.addEventListener('click', (e) => { e.preventDefault(); showSection('employeeSection'); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); e.target.closest('.nav-item').classList.add('active'); renderEmployeeTable(); });
-    document.getElementById('reportsLink')?.addEventListener('click', (e) => { e.preventDefault(); showSection('reportsSection'); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); e.target.closest('.nav-item').classList.add('active'); });
+    document.getElementById('reportsLink')?.addEventListener('click', (e) => { e.preventDefault(); showSection('reportsSection'); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); e.target.closest('.nav-item').classList.add('active'); renderReportDepartmentsGrid(); });
     document.getElementById('tasksLink')?.addEventListener('click', (e) => { e.preventDefault(); showSection('tasksSection'); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); e.target.closest('.nav-item').classList.add('active'); renderTasks(); });
     document.getElementById('messagesLink')?.addEventListener('click', (e) => { e.preventDefault(); showSection('messagesSection'); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); e.target.closest('.nav-item').classList.add('active'); renderMessagesList(); });
     document.getElementById('settingsLink')?.addEventListener('click', (e) => { e.preventDefault(); showSection('settingsSection'); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); e.target.closest('.nav-item').classList.add('active'); });
     document.getElementById('logoutBtn')?.addEventListener('click', () => { if(confirm('Logout?')) { localStorage.clear(); showToast('Logged out'); setTimeout(() => window.location.href = 'login.html', 1000); } });
     
-    // Dark mode
-    let isDark = false;
-    document.getElementById('darkModeToggle')?.addEventListener('click', () => { isDark = !isDark; document.body.classList.toggle('dark-mode', isDark); document.getElementById('darkModeIcon').classList.toggle('fa-sun', isDark); document.getElementById('darkModeIcon').classList.toggle('fa-moon', !isDark); });
-    
-    // Search input
-    document.getElementById('searchInput')?.addEventListener('input', performSearch);
+    // Search
+    document.getElementById('searchInput')?.addEventListener('input', function(e) {
+        const term = e.target.value.toLowerCase();
+        if(!term) { renderEmployeeTable(); return; }
+        const filtered = employees.filter(emp => emp.name.toLowerCase().includes(term) || emp.email.toLowerCase().includes(term));
+        const tbody = document.getElementById('employeeTableBody');
+        if(tbody) {
+            tbody.innerHTML = '';
+            filtered.forEach(emp => {
+                tbody.innerHTML += `<tr class="border-b"><td class="px-5 py-3">${emp.id}</td><td class="px-5 py-3">${emp.name}</td><td class="px-5 py-3">${emp.email}</td><td class="px-5 py-3">${emp.phone}</td><td class="px-5 py-3">${emp.role}</td><td class="px-5 py-3">${departmentMap[emp.department]}</td><td class="px-5 py-3">TZS ${emp.salary}</td><td class="px-5 py-3">${emp.status}</td><td class="px-5 py-3"><button class="text-blue-600">Edit</button></td></tr>`;
+            });
+        }
+    });
     
     // Charts
-    new Chart(document.getElementById('revenueChart'), { type: 'line', data: { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], datasets: [{ label: 'Revenue', data: [10, 18, 22, 25, 28, 30], borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)', fill: true, tension: 0.4 }, { label: 'Expenses', data: [8, 12, 15, 18, 20, 22], borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.1)', fill: true, tension: 0.4 }] }, options: { responsive: true, plugins: { legend: { position: 'bottom' } } } });
-    new Chart(document.getElementById('pieChart'), { type: 'doughnut', data: { labels: ['Managers', 'Finance', 'Sales', 'Secretary'], datasets: [{ data: [2, 1, 1, 1], backgroundColor: ['#8b5cf6', '#10b981', '#f59e0b', '#ef4444'], borderWidth: 0 }] }, options: { responsive: true, plugins: { legend: { position: 'bottom' } } } });
+    new Chart(document.getElementById('revenueChart'), { type: 'line', data: { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], datasets: [{ label: 'Revenue', data: [10, 18, 22, 25, 28, 30], borderColor: '#3b82f6', fill: true }, { label: 'Expenses', data: [8, 12, 15, 18, 20, 22], borderColor: '#ef4444', fill: true }] }, options: { responsive: true, plugins: { legend: { position: 'bottom' } } } });
+    new Chart(document.getElementById('pieChart'), { type: 'doughnut', data: { labels: ['Managers', 'Finance', 'Sales', 'Secretary'], datasets: [{ data: [2, 1, 1, 1], backgroundColor: ['#8b5cf6', '#10b981', '#f59e0b', '#ef4444'] }] }, options: { responsive: true, plugins: { legend: { position: 'bottom' } } } });
     
-    // Initialize
-    loadAllData();
-    renderEmployeeTable();
-    renderTasks();
-    renderMessagesList();
-    renderActivities();
-    renderDepartmentsGrid();
-    updateCounts();
-    
-    document.querySelectorAll('.nav-item[data-section]').forEach(item => { if(item.id !== 'employeeTableLink' && item.id !== 'departmentsLink' && item.id !== 'reportsLink' && item.id !== 'tasksLink' && item.id !== 'messagesLink' && item.id !== 'settingsLink') { item.addEventListener('click', (e) => { e.preventDefault(); showSection('dashboardSection'); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); item.classList.add('active'); }); } });
+    loadData();
 </script>
 </body>
 </html>
