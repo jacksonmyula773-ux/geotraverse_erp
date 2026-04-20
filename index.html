@@ -67,6 +67,27 @@
             border-radius: 50%;
         }
         
+        .floating-msg {
+            position: fixed;
+            bottom: 140px;
+            left: 15px;
+            z-index: 100;
+            animation: pulse 2s infinite;
+            animation-delay: 1s;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #0f74ba;
+            cursor: pointer;
+        }
+        .floating-msg:hover {
+            background: #0a5a8e;
+            transform: scale(1.05);
+        }
+        
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.05); }
@@ -81,7 +102,6 @@
             box-shadow: 0 20px 30px -12px rgba(0,0,0,0.15);
         }
         
-        /* Project description - black/dark color, readable */
         .project-card p {
             color: #1f2937 !important;
             font-weight: 500;
@@ -369,7 +389,6 @@
             color: white;
         }
         
-        /* Modal content text - dark/black for readability */
         .service-modal-content .text-gray-800,
         .service-modal-content .text-gray-600 {
             color: #1f2937 !important;
@@ -377,6 +396,18 @@
         .dark-mode .service-modal-content .text-gray-800,
         .dark-mode .service-modal-content .text-gray-600 {
             color: #e2e8f0 !important;
+        }
+        
+        /* Mobile menu improvements */
+        #mobileMenu {
+            transition: all 0.3s ease;
+            max-height: 0;
+            overflow: hidden;
+            padding: 0 1rem;
+        }
+        #mobileMenu.show {
+            max-height: 400px;
+            padding: 1rem 1rem;
         }
     </style>
 </head>
@@ -403,11 +434,13 @@
     <a href="tel:+255719336667" class="floating-call bg-blue-600 hover:bg-blue-700 text-white shadow-lg transition hover:scale-105 z-50 flex items-center justify-center">
         <i class="fas fa-phone-alt"></i>
     </a>
+    
+    <div class="floating-msg bg-blue-600 hover:bg-blue-700 text-white shadow-lg transition hover:scale-105 z-50 flex items-center justify-center cursor-pointer" onclick="scrollToContact()">
+        <i class="fas fa-envelope"></i>
+    </div>
 
-    <!-- Scroll to Top -->
     <div class="scroll-top" id="scrollTopBtn"><i class="fas fa-arrow-up text-white text-sm"></i></div>
 
-    <!-- Service Modal -->
     <div id="serviceModal" class="service-modal" onclick="closeServiceModal()">
         <div class="service-modal-content" onclick="event.stopPropagation()">
             <span class="close-modal-btn" onclick="closeServiceModal()">&times;</span>
@@ -415,7 +448,6 @@
         </div>
     </div>
 
-    <!-- Image Modal -->
     <div id="imageModal" class="image-modal" onclick="closeImageModal()">
         <span class="close-modal" onclick="closeImageModal()">&times;</span>
         <img id="modalImage" src="" alt="Project Image">
@@ -456,14 +488,16 @@
             <button id="mobileMenuBtn" class="md:hidden text-gray-600"><i class="fas fa-bars text-xl"></i></button>
         </div>
         
-        <div id="mobileMenu" class="hidden md:hidden px-4 pb-3 space-y-2 bg-white border-t">
-            <a href="#home" class="block py-2 text-sm">Nyumbani</a>
-            <a href="#services" class="block py-2 text-sm">Huduma</a>
-            <a href="#products" class="block py-2 text-sm">Vifaa</a>
-            <a href="#projects" class="block py-2 text-sm">Miradi</a>
-            <a href="#about" class="block py-2 text-sm">Kuhusu</a>
-            <a href="#contact" class="block py-2 text-sm">Mawasiliano</a>
-            <button id="mobileDarkToggle" class="py-2 text-sm w-full text-left"><i class="fas fa-moon mr-2"></i> Dark Mode</button>
+        <div id="mobileMenu" class="hidden md:hidden">
+            <div class="space-y-3 pb-3">
+                <a href="#home" class="block py-2 text-sm text-gray-700 hover:text-blue-600 transition mobile-nav-link">Nyumbani</a>
+                <a href="#services" class="block py-2 text-sm text-gray-700 hover:text-blue-600 transition mobile-nav-link">Huduma</a>
+                <a href="#products" class="block py-2 text-sm text-gray-700 hover:text-blue-600 transition mobile-nav-link">Vifaa</a>
+                <a href="#projects" class="block py-2 text-sm text-gray-700 hover:text-blue-600 transition mobile-nav-link">Miradi</a>
+                <a href="#about" class="block py-2 text-sm text-gray-700 hover:text-blue-600 transition mobile-nav-link">Kuhusu</a>
+                <a href="#contact" class="block py-2 text-sm text-gray-700 hover:text-blue-600 transition mobile-nav-link">Mawasiliano</a>
+                <button id="mobileDarkToggle" class="py-2 text-sm text-gray-700 w-full text-left"><i class="fas fa-moon mr-2"></i> Dark Mode</button>
+            </div>
         </div>
     </nav>
 
@@ -601,7 +635,6 @@
                 </div>
             </div>
             
-            <!-- Testimonials -->
             <div class="mt-10" data-aos="fade-up">
                 <h3 class="text-lg font-bold text-center text-gray-800 mb-5" id="testimonialsTitle">Wateja Wetu Wanasema</h3>
                 <div class="grid md:grid-cols-3 gap-4">
@@ -632,7 +665,6 @@
                 </div>
             </div>
             
-            <!-- Stats -->
             <div class="about-stats grid grid-cols-2 md:grid-cols-4 gap-4 text-center mt-8" data-aos="fade-up">
                 <div><div class="stat-number">150+</div><div class="stat-label" id="statProjects">Miradi</div></div>
                 <div><div class="stat-number">10+</div><div class="stat-label" id="statYears">Miaka</div></div>
@@ -743,7 +775,54 @@
     <script>
         AOS.init({ duration: 600, once: true });
         
-        // Service Details with bullet points
+        // Mobile Menu Functions - Fixed
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        
+        function toggleMobileMenu() {
+            if (mobileMenu.classList.contains('hidden')) {
+                mobileMenu.classList.remove('hidden');
+                mobileMenu.classList.add('show');
+            } else {
+                mobileMenu.classList.add('hidden');
+                mobileMenu.classList.remove('show');
+            }
+        }
+        
+        function closeMobileMenu() {
+            mobileMenu.classList.add('hidden');
+            mobileMenu.classList.remove('show');
+        }
+        
+        if (mobileMenuBtn) {
+            mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+        }
+        
+        // Close mobile menu when clicking on any mobile nav link
+        document.querySelectorAll('.mobile-nav-link').forEach(link => {
+            link.addEventListener('click', function() {
+                closeMobileMenu();
+            });
+        });
+        
+        // Also close mobile menu when clicking on dark mode toggle inside mobile menu
+        const mobileDarkToggle = document.getElementById('mobileDarkToggle');
+        if (mobileDarkToggle) {
+            mobileDarkToggle.addEventListener('click', function() {
+                setTimeout(closeMobileMenu, 300);
+            });
+        }
+        
+        function scrollToContact() {
+            const contactSection = document.getElementById('contact');
+            if(contactSection) {
+                contactSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                closeMobileMenu();
+                showToast('Tafadhali jaza fomu ili kuwasiliana nasi', false);
+            }
+        }
+        
+        // Service Details
         const serviceFullDetails = {
             1: {
                 title_sw: "Ujenzi wa Nyumba", title_en: "Housing Development",
@@ -794,7 +873,6 @@
         
         let currentLang = 'sw';
         
-        // Complete translations
         const translations = {
             servicesTitle: { sw: "Huduma Zetu", en: "Our Services" },
             productsTitle: { sw: "🧱 Vifaa vya Ujenzi", en: "🧱 Construction Materials" },
@@ -951,8 +1029,8 @@
         }
         
         function updateFooterLanguage() {
-            const elements = ['footerTagline', 'footerQuickLinks', 'footerContact', 'footerHours', 'hoursMonFri', 'hoursSat', 'hoursSun'];
-            elements.forEach(id => {
+            const footerElements = ['footerTagline', 'footerQuickLinks', 'footerContact', 'footerHours', 'hoursMonFri', 'hoursSat', 'hoursSun'];
+            footerElements.forEach(id => {
                 const el = document.getElementById(id);
                 if(el && translations[id] && translations[id][currentLang]) {
                     el.textContent = translations[id][currentLang];
@@ -964,17 +1042,15 @@
             document.documentElement.lang = currentLang;
             document.getElementById('currentLangDisplay').textContent = currentLang === 'sw' ? 'Kiswahili' : 'English';
             
-            // Update nav links
-            document.querySelectorAll('.nav-link, #mobileMenu a').forEach(link => {
+            document.querySelectorAll('.nav-link, .mobile-nav-link').forEach(link => {
                 const swText = link.getAttribute('data-sw');
                 const enText = link.getAttribute('data-en');
                 if(swText && enText) link.textContent = currentLang === 'sw' ? swText : enText;
             });
             
-            // Update all text content using IDs
             const textIds = ['servicesTitle', 'productsTitle', 'bricksTitle', 'bricksTypeHeader', 'bricksPriceHeader', 
                 'bricksWithDelivery', 'bricksWithoutDelivery', 'timberTitle', 'timberSizeHeader', 'timberPriceHeader', 
-                'orderBtn', 'projectsTitle', 'aboutTitle', 'aboutSubtitle', 'aboutText1', 'aboutText2', 
+                'orderBtn', 'projectsTitle', 'aboutTitle', 'aboutSubtitle', 'aboutText1', 'aboutText2',
                 'testimonialsTitle', 'contactTitle', 'officeTitle', 'phoneTitle', 'emailTitle', 'formInfo', 'sendBtn'];
             
             textIds.forEach(id => {
@@ -984,7 +1060,6 @@
                 }
             });
             
-            // Update about items
             for(let i = 1; i <= 4; i++) {
                 const el = document.getElementById(`aboutItem${i}`);
                 if(el && translations[`aboutItem${i}`] && translations[`aboutItem${i}`][currentLang]) {
@@ -992,7 +1067,6 @@
                 }
             }
             
-            // Update testimonials
             for(let i = 1; i <= 3; i++) {
                 const el = document.getElementById(`testimonial${i}`);
                 if(el && translations[`testimonial${i}`] && translations[`testimonial${i}`][currentLang]) {
@@ -1000,7 +1074,6 @@
                 }
             }
             
-            // Update stats
             const stats = ['statProjects', 'statYears', 'statClients', 'statSupport'];
             stats.forEach(id => {
                 const el = document.getElementById(id);
@@ -1009,16 +1082,13 @@
                 }
             });
             
-            // Update delivery info (special case with HTML)
             const deliveryEl = document.getElementById('deliveryInfo');
             if(deliveryEl && translations.deliveryInfo && translations.deliveryInfo[currentLang]) {
                 deliveryEl.innerHTML = `<i class="fas fa-truck mr-1"></i>${translations.deliveryInfo[currentLang]}`;
             }
             
-            // Update footer
             updateFooterLanguage();
             
-            // Update form placeholders
             const nameInput = document.getElementById('contactName');
             const emailInput = document.getElementById('contactEmail');
             const phoneInput = document.getElementById('contactPhone');
@@ -1048,7 +1118,7 @@
             if (savedLang === 'sw' || savedLang === 'en') {
                 currentLang = savedLang;
             } else {
-                currentLang = 'sw'; // Default Kiswahili
+                currentLang = 'sw';
                 localStorage.setItem('geotraverse_lang', 'sw');
             }
             updateLanguage();
@@ -1086,21 +1156,21 @@
         let isDark = false;
         const darkToggle = document.getElementById('darkModeToggle');
         const darkIcon = document.getElementById('darkModeIcon');
-        const mobileDarkToggle = document.getElementById('mobileDarkToggle');
+        const mobileDarkToggleBtn = document.getElementById('mobileDarkToggle');
         function toggleDark() {
             isDark = !isDark;
             if(isDark) {
                 document.body.classList.add('dark-mode');
                 darkIcon.classList.remove('fa-moon'); darkIcon.classList.add('fa-sun');
-                if(mobileDarkToggle) mobileDarkToggle.innerHTML = '<i class="fas fa-sun mr-2"></i> Light Mode';
+                if(mobileDarkToggleBtn) mobileDarkToggleBtn.innerHTML = '<i class="fas fa-sun mr-2"></i> Light Mode';
             } else {
                 document.body.classList.remove('dark-mode');
                 darkIcon.classList.remove('fa-sun'); darkIcon.classList.add('fa-moon');
-                if(mobileDarkToggle) mobileDarkToggle.innerHTML = '<i class="fas fa-moon mr-2"></i> Dark Mode';
+                if(mobileDarkToggleBtn) mobileDarkToggleBtn.innerHTML = '<i class="fas fa-moon mr-2"></i> Dark Mode';
             }
         }
         if(darkToggle) darkToggle.addEventListener('click', toggleDark);
-        if(mobileDarkToggle) mobileDarkToggle.addEventListener('click', toggleDark);
+        if(mobileDarkToggleBtn) mobileDarkToggleBtn.addEventListener('click', toggleDark);
         
         // Scroll to top
         window.addEventListener('scroll', () => {
@@ -1109,14 +1179,18 @@
         });
         document.getElementById('scrollTopBtn')?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
         
-        // Mobile menu
-        document.getElementById('mobileMenuBtn')?.addEventListener('click', () => document.getElementById('mobileMenu').classList.toggle('hidden'));
-        
-        // Smooth scroll
+        // Smooth scroll with mobile menu close
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
                 const href = this.getAttribute('href');
-                if(href && href !== '#') { e.preventDefault(); document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' }); }
+                if(href && href !== '#') {
+                    e.preventDefault();
+                    const target = document.querySelector(href);
+                    if(target) {
+                        target.scrollIntoView({ behavior: 'smooth' });
+                        closeMobileMenu();
+                    }
+                }
             });
         });
         
@@ -1128,7 +1202,8 @@
         const searchInput = document.getElementById('searchInput');
         searchInput?.addEventListener('input', performSearch);
         
-        // Initialize
+        window.scrollToContact = scrollToContact;
+        
         loadSavedLanguage();
         
         window.openServiceModal = openServiceModal;
