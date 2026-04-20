@@ -442,7 +442,7 @@
                         <div class="flex gap-2"><button onclick="createBackup()" class="flex-1 bg-green-600 text-white px-3 py-2 rounded-lg text-sm"><i class="fas fa-download mr-1"></i> Backup</button><button onclick="restoreBackup()" class="flex-1 bg-orange-600 text-white px-3 py-2 rounded-lg text-sm"><i class="fas fa-upload mr-1"></i> Restore</button></div>
                     </div>
                     
-                    <!-- System Logs Card (Iliyorekebishwa) -->
+                    <!-- System Logs Card -->
                     <div class="setting-card bg-white rounded-xl shadow-sm p-5">
                         <div class="flex items-center space-x-3 mb-3"><i class="fas fa-history text-2xl text-blue-600"></i><h3 class="font-bold text-lg">System Logs</h3></div>
                         <p class="text-sm text-gray-500 mb-3">View recent system activities</p>
@@ -558,87 +558,242 @@
         document.body.appendChild(toast); setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
     }
     
-    // ==================== ACTIVITY LOGS (ILIYOREKEBISHWA - CLEAR LOGS INAFANYA KAZI) ====================
-    let activityLogs = [];
+    function showLoading(show) { document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none'; }
     
-    function loadActivityLogs() {
-        const savedLogs = localStorage.getItem('geotraverse_activity_logs');
-        if (savedLogs) {
-            activityLogs = JSON.parse(savedLogs);
-        } else {
-            activityLogs = [
-                { action: "Admin logged in", time: new Date().toLocaleString() },
-                { action: "System initialized", time: new Date().toLocaleString() }
-            ];
-            saveActivityLogs();
-        }
-        renderSystemLogs();
-        renderActivityFeed();
-    }
+    // ==================== API CONFIGURATION ====================
+    const API_BASE = 'http://localhost/geotraverse/backend/api';
     
-    function saveActivityLogs() {
-        localStorage.setItem('geotraverse_activity_logs', JSON.stringify(activityLogs));
-    }
-    
-    function addActivityLog(action) {
-        const newLog = { action: action, time: new Date().toLocaleString() };
-        activityLogs.unshift(newLog);
-        if (activityLogs.length > 50) activityLogs.pop();
-        saveActivityLogs();
-        renderSystemLogs();
-        renderActivityFeed();
-    }
-    
-    function renderSystemLogs() {
-        const logsDiv = document.getElementById('systemLogsList');
-        if(logsDiv) {
-            if (activityLogs.length === 0) {
-                logsDiv.innerHTML = '<div class="text-center text-gray-400 py-4 text-sm"><i class="fas fa-inbox mr-1"></i> No logs available</div>';
-            } else {
-                logsDiv.innerHTML = activityLogs.map(log => `<div class="flex justify-between items-center p-2 border-b"><span class="text-xs">${log.action}</span><span class="text-xs text-gray-400">${log.time}</span></div>`).join('');
+    async function apiCall(endpoint, options = {}) {
+        const token = localStorage.getItem('admin_token');
+        const defaultOptions = {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': token || ''
             }
+        };
+        try {
+            const response = await fetch(`${API_BASE}/${endpoint}`, { ...defaultOptions, ...options });
+            const data = await response.json();
+            if (!response.ok) {
+                if (response.status === 401) {
+                    localStorage.removeItem('admin_token');
+                    localStorage.removeItem('admin_user');
+                    showToast('Session expired. Please login again.', true);
+                    setTimeout(() => window.location.href = 'login.html', 1500);
+                }
+                throw new Error(data.message || 'Request failed');
+            }
+            return data;
+        } catch (error) {
+            console.error('API Error:', error);
+            showToast(error.message, true);
+            throw error;
         }
     }
     
-    function renderActivityFeed() {
-        const feedDiv = document.getElementById('activityFeed');
-        if (!feedDiv) return;
-        if (activityLogs.length === 0) {
-            feedDiv.innerHTML = '<div class="text-center text-gray-400 py-4 text-sm"><i class="fas fa-inbox mr-1"></i> No recent activity</div>';
-            return;
+    // ==================== DASHBOARD API ====================
+    async function loadDashboardFromAPI() {
+        try {
+            const result = await apiCall('admin_dashboard.php');
+            if (result.success && result.data) {
+                document.getElementById('totalEmployees').innerText = result.data.stats?.total_employees || 0;
+                document.getElementById('pendingTasksCount').innerText = result.data.stats?.pending_tasks || 0;
+                document.getElementById('unreadMessagesCount').innerText = result.data.stats?.unread_messages || 0;
+                document.getElementById('totalProjects').innerText = result.data.stats?.total_projects || 0;
+                document.getElementById('pendingTasksBadge').innerText = result.data.stats?.pending_tasks || 0;
+                document.getElementById('unreadMessagesBadge').innerText = result.data.stats?.unread_messages || 0;
+                
+                if (result.data.recent_activities && result.data.recent_activities.length > 0) {
+                    const activityFeed = document.getElementById('activityFeed');
+                    activityFeed.innerHTML = result.data.recent_activities.map(act => `
+                        <div class="flex items-start gap-3 p-2 hover:bg-gray-50 rounded-lg transition">
+                            <i class="fas fa-circle text-blue-500 text-xs mt-1"></i>
+                            <div class="flex-1">
+                                <p class="text-sm">${escapeHtml(act.action)}</p>
+                                <p class="text-xs text-gray-400">${act.time || act.created_at || 'Just now'}</p>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            }
+        } catch (error) {
+            console.error('Error loading dashboard:', error);
+            loadMockDashboardData();
         }
-        const recentLogs = activityLogs.slice(0, 5);
-        feedDiv.innerHTML = recentLogs.map(log => `
-            <div class="flex items-start gap-3 p-2 hover:bg-gray-50 rounded-lg transition">
-                <i class="fas fa-circle text-blue-500 text-xs mt-1"></i>
-                <div class="flex-1">
-                    <p class="text-sm">${log.action}</p>
-                    <p class="text-xs text-gray-400">${log.time}</p>
-                </div>
-            </div>
-        `).join('');
     }
     
-    function clearAllLogs() {
-        if(confirm('Are you sure you want to clear ALL system logs and activity history?')) {
-            activityLogs = [];
-            saveActivityLogs();
-            renderSystemLogs();
-            renderActivityFeed();
-            showToast('✅ All logs cleared successfully');
-            addActivityLog('System logs cleared by admin');
-        }
-    }
-    
-    // ==================== DASHBOARD DATA ====================
-    function loadDashboardData() {
+    function loadMockDashboardData() {
         document.getElementById('totalEmployees').innerText = '24';
         document.getElementById('pendingTasksCount').innerText = '8';
         document.getElementById('unreadMessagesCount').innerText = '5';
         document.getElementById('totalProjects').innerText = '15';
-        document.getElementById('pendingTasksBadge').innerText = '8';
-        document.getElementById('unreadMessagesBadge').innerText = '5';
-        
+    }
+    
+    // ==================== EMPLOYEES API ====================
+    let employees = [];
+    
+    async function loadEmployeesFromAPI() {
+        try {
+            const result = await apiCall('employees.php');
+            if (result.success && result.data) {
+                employees = result.data;
+                renderEmployeeTable();
+                return employees;
+            }
+        } catch (error) {
+            console.error('Error loading employees:', error);
+            employees = [];
+            renderEmployeeTable();
+        }
+    }
+    
+    async function addEmployeeToAPI(employeeData) {
+        try {
+            const result = await apiCall('employees.php', { method: 'POST', body: JSON.stringify(employeeData) });
+            if (result.success) {
+                showToast('Employee added successfully');
+                await loadEmployeesFromAPI();
+                return true;
+            }
+        } catch (error) {
+            showToast('Failed to add employee', true);
+            return false;
+        }
+    }
+    
+    async function updateEmployeeInAPI(id, employeeData) {
+        try {
+            const result = await apiCall('employees.php', { method: 'PUT', body: JSON.stringify({ id, ...employeeData }) });
+            if (result.success) {
+                showToast('Employee updated successfully');
+                await loadEmployeesFromAPI();
+                return true;
+            }
+        } catch (error) {
+            showToast('Failed to update employee', true);
+            return false;
+        }
+    }
+    
+    async function deleteEmployeeFromAPI(id) {
+        try {
+            const result = await apiCall(`employees.php?id=${id}`, { method: 'DELETE' });
+            if (result.success) {
+                showToast('Employee deleted successfully');
+                await loadEmployeesFromAPI();
+                return true;
+            }
+        } catch (error) {
+            showToast('Failed to delete employee', true);
+            return false;
+        }
+    }
+    
+    // ==================== TASKS API ====================
+    let tasks = [];
+    
+    async function loadTasksFromAPI() {
+        try {
+            const result = await apiCall('tasks.php');
+            if (result.success && result.data) {
+                tasks = result.data;
+                renderTasks();
+                updateDashboardCounts();
+                return tasks;
+            }
+        } catch (error) {
+            console.error('Error loading tasks:', error);
+            tasks = [];
+            renderTasks();
+        }
+    }
+    
+    async function addTaskToAPI(taskData) {
+        try {
+            const result = await apiCall('tasks.php', { method: 'POST', body: JSON.stringify(taskData) });
+            if (result.success) {
+                showToast('Task added successfully');
+                await loadTasksFromAPI();
+                return true;
+            }
+        } catch (error) {
+            showToast('Failed to add task', true);
+            return false;
+        }
+    }
+    
+    async function toggleTaskInAPI(id, completed) {
+        try {
+            const result = await apiCall('tasks.php', { method: 'PUT', body: JSON.stringify({ id, completed: completed ? 1 : 0 }) });
+            if (result.success) {
+                await loadTasksFromAPI();
+                return true;
+            }
+        } catch (error) {
+            showToast('Failed to update task', true);
+            return false;
+        }
+    }
+    
+    // ==================== MESSAGES API ====================
+    let messages = [];
+    
+    async function loadMessagesFromAPI() {
+        try {
+            const result = await apiCall('messages.php');
+            if (result.success && result.data) {
+                messages = result.data;
+                renderMessagesList();
+                updateDashboardCounts();
+                return messages;
+            }
+        } catch (error) {
+            console.error('Error loading messages:', error);
+            messages = [];
+            renderMessagesList();
+        }
+    }
+    
+    async function sendReplyToAPI(messageId, replyText) {
+        try {
+            const result = await apiCall('messages.php', { method: 'POST', body: JSON.stringify({ id: messageId, reply_message: replyText }) });
+            if (result.success) {
+                showToast('Reply sent successfully');
+                await loadMessagesFromAPI();
+                return true;
+            }
+        } catch (error) {
+            showToast('Failed to send reply', true);
+            return false;
+        }
+    }
+    
+    // ==================== HELPER FUNCTIONS ====================
+    function escapeHtml(text) { if (!text) return ''; const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+    
+    // ==================== ACTIVITY LOGS ====================
+    let activityLogs = [];
+    
+    function loadActivityLogs() {
+        const savedLogs = localStorage.getItem('geotraverse_activity_logs');
+        if (savedLogs) { activityLogs = JSON.parse(savedLogs); } 
+        else { activityLogs = [{ action: "Admin logged in", time: new Date().toLocaleString() }, { action: "System initialized", time: new Date().toLocaleString() }]; saveActivityLogs(); }
+        renderSystemLogs();
+        renderActivityFeed();
+    }
+    
+    function saveActivityLogs() { localStorage.setItem('geotraverse_activity_logs', JSON.stringify(activityLogs)); }
+    
+    function addActivityLog(action) { const newLog = { action, time: new Date().toLocaleString() }; activityLogs.unshift(newLog); if (activityLogs.length > 50) activityLogs.pop(); saveActivityLogs(); renderSystemLogs(); renderActivityFeed(); }
+    
+    function renderSystemLogs() { const logsDiv = document.getElementById('systemLogsList'); if(logsDiv) { if (activityLogs.length === 0) { logsDiv.innerHTML = '<div class="text-center text-gray-400 py-4 text-sm"><i class="fas fa-inbox mr-1"></i> No logs available</div>'; } else { logsDiv.innerHTML = activityLogs.map(log => `<div class="flex justify-between items-center p-2 border-b"><span class="text-xs">${log.action}</span><span class="text-xs text-gray-400">${log.time}</span></div>`).join(''); } } }
+    
+    function renderActivityFeed() { const feedDiv = document.getElementById('activityFeed'); if (!feedDiv) return; if (activityLogs.length === 0) { feedDiv.innerHTML = '<div class="text-center text-gray-400 py-4 text-sm"><i class="fas fa-inbox mr-1"></i> No recent activity</div>'; return; } const recentLogs = activityLogs.slice(0, 5); feedDiv.innerHTML = recentLogs.map(log => `<div class="flex items-start gap-3 p-2 hover:bg-gray-50 rounded-lg transition"><i class="fas fa-circle text-blue-500 text-xs mt-1"></i><div class="flex-1"><p class="text-sm">${log.action}</p><p class="text-xs text-gray-400">${log.time}</p></div></div>`).join(''); }
+    
+    function clearAllLogs() { if(confirm('Are you sure you want to clear ALL system logs?')) { activityLogs = []; saveActivityLogs(); renderSystemLogs(); renderActivityFeed(); showToast('✅ All logs cleared successfully'); addActivityLog('System logs cleared by admin'); } }
+    
+    // ==================== DASHBOARD DATA ====================
+    function loadDashboardData() {
         new Chart(document.getElementById('revenueChart'), {
             type: 'line',
             data: { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], datasets: [{ label: 'Revenue (TZS M)', data: [12, 19, 15, 22, 28, 32], borderColor: '#0f74ba', backgroundColor: 'rgba(15,116,186,0.1)', fill: true, tension: 0.4 }] },
@@ -675,84 +830,63 @@
     function renderSalesOrders() { document.getElementById('salesOrdersList').innerHTML = `<div class="p-3 bg-gray-50 rounded-lg"><p class="font-bold">John Doe - Modern Villa</p><p class="text-sm">Amount: TZS 150,000,000 | Status: Pending</p><button onclick="showToast('Process Order')" class="mt-1 text-orange-600 text-sm">Process →</button></div><div class="p-3 bg-gray-50 rounded-lg"><p class="font-bold">Mary Smith - Land Survey</p><p class="text-sm">Amount: TZS 2,500,000 | Status: Approved</p><button onclick="showToast('View Order')" class="mt-1 text-orange-600 text-sm">View →</button></div>`; }
     function renderSecretaryMessages() { document.getElementById('secretaryMessagesList').innerHTML = `<div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg"><div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center"><i class="fas fa-user text-blue-600"></i></div><div><p class="font-bold">John Doe (Client)</p><p class="text-sm">Interested in Modern Villa</p></div><button onclick="showToast('Reply')" class="ml-auto text-blue-600 text-sm">Reply</button></div>`; }
     
-    // ==================== EMPLOYEES ====================
-    let employees = [{ id: 1, name: "John Doe", email: "john@geotraverse.com", phone: "0712345678", role: "Manager", department: "Management", salary: "2,500,000", status: "Active" }, { id: 2, name: "Mary Smith", email: "mary@geotraverse.com", phone: "0755123456", role: "Accountant", department: "Finance", salary: "1,800,000", status: "Active" }, { id: 3, name: "David Kim", email: "david@geotraverse.com", phone: "0784567890", role: "Sales Executive", department: "Sales & Marketing", salary: "1,500,000", status: "Active" }, { id: 4, name: "Sarah Lee", email: "sarah@geotraverse.com", phone: "0713987654", role: "Secretary", department: "Administration", salary: "1,200,000", status: "Active" }];
-    let nextEmpId = 5; let currentSearchTerm = '';
-    
+    // ==================== EMPLOYEES RENDER ====================
     function getRoleBadge(role) { const badges = { 'Manager': 'bg-purple-100 text-purple-700', 'Accountant': 'bg-green-100 text-green-700', 'Sales Executive': 'bg-blue-100 text-blue-700', 'Secretary': 'bg-red-100 text-red-700' }; return badges[role] || 'bg-gray-100 text-gray-700'; }
     
     function renderEmployeeTable() {
         const tbody = document.getElementById('employeeTableBody'); if(!tbody) return;
-        let filtered = employees; if(currentSearchTerm) filtered = employees.filter(e => e.name.toLowerCase().includes(currentSearchTerm) || e.email.toLowerCase().includes(currentSearchTerm) || e.phone.includes(currentSearchTerm));
-        tbody.innerHTML = filtered.map(emp => `<tr class="employee-row border-b hover:bg-gray-50 transition"><td class="px-5 py-3 text-sm">${emp.id}</td><td class="px-5 py-3 font-medium text-sm">${emp.name}</td><td class="px-5 py-3 text-sm hidden md:table-cell">${emp.email}</td><td class="px-5 py-3 text-sm hidden lg:table-cell">${emp.phone}</td><td class="px-5 py-3"><span class="px-2 py-1 text-xs rounded-full ${getRoleBadge(emp.role)}">${emp.role}</span></td><td class="px-5 py-3 text-sm hidden xl:table-cell">${emp.department}</td><td class="px-5 py-3 text-sm hidden 2xl:table-cell">TZS ${emp.salary}</td><td class="px-5 py-3"><span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">${emp.status}</span></td><td class="px-5 py-3"><button onclick="openEditEmployeeModal(${emp.id})" class="text-blue-600 mr-2"><i class="fas fa-edit"></i></button><button onclick="deleteEmployee(${emp.id})" class="text-red-600 mr-2"><i class="fas fa-trash"></i></button><button onclick="openChangePwdModal(${emp.id})" class="text-orange-600"><i class="fas fa-key"></i></button></td></tr>`).join('');
+        let filtered = employees; if(currentSearchTerm) filtered = employees.filter(e => e.name?.toLowerCase().includes(currentSearchTerm) || e.email?.toLowerCase().includes(currentSearchTerm) || e.phone?.includes(currentSearchTerm));
+        tbody.innerHTML = filtered.map(emp => `<tr class="employee-row border-b hover:bg-gray-50 transition"><td class="px-5 py-3 text-sm">${emp.id}</td><td class="px-5 py-3 font-medium text-sm">${escapeHtml(emp.name)}</td><td class="px-5 py-3 text-sm hidden md:table-cell">${escapeHtml(emp.email)}</td><td class="px-5 py-3 text-sm hidden lg:table-cell">${emp.phone || '-'}</td><td class="px-5 py-3"><span class="px-2 py-1 text-xs rounded-full ${getRoleBadge(emp.role)}">${emp.role}</span></td><td class="px-5 py-3 text-sm hidden xl:table-cell">${emp.department}</td><td class="px-5 py-3 text-sm hidden 2xl:table-cell">TZS ${emp.salary?.toLocaleString() || 0}</td><td class="px-5 py-3"><span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">${emp.status || 'Active'}</span></td><td class="px-5 py-3"><button onclick="openEditEmployeeModal(${emp.id})" class="text-blue-600 mr-2"><i class="fas fa-edit"></i></button><button onclick="deleteEmployee(${emp.id})" class="text-red-600 mr-2"><i class="fas fa-trash"></i></button><button onclick="openChangePwdModal(${emp.id})" class="text-orange-600"><i class="fas fa-key"></i></button></td></tr>`).join('');
     }
     
     function openAddEmployeeModal() { document.getElementById('employeeModal').classList.remove('hidden'); document.getElementById('employeeModal').classList.add('flex'); }
     function closeModal() { document.getElementById('employeeModal').classList.add('hidden'); document.getElementById('employeeModal').classList.remove('flex'); document.getElementById('employeeForm').reset(); }
-    function openEditEmployeeModal(id) { const emp = employees.find(e => e.id === id); if(emp) { document.getElementById('editEmpId').value = emp.id; document.getElementById('editEmpName').value = emp.name; document.getElementById('editEmpEmail').value = emp.email; document.getElementById('editEmpPhone').value = emp.phone; document.getElementById('editEmpRole').value = emp.role; document.getElementById('editEmpDepartment').value = emp.department; document.getElementById('editEmpSalary').value = emp.salary.replace(/,/g, ''); document.getElementById('editEmployeeModal').classList.remove('hidden'); document.getElementById('editEmployeeModal').classList.add('flex'); } }
+    function openEditEmployeeModal(id) { const emp = employees.find(e => e.id === id); if(emp) { document.getElementById('editEmpId').value = emp.id; document.getElementById('editEmpName').value = emp.name; document.getElementById('editEmpEmail').value = emp.email; document.getElementById('editEmpPhone').value = emp.phone || ''; document.getElementById('editEmpRole').value = emp.role; document.getElementById('editEmpDepartment').value = emp.department; document.getElementById('editEmpSalary').value = emp.salary; document.getElementById('editEmployeeModal').classList.remove('hidden'); document.getElementById('editEmployeeModal').classList.add('flex'); } }
     function closeEditModal() { document.getElementById('editEmployeeModal').classList.add('hidden'); document.getElementById('editEmployeeModal').classList.remove('flex'); }
-    function deleteEmployee(id) { 
-        if(confirm('Are you sure?')) { 
-            const emp = employees.find(e => e.id === id);
-            employees = employees.filter(e => e.id !== id); 
-            renderEmployeeTable(); 
-            addActivityLog(`Deleted employee: ${emp?.name || 'Unknown'}`);
-            showToast('Employee deleted'); 
-        } 
-    }
+    async function deleteEmployee(id) { if(confirm('Are you sure?')) { await deleteEmployeeFromAPI(id); addActivityLog(`Deleted employee ID ${id}`); } }
     function openChangePwdModal(id) { const emp = employees.find(e => e.id === id); if(emp) { document.getElementById('pwdEmpId').value = emp.id; document.getElementById('pwdEmpName').value = emp.name; document.getElementById('changePwdModal').classList.remove('hidden'); document.getElementById('changePwdModal').classList.add('flex'); } }
     function closePwdModal() { document.getElementById('changePwdModal').classList.add('hidden'); document.getElementById('changePwdModal').classList.remove('flex'); document.getElementById('changePwdForm').reset(); }
     function changeEmployeePassword() { const newPwd = document.getElementById('newPassword').value; const confirmPwd = document.getElementById('confirmNewPassword').value; if(!newPwd) { showToast('Enter new password', true); return; } if(newPwd !== confirmPwd) { showToast('Passwords do not match', true); return; } showToast('Password changed'); closePwdModal(); }
     
-    document.getElementById('employeeForm')?.addEventListener('submit', function(e) { e.preventDefault(); const name = document.getElementById('empName').value; if(!name) return; employees.push({ id: nextEmpId++, name, email: document.getElementById('empEmail').value, phone: document.getElementById('empPhone').value, role: document.getElementById('empRole').value, department: document.getElementById('empDepartment').value, salary: document.getElementById('empSalary').value, status: 'Active' }); renderEmployeeTable(); closeModal(); addActivityLog(`Added new employee: ${name}`); showToast('Employee added'); });
-    document.getElementById('editEmployeeForm')?.addEventListener('submit', function(e) { e.preventDefault(); const id = parseInt(document.getElementById('editEmpId').value); const emp = employees.find(e => e.id === id); if(emp) { emp.name = document.getElementById('editEmpName').value; emp.email = document.getElementById('editEmpEmail').value; emp.phone = document.getElementById('editEmpPhone').value; emp.role = document.getElementById('editEmpRole').value; emp.department = document.getElementById('editEmpDepartment').value; emp.salary = document.getElementById('editEmpSalary').value; renderEmployeeTable(); closeEditModal(); addActivityLog(`Updated employee: ${emp.name}`); showToast('Employee updated'); } });
+    document.getElementById('employeeForm')?.addEventListener('submit', async function(e) { e.preventDefault(); const name = document.getElementById('empName').value; if(!name) return; const employeeData = { name, email: document.getElementById('empEmail').value, phone: document.getElementById('empPhone').value, role: document.getElementById('empRole').value, department: document.getElementById('empDepartment').value, salary: document.getElementById('empSalary').value }; await addEmployeeToAPI(employeeData); addActivityLog(`Added new employee: ${name}`); closeModal(); document.getElementById('employeeForm').reset(); });
+    document.getElementById('editEmployeeForm')?.addEventListener('submit', async function(e) { e.preventDefault(); const id = parseInt(document.getElementById('editEmpId').value); const employeeData = { name: document.getElementById('editEmpName').value, email: document.getElementById('editEmpEmail').value, phone: document.getElementById('editEmpPhone').value, role: document.getElementById('editEmpRole').value, department: document.getElementById('editEmpDepartment').value, salary: document.getElementById('editEmpSalary').value }; await updateEmployeeInAPI(id, employeeData); addActivityLog(`Updated employee: ${employeeData.name}`); closeEditModal(); });
     document.getElementById('changePwdForm')?.addEventListener('submit', function(e) { e.preventDefault(); changeEmployeePassword(); });
     
-    // ==================== TASKS ====================
-    let tasks = [{ id: 1, title: "Complete Q1 Project Reports", description: "Managers need to submit Q1 reports", department: "Managers", completed: false }, { id: 2, title: "Process Pending Invoices", description: "Finance - 3 invoices awaiting payment", department: "Finance", completed: false }, { id: 3, title: "Follow up on Customer Forms", description: "Sales - 5 new customer inquiries", department: "Sales", completed: true }, { id: 4, title: "Schedule Board Meeting", description: "Secretary - Arrange meeting for next week", department: "Secretary", completed: false }];
-    let nextTaskId = 5;
-    
+    // ==================== TASKS RENDER ====================
     function renderTasks() {
         const pendingDiv = document.getElementById('pendingTasksList'); const completedDiv = document.getElementById('completedTasksList');
-        let filtered = tasks; if(currentSearchTerm) filtered = tasks.filter(t => t.title.toLowerCase().includes(currentSearchTerm) || t.description.toLowerCase().includes(currentSearchTerm));
+        let filtered = tasks; if(currentSearchTerm) filtered = tasks.filter(t => t.title?.toLowerCase().includes(currentSearchTerm) || t.description?.toLowerCase().includes(currentSearchTerm));
         const pendingCount = filtered.filter(t => !t.completed).length;
         document.getElementById('pendingTasksBadgeInline') && (document.getElementById('pendingTasksBadgeInline').innerText = pendingCount);
-        if(pendingDiv) pendingDiv.innerHTML = filtered.filter(t => !t.completed).map(t => `<div class="task-item"><div class="flex justify-between items-start"><div><p class="font-semibold text-sm">${t.title}</p><p class="text-xs text-gray-500 mt-1">${t.description}</p><span class="text-xs text-blue-500">${t.department}</span></div><input type="checkbox" onchange="toggleTask(${t.id})" class="w-5 h-5"></div></div>`).join('');
-        if(completedDiv) completedDiv.innerHTML = filtered.filter(t => t.completed).map(t => `<div class="task-item opacity-75"><div class="flex justify-between items-start"><div><p class="font-semibold text-sm line-through text-gray-400">${t.title}</p><p class="text-xs text-gray-400">${t.description}</p></div><i class="fas fa-check-circle text-green-500"></i></div></div>`).join('');
+        if(pendingDiv) pendingDiv.innerHTML = filtered.filter(t => !t.completed).map(t => `<div class="task-item"><div class="flex justify-between items-start"><div><p class="font-semibold text-sm">${escapeHtml(t.title)}</p><p class="text-xs text-gray-500 mt-1">${escapeHtml(t.description)}</p><span class="text-xs text-blue-500">${t.department}</span></div><input type="checkbox" onchange="toggleTask(${t.id})" class="w-5 h-5"></div></div>`).join('');
+        if(completedDiv) completedDiv.innerHTML = filtered.filter(t => t.completed).map(t => `<div class="task-item opacity-75"><div class="flex justify-between items-start"><div><p class="font-semibold text-sm line-through text-gray-400">${escapeHtml(t.title)}</p><p class="text-xs text-gray-400">${escapeHtml(t.description)}</p></div><i class="fas fa-check-circle text-green-500"></i></div></div>`).join('');
     }
     
-    function toggleTask(id) { const task = tasks.find(t => t.id === id); if(task) { task.completed = !task.completed; renderTasks(); updateDashboardCounts(); showToast(task.completed ? 'Task completed!' : 'Task marked incomplete'); } }
+    async function toggleTask(id) { const task = tasks.find(t => t.id === id); if(task) { await toggleTaskInAPI(id, !task.completed); addActivityLog(task.completed ? `Task marked incomplete: ${task.title}` : `Task completed: ${task.title}`); } }
     function openAddTaskModal() { document.getElementById('taskModal').classList.remove('hidden'); document.getElementById('taskModal').classList.add('flex'); }
     function closeTaskModal() { document.getElementById('taskModal').classList.add('hidden'); document.getElementById('taskModal').classList.remove('flex'); document.getElementById('taskTitle').value = ''; document.getElementById('taskDescription').value = ''; }
-    function addNewTask() { const title = document.getElementById('taskTitle').value; if(!title) { showToast('Enter task title', true); return; } tasks.unshift({ id: nextTaskId++, title, description: document.getElementById('taskDescription').value || 'No description', department: document.getElementById('taskDepartment').value, completed: false }); renderTasks(); updateDashboardCounts(); closeTaskModal(); addActivityLog(`Added new task: ${title}`); showToast('Task added'); }
+    async function addNewTask() { const title = document.getElementById('taskTitle').value; if(!title) { showToast('Enter task title', true); return; } const taskData = { title, description: document.getElementById('taskDescription').value || 'No description', department: document.getElementById('taskDepartment').value }; await addTaskToAPI(taskData); addActivityLog(`Added new task: ${title}`); closeTaskModal(); }
     
-    // ==================== MESSAGES ====================
-    let messages = [
-        { id: 1, fromDept: "Managers", subject: "Project Update", message: "We have completed 2 new modern houses this month. The projects are ready for handover.", timestamp: new Date(Date.now() - 2*60*60*1000), read: false, replies: [] },
-        { id: 2, fromDept: "Finance", subject: "Invoice Payment", message: "Client John Doe has paid TZS 5,000,000 for the Modern Villa project.", timestamp: new Date(Date.now() - 5*60*60*1000), read: false, replies: [] },
-        { id: 3, fromDept: "Sales", subject: "New Customer Inquiry", message: "We have received a new inquiry from a customer interested in a 5-acre land survey.", timestamp: new Date(Date.now() - 1*24*60*60*1000), read: true, replies: [] },
-        { id: 4, fromDept: "Secretary", subject: "Meeting Request", message: "Please confirm the board meeting schedule for next week.", timestamp: new Date(Date.now() - 2*24*60*60*1000), read: false, replies: [] }
-    ];
-    
-    function formatTime(date) { const now = new Date(); const diff = now - date; const minutes = Math.floor(diff / 60000); const hours = Math.floor(diff / 3600000); const days = Math.floor(diff / 86400000); if(minutes < 60) return `${minutes} min ago`; if(hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`; return `${days} day${days > 1 ? 's' : ''} ago`; }
+    // ==================== MESSAGES RENDER ====================
+    function formatTime(date) { if(!date) return 'Just now'; const d = new Date(date); const now = new Date(); const diff = now - d; const minutes = Math.floor(diff / 60000); const hours = Math.floor(diff / 3600000); const days = Math.floor(diff / 86400000); if(minutes < 60) return `${minutes} min ago`; if(hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`; return `${days} day${days > 1 ? 's' : ''} ago`; }
     
     function renderMessagesList() {
         const convDiv = document.getElementById('messagesList'); if(!convDiv) return;
-        let filtered = messages; if(currentSearchTerm) filtered = messages.filter(m => m.fromDept.toLowerCase().includes(currentSearchTerm) || m.subject.toLowerCase().includes(currentSearchTerm));
-        convDiv.innerHTML = filtered.map(m => `<div class="message-item p-3 rounded-lg ${!m.read ? 'message-unread' : 'hover:bg-gray-50'}" onclick="viewConversation(${m.id})"><div class="flex justify-between"><span class="font-semibold">${m.fromDept} Dept</span><span class="text-xs text-gray-400">${formatTime(m.timestamp)}</span></div><p class="text-sm truncate">${m.subject}</p><p class="text-xs text-gray-400">${m.replies.length} replies</p></div>`).join('');
+        let filtered = messages; if(currentSearchTerm) filtered = messages.filter(m => m.from_department?.toLowerCase().includes(currentSearchTerm) || m.subject?.toLowerCase().includes(currentSearchTerm));
+        convDiv.innerHTML = filtered.map(m => `<div class="message-item p-3 rounded-lg ${!m.is_read ? 'message-unread' : 'hover:bg-gray-50'}" onclick="viewConversation(${m.id})"><div class="flex justify-between"><span class="font-semibold">${escapeHtml(m.from_department)} Dept</span><span class="text-xs text-gray-400">${formatTime(m.created_at)}</span></div><p class="text-sm truncate">${escapeHtml(m.subject)}</p><p class="text-xs text-gray-400">${m.reply_message ? 'Replied' : 'Awaiting reply'}</p></div>`).join('');
         updateDashboardCounts();
     }
     
     function viewConversation(id) {
-        const msg = messages.find(m => m.id === id); if(msg) { msg.read = true; renderMessagesList(); updateDashboardCounts(); }
+        const msg = messages.find(m => m.id === id); if(msg && !msg.is_read) { msg.is_read = true; renderMessagesList(); updateDashboardCounts(); }
         const detailView = document.getElementById('messageDetailView');
-        let chatHtml = `<div class="mb-4 pb-4 border-b"><div class="flex justify-between items-center mb-3"><div><h3 class="font-bold text-lg">${msg.fromDept} Department</h3><p class="text-sm text-gray-500">${formatTime(msg.timestamp)}</p></div><span class="text-xs bg-gray-100 px-2 py-1 rounded">${msg.subject}</span></div><div class="chat-bubble chat-message"><p>${msg.message}</p></div>`;
-        msg.replies.forEach(reply => { chatHtml += `<div class="chat-bubble chat-reply"><p class="font-semibold text-sm">Admin replied:</p><p>${reply.message}</p><p class="text-xs text-gray-500 mt-1">${reply.timestamp}</p></div>`; });
+        let chatHtml = `<div class="mb-4 pb-4 border-b"><div class="flex justify-between items-center mb-3"><div><h3 class="font-bold text-lg">${escapeHtml(msg.from_department)} Department</h3><p class="text-sm text-gray-500">${formatTime(msg.created_at)}</p></div><span class="text-xs bg-gray-100 px-2 py-1 rounded">${escapeHtml(msg.subject)}</span></div><div class="chat-bubble chat-message"><p>${escapeHtml(msg.message)}</p></div>`;
+        if(msg.reply_message) { chatHtml += `<div class="chat-bubble chat-reply"><p class="font-semibold text-sm">Admin replied:</p><p>${escapeHtml(msg.reply_message)}</p><p class="text-xs text-gray-500 mt-1">${formatTime(msg.replied_at)}</p></div>`; }
         chatHtml += `</div><div class="mt-4"><textarea id="replyText" rows="3" placeholder="Type your reply..." class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea><div class="flex justify-end mt-3"><button onclick="sendReply(${msg.id})" class="btn-primary text-white px-5 py-2 rounded-lg"><i class="fas fa-paper-plane mr-2"></i>Send Reply</button></div></div>`;
         detailView.innerHTML = chatHtml;
     }
     
-    function sendReply(msgId) { const replyText = document.getElementById('replyText')?.value; if(!replyText || replyText.trim() === '') { showToast('Please enter a reply', true); return; } const msg = messages.find(m => m.id === msgId); if(msg) { msg.replies.push({ message: replyText, timestamp: new Date().toLocaleString() }); renderMessagesList(); addActivityLog(`Replied to message from ${msg.fromDept} department`); showToast(`Reply sent to ${msg.fromDept} department`); viewConversation(msgId); } }
+    async function sendReply(msgId) { const replyText = document.getElementById('replyText')?.value; if(!replyText || replyText.trim() === '') { showToast('Please enter a reply', true); return; } await sendReplyToAPI(msgId, replyText); addActivityLog(`Replied to message ID ${msgId}`); document.getElementById('replyText').value = ''; }
     
     // ==================== PROJECTS ====================
     let projects = [{ id: 1, name: "Modern Villa - Kigamboni", status: "Completed", progress: 100, client: "John M.", amount: "TZS 180M" }, { id: 2, name: "Commercial Complex - Pwani", status: "In Progress", progress: 65, client: "Sarah K.", amount: "TZS 350M" }, { id: 3, name: "Land Survey - 15 Acres", status: "Approved", progress: 30, client: "James P.", amount: "TZS 3.5M" }];
@@ -791,9 +925,10 @@
     function restoreBackup() { const backup = localStorage.getItem('geotraverse_backup'); if(backup) { const data = JSON.parse(backup); if(data.employees) employees = data.employees; if(data.tasks) tasks = data.tasks; if(data.messages) messages = data.messages; if(data.projects) projects = data.projects; renderEmployeeTable(); renderTasks(); renderMessagesList(); renderProjects(); updateDashboardCounts(); showToast('Backup restored successfully'); addActivityLog('System restored from backup'); } else { showToast('No backup found', true); } }
     function saveGeneralSettings() { showToast('General settings saved'); addActivityLog('General settings updated'); }
     function saveEmailConfig() { showToast('Email configuration saved'); addActivityLog('Email configuration updated'); }
-    function updateDashboardCounts() { const pendingTasks = tasks.filter(t => !t.completed).length; const unreadMessages = messages.filter(m => !m.read).length; document.getElementById('pendingTasksCount') && (document.getElementById('pendingTasksCount').innerText = pendingTasks); document.getElementById('unreadMessagesCount') && (document.getElementById('unreadMessagesCount').innerText = unreadMessages); document.getElementById('pendingTasksBadge') && (document.getElementById('pendingTasksBadge').innerText = pendingTasks); document.getElementById('unreadMessagesBadge') && (document.getElementById('unreadMessagesBadge').innerText = unreadMessages); }
+    function updateDashboardCounts() { const pendingTasks = tasks.filter(t => !t.completed).length; const unreadMessages = messages.filter(m => !m.is_read).length; document.getElementById('pendingTasksCount') && (document.getElementById('pendingTasksCount').innerText = pendingTasks); document.getElementById('unreadMessagesCount') && (document.getElementById('unreadMessagesCount').innerText = unreadMessages); document.getElementById('pendingTasksBadge') && (document.getElementById('pendingTasksBadge').innerText = pendingTasks); document.getElementById('unreadMessagesBadge') && (document.getElementById('unreadMessagesBadge').innerText = unreadMessages); }
     
     // ==================== SEARCH FUNCTION ====================
+    let currentSearchTerm = '';
     function performSearch() { const searchTerm = document.getElementById('searchInput').value.toLowerCase(); currentSearchTerm = searchTerm; const activeSection = document.querySelector('.nav-item.active')?.getAttribute('data-section'); if(activeSection === 'employees') renderEmployeeTable(); else if(activeSection === 'tasks') renderTasks(); else if(activeSection === 'messages') renderMessagesList(); if(searchTerm === '') { currentSearchTerm = ''; renderEmployeeTable(); renderTasks(); renderMessagesList(); } }
     
     // ==================== NAVIGATION ====================
@@ -816,11 +951,13 @@
     document.getElementById('scrollTopBtn')?.addEventListener('click', () => { window.scrollTo({ top: 0, behavior: 'smooth' }); });
     
     // ==================== INITIALIZATION ====================
-    function init() { 
+    async function init() { 
+        showLoading(true);
         loadDashboardData(); 
-        renderEmployeeTable(); 
-        renderTasks(); 
-        renderMessagesList(); 
+        await loadDashboardFromAPI();
+        await loadEmployeesFromAPI();
+        await loadTasksFromAPI();
+        await loadMessagesFromAPI();
         renderProjects(); 
         renderDepartmentsGrid(); 
         renderReportDepartmentsGrid(); 
@@ -834,7 +971,8 @@
         loadActivityLogs();
         showSection('dashboardSection'); 
         document.getElementById('searchInput')?.addEventListener('input', performSearch); 
-        console.log('Dashboard initialized'); 
+        showLoading(false);
+        console.log('Dashboard initialized with backend API'); 
     }
     init();
     

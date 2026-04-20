@@ -5,19 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>GeoTraverse | Admin Login</title>
     
-    <!-- TailwindCSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
-        * {
-            font-family: 'Inter', sans-serif;
-        }
+        * { font-family: 'Inter', sans-serif; }
         
         body {
             background: linear-gradient(135deg, #0f74ba 0%, #0a5a8e 100%);
@@ -26,101 +19,48 @@
             overflow-x: hidden;
         }
         
-        /* Animated background shapes */
         .shape {
             position: absolute;
             background: rgba(255, 255, 255, 0.05);
             border-radius: 50%;
             animation: float 20s infinite ease-in-out;
         }
-        
-        .shape-1 {
-            width: 250px;
-            height: 250px;
-            top: -80px;
-            left: -80px;
-            animation-delay: 0s;
-        }
-        
-        .shape-2 {
-            width: 180px;
-            height: 180px;
-            bottom: -40px;
-            right: -40px;
-            animation-delay: 5s;
-        }
-        
-        .shape-3 {
-            width: 120px;
-            height: 120px;
-            top: 50%;
-            right: 5%;
-            animation-delay: 10s;
-        }
+        .shape-1 { width: 250px; height: 250px; top: -80px; left: -80px; animation-delay: 0s; }
+        .shape-2 { width: 180px; height: 180px; bottom: -40px; right: -40px; animation-delay: 5s; }
+        .shape-3 { width: 120px; height: 120px; top: 50%; right: 5%; animation-delay: 10s; }
         
         @keyframes float {
-            0%, 100% {
-                transform: translate(0, 0) rotate(0deg);
-            }
-            33% {
-                transform: translate(25px, -25px) rotate(120deg);
-            }
-            66% {
-                transform: translate(-15px, 15px) rotate(240deg);
-            }
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(25px, -25px) rotate(120deg); }
+            66% { transform: translate(-15px, 15px) rotate(240deg); }
         }
         
-        /* Login Card Animation */
         .login-card {
             animation: fadeInUp 0.6s ease-out;
             backdrop-filter: blur(10px);
         }
         
         @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(40px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
-        /* Input Field Styles */
-        .input-field {
-            transition: all 0.3s ease;
-        }
-        
+        .input-field { transition: all 0.3s ease; }
         .input-field:focus {
             transform: scale(1.01);
             box-shadow: 0 0 0 3px rgba(15, 116, 186, 0.2);
             border-color: #0f74ba;
         }
         
-        /* Login Button */
         .login-btn {
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
         }
+        .login-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px -5px rgba(0, 0, 0, 0.2); }
+        .login-btn:active { transform: translateY(0); }
+        .login-btn.disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
         
-        .login-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px -5px rgba(0, 0, 0, 0.2);
-        }
-        
-        .login-btn:active {
-            transform: translateY(0);
-        }
-        
-        .login-btn.disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        /* Loading Spinner */
         .spinner {
             display: inline-block;
             width: 18px;
@@ -130,14 +70,8 @@
             border-top-color: white;
             animation: spin 0.6s linear infinite;
         }
+        @keyframes spin { to { transform: rotate(360deg); } }
         
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-        
-        /* Toast Notification */
         .toast-message {
             position: fixed;
             bottom: 20px;
@@ -151,56 +85,25 @@
             box-shadow: 0 8px 15px -3px rgba(0,0,0,0.1);
             font-size: 13px;
         }
-        
-        .toast-message.error {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-        }
-        
+        .toast-message.error { background: linear-gradient(135deg, #ef4444, #dc2626); }
         @keyframes slideInRight {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
         
-        /* Shake Animation for Error */
-        .shake {
-            animation: shake 0.3s ease-in-out;
-        }
-        
+        .shake { animation: shake 0.3s ease-in-out; }
         @keyframes shake {
-            0%, 100% {
-                transform: translateX(0);
-            }
-            25% {
-                transform: translateX(-4px);
-            }
-            75% {
-                transform: translateX(4px);
-            }
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
         }
         
-        /* Modal Animation */
-        .modal-enter {
-            animation: modalPop 0.2s ease-out;
-        }
-        
+        .modal-enter { animation: modalPop 0.2s ease-out; }
         @keyframes modalPop {
-            from {
-                opacity: 0;
-                transform: scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
         }
         
-        /* Password Strength Indicator */
         .password-strength {
             height: 2px;
             width: 0%;
@@ -209,7 +112,6 @@
             margin-top: 4px;
         }
         
-        /* Logo styling - no background */
         .logo-img {
             display: block;
             width: 70px;
@@ -218,25 +120,11 @@
             margin: 0 auto;
         }
         
-        /* Responsive Adjustments */
         @media (max-width: 640px) {
-            .login-card {
-                margin: 16px;
-                padding: 20px !important;
-            }
-            
-            .login-card h2 {
-                font-size: 1.3rem;
-            }
-            
-            .shape-1, .shape-2, .shape-3 {
-                display: none;
-            }
-            
-            .logo-img {
-                width: 55px;
-                height: 55px;
-            }
+            .login-card { margin: 16px; padding: 20px !important; }
+            .login-card h2 { font-size: 1.3rem; }
+            .shape-1, .shape-2, .shape-3 { display: none; }
+            .logo-img { width: 55px; height: 55px; }
         }
     </style>
 </head>
@@ -250,7 +138,7 @@
     <!-- Login Card -->
     <div class="login-card bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl w-full max-w-sm p-6 border border-white/20">
         
-        <!-- Logo Section - No background -->
+        <!-- Logo Section -->
         <div class="text-center mb-6">
             <img src="https://i.postimg.cc/MT6jTVHh/weblogo.png" alt="GeoTraverse Logo" class="logo-img">
             <h2 class="text-xl md:text-2xl font-bold text-gray-800 mt-3">Welcome Back!</h2>
@@ -372,9 +260,8 @@
         const sendResetBtn = document.getElementById('sendResetBtn');
         const resetEmail = document.getElementById('resetEmail');
         
-        // ==================== CREDENTIALS ====================
-        const VALID_EMAIL = "jacksonmyula773@gmail.com";
-        const VALID_PASSWORD = "1234";
+        // ==================== API CONFIGURATION ====================
+        const API_BASE = 'http://localhost/geotraverse/backend/api';
         
         // ==================== TOAST NOTIFICATION ====================
         function showToast(message, isError = false) {
@@ -464,46 +351,83 @@
             }
         }
         
-        // ==================== LOGIN FUNCTION ====================
+        // ==================== LOGIN FUNCTION (BACKEND INTEGRATION) ====================
         async function handleLogin(email, password, remember) {
+            // Show loading state
             loginBtn.disabled = true;
             const originalHtml = loginBtn.innerHTML;
             loginBtn.innerHTML = '<div class="spinner"></div><span class="ml-2">Signing in...</span>';
             loginBtn.classList.add('disabled');
             
-            await new Promise(resolve => setTimeout(resolve, 800));
-            
-            if (email === VALID_EMAIL && password === VALID_PASSWORD) {
-                const userData = {
-                    id: 1,
-                    email: email,
-                    full_name: 'Jackson Myula',
-                    role: 'admin',
-                    department: 'Management',
-                    login_time: new Date().toISOString()
-                };
+            try {
+                // Call backend API
+                const response = await fetch(`${API_BASE}/admin_login.php`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password })
+                });
                 
-                const token = 'demo_token_' + Date.now() + '_' + Math.random().toString(36).substr(2);
+                const result = await response.json();
                 
-                localStorage.setItem('admin_token', token);
-                localStorage.setItem('admin_user', JSON.stringify(userData));
-                saveCredentials(email, password, remember);
+                if (result.success) {
+                    // Save token and user data
+                    localStorage.setItem('admin_token', result.data.token);
+                    localStorage.setItem('admin_user', JSON.stringify(result.data.user));
+                    
+                    // Save credentials if remember me is checked
+                    saveCredentials(email, password, remember);
+                    
+                    showToast('Login successful! Redirecting to dashboard...');
+                    
+                    // Redirect to dashboard
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 500);
+                } else {
+                    showToast(result.message || 'Invalid email or password', true);
+                    shakeElement(loginForm);
+                    
+                    // Clear password field
+                    loginPassword.value = '';
+                    loginPassword.focus();
+                    
+                    // Reset button
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = originalHtml;
+                    loginBtn.classList.remove('disabled');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
                 
-                showToast('Login successful! Redirecting to dashboard...');
-                
-                setTimeout(() => {
-                    window.location.href = 'dashboard.html';
-                }, 500);
-            } else {
-                showToast('Invalid email or password. Please try again.', true);
-                shakeElement(loginForm);
-                
-                loginPassword.value = '';
-                loginPassword.focus();
-                
-                loginBtn.disabled = false;
-                loginBtn.innerHTML = originalHtml;
-                loginBtn.classList.remove('disabled');
+                // If backend is not available, try demo mode
+                if (email === 'jacksonmyula773@gmail.com' && password === '1234') {
+                    // Demo mode - create local session
+                    const userData = {
+                        id: 1,
+                        email: email,
+                        full_name: 'Jackson Myula',
+                        role: 'admin',
+                        department: 'Management'
+                    };
+                    const token = 'demo_token_' + Date.now();
+                    
+                    localStorage.setItem('admin_token', token);
+                    localStorage.setItem('admin_user', JSON.stringify(userData));
+                    saveCredentials(email, password, remember);
+                    
+                    showToast('Login successful (Demo Mode)! Redirecting...');
+                    
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 500);
+                } else {
+                    showToast('Connection error. Please make sure backend is running.', true);
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = originalHtml;
+                    loginBtn.classList.remove('disabled');
+                }
             }
         }
         
@@ -515,6 +439,7 @@
             const password = loginPassword.value;
             const remember = rememberMeCheckbox.checked;
             
+            // Validation
             if (!email) {
                 showToast('Please enter your email address', true);
                 shakeElement(loginEmail);
@@ -529,6 +454,7 @@
                 return;
             }
             
+            // Basic email format validation
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
                 showToast('Please enter a valid email address', true);
@@ -568,7 +494,7 @@
         });
         
         // ==================== SEND RESET PASSWORD ====================
-        sendResetBtn?.addEventListener('click', function() {
+        sendResetBtn?.addEventListener('click', async function() {
             const email = resetEmail.value.trim();
             
             if (!email) {
@@ -577,13 +503,42 @@
                 return;
             }
             
-            if (email === VALID_EMAIL) {
-                showToast('✅ Password reset instructions sent to ' + email);
-                showToast('Demo Mode: Your password is 1234', false);
-                setTimeout(closeForgotModal, 1500);
-            } else {
-                showToast('❌ Email address not found in our system!', true);
-                shakeElement(resetEmail);
+            try {
+                // Try to call backend reset API
+                const response = await fetch(`${API_BASE}/admin_forgot_password.php`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showToast('✅ Password reset instructions sent to ' + email);
+                    setTimeout(closeForgotModal, 1500);
+                } else {
+                    // Demo fallback
+                    if (email === 'jacksonmyula773@gmail.com') {
+                        showToast('✅ Demo: Password reset link sent to ' + email);
+                        showToast('Demo Mode: Your password is 1234', false);
+                        setTimeout(closeForgotModal, 1500);
+                    } else {
+                        showToast('❌ Email address not found in our system!', true);
+                        shakeElement(resetEmail);
+                    }
+                }
+            } catch (error) {
+                // Demo fallback when backend is not available
+                if (email === 'jacksonmyula773@gmail.com') {
+                    showToast('✅ Demo: Password reset instructions sent to ' + email);
+                    showToast('Demo Mode: Your password is 1234', false);
+                    setTimeout(closeForgotModal, 1500);
+                } else {
+                    showToast('❌ Email address not found in our system!', true);
+                    shakeElement(resetEmail);
+                }
             }
         });
         
@@ -622,12 +577,15 @@
         
         // ==================== PAGE LOAD ====================
         window.addEventListener('load', function() {
+            // Load saved credentials if any
             loadSavedCredentials();
             
+            // Clear password field if not remembered
             if (!rememberMeCheckbox.checked) {
                 if (loginPassword) loginPassword.value = '';
             }
             
+            // Focus on email field
             if (loginEmail && !loginEmail.value) {
                 loginEmail.focus();
             } else if (loginPassword && !loginPassword.value) {
@@ -635,8 +593,10 @@
             }
             
             console.log('Login page loaded successfully');
+            console.log('Backend API URL:', API_BASE);
         });
         
+        // ==================== RUN SESSION CHECK ====================
         checkExistingSession();
     </script>
 </body>
