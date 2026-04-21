@@ -14,6 +14,17 @@
     <style>
         * { font-family: 'Inter', sans-serif; }
         
+        /* Theme color variables */
+        :root {
+            --primary-color: #0f74ba;
+            --primary-dark: #0a5a8e;
+            --primary-light: #3a8fc9;
+        }
+        
+        body {
+            transition: background-color 0.3s ease;
+        }
+        
         .hero-bg {
             background: linear-gradient(rgba(15, 116, 186, 0.88), rgba(10, 90, 142, 0.92)), url('https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=600');
             background-size: cover;
@@ -39,19 +50,29 @@
             .section-title { font-size: 1.5rem !important; }
         }
         
-        .floating-wp {
+        /* Floating Buttons */
+        .floating-sms {
             position: fixed;
             bottom: 80px;
             left: 15px;
             z-index: 100;
             animation: pulse 2s infinite;
-            width: 45px;
-            height: 45px;
+            width: 38px;
+            height: 38px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 50%;
+            background: #6b7280;
+            color: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
         }
+        .floating-sms:hover {
+            background: #4b5563;
+            transform: scale(1.05);
+        }
+        
         .floating-call {
             position: fixed;
             bottom: 20px;
@@ -59,12 +80,20 @@
             z-index: 100;
             animation: pulse 2s infinite;
             animation-delay: 0.5s;
-            width: 45px;
-            height: 45px;
+            width: 38px;
+            height: 38px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+        .floating-call:hover {
+            background: var(--primary-dark);
+            transform: scale(1.05);
         }
         
         .floating-msg {
@@ -74,17 +103,20 @@
             z-index: 100;
             animation: pulse 2s infinite;
             animation-delay: 1s;
-            width: 45px;
-            height: 45px;
+            width: 38px;
+            height: 38px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 50%;
-            background: #0f74ba;
+            background: #10b981;
+            color: white;
             cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
         }
         .floating-msg:hover {
-            background: #0a5a8e;
+            background: #059669;
             transform: scale(1.05);
         }
         
@@ -93,31 +125,52 @@
             50% { transform: scale(1.05); }
         }
         
-        .service-card, .project-card {
+        .service-card, .project-card, .product-item {
             transition: all 0.3s ease;
             cursor: pointer;
         }
-        .service-card:hover, .project-card:hover {
+        .service-card:hover, .project-card:hover, .product-item:hover {
             transform: translateY(-5px);
             box-shadow: 0 20px 30px -12px rgba(0,0,0,0.15);
         }
         
-        .project-card p {
-            color: #1f2937 !important;
-            font-weight: 500;
-            opacity: 1;
-        }
-        .dark-mode .project-card p {
-            color: #e2e8f0 !important;
+        /* Icon styles */
+        .call-icon, .sms-icon, .message-icon {
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 16px;
         }
         
-        .service-card p {
-            color: #374151;
-            opacity: 1;
-            line-height: 1.5;
+        .call-icon {
+            background: rgba(15, 116, 186, 0.1);
+            color: var(--primary-color);
         }
-        .dark-mode .service-card p {
-            color: #cbd5e1;
+        .call-icon:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .sms-icon {
+            background: rgba(107, 114, 128, 0.1);
+            color: #6b7280;
+        }
+        .sms-icon:hover {
+            background: #6b7280;
+            color: white;
+        }
+        
+        .message-icon {
+            background: rgba(15, 116, 186, 0.1);
+            color: var(--primary-color);
+        }
+        .message-icon:hover {
+            background: var(--primary-color);
+            color: white;
         }
         
         .product-table {
@@ -125,7 +178,7 @@
             border-collapse: collapse;
         }
         .product-table th, .product-table td {
-            padding: 12px 16px;
+            padding: 10px 12px;
             text-align: left;
             border-bottom: 1px solid #e5e7eb;
         }
@@ -208,10 +261,10 @@
             right: 30px;
             background: #10b981;
             color: white;
-            padding: 10px 16px;
-            border-radius: 10px;
+            padding: 8px 14px;
+            border-radius: 8px;
             z-index: 1000;
-            font-size: 14px;
+            font-size: 12px;
         }
         .toast.error { background: #ef4444; }
         
@@ -220,9 +273,9 @@
             bottom: 150px;
             right: 15px;
             z-index: 100;
-            background: #0f74ba;
-            width: 40px;
-            height: 40px;
+            background: var(--primary-color);
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -230,11 +283,12 @@
             cursor: pointer;
             opacity: 0;
             transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
         .scroll-top.visible { opacity: 1; }
         
-        .staff-dropdown { position: relative; display: inline-block; }
-        .staff-dropdown-content {
+        .staff-dropdown, .settings-dropdown { position: relative; display: inline-block; }
+        .staff-dropdown-content, .settings-dropdown-content {
             display: none;
             position: absolute;
             bottom: 100%;
@@ -248,8 +302,8 @@
             margin-bottom: 10px;
             overflow: hidden;
         }
-        .dark-mode .staff-dropdown-content { background-color: #1e293b; }
-        .staff-dropdown-content a {
+        .dark-mode .staff-dropdown-content, .dark-mode .settings-dropdown-content { background-color: #1e293b; }
+        .staff-dropdown-content a, .settings-dropdown-content a, .settings-dropdown-content div {
             padding: 10px 14px;
             display: flex;
             align-items: center;
@@ -257,72 +311,76 @@
             font-size: 13px;
             color: #333;
             text-decoration: none;
+            cursor: pointer;
         }
-        .dark-mode .staff-dropdown-content a { color: #f1f5f9; }
-        .staff-dropdown-content a:hover { background-color: #f0f0f0; }
-        .dark-mode .staff-dropdown-content a:hover { background-color: #334155; }
-        .staff-dropdown.show .staff-dropdown-content { display: block; }
+        .dark-mode .staff-dropdown-content a, .dark-mode .settings-dropdown-content a,
+        .dark-mode .settings-dropdown-content div { color: #f1f5f9; }
+        .staff-dropdown-content a:hover, .settings-dropdown-content a:hover,
+        .settings-dropdown-content div:hover { background-color: #f0f0f0; }
+        .dark-mode .staff-dropdown-content a:hover, .dark-mode .settings-dropdown-content a:hover,
+        .dark-mode .settings-dropdown-content div:hover { background-color: #334155; }
+        .staff-dropdown.show .staff-dropdown-content, .settings-dropdown.show .settings-dropdown-content { display: block; }
         
         .lang-btn {
             background: rgba(15,116,186,0.15);
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 16px;
+            font-size: 11px;
             cursor: pointer;
             transition: 0.2s;
             border: none;
         }
         .lang-btn:hover { background: rgba(15,116,186,0.3); }
-        .lang-btn.active { background: #0f74ba; color: white; }
+        .lang-btn.active { background: var(--primary-color); color: white; }
         
         .hero-services-list {
             background: rgba(255,255,255,0.1);
             backdrop-filter: blur(10px);
             border-radius: 16px;
-            padding: 15px 20px;
+            padding: 12px 16px;
             margin-top: 20px;
         }
         .hero-services-list ul {
             list-style: none;
             display: flex;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 12px;
             justify-content: center;
         }
         .hero-services-list li {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 14px;
+            gap: 6px;
+            font-size: 12px;
         }
         @media (max-width: 768px) {
-            .hero-services-list li { font-size: 11px; }
-            .hero-services-list ul { gap: 10px; }
+            .hero-services-list li { font-size: 10px; }
+            .hero-services-list ul { gap: 8px; }
         }
         
         .search-container {
             display: flex;
-            gap: 8px;
+            gap: 6px;
         }
         .search-container input {
             flex: 1;
-            padding: 8px 12px;
+            padding: 6px 10px;
             border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            font-size: 13px;
+            border-radius: 8px;
+            font-size: 12px;
             outline: none;
             transition: 0.2s;
         }
         .search-container input:focus {
-            border-color: #0f74ba;
+            border-color: var(--primary-color);
             box-shadow: 0 0 0 2px rgba(15,116,186,0.2);
         }
         
         .top-bar {
-            background: #0a5a8e;
+            background: var(--primary-dark);
             color: white;
-            font-size: 12px;
-            padding: 6px 0;
+            font-size: 11px;
+            padding: 5px 0;
         }
         
         @keyframes fadeInUp {
@@ -331,32 +389,32 @@
         }
         
         .about-stats {
-            background: linear-gradient(135deg, #0f74ba 0%, #0a5a8e 100%);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
             border-radius: 16px;
-            padding: 20px;
+            padding: 16px;
             margin-top: 30px;
         }
         .stat-number {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: 700;
             color: white;
         }
         .stat-label {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             color: rgba(255,255,255,0.8);
         }
         
         .about-gallery {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-top: 20px;
+            gap: 8px;
+            margin-top: 16px;
         }
         .about-gallery img {
             width: 100%;
-            height: 70px;
+            height: 60px;
             object-fit: cover;
-            border-radius: 12px;
+            border-radius: 10px;
             cursor: pointer;
             transition: 0.3s;
         }
@@ -367,8 +425,8 @@
         
         .testimonial-card {
             background: white;
-            border-radius: 16px;
-            padding: 16px;
+            border-radius: 14px;
+            padding: 14px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             transition: 0.3s;
         }
@@ -398,6 +456,41 @@
             color: #e2e8f0 !important;
         }
         
+        /* Color Options - 5 colors */
+        .color-option {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            margin: 0 2px;
+        }
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+        .color-option.selected {
+            border-color: white;
+            box-shadow: 0 0 0 2px #333;
+        }
+        
+        /* Mobile responsive color options */
+        @media (max-width: 640px) {
+            .color-option {
+                width: 30px;
+                height: 30px;
+            }
+            .settings-dropdown-content {
+                min-width: 180px;
+                right: 0;
+                left: auto;
+                transform: translateX(0);
+            }
+            .settings-dropdown-content .flex {
+                justify-content: center;
+            }
+        }
+        
         /* Mobile menu improvements */
         #mobileMenu {
             transition: all 0.3s ease;
@@ -406,8 +499,34 @@
             padding: 0 1rem;
         }
         #mobileMenu.show {
-            max-height: 400px;
+            max-height: 500px;
             padding: 1rem 1rem;
+        }
+        
+        /* Navbar color transition */
+        .bg-white, .bg-gray-900, .bg-gray-800, .bg-blue-600, .bg-blue-700 {
+            transition: background-color 0.3s ease;
+        }
+        
+        .btn-primary, .bg-blue-600, .bg-blue-700, .bg-blue-50 {
+            transition: background-color 0.3s ease;
+        }
+        
+        /* Floating icons smaller */
+        .floating-sms i, .floating-call i, .floating-msg i {
+            font-size: 16px;
+        }
+        
+        /* Settings button mobile */
+        .settings-dropdown {
+            position: relative;
+        }
+        @media (max-width: 768px) {
+            .settings-dropdown-content {
+                right: 0;
+                left: auto;
+                transform: translateX(0);
+            }
         }
     </style>
 </head>
@@ -427,15 +546,15 @@
         </div>
     </div>
 
-    <!-- Floating Buttons -->
-    <a href="https://wa.me/255763782274" target="_blank" class="floating-wp bg-green-500 hover:bg-green-600 text-white shadow-lg transition hover:scale-105 z-50 flex items-center justify-center">
-        <i class="fab fa-whatsapp"></i>
-    </a>
-    <a href="tel:+255719336667" class="floating-call bg-blue-600 hover:bg-blue-700 text-white shadow-lg transition hover:scale-105 z-50 flex items-center justify-center">
+    <!-- Floating Buttons (SMS + Call) -->
+    <div class="floating-sms cursor-pointer" onclick="sendSMSQuick()">
+        <i class="fas fa-sms"></i>
+    </div>
+    <a href="tel:+255719336667" class="floating-call flex items-center justify-center">
         <i class="fas fa-phone-alt"></i>
     </a>
     
-    <div class="floating-msg bg-blue-600 hover:bg-blue-700 text-white shadow-lg transition hover:scale-105 z-50 flex items-center justify-center cursor-pointer" onclick="scrollToContact()">
+    <div class="floating-msg cursor-pointer" onclick="scrollToContact()">
         <i class="fas fa-envelope"></i>
     </div>
 
@@ -455,12 +574,12 @@
 
     <!-- Navbar -->
     <nav class="bg-white shadow-md sticky top-0 z-50 transition-colors">
-        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between flex-wrap gap-2">
+        <div class="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between flex-wrap gap-2">
             <div class="flex items-center gap-2">
-                <img src="https://i.postimg.cc/MT6jTVHh/weblogo.png" alt="Logo" class="w-10 h-10 rounded-lg">
+                <img src="https://i.postimg.cc/MT6jTVHh/weblogo.png" alt="Logo" class="w-8 h-8 rounded-lg">
                 <div>
-                    <h1 class="text-lg font-bold text-blue-700">GeoTraverse</h1>
-                    <p class="text-[10px] text-gray-500 -mt-1">Group of Companies</p>
+                    <h1 class="text-md font-bold text-blue-700" id="companyName">GeoTraverse</h1>
+                    <p class="text-[9px] text-gray-500 -mt-1" id="companyTagline">Group of Companies</p>
                 </div>
             </div>
             
@@ -469,135 +588,177 @@
                 <button id="langEnBtn" class="lang-btn">English</button>
             </div>
             
-            <div class="flex-1 max-w-[250px] mx-2">
+            <div class="flex-1 max-w-[220px] mx-2">
                 <div class="search-container">
-                    <input type="text" id="searchInput" placeholder="Tafuta huduma au miradi...">
+                    <input type="text" id="searchInput" placeholder="Tafuta...">
                 </div>
             </div>
             
-            <div class="hidden md:flex items-center gap-4">
-                <a href="#home" class="hover:text-blue-600 transition text-sm nav-link" data-sw="Nyumbani" data-en="Home">Nyumbani</a>
-                <a href="#services" class="hover:text-blue-600 transition text-sm nav-link" data-sw="Huduma" data-en="Services">Huduma</a>
-                <a href="#products" class="hover:text-blue-600 transition text-sm nav-link" data-sw="Vifaa" data-en="Products">Vifaa</a>
-                <a href="#projects" class="hover:text-blue-600 transition text-sm nav-link" data-sw="Miradi" data-en="Projects">Miradi</a>
-                <a href="#about" class="hover:text-blue-600 transition text-sm nav-link" data-sw="Kuhusu" data-en="About">Kuhusu</a>
-                <a href="#contact" class="hover:text-blue-600 transition text-sm nav-link" data-sw="Mawasiliano" data-en="Contact">Mawasiliano</a>
-                <button id="darkModeToggle" class="text-gray-600"><i id="darkModeIcon" class="fas fa-moon"></i></button>
+            <div class="hidden md:flex items-center gap-3">
+                <a href="#home" class="hover:text-blue-600 transition text-xs nav-link" data-sw="Nyumbani" data-en="Home">Nyumbani</a>
+                <a href="#services" class="hover:text-blue-600 transition text-xs nav-link" data-sw="Huduma" data-en="Services">Huduma</a>
+                <a href="#products" class="hover:text-blue-600 transition text-xs nav-link" data-sw="Vifaa" data-en="Products">Vifaa</a>
+                <a href="#projects" class="hover:text-blue-600 transition text-xs nav-link" data-sw="Miradi" data-en="Projects">Miradi</a>
+                <a href="#about" class="hover:text-blue-600 transition text-xs nav-link" data-sw="Kuhusu" data-en="About">Kuhusu</a>
+                <a href="#contact" class="hover:text-blue-600 transition text-xs nav-link" data-sw="Mawasiliano" data-en="Contact">Mawasiliano</a>
+                
+                <!-- Settings Dropdown with 5 Colors -->
+                <div class="settings-dropdown" id="settingsDropdown">
+                    <button id="settingsDropdownBtn" class="text-gray-600 hover:text-blue-600 transition">
+                        <i class="fas fa-cog text-sm"></i>
+                    </button>
+                    <div class="settings-dropdown-content">
+                        <div class="font-semibold text-xs text-gray-500 px-3 py-2 border-b text-center">Rangi za Website</div>
+                        <div class="flex gap-2 px-3 py-2 flex-wrap justify-center">
+                            <!-- 5 Colors -->
+                            <div class="color-option" style="background-color: #0f74ba;" onclick="changeWebsiteColor('#0f74ba', '#0a5a8e', this)" title="Blue"></div>
+                            <div class="color-option" style="background-color: #059669;" onclick="changeWebsiteColor('#059669', '#047857', this)" title="Green"></div>
+                            <div class="color-option" style="background-color: #7c3aed;" onclick="changeWebsiteColor('#7c3aed', '#5b21b6', this)" title="Purple"></div>
+                            <div class="color-option" style="background-color: #dc2626;" onclick="changeWebsiteColor('#dc2626', '#b91c1c', this)" title="Red"></div>
+                            <div class="color-option" style="background-color: #d97706;" onclick="changeWebsiteColor('#d97706', '#b45309', this)" title="Orange"></div>
+                        </div>
+                        <div class="border-t mt-1 pt-1">
+                            <div onclick="toggleDarkModeGlobal()" class="flex items-center gap-2 justify-center">
+                                <i class="fas fa-moon text-xs"></i> <span id="darkModeText" class="text-xs">Dark Mode</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button id="darkModeToggle" class="text-gray-600 hidden"><i id="darkModeIcon" class="fas fa-moon"></i></button>
             </div>
             
-            <button id="mobileMenuBtn" class="md:hidden text-gray-600"><i class="fas fa-bars text-xl"></i></button>
+            <button id="mobileMenuBtn" class="md:hidden text-gray-600"><i class="fas fa-bars text-lg"></i></button>
         </div>
         
         <div id="mobileMenu" class="hidden md:hidden">
-            <div class="space-y-3 pb-3">
-                <a href="#home" class="block py-2 text-sm text-gray-700 hover:text-blue-600 transition mobile-nav-link">Nyumbani</a>
-                <a href="#services" class="block py-2 text-sm text-gray-700 hover:text-blue-600 transition mobile-nav-link">Huduma</a>
-                <a href="#products" class="block py-2 text-sm text-gray-700 hover:text-blue-600 transition mobile-nav-link">Vifaa</a>
-                <a href="#projects" class="block py-2 text-sm text-gray-700 hover:text-blue-600 transition mobile-nav-link">Miradi</a>
-                <a href="#about" class="block py-2 text-sm text-gray-700 hover:text-blue-600 transition mobile-nav-link">Kuhusu</a>
-                <a href="#contact" class="block py-2 text-sm text-gray-700 hover:text-blue-600 transition mobile-nav-link">Mawasiliano</a>
-                <button id="mobileDarkToggle" class="py-2 text-sm text-gray-700 w-full text-left"><i class="fas fa-moon mr-2"></i> Dark Mode</button>
+            <div class="space-y-2 pb-3">
+                <a href="#home" class="block py-1 text-xs text-gray-700 hover:text-blue-600 transition mobile-nav-link">Nyumbani</a>
+                <a href="#services" class="block py-1 text-xs text-gray-700 hover:text-blue-600 transition mobile-nav-link">Huduma</a>
+                <a href="#products" class="block py-1 text-xs text-gray-700 hover:text-blue-600 transition mobile-nav-link">Vifaa</a>
+                <a href="#projects" class="block py-1 text-xs text-gray-700 hover:text-blue-600 transition mobile-nav-link">Miradi</a>
+                <a href="#about" class="block py-1 text-xs text-gray-700 hover:text-blue-600 transition mobile-nav-link">Kuhusu</a>
+                <a href="#contact" class="block py-1 text-xs text-gray-700 hover:text-blue-600 transition mobile-nav-link">Mawasiliano</a>
+                <div class="border-t pt-2 mt-2">
+                    <div class="font-semibold text-xs text-gray-500 mb-2 text-center">Rangi za Website</div>
+                    <div class="flex gap-2 flex-wrap justify-center">
+                        <div class="color-option w-8 h-8" style="background-color: #0f74ba;" onclick="changeWebsiteColor('#0f74ba', '#0a5a8e', this)"></div>
+                        <div class="color-option w-8 h-8" style="background-color: #059669;" onclick="changeWebsiteColor('#059669', '#047857', this)"></div>
+                        <div class="color-option w-8 h-8" style="background-color: #7c3aed;" onclick="changeWebsiteColor('#7c3aed', '#5b21b6', this)"></div>
+                        <div class="color-option w-8 h-8" style="background-color: #dc2626;" onclick="changeWebsiteColor('#dc2626', '#b91c1c', this)"></div>
+                        <div class="color-option w-8 h-8" style="background-color: #d97706;" onclick="changeWebsiteColor('#d97706', '#b45309', this)"></div>
+                    </div>
+                </div>
+                <button id="mobileDarkToggle" class="py-1 text-xs text-gray-700 w-full text-left"><i class="fas fa-moon mr-2"></i> Dark Mode</button>
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <section id="home" class="hero-bg min-h-[75vh] flex items-center text-white">
-        <div class="max-w-7xl mx-auto px-6 py-12">
+    <section id="home" class="hero-bg min-h-[70vh] flex items-center text-white">
+        <div class="max-w-7xl mx-auto px-6 py-10">
             <div class="max-w-3xl" data-aos="fade-right">
-                <h1 class="hero-title text-3xl md:text-5xl font-bold leading-tight mb-4">
-                    Kujenga <span class="text-yellow-400">Urithi</span> wa Kesho Leo
+                <h1 class="hero-title text-2xl md:text-4xl font-bold leading-tight mb-3">
+                    <span id="heroTitle1">Kujenga</span> <span class="text-yellow-400" id="heroTitleHighlight">Urithi</span> <span id="heroTitle2">wa Kesho Leo</span>
                 </h1>
-                <p class="hero-subtitle text-base md:text-lg text-white/90 mb-6">
+                <p class="hero-subtitle text-sm md:text-base text-white/90 mb-5" id="heroSubtitle">
                     Huduma za kitaalamu za Nyumba, Upimaji Ardhi na Mali nchini Tanzania.
                 </p>
                 
                 <div class="hero-services-list">
                     <ul id="heroServicesList">
-                        <li><i class="fas fa-home text-yellow-400"></i> <span data-sw="Ujenzi wa Nyumba" data-en="Housing Development">Ujenzi wa Nyumba</span></li>
-                        <li><i class="fas fa-map-marked-alt text-yellow-400"></i> <span data-sw="Upimaji Ardhi" data-en="Land Surveying">Upimaji Ardhi</span></li>
-                        <li><i class="fas fa-chart-line text-yellow-400"></i> <span data-sw="Ushauri wa Mali" data-en="Real Estate Consultancy">Ushauri wa Mali</span></li>
-                        <li><i class="fas fa-building text-yellow-400"></i> <span data-sw="Usimamizi wa Mali" data-en="Property Management">Usimamizi wa Mali</span></li>
-                        <li><i class="fas fa-file-signature text-yellow-400"></i> <span data-sw="Hati Miliki" data-en="Land Documentation">Hati Miliki</span></li>
-                        <li><i class="fas fa-truck text-yellow-400"></i> <span data-sw="Vifaa vya Ujenzi" data-en="Construction Materials">Vifaa vya Ujenzi</span></li>
+                        <li><i class="fas fa-home text-yellow-400 text-xs"></i> <span data-sw="Ujenzi wa Nyumba" data-en="Housing Development">Ujenzi wa Nyumba</span></li>
+                        <li><i class="fas fa-map-marked-alt text-yellow-400 text-xs"></i> <span data-sw="Upimaji Ardhi" data-en="Land Surveying">Upimaji Ardhi</span></li>
+                        <li><i class="fas fa-chart-line text-yellow-400 text-xs"></i> <span data-sw="Ushauri kuhusu Ardhi" data-en="Land Consultancy">Ushauri kuhusu Ardhi</span></li>
+                        <li><i class="fas fa-building text-yellow-400 text-xs"></i> <span data-sw="Usimamizi wa Mali" data-en="Property Management">Usimamizi wa Mali</span></li>
+                        <li><i class="fas fa-file-signature text-yellow-400 text-xs"></i> <span data-sw="Hati Miliki" data-en="Land Documentation">Hati Miliki</span></li>
+                        <li><i class="fas fa-truck text-yellow-400 text-xs"></i> <span data-sw="Vifaa vya Ujenzi" data-en="Construction Materials">Vifaa vya Ujenzi</span></li>
                     </ul>
                 </div>
                 
-                <div class="flex flex-wrap gap-3 mt-6">
-                    <a href="#projects" class="bg-white text-blue-700 px-5 py-2.5 rounded-xl font-semibold hover:bg-yellow-400 transition text-sm">Miradi Yetu</a>
-                    <a href="#contact" class="border-2 border-white px-5 py-2.5 rounded-xl font-semibold hover:bg-white/10 transition text-sm">Wasiliana Nasi</a>
+                <div class="flex flex-wrap gap-3 mt-5">
+                    <a href="#projects" class="bg-white text-blue-700 px-4 py-2 rounded-xl font-semibold hover:bg-yellow-400 transition text-xs" id="heroBtn1">Miradi Yetu</a>
+                    <a href="#contact" class="border-2 border-white px-4 py-2 rounded-xl font-semibold hover:bg-white/10 transition text-xs" id="heroBtn2">Wasiliana Nasi</a>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Services Section -->
-    <section id="services" class="py-16 bg-white">
+    <section id="services" class="py-12 bg-white">
         <div class="max-w-7xl mx-auto px-6">
-            <h2 class="section-title text-2xl md:text-3xl font-bold text-center mb-10" data-aos="fade-up" id="servicesTitle">Huduma Zetu</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="servicesGrid"></div>
+            <h2 class="section-title text-xl md:text-2xl font-bold text-center mb-8" data-aos="fade-up" id="servicesTitle">Huduma Zetu</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" id="servicesGrid"></div>
         </div>
     </section>
 
     <!-- Products Section -->
-    <section id="products" class="py-16 bg-gray-100">
+    <section id="products" class="py-12 bg-gray-100">
         <div class="max-w-7xl mx-auto px-6">
-            <h2 class="section-title text-2xl md:text-3xl font-bold text-center mb-10" data-aos="fade-up" id="productsTitle">🧱 Vifaa vya Ujenzi</h2>
+            <h2 class="section-title text-xl md:text-2xl font-bold text-center mb-8" data-aos="fade-up" id="productsTitle">🧱 Vifaa vya Ujenzi</h2>
             
-            <div class="bg-white rounded-2xl shadow overflow-hidden mb-8">
-                <div class="bg-gradient-to-r from-orange-600 to-red-600 p-3 text-white">
-                    <h3 class="font-bold"><i class="fas fa-cubes mr-2"></i> <span id="bricksTitle">Matofali (Bricks)</span></h3>
+            <div class="bg-white rounded-xl shadow overflow-hidden mb-6">
+                <div class="bg-gradient-to-r from-orange-600 to-red-600 p-2 text-white">
+                    <h3 class="font-bold text-sm"><i class="fas fa-cubes mr-2"></i> <span id="bricksTitle">Matofali (Bricks)</span></h3>
                 </div>
                 <table class="product-table">
-                    <thead><tr><th id="bricksTypeHeader">Aina</th><th id="bricksPriceHeader">Bei (Tsh)</th></tr></thead>
+                    <thead>
+                        <tr><th class="text-xs" id="bricksTypeHeader">Aina</th><th class="text-xs" id="bricksPriceHeader">Bei (Tsh)</th><th class="w-28"></th></thead>
                     <tbody>
-                        <tr><td id="bricksWithDelivery">Tofali na usafiri</td><td class="font-bold text-orange-600">1,100</td></tr>
-                        <tr><td id="bricksWithoutDelivery">Tofali bila usafiri</td><td class="font-bold text-orange-600">950</td></tr>
+                        <tr><td class="text-sm" id="bricksWithDelivery">Tofali na usafiri</td>
+                        <td class="font-bold text-orange-600 text-sm">1,100</td>
+                        <td class="text-center"><div class="flex gap-1 justify-center flex-wrap"><span class="sms-icon" onclick="sendSMS('Ninaomba bei ya Tofali na usafiri')"><i class="fas fa-sms text-xs"></i><span class="hidden sm:inline text-xs">SMS</span></span><span class="call-icon" onclick="makeCall()"><i class="fas fa-phone-alt text-xs"></i><span class="hidden sm:inline text-xs">Simu</span></span></div></td>
+                    </tr>
+                    <tr><td class="text-sm" id="bricksWithoutDelivery">Tofali bila usafiri</td>
+                        <td class="font-bold text-orange-600 text-sm">950</td>
+                        <td class="text-center"><div class="flex gap-1 justify-center flex-wrap"><span class="sms-icon" onclick="sendSMS('Ninaomba bei ya Tofali bila usafiri')"><i class="fas fa-sms text-xs"></i><span class="hidden sm:inline text-xs">SMS</span></span><span class="call-icon" onclick="makeCall()"><i class="fas fa-phone-alt text-xs"></i><span class="hidden sm:inline text-xs">Simu</span></span></div></td>
+                    </tr>
                     </tbody>
                 </table>
-                <div class="p-3 bg-blue-50 text-center"><p class="text-xs text-blue-600" id="deliveryInfo"><i class="fas fa-truck mr-1"></i>Usafiri Dar es Salaam na Dodoma</p></div>
+                <div class="p-2 bg-blue-50 text-center"><p class="text-xs text-blue-600" id="deliveryInfo"><i class="fas fa-truck mr-1"></i>Usafiri Dar es Salaam na Dodoma</p></div>
             </div>
             
-            <div class="bg-white rounded-2xl shadow overflow-hidden">
-                <div class="bg-gradient-to-r from-green-600 to-teal-600 p-3 text-white">
-                    <h3 class="font-bold"><i class="fas fa-tree mr-2"></i> <span id="timberTitle">Mbao (Timber)</span></h3>
+            <div class="bg-white rounded-xl shadow overflow-hidden">
+                <div class="bg-gradient-to-r from-green-600 to-teal-600 p-2 text-white">
+                    <h3 class="font-bold text-sm"><i class="fas fa-tree mr-2"></i> <span id="timberTitle">Mbao (Timber)</span></h3>
                 </div>
                 <table class="product-table">
-                    <thead><tr><th id="timberSizeHeader">Ukubwa (Size)</th><th id="timberPriceHeader">Bei (Tsh)</th></tr></thead>
+                    <thead>
+                        <tr><th class="text-xs" id="timberSizeHeader">Ukubwa (Size)</th><th class="text-xs" id="timberPriceHeader">Bei (Tsh)</th><th class="w-28"></th></thead>
                     <tbody>
-                        <tr><td>1 × 4 inchi</td><td class="font-bold text-green-600">2,500</td></tr>
-                        <tr><td>1 × 6 inchi</td><td class="font-bold text-green-600">5,000</td></tr>
-                        <tr><td>2 × 3 inchi</td><td class="font-bold text-green-600">2,500</td></tr>
-                        <tr><td>2 × 4 inchi</td><td class="font-bold text-green-600">4,500</td></tr>
-                        <tr><td>1 × 8 inchi</td><td class="font-bold text-green-600">10,000</td></tr>
+                        <tr><td class="text-sm">1 × 4 inchi</td><td class="font-bold text-green-600 text-sm">2,500</td><td class="text-center"><div class="flex gap-1 justify-center flex-wrap"><span class="sms-icon" onclick="sendSMS('Ninaomba bei ya Mbao 1x4 inchi')"><i class="fas fa-sms text-xs"></i><span class="hidden sm:inline text-xs">SMS</span></span><span class="call-icon" onclick="makeCall()"><i class="fas fa-phone-alt text-xs"></i><span class="hidden sm:inline text-xs">Simu</span></span></div></td></tr>
+                        <tr><td class="text-sm">1 × 6 inchi</td><td class="font-bold text-green-600 text-sm">5,000</td><td class="text-center"><div class="flex gap-1 justify-center flex-wrap"><span class="sms-icon" onclick="sendSMS('Ninaomba bei ya Mbao 1x6 inchi')"><i class="fas fa-sms text-xs"></i><span class="hidden sm:inline text-xs">SMS</span></span><span class="call-icon" onclick="makeCall()"><i class="fas fa-phone-alt text-xs"></i><span class="hidden sm:inline text-xs">Simu</span></span></div></td></tr>
+                        <tr><td class="text-sm">2 × 3 inchi</td><td class="font-bold text-green-600 text-sm">2,500</td><td class="text-center"><div class="flex gap-1 justify-center flex-wrap"><span class="sms-icon" onclick="sendSMS('Ninaomba bei ya Mbao 2x3 inchi')"><i class="fas fa-sms text-xs"></i><span class="hidden sm:inline text-xs">SMS</span></span><span class="call-icon" onclick="makeCall()"><i class="fas fa-phone-alt text-xs"></i><span class="hidden sm:inline text-xs">Simu</span></span></div></td></tr>
+                        <tr><td class="text-sm">2 × 4 inchi</td><td class="font-bold text-green-600 text-sm">4,500</td><td class="text-center"><div class="flex gap-1 justify-center flex-wrap"><span class="sms-icon" onclick="sendSMS('Ninaomba bei ya Mbao 2x4 inchi')"><i class="fas fa-sms text-xs"></i><span class="hidden sm:inline text-xs">SMS</span></span><span class="call-icon" onclick="makeCall()"><i class="fas fa-phone-alt text-xs"></i><span class="hidden sm:inline text-xs">Simu</span></span></div></td></tr>
+                        <tr><td class="text-sm">1 × 8 inchi</td><td class="font-bold text-green-600 text-sm">10,000</td><td class="text-center"><div class="flex gap-1 justify-center flex-wrap"><span class="sms-icon" onclick="sendSMS('Ninaomba bei ya Mbao 1x8 inchi')"><i class="fas fa-sms text-xs"></i><span class="hidden sm:inline text-xs">SMS</span></span><span class="call-icon" onclick="makeCall()"><i class="fas fa-phone-alt text-xs"></i><span class="hidden sm:inline text-xs">Simu</span></span></div></td></tr>
                     </tbody>
                 </table>
             </div>
             
-            <div class="text-center mt-6"><a href="#contact" class="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition text-sm" id="orderBtn">Agiza Sasa →</a></div>
+            <div class="text-center mt-5"><a href="#contact" class="inline-block bg-blue-600 text-white px-4 py-1.5 rounded-lg font-semibold hover:bg-blue-700 transition text-xs" id="orderBtn">Agiza Sasa →</a></div>
         </div>
     </section>
 
     <!-- Projects Section -->
-    <section id="projects" class="py-16 bg-white">
+    <section id="projects" class="py-12 bg-white">
         <div class="max-w-7xl mx-auto px-6">
-            <h2 class="section-title text-2xl md:text-3xl font-bold text-center mb-10" data-aos="fade-up" id="projectsTitle">🏗️ Miradi Yetu</h2>
-            <div class="grid md:grid-cols-3 gap-6" id="projectsGrid"></div>
+            <h2 class="section-title text-xl md:text-2xl font-bold text-center mb-8" data-aos="fade-up" id="projectsTitle">🏗️ Miradi Yetu</h2>
+            <div class="grid md:grid-cols-3 gap-5" id="projectsGrid"></div>
         </div>
     </section>
 
     <!-- About Section -->
-    <section id="about" class="py-16 bg-gray-100">
+    <section id="about" class="py-12 bg-gray-100">
         <div class="max-w-7xl mx-auto px-6">
-            <div class="text-center mb-10" data-aos="fade-up">
-                <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-3" id="aboutTitle">Kuhusu GeoTraverse</h2>
-                <p class="text-gray-500 max-w-2xl mx-auto text-sm" id="aboutSubtitle">Kampuni inayoaminika katika sekta ya ardhi na mali nchini Tanzania</p>
+            <div class="text-center mb-8" data-aos="fade-up">
+                <h2 class="text-xl md:text-2xl font-bold text-gray-800 mb-2" id="aboutTitle">Kuhusu GeoTraverse</h2>
+                <p class="text-gray-500 max-w-2xl mx-auto text-xs" id="aboutSubtitle">Kampuni inayoaminika katika sekta ya ardhi na mali nchini Tanzania</p>
             </div>
             
-            <div class="flex flex-col lg:flex-row gap-10">
+            <div class="flex flex-col lg:flex-row gap-8">
                 <div class="lg:w-1/2" data-aos="fade-right">
-                    <img src="https://images.pexels.com/photos/280229/pexels-photo-280229.jpeg?auto=compress&cs=tinysrgb&w=600" alt="About GeoTraverse" class="rounded-2xl shadow-xl w-full hover:scale-105 transition duration-500">
-                    <div class="about-gallery mt-4">
+                    <img src="https://images.pexels.com/photos/280229/pexels-photo-280229.jpeg?auto=compress&cs=tinysrgb&w=600" alt="About GeoTraverse" class="rounded-xl shadow-xl w-full hover:scale-105 transition duration-500">
+                    <div class="about-gallery mt-3">
                         <img src="https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=200" onclick="openImageModal(this.src)" class="cursor-pointer">
                         <img src="https://images.pexels.com/photos/2587054/pexels-photo-2587054.jpeg?auto=compress&cs=tinysrgb&w=200" onclick="openImageModal(this.src)" class="cursor-pointer">
                         <img src="https://images.pexels.com/photos/280229/pexels-photo-280229.jpeg?auto=compress&cs=tinysrgb&w=200" onclick="openImageModal(this.src)" class="cursor-pointer">
@@ -605,67 +766,34 @@
                 </div>
                 
                 <div class="lg:w-1/2" data-aos="fade-left">
-                    <div class="bg-white rounded-2xl p-6 shadow-lg">
-                        <p class="text-gray-600 text-sm mb-4 leading-relaxed" id="aboutText1">
+                    <div class="bg-white rounded-xl p-5 shadow-lg">
+                        <p class="text-gray-600 text-xs mb-3 leading-relaxed" id="aboutText1">
                             GeoTraverse ni kampuni inayoongoza katika utoaji wa huduma za ardhi na mali nchini Tanzania, tukijitolea kutoa ubora katika kila mradi tunaofanya.
                         </p>
-                        <p class="text-gray-600 text-sm mb-6 leading-relaxed" id="aboutText2">
+                        <p class="text-gray-600 text-xs mb-4 leading-relaxed" id="aboutText2">
                             Kwa zaidi ya miaka 10 ya uzoefu, tumefanikiwa kukamilisha zaidi ya miradi 150 na kuwasaidia wateja wetu kufikia malengo yao ya uwekezaji.
                         </p>
                         
-                        <div class="grid grid-cols-2 gap-3 mb-6">
-                            <div class="flex items-center gap-2 p-2 bg-blue-50 rounded-xl">
-                                <i class="fas fa-check-circle text-green-500 text-sm"></i>
-                                <span class="text-gray-700 text-xs" id="aboutItem1">Wataalamu wenye leseni</span>
-                            </div>
-                            <div class="flex items-center gap-2 p-2 bg-blue-50 rounded-xl">
-                                <i class="fas fa-check-circle text-green-500 text-sm"></i>
-                                <span class="text-gray-700 text-xs" id="aboutItem2">Vifaa vya kisasa</span>
-                            </div>
-                            <div class="flex items-center gap-2 p-2 bg-blue-50 rounded-xl">
-                                <i class="fas fa-check-circle text-green-500 text-sm"></i>
-                                <span class="text-gray-700 text-xs" id="aboutItem3">Uwasilishaji kwa wakati</span>
-                            </div>
-                            <div class="flex items-center gap-2 p-2 bg-blue-50 rounded-xl">
-                                <i class="fas fa-check-circle text-green-500 text-sm"></i>
-                                <span class="text-gray-700 text-xs" id="aboutItem4">Huduma bora kwa wateja</span>
-                            </div>
+                        <div class="grid grid-cols-2 gap-2 mb-4">
+                            <div class="flex items-center gap-2 p-1.5 bg-blue-50 rounded-lg"><i class="fas fa-check-circle text-green-500 text-xs"></i><span class="text-gray-700 text-xs" id="aboutItem1">Wataalamu wenye leseni</span></div>
+                            <div class="flex items-center gap-2 p-1.5 bg-blue-50 rounded-lg"><i class="fas fa-check-circle text-green-500 text-xs"></i><span class="text-gray-700 text-xs" id="aboutItem2">Vifaa vya kisasa</span></div>
+                            <div class="flex items-center gap-2 p-1.5 bg-blue-50 rounded-lg"><i class="fas fa-check-circle text-green-500 text-xs"></i><span class="text-gray-700 text-xs" id="aboutItem3">Uwasilishaji kwa wakati</span></div>
+                            <div class="flex items-center gap-2 p-1.5 bg-blue-50 rounded-lg"><i class="fas fa-check-circle text-green-500 text-xs"></i><span class="text-gray-700 text-xs" id="aboutItem4">Huduma bora kwa wateja</span></div>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <div class="mt-10" data-aos="fade-up">
-                <h3 class="text-lg font-bold text-center text-gray-800 mb-5" id="testimonialsTitle">Wateja Wetu Wanasema</h3>
+            <div class="mt-8" data-aos="fade-up">
+                <h3 class="text-base font-bold text-center text-gray-800 mb-4" id="testimonialsTitle">Wateja Wetu Wanasema</h3>
                 <div class="grid md:grid-cols-3 gap-4">
-                    <div class="testimonial-card">
-                        <i class="fas fa-quote-left text-blue-500 text-xl mb-2"></i>
-                        <p class="text-gray-600 text-xs italic" id="testimonial1">"GeoTraverse walinisaidia kupata viwanja vya bei nafuu na kufanya upimaji kwa usahihi."</p>
-                        <div class="mt-2 flex items-center gap-1">
-                            <i class="fas fa-star text-yellow-400 text-xs"></i><i class="fas fa-star text-yellow-400 text-xs"></i><i class="fas fa-star text-yellow-400 text-xs"></i><i class="fas fa-star text-yellow-400 text-xs"></i><i class="fas fa-star text-yellow-400 text-xs"></i>
-                            <p class="text-xs font-semibold text-gray-700 ml-1">- John Mwita</p>
-                        </div>
-                    </div>
-                    <div class="testimonial-card">
-                        <i class="fas fa-quote-left text-blue-500 text-xl mb-2"></i>
-                        <p class="text-gray-600 text-xs italic" id="testimonial2">"Ujenzi wa nyumba yangu ulikamilika kwa wakati na ubora wa juu. Asante!"</p>
-                        <div class="mt-2 flex items-center gap-1">
-                            <i class="fas fa-star text-yellow-400 text-xs"></i><i class="fas fa-star text-yellow-400 text-xs"></i><i class="fas fa-star text-yellow-400 text-xs"></i><i class="fas fa-star text-yellow-400 text-xs"></i><i class="fas fa-star text-yellow-400 text-xs"></i>
-                            <p class="text-xs font-semibold text-gray-700 ml-1">- Sarah Hassan</p>
-                        </div>
-                    </div>
-                    <div class="testimonial-card">
-                        <i class="fas fa-quote-left text-blue-500 text-xl mb-2"></i>
-                        <p class="text-gray-600 text-xs italic" id="testimonial3">"Wananasaidia kufuatilia hati miliki. Mchakato wote ulikuwa mwepesi."</p>
-                        <div class="mt-2 flex items-center gap-1">
-                            <i class="fas fa-star text-yellow-400 text-xs"></i><i class="fas fa-star text-yellow-400 text-xs"></i><i class="fas fa-star text-yellow-400 text-xs"></i><i class="fas fa-star text-yellow-400 text-xs"></i><i class="fas fa-star text-yellow-400 text-xs"></i>
-                            <p class="text-xs font-semibold text-gray-700 ml-1">- David Omondi</p>
-                        </div>
-                    </div>
+                    <div class="testimonial-card"><i class="fas fa-quote-left text-blue-500 text-base mb-1"></i><p class="text-gray-600 text-xs italic" id="testimonial1">"GeoTraverse walinisaidia kupata viwanja vya bei nafuu na kufanya upimaji kwa usahihi."</p><div class="mt-2 flex items-center gap-1"><i class="fas fa-star text-yellow-400 text-xs"></i><i class="fas fa-star text-yellow-400 text-xs"></i><i class="fas fa-star text-yellow-400 text-xs"></i><i class="fas fa-star text-yellow-400 text-xs"></i><i class="fas fa-star text-yellow-400 text-xs"></i><p class="text-xs font-semibold text-gray-700 ml-1">- John Mwita</p></div></div>
+                    <div class="testimonial-card"><i class="fas fa-quote-left text-blue-500 text-base mb-1"></i><p class="text-gray-600 text-xs italic" id="testimonial2">"Ujenzi wa nyumba yangu ulikamilika kwa wakati na ubora wa juu. Asante!"</p><div class="mt-2 flex items-center gap-1"><i class="fas fa-star text-yellow-400 text-xs"></i><i class="fas fa-star text-yellow-400 text-xs"></i><i class="fas fa-star text-yellow-400 text-xs"></i><i class="fas fa-star text-yellow-400 text-xs"></i><i class="fas fa-star text-yellow-400 text-xs"></i><p class="text-xs font-semibold text-gray-700 ml-1">- Sarah Hassan</p></div></div>
+                    <div class="testimonial-card"><i class="fas fa-quote-left text-blue-500 text-base mb-1"></i><p class="text-gray-600 text-xs italic" id="testimonial3">"Wananasaidia kufuatilia hati miliki. Mchakato wote ulikuwa mwepesi."</p><div class="mt-2 flex items-center gap-1"><i class="fas fa-star text-yellow-400 text-xs"></i><i class="fas fa-star text-yellow-400 text-xs"></i><i class="fas fa-star text-yellow-400 text-xs"></i><i class="fas fa-star text-yellow-400 text-xs"></i><i class="fas fa-star text-yellow-400 text-xs"></i><p class="text-xs font-semibold text-gray-700 ml-1">- David Omondi</p></div></div>
                 </div>
             </div>
             
-            <div class="about-stats grid grid-cols-2 md:grid-cols-4 gap-4 text-center mt-8" data-aos="fade-up">
+            <div class="about-stats grid grid-cols-2 md:grid-cols-4 gap-3 text-center mt-6" data-aos="fade-up">
                 <div><div class="stat-number">150+</div><div class="stat-label" id="statProjects">Miradi</div></div>
                 <div><div class="stat-number">10+</div><div class="stat-label" id="statYears">Miaka</div></div>
                 <div><div class="stat-number">500+</div><div class="stat-label" id="statClients">Wateja</div></div>
@@ -675,25 +803,23 @@
     </section>
 
     <!-- Contact Section -->
-    <section id="contact" class="py-16 bg-white">
+    <section id="contact" class="py-12 bg-white">
         <div class="max-w-7xl mx-auto px-6">
-            <h2 class="section-title text-2xl md:text-3xl font-bold text-center mb-10" data-aos="fade-up" id="contactTitle">Wasiliana Nasi</h2>
-            <div class="flex flex-col md:flex-row gap-8">
-                <div class="flex-1 space-y-3">
-                    <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-xl"><i class="fas fa-map-marker-alt text-blue-600"></i><div><h3 class="font-semibold text-sm" id="officeTitle">Ofisi</h3><p class="text-xs">Bara bara ya 9, Dodoma</p></div></div>
-                    <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-xl"><i class="fas fa-phone text-blue-600"></i><div><h3 class="font-semibold text-sm" id="phoneTitle">Simu</h3><a href="tel:+255719336667" class="text-xs hover:text-blue-600">0719 336 667</a></div></div>
-                    <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-xl"><i class="fab fa-whatsapp text-green-600"></i><div><h3 class="font-semibold text-sm">WhatsApp</h3><a href="https://wa.me/255763782274" target="_blank" class="text-xs hover:text-green-600">0763 782 274</a></div></div>
-                    <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-xl"><i class="fas fa-envelope text-blue-600"></i><div><h3 class="font-semibold text-sm" id="emailTitle">Barua pepe</h3><p class="text-xs">info@geotraverse.com</p></div></div>
+            <h2 class="section-title text-xl md:text-2xl font-bold text-center mb-8" data-aos="fade-up" id="contactTitle">Wasiliana Nasi</h2>
+            <div class="flex flex-col md:flex-row gap-6">
+                <div class="flex-1 space-y-2">
+                    <div class="flex items-start gap-3 p-2.5 bg-gray-50 rounded-lg"><i class="fas fa-map-marker-alt text-blue-600 text-sm"></i><div><h3 class="font-semibold text-xs" id="officeTitle">Ofisi</h3><p class="text-xs">Bara bara ya 9, Dodoma</p></div></div>
+                    <div class="flex items-start gap-3 p-2.5 bg-gray-50 rounded-lg"><i class="fas fa-phone text-blue-600 text-sm"></i><div><h3 class="font-semibold text-xs" id="phoneTitle">Simu</h3><a href="tel:+255719336667" class="text-xs hover:text-blue-600">0719 336 667</a></div></div>
+                    <div class="flex items-start gap-3 p-2.5 bg-gray-50 rounded-lg"><i class="fas fa-envelope text-blue-600 text-sm"></i><div><h3 class="font-semibold text-xs" id="emailTitle">Barua pepe</h3><p class="text-xs">info@geotraverse.com</p></div></div>
                 </div>
                 <div class="flex-1">
-                    <div class="bg-gray-50 rounded-2xl p-6">
-                        <div class="mb-3 p-2 bg-blue-50 rounded-lg text-center"><p class="text-xs text-blue-600" id="formInfo"><i class="fas fa-info-circle mr-1"></i>Ujumbe unaenda kwa Idara ya Katibu</p></div>
+                    <div class="bg-gray-50 rounded-xl p-5">
+                        <div class="mb-2 p-1.5 bg-blue-50 rounded-lg text-center"><p class="text-xs text-blue-600" id="formInfo"><i class="fas fa-info-circle mr-1"></i>Tutajibu ujumbe wako haraka</p></div>
                         <form id="contactForm">
-                            <input type="text" id="contactName" placeholder="Jina lako" class="w-full p-2 border rounded-lg mb-2 text-sm" required>
-                            <input type="email" id="contactEmail" placeholder="Barua pepe" class="w-full p-2 border rounded-lg mb-2 text-sm" required>
-                            <input type="tel" id="contactPhone" placeholder="Simu" class="w-full p-2 border rounded-lg mb-2 text-sm">
-                            <textarea id="contactMessage" rows="4" placeholder="Ujumbe wako" class="w-full p-2 border rounded-lg mb-2 text-sm" required></textarea>
-                            <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition text-sm" id="sendBtn">Tuma Ujumbe</button>
+                            <input type="text" id="contactName" placeholder="Jina lako" class="w-full p-2 border rounded-lg mb-2 text-xs" required>
+                            <input type="tel" id="contactPhone" placeholder="Namba ya simu" class="w-full p-2 border rounded-lg mb-2 text-xs" required>
+                            <textarea id="contactMessage" rows="3" placeholder="Ujumbe wako..." class="w-full p-2 border rounded-lg mb-2 text-xs" required></textarea>
+                            <button type="submit" class="w-full bg-blue-600 text-white py-1.5 rounded-lg font-semibold hover:bg-blue-700 transition text-xs" id="sendBtn">Tuma Ujumbe</button>
                         </form>
                     </div>
                 </div>
@@ -702,83 +828,168 @@
     </section>
 
     <!-- Footer -->
-    <footer class="bg-gray-900 text-gray-400 py-10">
+    <footer class="bg-gray-900 text-gray-400 py-8">
         <div class="max-w-7xl mx-auto px-6">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <div>
-                    <img src="https://i.postimg.cc/MT6jTVHh/weblogo.png" class="w-12 h-12 mb-3 opacity-75">
-                    <p class="text-white font-semibold">GeoTraverse Group</p>
-                    <p class="text-xs mt-1" id="footerTagline">Building Tomorrow's Legacy Today</p>
-                    <div class="flex gap-3 mt-4">
-                        <a href="https://wa.me/255763782274" class="text-gray-400 hover:text-green-400"><i class="fab fa-whatsapp text-lg"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-blue-400"><i class="fab fa-facebook-f text-lg"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-pink-400"><i class="fab fa-instagram text-lg"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-blue-400"><i class="fab fa-linkedin-in text-lg"></i></a>
-                    </div>
-                </div>
-                
-                <div>
-                    <h4 class="text-white font-semibold mb-3 text-sm" id="footerQuickLinks">Quick Links</h4>
-                    <ul class="space-y-2 text-xs">
-                        <li><a href="#home" class="hover:text-white transition" data-sw="Nyumbani" data-en="Home">Nyumbani</a></li>
-                        <li><a href="#services" class="hover:text-white transition" data-sw="Huduma" data-en="Services">Huduma</a></li>
-                        <li><a href="#products" class="hover:text-white transition" data-sw="Vifaa" data-en="Products">Vifaa</a></li>
-                        <li><a href="#projects" class="hover:text-white transition" data-sw="Miradi" data-en="Projects">Miradi</a></li>
-                        <li><a href="#about" class="hover:text-white transition" data-sw="Kuhusu" data-en="About">Kuhusu</a></li>
-                        <li><a href="#contact" class="hover:text-white transition" data-sw="Mawasiliano" data-en="Contact">Mawasiliano</a></li>
-                    </ul>
-                </div>
-                
-                <div>
-                    <h4 class="text-white font-semibold mb-3 text-sm" id="footerContact">Mawasiliano</h4>
-                    <ul class="space-y-2 text-xs">
-                        <li><a href="tel:+255719336667" class="footer-contact-link"><i class="fas fa-phone mr-2 text-blue-400"></i> 0719 336 667</a></li>
-                        <li><a href="https://wa.me/255763782274" target="_blank" class="footer-contact-link"><i class="fab fa-whatsapp mr-2 text-green-400"></i> 0763 782 274</a></li>
-                        <li><a href="mailto:info@geotraverse.com" class="footer-contact-link"><i class="fas fa-envelope mr-2 text-blue-400"></i> info@geotraverse.com</a></li>
-                        <li><i class="fas fa-map-marker-alt mr-2 text-blue-400"></i> Bara bara ya 9, Dodoma</li>
-                    </ul>
-                </div>
-                
-                <div>
-                    <h4 class="text-white font-semibold mb-3 text-sm" id="footerHours">Saa za Kufungua</h4>
-                    <ul class="space-y-2 text-xs">
-                        <li><i class="fas fa-clock mr-2 text-blue-400"></i> <span id="hoursMonFri">Jumatatu - Ijumaa: 8:00 AM - 5:00 PM</span></li>
-                        <li><i class="fas fa-clock mr-2 text-blue-400"></i> <span id="hoursSat">Jumamosi: 9:00 AM - 1:00 PM</span></li>
-                        <li><i class="fas fa-clock mr-2 text-blue-400"></i> <span id="hoursSun">Jumapili: Imefungwa</span></li>
-                        <li class="mt-2"><i class="fas fa-map-pin mr-2 text-blue-400"></i> Dar es Salaam, Tanzania</li>
-                    </ul>
-                </div>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div><img src="https://i.postimg.cc/MT6jTVHh/weblogo.png" class="w-10 h-10 mb-2 opacity-75"><p class="text-white font-semibold text-sm">GeoTraverse Group</p><p class="text-xs mt-1" id="footerTagline">Building Tomorrow's Legacy Today</p><div class="flex gap-3 mt-3"><a href="#" class="text-gray-400 hover:text-blue-400"><i class="fab fa-facebook-f text-sm"></i></a><a href="#" class="text-gray-400 hover:text-pink-400"><i class="fab fa-instagram text-sm"></i></a><a href="#" class="text-gray-400 hover:text-blue-400"><i class="fab fa-linkedin-in text-sm"></i></a></div></div>
+                <div><h4 class="text-white font-semibold mb-2 text-xs" id="footerQuickLinks">Quick Links</h4><ul class="space-y-1 text-xs"><li><a href="#home" class="hover:text-white transition" data-sw="Nyumbani" data-en="Home">Nyumbani</a></li><li><a href="#services" class="hover:text-white transition" data-sw="Huduma" data-en="Services">Huduma</a></li><li><a href="#products" class="hover:text-white transition" data-sw="Vifaa" data-en="Products">Vifaa</a></li><li><a href="#projects" class="hover:text-white transition" data-sw="Miradi" data-en="Projects">Miradi</a></li><li><a href="#about" class="hover:text-white transition" data-sw="Kuhusu" data-en="About">Kuhusu</a></li><li><a href="#contact" class="hover:text-white transition" data-sw="Mawasiliano" data-en="Contact">Mawasiliano</a></li></ul></div>
+                <div><h4 class="text-white font-semibold mb-2 text-xs" id="footerContact">Mawasiliano</h4><ul class="space-y-1 text-xs"><li><a href="tel:+255719336667" class="footer-contact-link"><i class="fas fa-phone mr-2 text-blue-400 text-xs"></i> 0719 336 667</a></li><li><a href="mailto:info@geotraverse.com" class="footer-contact-link"><i class="fas fa-envelope mr-2 text-blue-400 text-xs"></i> info@geotraverse.com</a></li><li><i class="fas fa-map-marker-alt mr-2 text-blue-400 text-xs"></i> Bara bara ya 9, Dodoma</li></ul></div>
+                <div><h4 class="text-white font-semibold mb-2 text-xs" id="footerHours">Saa za Kufungua</h4><ul class="space-y-1 text-xs"><li><i class="fas fa-clock mr-2 text-blue-400 text-xs"></i> <span id="hoursMonFri">Jumatatu - Ijumaa: 8:00 AM - 5:00 PM</span></li><li><i class="fas fa-clock mr-2 text-blue-400 text-xs"></i> <span id="hoursSat">Jumamosi: 9:00 AM - 1:00 PM</span></li><li><i class="fas fa-clock mr-2 text-blue-400 text-xs"></i> <span id="hoursSun">Jumapili: Imefungwa</span></li><li class="mt-1"><i class="fas fa-map-pin mr-2 text-blue-400 text-xs"></i> Dar es Salaam, Tanzania</li></ul></div>
             </div>
-            
-            <div class="flex justify-center mt-8">
-                <div class="staff-dropdown" id="staffDropdown">
-                    <button id="staffDropdownBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-xl font-semibold flex items-center gap-2 transition text-sm">
-                        <i class="fas fa-users"></i> Staff Access
-                        <i class="fas fa-chevron-down text-xs"></i>
-                    </button>
-                    <div class="staff-dropdown-content">
-                       <a href="/admin/login.html" target="_self"><i class="fas fa-user-shield text-blue-600 w-4"></i> Admin Dashboard</a>
-                        <a href="/managers/login.html" target="_blank"><i class="fas fa-user-tie text-purple-600 w-4"></i> Managers Department</a>
-                        <a href="/finance/login.html" target="_blank"><i class="fas fa-calculator text-green-600 w-4"></i> Finance Department</a>
-                        <a href="/sales/login.html" target="_blank"><i class="fas fa-chart-line text-orange-600 w-4"></i> Sales Department</a>
-                        <a href="/secretary/login.html" target="_blank"><i class="fas fa-envelope text-red-600 w-4"></i> Secretary Department</a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="border-t border-gray-800 mt-8 pt-6 text-center text-xs">
-                <p>&copy; 2024 GeoTraverse. All Rights Reserved.</p>
-            </div>
+            <div class="flex justify-center mt-6"><div class="staff-dropdown" id="staffDropdown"><button id="staffDropdownBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded-lg font-semibold flex items-center gap-2 transition text-xs"><i class="fas fa-users text-xs"></i> Staff Access <i class="fas fa-chevron-down text-xs"></i></button><div class="staff-dropdown-content"><a href="/admin/login.html" target="_self"><i class="fas fa-user-shield text-blue-600 w-4 text-xs"></i> Admin Dashboard</a><a href="/managers/login.html" target="_blank"><i class="fas fa-user-tie text-purple-600 w-4 text-xs"></i> Managers Department</a><a href="/finance/login.html" target="_blank"><i class="fas fa-calculator text-green-600 w-4 text-xs"></i> Finance Department</a><a href="/sales/login.html" target="_blank"><i class="fas fa-chart-line text-orange-600 w-4 text-xs"></i> Sales Department</a><a href="/secretary/login.html" target="_blank"><i class="fas fa-envelope text-red-600 w-4 text-xs"></i> Secretary Department</a></div></div></div>
+            <div class="border-t border-gray-800 mt-6 pt-4 text-center text-xs"><p>&copy; 2024 GeoTraverse. All Rights Reserved.</p></div>
         </div>
     </footer>
 
     <script>
         AOS.init({ duration: 600, once: true });
         
-        // Mobile Menu Functions - Fixed
+        // ==================== CONTACT FUNCTIONS ====================
+        const COMPANY_PHONE = "255719336667";
+        
+        function sendSMSQuick() {
+            const message = "Halo, nina swali kuhusu huduma zenu. Tafadhali nisaidie.";
+            const encodedMessage = encodeURIComponent(message);
+            window.location.href = `sms:${COMPANY_PHONE}?body=${encodedMessage}`;
+        }
+        
+        function makeCall() {
+            window.location.href = `tel:+${COMPANY_PHONE}`;
+        }
+        
+        function sendSMS(message) {
+            const encodedMessage = encodeURIComponent(message);
+            window.location.href = `sms:${COMPANY_PHONE}?body=${encodedMessage}`;
+        }
+        
+        function scrollToContactWithMessage(serviceName) {
+            const contactSection = document.getElementById('contact');
+            if (contactSection) {
+                contactSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                const messageField = document.getElementById('contactMessage');
+                if (messageField) {
+                    setTimeout(() => {
+                        messageField.value = `Nina swali kuhusu: ${serviceName}`;
+                        messageField.focus();
+                    }, 500);
+                }
+            }
+        }
+        
+        function scrollToContact() {
+            const contactSection = document.getElementById('contact');
+            if (contactSection) {
+                contactSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                closeMobileMenu();
+            }
+        }
+        
+        // ==================== WEBSITE COLOR CHANGE (5 Colors) ====================
+        function changeWebsiteColor(primaryColor, darkColor, element) {
+            document.documentElement.style.setProperty('--primary-color', primaryColor);
+            document.documentElement.style.setProperty('--primary-dark', darkColor);
+            
+            // Update top bar
+            document.querySelectorAll('.top-bar').forEach(el => {
+                el.style.backgroundColor = darkColor;
+            });
+            
+            // Update floating call button and scroll top
+            document.querySelectorAll('.floating-call, .scroll-top, .about-stats').forEach(el => {
+                el.style.backgroundColor = primaryColor;
+            });
+            
+            // Update buttons
+            document.querySelectorAll('.bg-blue-600, .btn-primary, #orderBtn, #sendBtn, #staffDropdownBtn').forEach(el => {
+                el.style.backgroundColor = primaryColor;
+            });
+            
+            document.querySelectorAll('.bg-blue-700, .floating-call:hover, .scroll-top:hover, #orderBtn:hover, #sendBtn:hover, #staffDropdownBtn:hover').forEach(el => {
+                el.style.backgroundColor = darkColor;
+            });
+            
+            // Update call icons
+            document.querySelectorAll('.call-icon').forEach(el => {
+                el.style.color = primaryColor;
+            });
+            document.querySelectorAll('.call-icon:hover').forEach(el => {
+                el.style.backgroundColor = primaryColor;
+                el.style.color = 'white';
+            });
+            
+            // Update language buttons active state
+            document.querySelectorAll('.lang-btn.active').forEach(el => {
+                el.style.backgroundColor = primaryColor;
+            });
+            
+            // Update hero background (keeping the gradient with new color)
+            document.querySelectorAll('.hero-bg').forEach(el => {
+                el.style.background = `linear-gradient(rgba(15, 116, 186, 0.88), rgba(10, 90, 142, 0.92)), url('https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=600')`;
+            });
+            
+            // Save to localStorage
+            localStorage.setItem('website_primary_color', primaryColor);
+            localStorage.setItem('website_dark_color', darkColor);
+            
+            // Update selected style
+            document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
+            if (element) element.classList.add('selected');
+            
+            showToast('Rangi ya website imebadilishwa!');
+        }
+        
+        function loadSavedWebsiteColor() {
+            const primaryColor = localStorage.getItem('website_primary_color');
+            const darkColor = localStorage.getItem('website_dark_color');
+            if (primaryColor && darkColor) {
+                document.documentElement.style.setProperty('--primary-color', primaryColor);
+                document.documentElement.style.setProperty('--primary-dark', darkColor);
+                
+                // Update UI elements
+                document.querySelectorAll('.top-bar').forEach(el => { el.style.backgroundColor = darkColor; });
+                document.querySelectorAll('.floating-call, .scroll-top, .about-stats').forEach(el => { el.style.backgroundColor = primaryColor; });
+                document.querySelectorAll('.bg-blue-600, .btn-primary, #orderBtn, #sendBtn, #staffDropdownBtn').forEach(el => { el.style.backgroundColor = primaryColor; });
+                document.querySelectorAll('.call-icon').forEach(el => { el.style.color = primaryColor; });
+                document.querySelectorAll('.lang-btn.active').forEach(el => { el.style.backgroundColor = primaryColor; });
+                
+                // Mark selected color
+                const colors = ['#0f74ba', '#059669', '#7c3aed', '#dc2626', '#d97706'];
+                const selectedIndex = colors.indexOf(primaryColor);
+                if (selectedIndex !== -1) {
+                    const colorOptions = document.querySelectorAll('.color-option');
+                    if (colorOptions[selectedIndex]) colorOptions[selectedIndex].classList.add('selected');
+                }
+            }
+        }
+        
+        // ==================== DARK MODE GLOBAL ====================
+        let isDarkGlobal = false;
+        function toggleDarkModeGlobal() {
+            isDarkGlobal = !isDarkGlobal;
+            if (isDarkGlobal) {
+                document.body.classList.add('dark-mode');
+                document.getElementById('darkModeText') && (document.getElementById('darkModeText').innerText = 'Light Mode');
+                document.getElementById('darkModeIcon') && document.getElementById('darkModeIcon').classList.replace('fa-moon', 'fa-sun');
+            } else {
+                document.body.classList.remove('dark-mode');
+                document.getElementById('darkModeText') && (document.getElementById('darkModeText').innerText = 'Dark Mode');
+                document.getElementById('darkModeIcon') && document.getElementById('darkModeIcon').classList.replace('fa-sun', 'fa-moon');
+            }
+            localStorage.setItem('website_dark_mode', isDarkGlobal);
+        }
+        
+        function loadDarkModeGlobal() {
+            const saved = localStorage.getItem('website_dark_mode');
+            if (saved === 'true') {
+                isDarkGlobal = true;
+                document.body.classList.add('dark-mode');
+                document.getElementById('darkModeText') && (document.getElementById('darkModeText').innerText = 'Light Mode');
+            }
+        }
+        
+        // Mobile Menu Functions
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
         const mobileMenu = document.getElementById('mobileMenu');
-        
         function toggleMobileMenu() {
             if (mobileMenu.classList.contains('hidden')) {
                 mobileMenu.classList.remove('hidden');
@@ -788,78 +999,53 @@
                 mobileMenu.classList.remove('show');
             }
         }
-        
         function closeMobileMenu() {
             mobileMenu.classList.add('hidden');
             mobileMenu.classList.remove('show');
         }
-        
-        if (mobileMenuBtn) {
-            mobileMenuBtn.addEventListener('click', toggleMobileMenu);
-        }
-        
-        // Close mobile menu when clicking on any mobile nav link
-        document.querySelectorAll('.mobile-nav-link').forEach(link => {
-            link.addEventListener('click', function() {
-                closeMobileMenu();
-            });
-        });
-        
-        // Also close mobile menu when clicking on dark mode toggle inside mobile menu
+        if (mobileMenuBtn) { mobileMenuBtn.addEventListener('click', toggleMobileMenu); }
+        document.querySelectorAll('.mobile-nav-link').forEach(link => { link.addEventListener('click', function() { closeMobileMenu(); }); });
         const mobileDarkToggle = document.getElementById('mobileDarkToggle');
-        if (mobileDarkToggle) {
-            mobileDarkToggle.addEventListener('click', function() {
-                setTimeout(closeMobileMenu, 300);
-            });
-        }
-        
-        function scrollToContact() {
-            const contactSection = document.getElementById('contact');
-            if(contactSection) {
-                contactSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                closeMobileMenu();
-                showToast('Tafadhali jaza fomu ili kuwasiliana nasi', false);
-            }
-        }
+        if (mobileDarkToggle) { mobileDarkToggle.addEventListener('click', function() { toggleDarkModeGlobal(); setTimeout(closeMobileMenu, 300); }); }
         
         // Service Details
         const serviceFullDetails = {
             1: {
                 title_sw: "Ujenzi wa Nyumba", title_en: "Housing Development",
-                desc_sw: "GeoTraverse inatoa huduma za ujenzi wa nyumba za kisasa, villas, apartments, na makazi ya gated communities.\n\nHuduma zetu za ujenzi:\n• Ubunifu wa nyumba kulingana na mahitaji yako\n• Ujenzi wa nyumba za kisasa\n• Ujenzi wa majengo ya biashara\n• Usimamizi wa miradi ya ujenzi\n• Udhamini wa miaka 5\n\nTunatumia vifaa bora na wataalamu wenye uzoefu.",
-                desc_en: "Modern house construction services, luxury villas, apartments.\n\nOur construction services:\n• Custom house design\n• Modern house construction\n• Commercial buildings\n• Project management\n• 5-year warranty"
+                desc_sw: "<strong>GeoTraverse inatoa huduma za ujenzi wa nyumba za kisasa, villas, apartments, na makazi ya gated communities.</strong><br><br>📌 Huduma zetu za ujenzi:<br>• Ubunifu wa nyumba kulingana na mahitaji yako<br>• Ujenzi wa nyumba za kisasa na za kifahari<br>• Ujenzi wa majengo ya biashara na ofisi<br>• Usimamizi wa miradi ya ujenzi kwa ufanisi<br>• Udhamini wa miaka 5 kwa nyumba zote tunazojenga<br>• Timu ya wataalamu wenye uzoefu wa zaidi ya miaka 10<br><br>💰 Tunatoa makadirio ya gharama bure kabisa. Wasiliana nasi kwa maelezo zaidi!",
+                desc_en: "<strong>GeoTraverse offers modern house construction, luxury villas, apartments, and gated communities.</strong><br><br>📌 Our construction services:<br>• Custom house design based on your needs<br>• Modern and luxury house construction<br>• Commercial buildings and offices<br>• Professional project management<br>• 5-year warranty on all constructed houses<br>• Team of experts with over 10 years experience<br><br>💰 Free cost estimation. Contact us for more details!"
             },
             2: {
                 title_sw: "Upimaji Ardhi", title_en: "Land Surveying",
-                desc_sw: "Huduma za upimaji ardhi kwa usahihi wa hali ya juu.\n\nHuduma zetu:\n• Upimaji wa mipaka ya viwanja\n• Ramani za topografia\n• Ugawaji wa viwanja\n• Uthibitishaji wa ukubwa wa ardhi\n• Ushauri wa upimaji kabla ya ununuzi",
-                desc_en: "High-precision land surveying services.\n\nOur services:\n• Boundary surveys\n• Topographic mapping\n• Land subdivision\n• Land size verification\n• Pre-purchase advice"
+                desc_sw: "<strong>Huduma za upimaji ardhi kwa usahihi wa hali ya juu kwa kutumia vifaa vya kisasa.</strong><br><br>📌 Huduma zetu za upimaji:<br>• Upimaji wa mipaka ya viwanja na mashamba<br>• Ramani za topografia na contour mapping<br>• Ugawaji wa viwanja na mikoa<br>• Uthibitishaji wa ukubwa halisi wa ardhi<br>• Ushauri wa upimaji kabla ya ununuzi wa ardhi<br>• Upimaji kwa ajili ya hati miliki<br>• Ufuatiliaji wa maombi ya hati<br><br>📐 Tunahakikisha usahihi wa 99.9% katika upimaji wetu wote!",
+                desc_en: "<strong>High-precision land surveying services using modern equipment.</strong><br><br>📌 Our surveying services:<br>• Boundary surveys for plots and farms<br>• Topographic maps and contour mapping<br>• Land subdivision and planning<br>• Land size verification<br>• Pre-purchase land surveying advice<br>• Survey for title deed processing<br>• Application follow-up services<br><br>📐 We guarantee 99.9% accuracy in all our surveys!"
             },
             3: {
-                title_sw: "Ushauri wa Mali", title_en: "Real Estate Consultancy",
-                desc_sw: "Ushauri wa kitaalamu kuhusu uwekezaji wa ardhi na mali.\n\nHuduma zetu:\n• Ushauri wa uwekezaji wa ardhi\n• Tathmini ya thamani ya mali\n• Utafiti wa soko la mali\n• Ushauri wa kisheria\n• Ushauri wa ukodishaji na uuzaji",
-                desc_en: "Professional property investment advice.\n\nOur services:\n• Land investment advice\n• Property valuation\n• Market research\n• Legal advice\n• Leasing advice"
+                title_sw: "Ushauri kuhusu Ardhi", title_en: "Land Consultancy",
+                desc_sw: "<strong>Ushauri wa kitaalamu kuhusu uwekezaji wa ardhi na mali nchini Tanzania.</strong><br><br>📌 Huduma zetu za ushauri:<br>• Ushauri wa uwekezaji wa ardhi kwa faida kubwa<br>• Tathmini ya thamani halisi ya ardhi na mali<br>• Utafiti wa soko la ardhi na mali<br>• Ushauri wa kisheria kuhusu ununuzi wa ardhi<br>• Ushauri wa ukodishaji na uuzaji wa mali<br>• Utafiti wa eneo bora kwa uwekezaji<br>• Ushauri wa utaratibu wa kupata hati miliki<br><br>💡 Wacha tukusaidie kufanya maamuzi sahihi kwenye uwekezaji wako!",
+                desc_en: "<strong>Professional advice on land and property investment in Tanzania.</strong><br><br>📌 Our consultancy services:<br>• Land investment advice for maximum profit<br>• Land and property valuation<br>• Land and property market research<br>• Legal advice on land purchase<br>• Leasing and selling advice<br>• Best location research for investment<br>• Title deed acquisition procedures<br><br>💡 Let us help you make the right investment decisions!"
             },
             4: {
                 title_sw: "Usimamizi wa Mali", title_en: "Property Management",
-                desc_sw: "Huduma za usimamizi wa majengo na mali zako.\n\nHuduma zetu:\n• Ukodishaji wa majengo\n• Ukusanyaji wa kodi\n• Matengenezo ya majengo\n• Usimamizi wa wapangaji\n• Uhakiki wa mali",
-                desc_en: "Property and building management.\n\nOur services:\n• Building leasing\n• Rent collection\n• Maintenance\n• Tenant management\n• Property inspection"
+                desc_sw: "<strong>Huduma za usimamizi wa majengo na mali zako kwa ufanisi mkubwa.</strong><br><br>📌 Huduma zetu za usimamizi:<br>• Ukodishaji wa majengo na vyumba<br>• Ukusanyaji wa kodi kwa wakati<br>• Matengenezo ya majengo na ukarabati<br>• Usimamizi wa wapangaji na migogoro<br>• Uhakiki wa mali mara kwa mara<br>• Utafutaji wa wapangaji wazuri<br>• Usimamizi wa bili na gharama za majengo<br><br>🏢 Tunakuhakikishia mapato thabiti kutoka kwa mali yako!",
+                desc_en: "<strong>Efficient property and building management services.</strong><br><br>📌 Our management services:<br>• Building and unit leasing<br>• Timely rent collection<br>• Building maintenance and repairs<br>• Tenant management and dispute resolution<br>• Regular property inspection<br>• Quality tenant search<br>• Bill and expense management<br><br>🏢 We guarantee stable income from your property!"
             },
             5: {
                 title_sw: "Hati Miliki", title_en: "Land Documentation",
-                desc_sw: "Huduma za usajili wa hati miliki na vibali.\n\nHuduma zetu:\n• Usajili wa hati miliki\n• Ufuatiliaji wa maombi\n• Upataji wa vibali vya ujenzi\n• Ushauri wa kisheria\n• Usuluhishi wa migogoro",
-                desc_en: "Title deed registration and permits.\n\nOur services:\n• Title deed registration\n• Application follow-up\n• Building permits\n• Legal advice\n• Dispute resolution"
+                desc_sw: "<strong>Huduma za usajili wa hati miliki na vibali vya ujenzi kwa haraka na ufanisi.</strong><br><br>📌 Huduma zetu za hati:<br>• Usajili wa hati miliki kwa haraka<br>• Ufuatiliaji wa maombi ya hati miliki<br>• Upataji wa vibali vya ujenzi<br>• Ushauri wa kisheria kwa migogoro ya ardhi<br>• Usuluhishi wa migogoro ya ardhi na mipaka<br>• Uthibitishaji wa uhalali wa hati miliki<br>• Usaidizi wa kukusanya nyaraka zote muhimu<br><br>📜 Tunakusaidia kupata hati miliki yako kwa urahisi na haraka!",
+                desc_en: "<strong>Fast and efficient title deed registration and building permit services.</strong><br><br>📌 Our documentation services:<br>• Fast title deed registration<br>• Title deed application follow-up<br>• Building permit acquisition<br>• Legal advice for land disputes<br>• Land and boundary dispute resolution<br>• Title deed authenticity verification<br>• Assistance in gathering all required documents<br><br>📜 We help you get your title deed easily and quickly!"
             },
             6: {
                 title_sw: "Vifaa vya Ujenzi", title_en: "Construction Materials",
-                desc_sw: "Uuzaji wa vifaa vya ujenzi kwa bei nafuu.\n\nVifaa tunavyouza:\n• Matofali kwa wingi\n• Mbao za aina zote\n• Saruji\n• Chuma cha ujenzi\n• Rangi na vifaa vya kupaka\n• Vifaa vya mabomba na umeme",
-                desc_en: "Construction materials at affordable prices.\n\nMaterials:\n• Bulk bricks\n• All timber types\n• Cement\n• Reinforcement bars\n• Paint and plastering\n• Plumbing supplies"
+                desc_sw: "<strong>Uuzaji wa vifaa vya ujenzi kwa bei nafuu na ubora wa juu.</strong><br><br>📌 Vifaa tunavyovyouza:<br>• Matofali kwa wingi (bei ya kiwanda)<br>• Mbao za aina zote (mivule, mninga, pine, n.k)<br>• Saruji na simenti za ubora<br>• Chuma cha ujenzi (reinforcement bars)<br>• Rangi na vifaa vya kupaka<br>• Vifaa vya mabomba na umeme<br>• Kokoto, mchanga na mawe<br>• Paa na mabati<br><br>🚛 Tunatoa usafiri wa bure kwa ununuzi wa kiasi kikubwa. Piga simu sasa kwa bei nafuu!",
+                desc_en: "<strong>Sale of construction materials at affordable prices with high quality.</strong><br><br>📌 Materials we sell:<br>• Bulk bricks (factory prices)<br>• All types of timber<br>• Quality cement<br>• Reinforcement bars<br>• Paint and plastering materials<br>• Plumbing and electrical supplies<br>• Ballast, sand and stones<br>• Roofing sheets<br><br>🚛 Free delivery for bulk purchases. Call now for best prices!"
             }
         };
         
         let servicesData = [
             { id: 1, name_sw: "Ujenzi wa Nyumba", name_en: "Housing Development", icon: "fa-home", color: "blue", short_sw: "Nyumba za kisasa, villas, na makazi ya kifahari.", short_en: "Modern villas, apartments and gated communities." },
             { id: 2, name_sw: "Upimaji Ardhi", name_en: "Land Surveying", icon: "fa-map-marked-alt", color: "emerald", short_sw: "Upimaji mipaka, ramani za topografia na ugawaji viwanja.", short_en: "Boundary surveys, topographic mapping and subdivision." },
-            { id: 3, name_sw: "Ushauri wa Mali", name_en: "Real Estate Consultancy", icon: "fa-chart-line", color: "amber", short_sw: "Ushauri wa uwekezaji, uthamini wa mali na usimamizi wa miradi.", short_en: "Investment advice, property valuation and project management." },
+            { id: 3, name_sw: "Ushauri kuhusu Ardhi", name_en: "Land Consultancy", icon: "fa-chart-line", color: "amber", short_sw: "Ushauri wa uwekezaji, uthamini wa mali na ushauri wa kisheria.", short_en: "Investment advice, property valuation and legal advice." },
             { id: 4, name_sw: "Usimamizi wa Mali", name_en: "Property Management", icon: "fa-building", color: "purple", short_sw: "Ukodishaji, matengenezo na usimamizi wa majengo.", short_en: "Leasing, maintenance and property management." },
             { id: 5, name_sw: "Hati Miliki", name_en: "Land Documentation", icon: "fa-file-signature", color: "red", short_sw: "Usajili wa hati, vibali na ushauri wa kisheria.", short_en: "Title registration, permits and legal advice." },
             { id: 6, name_sw: "Vifaa vya Ujenzi", name_en: "Construction Materials", icon: "fa-truck", color: "teal", short_sw: "Uuzaji wa mbao, matofali, saruji na vifaa vingine.", short_en: "Sale of timber, bricks, cement and other materials." }
@@ -907,7 +1093,7 @@
             officeTitle: { sw: "Ofisi", en: "Office" },
             phoneTitle: { sw: "Simu", en: "Phone" },
             emailTitle: { sw: "Barua pepe", en: "Email" },
-            formInfo: { sw: "Ujumbe unaenda kwa Idara ya Katibu", en: "Messages go to Secretary Department" },
+            formInfo: { sw: "Tutajibu ujumbe wako haraka iwezekanavyo", en: "We will respond to your message as soon as possible" },
             sendBtn: { sw: "Tuma Ujumbe", en: "Send Message" },
             footerTagline: { sw: "Kujenga Urithi wa Kesho Leo", en: "Building Tomorrow's Legacy Today" },
             footerQuickLinks: { sw: "Viungo vya Haraka", en: "Quick Links" },
@@ -915,18 +1101,29 @@
             footerHours: { sw: "Saa za Kufungua", en: "Working Hours" },
             hoursMonFri: { sw: "Jumatatu - Ijumaa: 8:00 AM - 5:00 PM", en: "Monday - Friday: 8:00 AM - 5:00 PM" },
             hoursSat: { sw: "Jumamosi: 9:00 AM - 1:00 PM", en: "Saturday: 9:00 AM - 1:00 PM" },
-            hoursSun: { sw: "Jumapili: Imefungwa", en: "Sunday: Closed" }
+            hoursSun: { sw: "Jumapili: Imefungwa", en: "Sunday: Closed" },
+            heroTitle1: { sw: "Kujenga", en: "Building" },
+            heroTitleHighlight: { sw: "Urithi", en: "Legacy" },
+            heroTitle2: { sw: "wa Kesho Leo", en: "of Tomorrow Today" },
+            heroSubtitle: { sw: "Huduma za kitaalamu za Nyumba, Upimaji Ardhi na Mali nchini Tanzania.", en: "Professional services for Housing, Land Surveying and Property in Tanzania." },
+            heroBtn1: { sw: "Miradi Yetu", en: "Our Projects" },
+            heroBtn2: { sw: "Wasiliana Nasi", en: "Contact Us" }
         };
         
         function renderServices() {
             const grid = document.getElementById('servicesGrid');
             if(!grid) return;
             grid.innerHTML = servicesData.map(s => `
-                <div class="service-card bg-gray-50 p-6 rounded-2xl hover:shadow-xl" onclick="openServiceModal(${s.id})">
-                    <i class="fas ${s.icon} text-3xl text-${s.color}-600 mb-3"></i>
-                    <h3 class="text-lg font-semibold mb-2">${currentLang === 'sw' ? s.name_sw : s.name_en}</h3>
-                    <p class="text-gray-600 text-sm">${currentLang === 'sw' ? s.short_sw : s.short_en}</p>
-                    <div class="mt-3 text-${s.color}-600 text-xs font-medium">${currentLang === 'sw' ? 'Soma zaidi →' : 'Learn more →'}</div>
+                <div class="service-card bg-gray-50 p-4 rounded-xl hover:shadow-md">
+                    <i class="fas ${s.icon} text-xl text-${s.color}-600 mb-2"></i>
+                    <h3 class="text-sm font-semibold mb-1">${currentLang === 'sw' ? s.name_sw : s.name_en}</h3>
+                    <p class="text-gray-600 text-xs">${currentLang === 'sw' ? s.short_sw : s.short_en}</p>
+                    <div class="flex justify-between items-center mt-3">
+                        <div class="text-${s.color}-600 text-xs font-medium cursor-pointer" onclick="openServiceModal(${s.id})">${currentLang === 'sw' ? 'Soma zaidi →' : 'Learn more →'}</div>
+                        <span class="message-icon" onclick="scrollToContactWithMessage('${currentLang === 'sw' ? s.name_sw : s.name_en}')">
+                            <i class="fas fa-envelope text-xs"></i> <span class="hidden sm:inline text-xs">${currentLang === 'sw' ? 'Ujumbe' : 'Message'}</span>
+                        </span>
+                    </div>
                 </div>
             `).join('');
         }
@@ -935,11 +1132,11 @@
             const grid = document.getElementById('projectsGrid');
             if(!grid) return;
             grid.innerHTML = projectsData.map(p => `
-                <div class="project-card bg-white rounded-2xl overflow-hidden shadow-lg cursor-pointer" onclick="openProjectImage('${p.image}')">
-                    <img src="${p.image}" class="w-full h-48 object-cover">
-                    <div class="p-4">
-                        <h3 class="font-semibold text-gray-800 dark:text-white">${currentLang === 'sw' ? p.name_sw : p.name_en}</h3>
-                        <p class="text-${p.status_color}-600 text-sm font-medium">${currentLang === 'sw' ? p.status_sw : p.status_en}</p>
+                <div class="project-card bg-white rounded-xl overflow-hidden shadow cursor-pointer" onclick="openProjectImage('${p.image}')">
+                    <img src="${p.image}" class="w-full h-36 object-cover">
+                    <div class="p-3">
+                        <h3 class="font-semibold text-gray-800 dark:text-white text-sm">${currentLang === 'sw' ? p.name_sw : p.name_en}</h3>
+                        <p class="text-${p.status_color}-600 text-xs font-medium">${currentLang === 'sw' ? p.status_sw : p.status_en}</p>
                     </div>
                 </div>
             `).join('');
@@ -949,14 +1146,21 @@
             const details = serviceFullDetails[id];
             if(details) {
                 const title = currentLang === 'sw' ? details.title_sw : details.title_en;
-                let description = currentLang === 'sw' ? details.desc_sw : details.desc_en;
-                description = description.replace(/\n/g, '<br>');
+                const description = currentLang === 'sw' ? details.desc_sw : details.desc_en;
                 document.getElementById('serviceModalContent').innerHTML = `
-                    <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-4">${title}</h2>
+                    <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-3">${title}</h2>
                     <div class="text-gray-800 dark:text-gray-200 text-sm leading-relaxed">${description}</div>
-                    <div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-                        <p class="text-sm text-gray-600 dark:text-gray-400"><i class="fas fa-phone mr-2 text-blue-600"></i> 0719 336 667</p>
-                        <p class="text-sm text-gray-600 dark:text-gray-400"><i class="fas fa-envelope mr-2 text-blue-600"></i> info@geotraverse.com</p>
+                    <div class="mt-5 pt-3 border-t border-gray-200 dark:border-gray-700">
+                        <p class="text-xs text-gray-600 dark:text-gray-400"><i class="fas fa-phone mr-2 text-blue-600"></i> 0719 336 667</p>
+                        <p class="text-xs text-gray-600 dark:text-gray-400"><i class="fas fa-envelope mr-2 text-blue-600"></i> info@geotraverse.com</p>
+                        <div class="mt-3 flex gap-2 flex-wrap">
+                            <span class="sms-icon inline-flex" onclick="closeServiceModal(); sendSMS('Nina swali kuhusu ${title}')">
+                                <i class="fas fa-sms text-xs"></i> <span class="text-xs">SMS</span>
+                            </span>
+                            <span class="call-icon inline-flex" onclick="closeServiceModal(); makeCall()">
+                                <i class="fas fa-phone-alt text-xs"></i> <span class="text-xs">Simu</span>
+                            </span>
+                        </div>
                     </div>
                 `;
                 document.getElementById('serviceModal').classList.add('active');
@@ -1015,7 +1219,7 @@
             
             if (found && foundElement) {
                 foundElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                foundElement.style.boxShadow = '0 0 0 3px #0f74ba';
+                foundElement.style.boxShadow = '0 0 0 2px var(--primary-color)';
                 setTimeout(() => { foundElement.style.boxShadow = ''; }, 2000);
             }
         }
@@ -1042,6 +1246,13 @@
             document.documentElement.lang = currentLang;
             document.getElementById('currentLangDisplay').textContent = currentLang === 'sw' ? 'Kiswahili' : 'English';
             
+            document.getElementById('heroTitle1') && (document.getElementById('heroTitle1').innerText = translations.heroTitle1[currentLang]);
+            document.getElementById('heroTitleHighlight') && (document.getElementById('heroTitleHighlight').innerText = translations.heroTitleHighlight[currentLang]);
+            document.getElementById('heroTitle2') && (document.getElementById('heroTitle2').innerText = translations.heroTitle2[currentLang]);
+            document.getElementById('heroSubtitle') && (document.getElementById('heroSubtitle').innerText = translations.heroSubtitle[currentLang]);
+            document.getElementById('heroBtn1') && (document.getElementById('heroBtn1').innerText = translations.heroBtn1[currentLang]);
+            document.getElementById('heroBtn2') && (document.getElementById('heroBtn2').innerText = translations.heroBtn2[currentLang]);
+            
             document.querySelectorAll('.nav-link, .mobile-nav-link').forEach(link => {
                 const swText = link.getAttribute('data-sw');
                 const enText = link.getAttribute('data-en');
@@ -1063,7 +1274,7 @@
             for(let i = 1; i <= 4; i++) {
                 const el = document.getElementById(`aboutItem${i}`);
                 if(el && translations[`aboutItem${i}`] && translations[`aboutItem${i}`][currentLang]) {
-                    el.innerHTML = `<i class="fas fa-check-circle text-green-500 text-sm"></i>${translations[`aboutItem${i}`][currentLang]}`;
+                    el.innerHTML = `<i class="fas fa-check-circle text-green-500 text-xs"></i>${translations[`aboutItem${i}`][currentLang]}`;
                 }
             }
             
@@ -1090,13 +1301,11 @@
             updateFooterLanguage();
             
             const nameInput = document.getElementById('contactName');
-            const emailInput = document.getElementById('contactEmail');
             const phoneInput = document.getElementById('contactPhone');
             const messageInput = document.getElementById('contactMessage');
             if(nameInput) nameInput.placeholder = currentLang === 'sw' ? 'Jina lako' : 'Your Name';
-            if(emailInput) emailInput.placeholder = currentLang === 'sw' ? 'Barua pepe' : 'Your Email';
-            if(phoneInput) phoneInput.placeholder = currentLang === 'sw' ? 'Simu' : 'Phone';
-            if(messageInput) messageInput.placeholder = currentLang === 'sw' ? 'Ujumbe wako' : 'Your Message';
+            if(phoneInput) phoneInput.placeholder = currentLang === 'sw' ? 'Namba ya simu' : 'Phone Number';
+            if(messageInput) messageInput.placeholder = currentLang === 'sw' ? 'Ujumbe wako...' : 'Your message...';
             
             updateHeroServicesList();
             renderServices();
@@ -1127,9 +1336,9 @@
         function showToast(msg, isError = false) {
             const toast = document.createElement('div');
             toast.className = `toast ${isError ? 'error' : ''}`;
-            toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-circle' : 'fa-check-circle'} mr-2"></i>${msg}`;
+            toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-circle' : 'fa-check-circle'} mr-1"></i>${msg}`;
             document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
+            setTimeout(() => toast.remove(), 2500);
         }
         
         // Staff Dropdown
@@ -1140,15 +1349,27 @@
             document.addEventListener('click', () => staffDropdown.classList.remove('show'));
         }
         
+        // Settings Dropdown
+        const settingsDropdown = document.getElementById('settingsDropdown');
+        const settingsBtn = document.getElementById('settingsDropdownBtn');
+        if(settingsBtn && settingsDropdown) {
+            settingsBtn.addEventListener('click', (e) => { e.stopPropagation(); settingsDropdown.classList.toggle('show'); });
+            document.addEventListener('click', () => settingsDropdown.classList.remove('show'));
+        }
+        
         // Contact Form
         document.getElementById('contactForm')?.addEventListener('submit', function(e) {
             e.preventDefault();
             const name = document.getElementById('contactName').value;
-            if(name) {
-                showToast(currentLang === 'sw' ? `Asante ${name}! Ujumbe wako umetumwa.` : `Thank you ${name}! Your message has been sent.`);
+            const phone = document.getElementById('contactPhone').value;
+            const message = document.getElementById('contactMessage').value;
+            if(name && phone && message) {
+                const fullMessage = `Jina: ${name}%0ANamba: ${phone}%0AUjumbe: ${message}`;
+                window.location.href = `sms:${COMPANY_PHONE}?body=${fullMessage}`;
+                showToast(currentLang === 'sw' ? `Asante ${name}! Ujumbe wako umetumwa kwa SMS` : `Thank you ${name}! Your message has been sent via SMS`);
                 this.reset();
             } else {
-                showToast(currentLang === 'sw' ? 'Tafadhali jaza nyanja zote' : 'Please fill all fields', true);
+                showToast(currentLang === 'sw' ? 'Tafadhali jaza nyanja zote (Jina, Simu, Ujumbe)' : 'Please fill all fields (Name, Phone, Message)', true);
             }
         });
         
@@ -1156,21 +1377,7 @@
         let isDark = false;
         const darkToggle = document.getElementById('darkModeToggle');
         const darkIcon = document.getElementById('darkModeIcon');
-        const mobileDarkToggleBtn = document.getElementById('mobileDarkToggle');
-        function toggleDark() {
-            isDark = !isDark;
-            if(isDark) {
-                document.body.classList.add('dark-mode');
-                darkIcon.classList.remove('fa-moon'); darkIcon.classList.add('fa-sun');
-                if(mobileDarkToggleBtn) mobileDarkToggleBtn.innerHTML = '<i class="fas fa-sun mr-2"></i> Light Mode';
-            } else {
-                document.body.classList.remove('dark-mode');
-                darkIcon.classList.remove('fa-sun'); darkIcon.classList.add('fa-moon');
-                if(mobileDarkToggleBtn) mobileDarkToggleBtn.innerHTML = '<i class="fas fa-moon mr-2"></i> Dark Mode';
-            }
-        }
-        if(darkToggle) darkToggle.addEventListener('click', toggleDark);
-        if(mobileDarkToggleBtn) mobileDarkToggleBtn.addEventListener('click', toggleDark);
+        if(darkToggle) { darkToggle.addEventListener('click', toggleDarkModeGlobal); }
         
         // Scroll to top
         window.addEventListener('scroll', () => {
@@ -1179,7 +1386,7 @@
         });
         document.getElementById('scrollTopBtn')?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
         
-        // Smooth scroll with mobile menu close
+        // Smooth scroll
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
                 const href = this.getAttribute('href');
@@ -1202,14 +1409,22 @@
         const searchInput = document.getElementById('searchInput');
         searchInput?.addEventListener('input', performSearch);
         
+        // Expose global functions
         window.scrollToContact = scrollToContact;
-        
-        loadSavedLanguage();
-        
+        window.scrollToContactWithMessage = scrollToContactWithMessage;
+        window.sendSMSQuick = sendSMSQuick;
+        window.makeCall = makeCall;
+        window.sendSMS = sendSMS;
         window.openServiceModal = openServiceModal;
         window.closeServiceModal = closeServiceModal;
         window.openProjectImage = openProjectImage;
         window.closeImageModal = closeImageModal;
+        window.changeWebsiteColor = changeWebsiteColor;
+        window.toggleDarkModeGlobal = toggleDarkModeGlobal;
+        
+        loadSavedLanguage();
+        loadSavedWebsiteColor();
+        loadDarkModeGlobal();
     </script>
 </body>
 </html>
