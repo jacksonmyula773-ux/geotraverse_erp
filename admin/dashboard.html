@@ -20,7 +20,44 @@
         ::-webkit-scrollbar-track { background: #e4e4e7; border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: #a1a1aa; border-radius: 10px; }
         
-        .sidebar { background: linear-gradient(180deg, #0f74ba 0%, #0a5a8e 100%); transition: background-color 0.3s ease; }
+        /* Sidebar with scroll */
+        .sidebar {
+            background: linear-gradient(180deg, #0f74ba 0%, #0a5a8e 100%);
+            transition: background-color 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 1.5rem 0.75rem;
+            scrollbar-width: thin;
+        }
+        
+        .sidebar-nav::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .sidebar-nav::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+        }
+        
+        .sidebar-nav::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 10px;
+        }
+        
+        .sidebar-footer {
+            padding: 1rem;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            flex-shrink: 0;
+        }
+        
         .nav-item { transition: all 0.2s ease; border-left: 3px solid transparent; cursor: pointer; }
         .nav-item.active { background-color: rgba(255,255,255,0.12); border-left-color: #60a5fa; }
         .nav-item.active i { color: #60a5fa; }
@@ -110,17 +147,93 @@
         .password-toggle { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #9ca3af; }
         .password-toggle:hover { color: #0f74ba; }
         
-        .search-highlight {
-            background-color: rgba(15, 116, 186, 0.2);
-            border-radius: 4px;
-            padding: 0 2px;
+        /* Search results modal */
+        .search-results-modal {
+            position: fixed;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 600px;
+            max-height: 70vh;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
+            z-index: 1000;
+            overflow: hidden;
+            display: none;
+            flex-direction: column;
         }
+        .search-results-modal.active { display: flex; }
+        .search-results-header {
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #0f74ba, #0a5a8e);
+            color: white;
+            font-weight: 600;
+        }
+        .search-results-content {
+            padding: 15px;
+            overflow-y: auto;
+            max-height: 60vh;
+        }
+        .search-result-group {
+            margin-bottom: 20px;
+        }
+        .search-result-group h4 {
+            font-size: 12px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .search-result-item {
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 5px;
+        }
+        .search-result-item:hover {
+            background-color: #f3f4f6;
+        }
+        .dark-mode .search-results-modal { background: #1e293b; }
+        .dark-mode .search-result-item:hover { background-color: #334155; }
+        .dark-mode .search-result-group h4 { color: #94a3b8; border-bottom-color: #334155; }
         
-        .no-results {
-            text-align: center;
-            padding: 40px;
-            color: #9ca3af;
+        .search-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            display: none;
+        }
+        .search-overlay.active { display: block; }
+        
+        /* Session timeout warning */
+        .session-warning {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #f59e0b;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            z-index: 1001;
+            display: none;
             font-size: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .session-warning.show { display: block; animation: fadeInUp 0.3s ease; }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translate(-50%, 20px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
         }
         
         @media (max-width: 768px) {
@@ -130,6 +243,7 @@
             .mobile-menu-overlay.open { display: block; }
             .employee-table-container { overflow-x: auto; }
             .employee-table { min-width: 800px; }
+            .search-results-modal { top: 60px; width: 95%; }
         }
     </style>
 </head>
@@ -143,13 +257,32 @@
 <!-- Mobile Menu Overlay -->
 <div id="mobileMenuOverlay" class="mobile-menu-overlay" onclick="closeMobileSidebar()"></div>
 
+<!-- Session Timeout Warning -->
+<div id="sessionWarning" class="session-warning">
+    <i class="fas fa-clock mr-2"></i> Your session will expire in <span id="sessionTimer">60</span> seconds due to inactivity.
+    <button onclick="resetSessionTimer()" class="ml-3 bg-white text-orange-600 px-2 py-1 rounded text-xs">Stay Logged In</button>
+</div>
+
+<!-- Global Search Modal -->
+<div id="searchOverlay" class="search-overlay" onclick="closeGlobalSearch()"></div>
+<div id="searchResultsModal" class="search-results-modal">
+    <div class="search-results-header">
+        <i class="fas fa-search mr-2"></i> Search Results
+        <button onclick="closeGlobalSearch()" class="float-right text-white hover:text-gray-200">&times;</button>
+    </div>
+    <div id="searchResultsContent" class="search-results-content">
+        <div class="text-center text-gray-400 py-8">Start typing to search...</div>
+    </div>
+</div>
+
 <!-- MAIN DASHBOARD -->
 <div id="dashboardApp">
 <div class="flex h-screen overflow-hidden">
     
-    <!-- SIDEBAR -->
+    <!-- SIDEBAR WITH SCROLL -->
     <aside id="mainSidebar" class="sidebar w-64 shadow-xl flex flex-col z-20">
-        <div class="px-6 py-6 border-b border-white/20">
+        <!-- Sidebar Header - Fixed -->
+        <div class="px-6 py-6 border-b border-white/20 flex-shrink-0">
             <div class="flex items-center space-x-3">
                 <img src="https://i.postimg.cc/MT6jTVHh/weblogo.png" alt="GeoTraverse Logo" class="w-10 h-10 rounded-lg object-cover">
                 <div>
@@ -159,33 +292,40 @@
             </div>
         </div>
         
-        <nav class="flex-1 px-3 py-6 space-y-1">
-            <a href="#" class="nav-item active flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white" data-section="dashboard">
-                <i class="fas fa-tachometer-alt w-5 text-white/70"></i><span>Dashboard</span>
-            </a>
-            <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white" data-section="employees">
-                <i class="fas fa-users w-5 text-white/70"></i><span>Employees</span>
-            </a>
-            <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white" data-section="departments">
-                <i class="fas fa-building w-5 text-white/70"></i><span>Departments</span>
-            </a>
-            <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white" data-section="reports">
-                <i class="fas fa-chart-line w-5 text-white/70"></i><span>Reports</span>
-            </a>
-            <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white" data-section="tasks">
-                <i class="fas fa-tasks w-5 text-white/70"></i><span>Tasks</span>
-                <span class="ml-auto bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full" id="pendingTasksBadge">0</span>
-            </a>
-            <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white" data-section="messages">
-                <i class="fas fa-envelope w-5 text-white/70"></i><span>Messages</span>
-                <span class="ml-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full" id="unreadMessagesBadge">0</span>
-            </a>
-            <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white" data-section="settings">
-                <i class="fas fa-cog w-5 text-white/70"></i><span>Settings</span>
-            </a>
-        </nav>
+        <!-- Sidebar Navigation - Scrollable -->
+        <div class="sidebar-nav flex-1 overflow-y-auto">
+            <nav class="space-y-1">
+                <a href="#" class="nav-item active flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white" data-section="dashboard">
+                    <i class="fas fa-tachometer-alt w-5 text-white/70"></i><span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white" data-section="employees">
+                    <i class="fas fa-users w-5 text-white/70"></i><span>Employees</span>
+                </a>
+                <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white" data-section="departments">
+                    <i class="fas fa-building w-5 text-white/70"></i><span>Departments</span>
+                </a>
+                <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white" data-section="reports">
+                    <i class="fas fa-chart-line w-5 text-white/70"></i><span>Reports</span>
+                </a>
+                <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white" data-section="tasks">
+                    <i class="fas fa-tasks w-5 text-white/70"></i><span>Tasks</span>
+                    <span class="ml-auto bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full" id="pendingTasksBadge">0</span>
+                </a>
+                <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white" data-section="messages">
+                    <i class="fas fa-envelope w-5 text-white/70"></i><span>Messages</span>
+                    <span class="ml-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full" id="unreadMessagesBadge">0</span>
+                </a>
+                <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white" data-section="projects">
+                    <i class="fas fa-building w-5 text-white/70"></i><span>Projects</span>
+                </a>
+                <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white" data-section="settings">
+                    <i class="fas fa-cog w-5 text-white/70"></i><span>Settings</span>
+                </a>
+            </nav>
+        </div>
         
-        <div class="p-4 border-t border-white/20">
+        <!-- Sidebar Footer - Fixed with Logout -->
+        <div class="sidebar-footer flex-shrink-0">
             <div class="flex items-center space-x-3 mb-3">
                 <div class="w-9 h-9 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full flex items-center justify-center">
                     <i class="fas fa-user text-white text-sm"></i>
@@ -218,13 +358,16 @@
                         <i class="fas fa-external-link-alt text-sm"></i><span>Main Website</span>
                     </a>
                 </div>
+                
+                <!-- Search Bar - Auto Search (No Button) -->
                 <div class="flex-1 max-w-md mx-4">
                     <div class="relative">
                         <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
-                        <input type="text" id="searchInput" placeholder="Search employees, tasks, messages..." 
+                        <input type="text" id="globalSearchInput" placeholder="Search anything (employees, tasks, messages, projects)..." 
                                class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-500">
                     </div>
                 </div>
+                
                 <button id="darkModeToggle" class="text-gray-500 hover:text-blue-600 transition">
                     <i id="darkModeIcon" class="fas fa-moon text-xl"></i>
                 </button>
@@ -382,27 +525,11 @@
                 </div>
             </div>
             
-            <!-- ==================== REPORTS SECTION ==================== -->
-            <div id="reportsSection" class="hidden">
-                <div class="mb-6"><h2 class="text-2xl font-bold gradient-text">Reports Dashboard</h2><p class="text-gray-500 mt-1">Generate and view department reports</p></div>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8" id="reportDepartmentsGrid"></div>
-                <div id="departmentReportView" class="hidden">
-                    <button onclick="closeDepartmentReport()" class="text-gray-500 hover:text-blue-600 mb-4"><i class="fas fa-arrow-left"></i> Back to Departments</button>
-                    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-                        <div class="bg-gradient-to-r from-blue-600 to-blue-700 p-5 text-white"><h3 id="reportDeptTitle" class="text-xl font-bold">Department Reports</h3><p id="reportDeptDesc" class="text-blue-200 mt-1">Department Reports</p></div>
-                        <div class="flex border-b flex-wrap">
-                            <button onclick="loadReport('daily')" id="tabDaily" class="report-tab active">Daily Report</button>
-                            <button onclick="loadReport('weekly')" id="tabWeekly" class="report-tab">Weekly Report</button>
-                            <button onclick="loadReport('monthly')" id="tabMonthly" class="report-tab">Monthly Report</button>
-                            <button onclick="loadReport('annual')" id="tabAnnual" class="report-tab">Annual Report</button>
-                        </div>
-                        <div id="reportContent" class="p-6"></div>
-                        <div class="px-6 py-4 border-t bg-gray-50 flex justify-end space-x-3">
-                            <button onclick="exportToPDF()" class="bg-red-600 text-white px-4 py-2 rounded-lg"><i class="fas fa-file-pdf"></i> Export PDF</button>
-                            <button onclick="exportToExcel()" class="bg-green-600 text-white px-4 py-2 rounded-lg"><i class="fas fa-file-excel"></i> Export Excel</button>
-                            <button onclick="window.print()" class="bg-gray-600 text-white px-4 py-2 rounded-lg"><i class="fas fa-print"></i> Print</button>
-                        </div>
-                    </div>
+            <!-- ==================== PROJECTS SECTION ==================== -->
+            <div id="projectsSection" class="hidden">
+                <div class="bg-white rounded-xl shadow-sm p-5">
+                    <h3 class="text-lg font-semibold mb-4"><i class="fas fa-building mr-2 text-green-500"></i>All Projects</h3>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4" id="projectsGrid"></div>
                 </div>
             </div>
             
@@ -436,12 +563,35 @@
                 </div>
             </div>
             
+            <!-- ==================== REPORTS SECTION ==================== -->
+            <div id="reportsSection" class="hidden">
+                <div class="mb-6"><h2 class="text-2xl font-bold gradient-text">Reports Dashboard</h2><p class="text-gray-500 mt-1">Generate and view department reports</p></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8" id="reportDepartmentsGrid"></div>
+                <div id="departmentReportView" class="hidden">
+                    <button onclick="closeDepartmentReport()" class="text-gray-500 hover:text-blue-600 mb-4"><i class="fas fa-arrow-left"></i> Back to Departments</button>
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                        <div class="bg-gradient-to-r from-blue-600 to-blue-700 p-5 text-white"><h3 id="reportDeptTitle" class="text-xl font-bold">Department Reports</h3><p id="reportDeptDesc" class="text-blue-200 mt-1">Department Reports</p></div>
+                        <div class="flex border-b flex-wrap">
+                            <button onclick="loadReport('daily')" id="tabDaily" class="report-tab active">Daily Report</button>
+                            <button onclick="loadReport('weekly')" id="tabWeekly" class="report-tab">Weekly Report</button>
+                            <button onclick="loadReport('monthly')" id="tabMonthly" class="report-tab">Monthly Report</button>
+                            <button onclick="loadReport('annual')" id="tabAnnual" class="report-tab">Annual Report</button>
+                        </div>
+                        <div id="reportContent" class="p-6"></div>
+                        <div class="px-6 py-4 border-t bg-gray-50 flex justify-end space-x-3">
+                            <button onclick="exportToPDF()" class="bg-red-600 text-white px-4 py-2 rounded-lg"><i class="fas fa-file-pdf"></i> Export PDF</button>
+                            <button onclick="exportToExcel()" class="bg-green-600 text-white px-4 py-2 rounded-lg"><i class="fas fa-file-excel"></i> Export Excel</button>
+                            <button onclick="window.print()" class="bg-gray-600 text-white px-4 py-2 rounded-lg"><i class="fas fa-print"></i> Print</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <!-- ==================== SETTINGS SECTION ==================== -->
             <div id="settingsSection" class="hidden">
                 <div class="mb-6"><h2 class="text-2xl font-bold gradient-text">Settings</h2><p class="text-gray-500 mt-1">Manage your application preferences</p></div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-6">
-                    <!-- Reset Password Card -->
                     <div class="setting-card bg-white rounded-xl shadow-sm p-5">
                         <div class="flex items-center space-x-3 mb-3"><i class="fas fa-key text-2xl text-blue-600"></i><h3 class="font-bold text-lg">Reset Password</h3></div>
                         <p class="text-sm text-gray-500 mb-3">Change your admin account password</p>
@@ -453,7 +603,6 @@
                         </div>
                     </div>
                     
-                    <!-- Sidebar Color Card -->
                     <div class="setting-card bg-white rounded-xl shadow-sm p-5">
                         <div class="flex items-center space-x-3 mb-3"><i class="fas fa-palette text-2xl text-purple-600"></i><h3 class="font-bold text-lg">Sidebar Color</h3></div>
                         <p class="text-sm text-gray-500 mb-3">Choose your preferred sidebar color</p>
@@ -468,14 +617,12 @@
                         <p class="text-xs text-gray-400 mt-3"><i class="fas fa-info-circle mr-1"></i> Saved automatically</p>
                     </div>
                     
-                    <!-- Backup & Restore Card -->
                     <div class="setting-card bg-white rounded-xl shadow-sm p-5">
                         <div class="flex items-center space-x-3 mb-3"><i class="fas fa-database text-2xl text-green-600"></i><h3 class="font-bold text-lg">Backup & Restore</h3></div>
                         <p class="text-sm text-gray-500 mb-3">Backup or restore your data</p>
                         <div class="flex gap-2"><button onclick="createBackup()" class="flex-1 bg-green-600 text-white px-3 py-2 rounded-lg text-sm"><i class="fas fa-download mr-1"></i> Backup</button><button onclick="restoreBackup()" class="flex-1 bg-orange-600 text-white px-3 py-2 rounded-lg text-sm"><i class="fas fa-upload mr-1"></i> Restore</button></div>
                     </div>
                     
-                    <!-- System Logs Card -->
                     <div class="setting-card bg-white rounded-xl shadow-sm p-5">
                         <div class="flex items-center space-x-3 mb-3"><i class="fas fa-history text-2xl text-blue-600"></i><h3 class="font-bold text-lg">System Logs</h3></div>
                         <p class="text-sm text-gray-500 mb-3">View recent system activities</p>
@@ -483,7 +630,6 @@
                         <button onclick="clearAllLogs()" class="w-full mt-3 bg-red-600 text-white px-3 py-2 rounded-lg text-sm"><i class="fas fa-trash mr-1"></i> Clear All Logs</button>
                     </div>
                     
-                    <!-- General Settings Card -->
                     <div class="setting-card bg-white rounded-xl shadow-sm p-5">
                         <div class="flex items-center space-x-3 mb-3"><i class="fas fa-globe text-2xl text-blue-600"></i><h3 class="font-bold text-lg">General Settings</h3></div>
                         <p class="text-sm text-gray-500 mb-3">Company information & preferences</p>
@@ -496,7 +642,6 @@
                         </div>
                     </div>
                     
-                    <!-- Email Configuration Card -->
                     <div class="setting-card bg-white rounded-xl shadow-sm p-5">
                         <div class="flex items-center space-x-3 mb-3"><i class="fas fa-envelope text-2xl text-blue-600"></i><h3 class="font-bold text-lg">Email Config</h3></div>
                         <p class="text-sm text-gray-500 mb-3">SMTP email settings</p>
@@ -581,8 +726,65 @@
     })();
     
     // ==================== LOGOUT ====================
-    function logout() { localStorage.removeItem('admin_token'); localStorage.removeItem('admin_user'); showToast('Logged out successfully'); setTimeout(() => window.location.href = 'login.html', 500); }
+    function logout() { 
+        localStorage.removeItem('admin_token'); 
+        localStorage.removeItem('admin_user'); 
+        localStorage.removeItem('last_activity'); 
+        showToast('Logged out successfully'); 
+        setTimeout(() => window.location.href = 'login.html', 500); 
+    }
     document.getElementById('logoutBtn')?.addEventListener('click', logout);
+    
+    // ==================== AUTO LOGOUT AFTER 1 HOUR INACTIVITY ====================
+    let inactivityTimer = null;
+    let warningTimer = null;
+    let warningCountdown = null;
+    const INACTIVITY_LIMIT = 60 * 60 * 1000;
+    const WARNING_TIME = 30 * 1000;
+    
+    function resetInactivityTimer() {
+        if (inactivityTimer) clearTimeout(inactivityTimer);
+        if (warningTimer) clearTimeout(warningTimer);
+        if (warningCountdown) clearInterval(warningCountdown);
+        document.getElementById('sessionWarning').classList.remove('show');
+        inactivityTimer = setTimeout(showSessionWarning, INACTIVITY_LIMIT - WARNING_TIME);
+        localStorage.setItem('last_activity', Date.now().toString());
+    }
+    
+    function showSessionWarning() {
+        let secondsLeft = 30;
+        const warningDiv = document.getElementById('sessionWarning');
+        const timerSpan = document.getElementById('sessionTimer');
+        warningDiv.classList.add('show');
+        timerSpan.innerText = secondsLeft;
+        warningTimer = setTimeout(() => { logout(); }, WARNING_TIME);
+        warningCountdown = setInterval(() => {
+            secondsLeft--;
+            timerSpan.innerText = secondsLeft;
+            if (secondsLeft <= 0) clearInterval(warningCountdown);
+        }, 1000);
+    }
+    
+    function resetSessionTimer() {
+        resetInactivityTimer();
+        showToast('Session extended! You will remain logged in.');
+    }
+    
+    const activities = ['click', 'mousemove', 'keypress', 'scroll', 'touchstart'];
+    activities.forEach(activity => { document.addEventListener(activity, resetInactivityTimer); });
+    
+    function checkExistingSession() {
+        const lastActivity = localStorage.getItem('last_activity');
+        if (lastActivity) {
+            const timeSinceLastActivity = Date.now() - parseInt(lastActivity);
+            if (timeSinceLastActivity >= INACTIVITY_LIMIT) { logout(); }
+            else {
+                const remainingTime = INACTIVITY_LIMIT - timeSinceLastActivity;
+                if (remainingTime > 0) { inactivityTimer = setTimeout(showSessionWarning, remainingTime - WARNING_TIME); }
+            }
+        } else { resetInactivityTimer(); }
+    }
+    checkExistingSession();
     
     // ==================== TOAST ====================
     function showToast(message, isError = false) {
@@ -599,18 +801,14 @@
     async function apiCall(endpoint, options = {}) {
         const token = localStorage.getItem('admin_token');
         const defaultOptions = {
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': token || ''
-            }
+            headers: { 'Content-Type': 'application/json', 'Authorization': token || '' }
         };
         try {
             const response = await fetch(`${API_BASE}/${endpoint}`, { ...defaultOptions, ...options });
             const data = await response.json();
             if (!response.ok) {
                 if (response.status === 401) {
-                    localStorage.removeItem('admin_token');
-                    localStorage.removeItem('admin_user');
+                    localStorage.removeItem('admin_token'); localStorage.removeItem('admin_user');
                     showToast('Session expired. Please login again.', true);
                     setTimeout(() => window.location.href = 'login.html', 1500);
                 }
@@ -624,15 +822,178 @@
         }
     }
     
+    // ==================== DATA STORES ====================
+    let employees = [];
+    let tasks = [];
+    let messages = [];
+    let projects = [];
+    let activityLogs = [];
+    
+    // ==================== LOAD ALL DATA ====================
+    async function loadEmployeesFromAPI() {
+        try {
+            const result = await apiCall('employees.php');
+            if (result.success && result.data) { 
+                employees = result.data; 
+                renderEmployeeTable(); 
+                updateDashboardCounts(); 
+                return employees; 
+            }
+        } catch (error) { employees = []; renderEmployeeTable(); }
+    }
+    
+    async function loadTasksFromAPI() {
+        try {
+            const result = await apiCall('tasks.php');
+            if (result.success && result.data) { tasks = result.data; renderTasks(); updateDashboardCounts(); return tasks; }
+        } catch (error) { tasks = []; renderTasks(); }
+    }
+    
+    async function loadMessagesFromAPI() {
+        try {
+            const result = await apiCall('messages.php');
+            if (result.success && result.data) { messages = result.data; renderMessagesList(); updateDashboardCounts(); return messages; }
+        } catch (error) { messages = []; renderMessagesList(); }
+    }
+    
+    async function loadProjectsFromAPI() {
+        try {
+            const result = await apiCall('projects.php');
+            if (result.success && result.data) { projects = result.data; renderProjects(); return projects; }
+        } catch (error) { projects = []; renderProjects(); }
+    }
+    
+    // ==================== GLOBAL SEARCH FUNCTION (Auto - No Button) ====================
+    let searchTimeout = null;
+    
+    function performAutoSearch() {
+        const searchTerm = document.getElementById('globalSearchInput').value.toLowerCase().trim();
+        
+        if (searchTimeout) clearTimeout(searchTimeout);
+        
+        searchTimeout = setTimeout(() => {
+            if (searchTerm === '') {
+                closeGlobalSearch();
+                return;
+            }
+            
+            const results = {
+                employees: employees.filter(emp => 
+                    emp.name?.toLowerCase().includes(searchTerm) ||
+                    emp.email?.toLowerCase().includes(searchTerm) ||
+                    emp.phone?.includes(searchTerm) ||
+                    emp.role?.toLowerCase().includes(searchTerm) ||
+                    emp.department?.toLowerCase().includes(searchTerm)
+                ),
+                tasks: tasks.filter(task => 
+                    task.title?.toLowerCase().includes(searchTerm) ||
+                    task.description?.toLowerCase().includes(searchTerm) ||
+                    task.department?.toLowerCase().includes(searchTerm)
+                ),
+                messages: messages.filter(msg => 
+                    msg.from_department?.toLowerCase().includes(searchTerm) ||
+                    msg.subject?.toLowerCase().includes(searchTerm) ||
+                    msg.message?.toLowerCase().includes(searchTerm)
+                ),
+                projects: projects.filter(proj => 
+                    proj.name?.toLowerCase().includes(searchTerm) ||
+                    proj.client_name?.toLowerCase().includes(searchTerm) ||
+                    proj.location?.toLowerCase().includes(searchTerm)
+                )
+            };
+            
+            displaySearchResults(results, searchTerm);
+            openGlobalSearch();
+        }, 300);
+    }
+    
+    function displaySearchResults(results, searchTerm) {
+        const contentDiv = document.getElementById('searchResultsContent');
+        let html = '';
+        
+        if (results.employees.length > 0) {
+            html += `<div class="search-result-group"><h4><i class="fas fa-users mr-1"></i> Employees (${results.employees.length})</h4>`;
+            results.employees.forEach(emp => {
+                html += `<div class="search-result-item" onclick="goToSectionAndHighlight('employees', ${emp.id}, '${emp.name.replace(/'/g, "\\'")}')">
+                    <div class="font-medium text-sm">👤 ${escapeHtml(emp.name)}</div>
+                    <div class="text-xs text-gray-500">${escapeHtml(emp.email)} | ${emp.role} | ${emp.department}</div>
+                </div>`;
+            });
+            html += `</div>`;
+        }
+        
+        if (results.tasks.length > 0) {
+            html += `<div class="search-result-group"><h4><i class="fas fa-tasks mr-1"></i> Tasks (${results.tasks.length})</h4>`;
+            results.tasks.forEach(task => {
+                html += `<div class="search-result-item" onclick="goToSectionAndHighlight('tasks', ${task.id}, '${task.title.replace(/'/g, "\\'")}')">
+                    <div class="font-medium text-sm">📋 ${escapeHtml(task.title)}</div>
+                    <div class="text-xs text-gray-500">${escapeHtml(task.description?.substring(0, 60) || '')} | ${task.department}</div>
+                    <div class="text-xs ${task.completed ? 'text-green-500' : 'text-orange-500'} mt-1">${task.completed ? '✓ Completed' : '⏳ Pending'}</div>
+                </div>`;
+            });
+            html += `</div>`;
+        }
+        
+        if (results.messages.length > 0) {
+            html += `<div class="search-result-group"><h4><i class="fas fa-envelope mr-1"></i> Messages (${results.messages.length})</h4>`;
+            results.messages.forEach(msg => {
+                html += `<div class="search-result-item" onclick="goToSectionAndHighlight('messages', ${msg.id}, '${msg.subject.replace(/'/g, "\\'")}')">
+                    <div class="font-medium text-sm">📧 ${escapeHtml(msg.subject)}</div>
+                    <div class="text-xs text-gray-500">From: ${msg.from_department} Dept | ${escapeHtml(msg.message?.substring(0, 50) || '')}</div>
+                    <div class="text-xs ${!msg.is_read ? 'text-blue-500 font-medium' : 'text-gray-400'} mt-1">${!msg.is_read ? '📬 Unread' : '✓ Read'}</div>
+                </div>`;
+            });
+            html += `</div>`;
+        }
+        
+        if (results.projects.length > 0) {
+            html += `<div class="search-result-group"><h4><i class="fas fa-building mr-1"></i> Projects (${results.projects.length})</h4>`;
+            results.projects.forEach(proj => {
+                html += `<div class="search-result-item" onclick="goToSectionAndHighlight('projects', ${proj.id}, '${proj.name.replace(/'/g, "\\'")}')">
+                    <div class="font-medium text-sm">🏗️ ${escapeHtml(proj.name)}</div>
+                    <div class="text-xs text-gray-500">Client: ${escapeHtml(proj.client_name || 'N/A')} | Amount: TZS ${parseFloat(proj.amount || 0).toLocaleString()}</div>
+                    <div class="text-xs ${proj.status === 'completed' ? 'text-green-500' : (proj.status === 'in_progress' ? 'text-orange-600' : 'text-blue-600')} mt-1">Status: ${proj.status}</div>
+                </div>`;
+            });
+            html += `</div>`;
+        }
+        
+        if (results.employees.length === 0 && results.tasks.length === 0 && results.messages.length === 0 && results.projects.length === 0) {
+            html = `<div class="text-center text-gray-400 py-8"><i class="fas fa-search text-3xl mb-2"></i><p>No results found for "${escapeHtml(searchTerm)}"</p><p class="text-xs mt-2">Try searching by name, email, title, or other keywords</p></div>`;
+        }
+        
+        contentDiv.innerHTML = html;
+    }
+    
+    function openGlobalSearch() {
+        document.getElementById('searchResultsModal').classList.add('active');
+        document.getElementById('searchOverlay').classList.add('active');
+    }
+    
+    function closeGlobalSearch() {
+        document.getElementById('searchResultsModal').classList.remove('active');
+        document.getElementById('searchOverlay').classList.remove('active');
+    }
+    
+    function goToSectionAndHighlight(section, id, name) {
+        closeGlobalSearch();
+        document.getElementById('globalSearchInput').value = '';
+        const sectionMap = { 'employees': 'employeeSection', 'tasks': 'tasksSection', 'messages': 'messagesSection', 'projects': 'projectsSection' };
+        if (sectionMap[section]) {
+            showSection(sectionMap[section]);
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+            document.querySelector(`.nav-item[data-section="${section}"]`)?.classList.add('active');
+            setTimeout(() => showToast(`Found: ${name}`, false), 500);
+        }
+    }
+    
     // ==================== DASHBOARD API ====================
     async function loadDashboardFromAPI() {
         try {
             const employeesResult = await apiCall('employees.php');
-            if (employeesResult.success && employeesResult.data) {
-                const totalEmployees = employeesResult.data.length;
-                document.getElementById('totalEmployees').innerText = totalEmployees;
+            if (employeesResult.success && employeesResult.data) { 
+                document.getElementById('totalEmployees').innerText = employeesResult.data.length; 
             }
-            
             const result = await apiCall('admin_dashboard.php');
             if (result.success && result.data) {
                 document.getElementById('pendingTasksCount').innerText = result.data.stats?.pending_tasks || 0;
@@ -644,62 +1005,27 @@
                 document.getElementById('totalInvoices').innerText = result.data.stats?.total_invoices || 0;
                 document.getElementById('totalOrders').innerText = result.data.stats?.total_orders || 0;
                 document.getElementById('totalMeetings').innerText = result.data.stats?.total_meetings || 0;
-                
                 if (result.data.recent_activities && result.data.recent_activities.length > 0) {
-                    const activityFeed = document.getElementById('activityFeed');
-                    activityFeed.innerHTML = result.data.recent_activities.map(act => `
-                        <div class="flex items-start gap-3 p-2 hover:bg-gray-50 rounded-lg transition">
-                            <i class="fas fa-circle text-blue-500 text-xs mt-1"></i>
-                            <div class="flex-1">
-                                <p class="text-sm">${escapeHtml(act.action)}</p>
-                                <p class="text-xs text-gray-400">${act.time || act.created_at || 'Just now'}</p>
-                            </div>
-                        </div>
-                    `).join('');
+                    document.getElementById('activityFeed').innerHTML = result.data.recent_activities.map(act => `<div class="flex items-start gap-3 p-2 hover:bg-gray-50 rounded-lg transition"><i class="fas fa-circle text-blue-500 text-xs mt-1"></i><div class="flex-1"><p class="text-sm">${escapeHtml(act.action)}</p><p class="text-xs text-gray-400">${act.time || act.created_at || 'Just now'}</p></div></div>`).join('');
                 } else {
                     document.getElementById('activityFeed').innerHTML = '<div class="text-center text-gray-400 py-4">No recent activity</div>';
                 }
             }
-        } catch (error) {
-            console.error('Error loading dashboard:', error);
-        }
+        } catch (error) { console.error('Error loading dashboard:', error); }
     }
     
-    // ==================== EMPLOYEES API ====================
-    let employees = [];
-    
-    async function loadEmployeesFromAPI() {
-        try {
-            const result = await apiCall('employees.php');
-            if (result.success && result.data) {
-                employees = result.data;
-                renderEmployeeTable();
-                return employees;
-            }
-        } catch (error) {
-            console.error('Error loading employees:', error);
-            employees = [];
-            renderEmployeeTable();
-        }
-    }
-    
+    // ==================== EMPLOYEES CRUD ====================
     async function addEmployeeToAPI(employeeData) {
         try {
             const result = await apiCall('employees.php', { method: 'POST', body: JSON.stringify(employeeData) });
             if (result.success) {
                 showToast('Employee added successfully');
-                await loadEmployeesFromAPI();
-                await loadDashboardFromAPI();
+                await loadEmployeesFromAPI(); 
+                await loadDashboardFromAPI(); 
                 renderDepartmentsGrid();
                 return true;
-            } else {
-                showToast(result.message || 'Failed to add employee', true);
-                return false;
-            }
-        } catch (error) {
-            showToast('Failed to add employee: ' + error.message, true);
-            return false;
-        }
+            } else { showToast(result.message || 'Failed to add employee', true); return false; }
+        } catch (error) { showToast('Failed to add employee: ' + error.message, true); return false; }
     }
     
     async function updateEmployeeInAPI(id, employeeData) {
@@ -707,17 +1033,11 @@
             const result = await apiCall('employees.php', { method: 'PUT', body: JSON.stringify({ id, ...employeeData }) });
             if (result.success) {
                 showToast('Employee updated successfully');
-                await loadEmployeesFromAPI();
+                await loadEmployeesFromAPI(); 
                 await loadDashboardFromAPI();
                 return true;
-            } else {
-                showToast(result.message || 'Failed to update employee', true);
-                return false;
-            }
-        } catch (error) {
-            showToast('Failed to update employee: ' + error.message, true);
-            return false;
-        }
+            } else { showToast(result.message || 'Failed to update employee', true); return false; }
+        } catch (error) { showToast('Failed to update employee: ' + error.message, true); return false; }
     }
     
     async function deleteEmployeeFromAPI(id) {
@@ -725,87 +1045,39 @@
             const result = await apiCall(`employees.php?id=${id}`, { method: 'DELETE' });
             if (result.success) {
                 showToast('Employee deleted successfully');
-                await loadEmployeesFromAPI();
-                await loadDashboardFromAPI();
+                await loadEmployeesFromAPI(); 
+                await loadDashboardFromAPI(); 
                 renderDepartmentsGrid();
                 return true;
-            } else {
-                showToast(result.message || 'Failed to delete employee', true);
-                return false;
-            }
-        } catch (error) {
-            showToast('Failed to delete employee: ' + error.message, true);
-            return false;
-        }
+            } else { showToast(result.message || 'Failed to delete employee', true); return false; }
+        } catch (error) { showToast('Failed to delete employee: ' + error.message, true); return false; }
     }
     
-    // ==================== TASKS API ====================
-    let tasks = [];
-    
-    async function loadTasksFromAPI() {
-        try {
-            const result = await apiCall('tasks.php');
-            if (result.success && result.data) {
-                tasks = result.data;
-                renderTasks();
-                updateDashboardCounts();
-                return tasks;
-            }
-        } catch (error) {
-            console.error('Error loading tasks:', error);
-            tasks = [];
-            renderTasks();
-        }
-    }
-    
+    // ==================== TASKS CRUD ====================
     async function addTaskToAPI(taskData) {
         try {
             const result = await apiCall('tasks.php', { method: 'POST', body: JSON.stringify(taskData) });
             if (result.success) {
                 showToast('Task added successfully');
-                await loadTasksFromAPI();
+                await loadTasksFromAPI(); 
                 await loadDashboardFromAPI();
                 return true;
             }
-        } catch (error) {
-            showToast('Failed to add task', true);
-            return false;
-        }
+        } catch (error) { showToast('Failed to add task', true); return false; }
     }
     
     async function toggleTaskInAPI(id, completed) {
         try {
             const result = await apiCall('tasks.php', { method: 'PUT', body: JSON.stringify({ id, completed: completed ? 1 : 0 }) });
             if (result.success) {
-                await loadTasksFromAPI();
+                await loadTasksFromAPI(); 
                 await loadDashboardFromAPI();
                 return true;
             }
-        } catch (error) {
-            showToast('Failed to update task', true);
-            return false;
-        }
+        } catch (error) { showToast('Failed to update task', true); return false; }
     }
     
-    // ==================== MESSAGES API ====================
-    let messages = [];
-    
-    async function loadMessagesFromAPI() {
-        try {
-            const result = await apiCall('messages.php');
-            if (result.success && result.data) {
-                messages = result.data;
-                renderMessagesList();
-                updateDashboardCounts();
-                return messages;
-            }
-        } catch (error) {
-            console.error('Error loading messages:', error);
-            messages = [];
-            renderMessagesList();
-        }
-    }
-    
+    // ==================== MESSAGES CRUD ====================
     async function sendReplyToAPI(messageId, replyText) {
         try {
             const result = await apiCall('messages.php', { method: 'POST', body: JSON.stringify({ id: messageId, reply_message: replyText }) });
@@ -814,10 +1086,7 @@
                 await loadMessagesFromAPI();
                 return true;
             }
-        } catch (error) {
-            showToast('Failed to send reply', true);
-            return false;
-        }
+        } catch (error) { showToast('Failed to send reply', true); return false; }
     }
     
     async function deleteMessageFromAPI(messageId) {
@@ -828,67 +1097,20 @@
                 await loadMessagesFromAPI();
                 updateDashboardCounts();
                 const detailView = document.getElementById('messageDetailView');
-                if (detailView) {
-                    detailView.innerHTML = `
-                        <i class="fas fa-envelope-open-text text-5xl mb-3"></i>
-                        <p>Select a message to view, reply or delete</p>
-                    `;
-                }
+                if (detailView) { detailView.innerHTML = `<i class="fas fa-envelope-open-text text-5xl mb-3"></i><p>Select a message to view, reply or delete</p>`; }
                 return true;
-            } else {
-                showToast(result.message || 'Failed to delete message', true);
-                return false;
-            }
-        } catch (error) {
-            showToast('Failed to delete message: ' + error.message, true);
-            return false;
-        }
-    }
-    
-    // ==================== PROJECTS API ====================
-    let projects = [];
-    
-    async function loadProjectsFromAPI() {
-        try {
-            const result = await apiCall('projects.php');
-            if (result.success && result.data) {
-                projects = result.data;
-                renderProjects();
-                return projects;
-            }
-        } catch (error) {
-            console.error('Error loading projects:', error);
-            projects = [];
-            renderProjects();
-        }
-    }
-    
-    // ==================== REPORTS API ====================
-    async function loadDepartmentReportFromAPI(department, period) {
-        try {
-            const result = await apiCall(`reports.php?department=${department}&period=${period}`);
-            if (result.success && result.data) {
-                return result.data;
-            }
-        } catch (error) {
-            console.error('Error loading report:', error);
-            return null;
-        }
+            } else { showToast(result.message || 'Failed to delete message', true); return false; }
+        } catch (error) { showToast('Failed to delete message: ' + error.message, true); return false; }
     }
     
     // ==================== HELPER FUNCTIONS ====================
     function escapeHtml(text) { if (!text) return ''; const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
     
-    // ==================== ACTIVITY LOGS (Clear logs inafanya kazi vizuri) ====================
-    let activityLogs = [];
-    
+    // ==================== ACTIVITY LOGS ====================
     function loadActivityLogs() {
         const savedLogs = localStorage.getItem('geotraverse_activity_logs');
         if (savedLogs) { activityLogs = JSON.parse(savedLogs); } 
-        else { 
-            activityLogs = []; 
-            saveActivityLogs(); 
-        }
+        else { activityLogs = []; saveActivityLogs(); }
         renderSystemLogs();
         renderActivityFeed();
     }
@@ -918,12 +1140,10 @@
     function renderActivityFeed() {
         const feedDiv = document.getElementById('activityFeed');
         if (!feedDiv) return;
-        
         if (activityLogs.length === 0) {
             feedDiv.innerHTML = '<div class="text-center text-gray-400 py-4 text-sm"><i class="fas fa-inbox mr-1"></i> No recent activity</div>';
             return;
         }
-        
         const recentLogs = activityLogs.slice(0, 5);
         feedDiv.innerHTML = recentLogs.map(log => `
             <div class="flex items-start gap-3 p-2 hover:bg-gray-50 rounded-lg transition">
@@ -948,23 +1168,12 @@
     
     // ==================== DASHBOARD CHART ====================
     let revenueChart = null;
-    
     function loadDashboardChart() {
         const ctx = document.getElementById('revenueChart').getContext('2d');
         if (revenueChart) revenueChart.destroy();
         revenueChart = new Chart(ctx, {
             type: 'line',
-            data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                datasets: [{
-                    label: 'Revenue (TZS M)',
-                    data: [12, 19, 15, 22, 28, 32],
-                    borderColor: '#0f74ba',
-                    backgroundColor: 'rgba(15,116,186,0.1)',
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
+            data: { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], datasets: [{ label: 'Revenue (TZS M)', data: [12, 19, 15, 22, 28, 32], borderColor: '#0f74ba', backgroundColor: 'rgba(15,116,186,0.1)', fill: true, tension: 0.4 }] },
             options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom' } } }
         });
     }
@@ -979,12 +1188,7 @@
     
     function renderDepartmentsGrid() {
         const grid = document.getElementById('departmentsGrid'); if(!grid) return;
-        const deptCounts = {
-            'Managers': employees.filter(e => e.department === 'Management').length,
-            'Finance': employees.filter(e => e.department === 'Finance').length,
-            'Sales': employees.filter(e => e.department === 'Sales & Marketing').length,
-            'Secretary': employees.filter(e => e.department === 'Administration').length
-        };
+        const deptCounts = { 'Managers': employees.filter(e => e.department === 'Management').length, 'Finance': employees.filter(e => e.department === 'Finance').length, 'Sales': employees.filter(e => e.department === 'Sales & Marketing').length, 'Secretary': employees.filter(e => e.department === 'Administration').length };
         grid.innerHTML = departmentsData.map(dept => `<div class="dept-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"><div class="bg-${dept.color}-600 p-4 text-white"><div class="flex items-center justify-between"><i class="fas ${dept.icon} text-3xl"></i><span class="bg-white/20 px-2 py-1 rounded-lg text-sm">${dept.displayName}</span></div><h3 class="text-xl font-bold mt-3">${dept.name}</h3></div><div class="p-4"><div class="flex justify-between mb-3"><span class="text-gray-500 text-sm">Employees</span><span class="text-2xl font-bold">${deptCounts[dept.displayName] || 0}</span></div><div class="flex gap-2"><button onclick="openDepartmentDashboard('${dept.displayName}')" class="flex-1 bg-${dept.color}-50 text-${dept.color}-600 py-2 rounded-lg text-sm font-medium hover:bg-${dept.color}-100 transition"><i class="fas fa-chalkboard-user"></i> View Dashboard</button><a href="${dept.website}" target="_blank" class="flex-1 bg-gray-50 text-gray-600 py-2 rounded-lg text-sm font-medium hover:bg-gray-100 transition flex items-center justify-center"><i class="fas fa-external-link-alt mr-1"></i> Visit Website</a></div></div></div>`).join('');
     }
     
@@ -1003,764 +1207,147 @@
         const grid = document.getElementById('managersProjectsGrid');
         if(!grid) return;
         const managerProjects = projects.filter(p => p.status !== 'completed').slice(0, 2);
-        if(managerProjects.length === 0) {
-            grid.innerHTML = '<div class="col-span-2 text-center text-gray-400 py-8">No projects found</div>';
-        } else {
-            grid.innerHTML = managerProjects.map(p => `<div class="project-card bg-white p-3"><div class="h-32 bg-purple-100 rounded-lg flex items-center justify-center"><i class="fas fa-building text-purple-500 text-3xl"></i></div><p class="font-bold mt-2">${escapeHtml(p.name)}</p><p class="text-sm ${p.status === 'completed' ? 'text-green-600' : (p.status === 'in_progress' ? 'text-orange-600' : 'text-blue-600')}">${p.status}</p><button onclick="showToast('View Project Details')" class="mt-2 text-purple-600 text-sm">View Details →</button></div>`).join('');
+        if(managerProjects.length === 0) { grid.innerHTML = '<div class="col-span-2 text-center text-gray-400 py-8">No projects found</div>'; }
+        else { grid.innerHTML = managerProjects.map(p => `<div class="project-card bg-white p-3"><div class="h-32 bg-purple-100 rounded-lg flex items-center justify-center"><i class="fas fa-building text-purple-500 text-3xl"></i></div><p class="font-bold mt-2">${escapeHtml(p.name)}</p><p class="text-sm ${p.status === 'completed' ? 'text-green-600' : (p.status === 'in_progress' ? 'text-orange-600' : 'text-blue-600')}">${p.status}</p><button onclick="showToast('View Project Details')" class="mt-2 text-purple-600 text-sm">View Details →</button></div>`).join('');
         }
     }
     
-    function renderFinanceInvoices() { 
-        const div = document.getElementById('financeInvoicesList');
-        if(!div) return;
-        div.innerHTML = `<div class="text-center text-gray-400 py-4">No invoices found</div>`;
-    }
-    
-    function renderSalesOrders() { 
-        const div = document.getElementById('salesOrdersList');
-        if(!div) return;
-        div.innerHTML = `<div class="text-center text-gray-400 py-4">No orders found</div>`;
-    }
-    
-    function renderSecretaryMessages() { 
-        const div = document.getElementById('secretaryMessagesList');
-        if(!div) return;
-        div.innerHTML = `<div class="text-center text-gray-400 py-4">No recent messages</div>`;
-    }
+    function renderFinanceInvoices() { const div = document.getElementById('financeInvoicesList'); if(div) div.innerHTML = `<div class="text-center text-gray-400 py-4">No invoices found</div>`; }
+    function renderSalesOrders() { const div = document.getElementById('salesOrdersList'); if(div) div.innerHTML = `<div class="text-center text-gray-400 py-4">No orders found</div>`; }
+    function renderSecretaryMessages() { const div = document.getElementById('secretaryMessagesList'); if(div) div.innerHTML = `<div class="text-center text-gray-400 py-4">No recent messages</div>`; }
     
     // ==================== EMPLOYEES RENDER ====================
     function getRoleBadge(role) { 
-        const badges = { 
-            'Manager': 'bg-purple-100 text-purple-700', 
-            'Accountant': 'bg-green-100 text-green-700', 
-            'Sales Executive': 'bg-blue-100 text-blue-700', 
-            'Secretary': 'bg-red-100 text-red-700' 
-        }; 
+        const badges = { 'Manager': 'bg-purple-100 text-purple-700', 'Accountant': 'bg-green-100 text-green-700', 'Sales Executive': 'bg-blue-100 text-blue-700', 'Secretary': 'bg-red-100 text-red-700' }; 
         return badges[role] || 'bg-gray-100 text-gray-700'; 
     }
     
     function renderEmployeeTable() {
-        const tbody = document.getElementById('employeeTableBody'); 
-        if(!tbody) return;
-        
-        let filteredEmployees = employees;
-        if (currentSearchTerm && currentSearchTerm !== '') {
-            filteredEmployees = employees.filter(emp => 
-                emp.name?.toLowerCase().includes(currentSearchTerm) ||
-                emp.email?.toLowerCase().includes(currentSearchTerm) ||
-                emp.phone?.includes(currentSearchTerm) ||
-                emp.role?.toLowerCase().includes(currentSearchTerm) ||
-                emp.department?.toLowerCase().includes(currentSearchTerm)
-            );
-        }
-        
-        if(filteredEmployees.length === 0 && currentSearchTerm && currentSearchTerm !== '') {
-            tbody.innerHTML = `<tr><td colspan="9" class="text-center py-8 text-gray-500">No employees found matching "${currentSearchTerm}"</td></td>`;
-            return;
-        }
-        
-        if(filteredEmployees.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="9" class="text-center py-8 text-gray-500">No employees found. Click "Add Employee" to add one.</td></tr>';
-            return;
-        }
-        
-        tbody.innerHTML = filteredEmployees.map(emp => `
-            <tr class="employee-row border-b hover:bg-gray-50 transition">
-                <td class="px-4 py-3 text-sm">${emp.id}</td>
-                <td class="px-4 py-3 font-medium text-sm">${escapeHtml(emp.name)}</td>
-                <td class="px-4 py-3 text-sm hidden sm:table-cell">${escapeHtml(emp.email)}</td>
-                <td class="px-4 py-3 text-sm hidden md:table-cell">${emp.phone || '-'}</td>
-                <td class="px-4 py-3"><span class="px-2 py-1 text-xs rounded-full ${getRoleBadge(emp.role)}">${emp.role}</span></td>
-                <td class="px-4 py-3 text-sm hidden lg:table-cell">${emp.department}</td>
-                <td class="px-4 py-3 text-sm font-semibold text-green-600">TZS ${parseFloat(emp.salary).toLocaleString()}</td>
-                <td class="px-4 py-3"><span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">${emp.status || 'Active'}</span></td>
-                <td class="px-4 py-3">
-                    <button onclick="openEditEmployeeModal(${emp.id})" class="text-blue-600 hover:text-blue-800 mr-2 transition" title="Edit">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button onclick="deleteEmployee(${emp.id})" class="text-red-600 hover:text-red-800 mr-2 transition" title="Delete">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                    <button onclick="openChangePwdModal(${emp.id})" class="text-orange-600 hover:text-orange-800 transition" title="Change Password">
-                        <i class="fas fa-key"></i>
-                    </button>
-                 </td>
-              </tr>
-        `).join('');
+        const tbody = document.getElementById('employeeTableBody'); if(!tbody) return;
+        if(employees.length === 0) { tbody.innerHTML = '<tr><td colspan="9" class="text-center py-8 text-gray-500">No employees found. Click "Add Employee" to add one. </td> </tr>'; return; }
+        tbody.innerHTML = employees.map(emp => `<tr class="employee-row border-b hover:bg-gray-50 transition"><td class="px-4 py-3 text-sm">${emp.id}</td><td class="px-4 py-3 font-medium text-sm">${escapeHtml(emp.name)}</td><td class="px-4 py-3 text-sm hidden sm:table-cell">${escapeHtml(emp.email)}</td><td class="px-4 py-3 text-sm hidden md:table-cell">${emp.phone || '-'}</td><td class="px-4 py-3"><span class="px-2 py-1 text-xs rounded-full ${getRoleBadge(emp.role)}">${emp.role}</span></td><td class="px-4 py-3 text-sm hidden lg:table-cell">${emp.department}</td><td class="px-4 py-3 text-sm font-semibold text-green-600">TZS ${parseFloat(emp.salary).toLocaleString()}</td><td class="px-4 py-3"><span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">${emp.status || 'Active'}</span></td><td class="px-4 py-3"><button onclick="openEditEmployeeModal(${emp.id})" class="text-blue-600 hover:text-blue-800 mr-2"><i class="fas fa-edit"></i></button><button onclick="deleteEmployee(${emp.id})" class="text-red-600 hover:text-red-800 mr-2"><i class="fas fa-trash"></i></button><button onclick="openChangePwdModal(${emp.id})" class="text-orange-600 hover:text-orange-800"><i class="fas fa-key"></i></button></td></tr>`).join('');
     }
     
-    // ==================== EXPORT EMPLOYEES TO EXCEL ====================
     function exportEmployeesToExcel() {
-        if (!employees || employees.length === 0) {
-            showToast('No employee data to export', true);
-            return;
-        }
-        
-        let excelData = [
-            ['GeoTraverse - Employees Report'],
-            [`Generated on: ${new Date().toLocaleString()}`],
-            [`Total Employees: ${employees.length}`],
-            [],
-            ['ID', 'Name', 'Email', 'Phone', 'Role', 'Department', 'Salary (TZS)', 'Status']
-        ];
-        
-        employees.forEach(emp => {
-            excelData.push([
-                emp.id,
-                emp.name,
-                emp.email,
-                emp.phone || '-',
-                emp.role,
-                emp.department,
-                parseFloat(emp.salary).toLocaleString(),
-                emp.status || 'Active'
-            ]);
-        });
-        
-        excelData.push([]);
-        excelData.push(['Summary']);
-        excelData.push([`Total Employees: ${employees.length}`]);
-        excelData.push([`Active Employees: ${employees.filter(e => e.status === 'active').length}`]);
-        
-        const wb = XLSX.utils.book_new();
-        const ws = XLSX.utils.aoa_to_sheet(excelData);
-        ws['!cols'] = [{wch:5}, {wch:20}, {wch:25}, {wch:15}, {wch:15}, {wch:20}, {wch:15}, {wch:10}];
-        
-        XLSX.utils.book_append_sheet(wb, ws, 'Employees_Report');
-        XLSX.writeFile(wb, `employees_report_${new Date().toISOString().slice(0,10)}.xlsx`);
-        
+        if (!employees || employees.length === 0) { showToast('No employee data to export', true); return; }
+        let excelData = [['GeoTraverse - Employees Report'], [`Generated on: ${new Date().toLocaleString()}`], [`Total Employees: ${employees.length}`], [], ['ID', 'Name', 'Email', 'Phone', 'Role', 'Department', 'Salary (TZS)', 'Status']];
+        employees.forEach(emp => { excelData.push([emp.id, emp.name, emp.email, emp.phone || '-', emp.role, emp.department, parseFloat(emp.salary).toLocaleString(), emp.status || 'Active']); });
+        excelData.push([], ['Summary'], [`Total Employees: ${employees.length}`], [`Active Employees: ${employees.filter(e => e.status === 'active').length}`]);
+        const wb = XLSX.utils.book_new(); const ws = XLSX.utils.aoa_to_sheet(excelData); ws['!cols'] = [{wch:5}, {wch:20}, {wch:25}, {wch:15}, {wch:15}, {wch:20}, {wch:15}, {wch:10}];
+        XLSX.utils.book_append_sheet(wb, ws, 'Employees_Report'); XLSX.writeFile(wb, `employees_report_${new Date().toISOString().slice(0,10)}.xlsx`);
         showToast('Employees exported to Excel successfully!');
     }
     
     function openAddEmployeeModal() { document.getElementById('employeeModal').classList.remove('hidden'); document.getElementById('employeeModal').classList.add('flex'); }
     function closeModal() { document.getElementById('employeeModal').classList.add('hidden'); document.getElementById('employeeModal').classList.remove('flex'); document.getElementById('employeeForm').reset(); }
-    
-    function openEditEmployeeModal(id) { 
-        const emp = employees.find(e => e.id === id); 
-        if(emp) { 
-            document.getElementById('editEmpId').value = emp.id; 
-            document.getElementById('editEmpName').value = emp.name; 
-            document.getElementById('editEmpEmail').value = emp.email; 
-            document.getElementById('editEmpPhone').value = emp.phone || ''; 
-            document.getElementById('editEmpRole').value = emp.role; 
-            document.getElementById('editEmpDepartment').value = emp.department; 
-            document.getElementById('editEmpSalary').value = emp.salary; 
-            document.getElementById('editEmployeeModal').classList.remove('hidden'); 
-            document.getElementById('editEmployeeModal').classList.add('flex'); 
-        } 
-    }
+    function openEditEmployeeModal(id) { const emp = employees.find(e => e.id === id); if(emp) { document.getElementById('editEmpId').value = emp.id; document.getElementById('editEmpName').value = emp.name; document.getElementById('editEmpEmail').value = emp.email; document.getElementById('editEmpPhone').value = emp.phone || ''; document.getElementById('editEmpRole').value = emp.role; document.getElementById('editEmpDepartment').value = emp.department; document.getElementById('editEmpSalary').value = emp.salary; document.getElementById('editEmployeeModal').classList.remove('hidden'); document.getElementById('editEmployeeModal').classList.add('flex'); } }
     function closeEditModal() { document.getElementById('editEmployeeModal').classList.add('hidden'); document.getElementById('editEmployeeModal').classList.remove('flex'); }
-    
-    async function deleteEmployee(id) { 
-        if(confirm('Are you sure you want to delete this employee?')) { 
-            await deleteEmployeeFromAPI(id); 
-            addActivityLog(`Deleted employee ID ${id}`); 
-        } 
-    }
-    
-    function openChangePwdModal(id) { 
-        const emp = employees.find(e => e.id === id); 
-        if(emp) { 
-            document.getElementById('pwdEmpId').value = emp.id; 
-            document.getElementById('pwdEmpName').value = emp.name; 
-            document.getElementById('changePwdModal').classList.remove('hidden'); 
-            document.getElementById('changePwdModal').classList.add('flex'); 
-        } 
-    }
+    async function deleteEmployee(id) { if(confirm('Are you sure you want to delete this employee?')) { await deleteEmployeeFromAPI(id); addActivityLog(`Deleted employee ID ${id}`); } }
+    function openChangePwdModal(id) { const emp = employees.find(e => e.id === id); if(emp) { document.getElementById('pwdEmpId').value = emp.id; document.getElementById('pwdEmpName').value = emp.name; document.getElementById('changePwdModal').classList.remove('hidden'); document.getElementById('changePwdModal').classList.add('flex'); } }
     function closePwdModal() { document.getElementById('changePwdModal').classList.add('hidden'); document.getElementById('changePwdModal').classList.remove('flex'); document.getElementById('changePwdForm').reset(); }
     function changeEmployeePassword() { const newPwd = document.getElementById('newPassword').value; const confirmPwd = document.getElementById('confirmNewPassword').value; if(!newPwd) { showToast('Enter new password', true); return; } if(newPwd !== confirmPwd) { showToast('Passwords do not match', true); return; } showToast('Password changed'); closePwdModal(); }
     
-    document.getElementById('employeeForm')?.addEventListener('submit', async function(e) { 
-        e.preventDefault(); 
-        const name = document.getElementById('empName').value; 
-        if(!name) return; 
-        const employeeData = { 
-            name, 
-            email: document.getElementById('empEmail').value, 
-            phone: document.getElementById('empPhone').value, 
-            role: document.getElementById('empRole').value, 
-            department: document.getElementById('empDepartment').value, 
-            salary: document.getElementById('empSalary').value 
-        }; 
-        await addEmployeeToAPI(employeeData); 
-        addActivityLog(`Added new employee: ${name}`); 
-        closeModal(); 
-        document.getElementById('employeeForm').reset(); 
-    });
-    
-    document.getElementById('editEmployeeForm')?.addEventListener('submit', async function(e) { 
-        e.preventDefault(); 
-        const id = parseInt(document.getElementById('editEmpId').value); 
-        const employeeData = { 
-            name: document.getElementById('editEmpName').value, 
-            email: document.getElementById('editEmpEmail').value, 
-            phone: document.getElementById('editEmpPhone').value, 
-            role: document.getElementById('editEmpRole').value, 
-            department: document.getElementById('editEmpDepartment').value, 
-            salary: document.getElementById('editEmpSalary').value 
-        }; 
-        await updateEmployeeInAPI(id, employeeData); 
-        addActivityLog(`Updated employee: ${employeeData.name}`); 
-        closeEditModal(); 
-    });
-    
+    document.getElementById('employeeForm')?.addEventListener('submit', async function(e) { e.preventDefault(); const name = document.getElementById('empName').value; if(!name) return; const employeeData = { name, email: document.getElementById('empEmail').value, phone: document.getElementById('empPhone').value, role: document.getElementById('empRole').value, department: document.getElementById('empDepartment').value, salary: document.getElementById('empSalary').value }; await addEmployeeToAPI(employeeData); addActivityLog(`Added new employee: ${name}`); closeModal(); document.getElementById('employeeForm').reset(); });
+    document.getElementById('editEmployeeForm')?.addEventListener('submit', async function(e) { e.preventDefault(); const id = parseInt(document.getElementById('editEmpId').value); const employeeData = { name: document.getElementById('editEmpName').value, email: document.getElementById('editEmpEmail').value, phone: document.getElementById('editEmpPhone').value, role: document.getElementById('editEmpRole').value, department: document.getElementById('editEmpDepartment').value, salary: document.getElementById('editEmpSalary').value }; await updateEmployeeInAPI(id, employeeData); addActivityLog(`Updated employee: ${employeeData.name}`); closeEditModal(); });
     document.getElementById('changePwdForm')?.addEventListener('submit', function(e) { e.preventDefault(); changeEmployeePassword(); });
     
     // ==================== TASKS RENDER ====================
     function renderTasks() {
-        const pendingDiv = document.getElementById('pendingTasksList'); 
-        const completedDiv = document.getElementById('completedTasksList');
-        
-        let filteredTasks = tasks;
-        if (currentSearchTerm && currentSearchTerm !== '') {
-            filteredTasks = tasks.filter(t => 
-                t.title?.toLowerCase().includes(currentSearchTerm) ||
-                t.description?.toLowerCase().includes(currentSearchTerm) ||
-                t.department?.toLowerCase().includes(currentSearchTerm)
-            );
+        const pendingDiv = document.getElementById('pendingTasksList'); const completedDiv = document.getElementById('completedTasksList');
+        if(tasks.length === 0) {
+            if(pendingDiv) pendingDiv.innerHTML = '<div class="text-center text-gray-400 py-8">No pending tasks</div>';
+            if(completedDiv) completedDiv.innerHTML = '<div class="text-center text-gray-400 py-8">No completed tasks</div>';
+            document.getElementById('pendingTasksBadgeInline') && (document.getElementById('pendingTasksBadgeInline').innerText = '0');
+            return;
         }
-        
-        const pendingTasks = filteredTasks.filter(t => !t.completed);
-        const completedTasks = filteredTasks.filter(t => t.completed);
-        
+        const pendingTasks = tasks.filter(t => !t.completed); const completedTasks = tasks.filter(t => t.completed);
         document.getElementById('pendingTasksBadgeInline') && (document.getElementById('pendingTasksBadgeInline').innerText = pendingTasks.length);
-        
-        if(pendingDiv) {
-            if(pendingTasks.length === 0 && currentSearchTerm && currentSearchTerm !== '') {
-                pendingDiv.innerHTML = `<div class="text-center text-gray-400 py-8">No pending tasks matching "${currentSearchTerm}"</div>`;
-            } else if(pendingTasks.length === 0) {
-                pendingDiv.innerHTML = '<div class="text-center text-gray-400 py-8">No pending tasks</div>';
-            } else {
-                pendingDiv.innerHTML = pendingTasks.map(t => `
-                    <div class="task-item">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <p class="font-semibold text-sm">${escapeHtml(t.title)}</p>
-                                <p class="text-xs text-gray-500 mt-1">${escapeHtml(t.description)}</p>
-                                <span class="text-xs text-blue-500">${t.department}</span>
-                            </div>
-                            <input type="checkbox" onchange="toggleTask(${t.id})" class="w-5 h-5 cursor-pointer">
-                        </div>
-                    </div>
-                `).join('');
-            }
-        }
-        
-        if(completedDiv) {
-            if(completedTasks.length === 0 && currentSearchTerm && currentSearchTerm !== '') {
-                completedDiv.innerHTML = `<div class="text-center text-gray-400 py-8">No completed tasks matching "${currentSearchTerm}"</div>`;
-            } else if(completedTasks.length === 0) {
-                completedDiv.innerHTML = '<div class="text-center text-gray-400 py-8">No completed tasks</div>';
-            } else {
-                completedDiv.innerHTML = completedTasks.map(t => `
-                    <div class="task-item opacity-75">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <p class="font-semibold text-sm line-through text-gray-400">${escapeHtml(t.title)}</p>
-                                <p class="text-xs text-gray-400">${escapeHtml(t.description)}</p>
-                            </div>
-                            <i class="fas fa-check-circle text-green-500"></i>
-                        </div>
-                    </div>
-                `).join('');
-            }
-        }
+        if(pendingDiv) { if(pendingTasks.length === 0) { pendingDiv.innerHTML = '<div class="text-center text-gray-400 py-8">No pending tasks</div>'; } else { pendingDiv.innerHTML = pendingTasks.map(t => `<div class="task-item"><div class="flex justify-between items-start"><div><p class="font-semibold text-sm">${escapeHtml(t.title)}</p><p class="text-xs text-gray-500 mt-1">${escapeHtml(t.description)}</p><span class="text-xs text-blue-500">${t.department}</span></div><input type="checkbox" onchange="toggleTask(${t.id})" class="w-5 h-5 cursor-pointer" ${t.completed ? 'checked' : ''}></div></div>`).join(''); } }
+        if(completedDiv) { if(completedTasks.length === 0) { completedDiv.innerHTML = '<div class="text-center text-gray-400 py-8">No completed tasks</div>'; } else { completedDiv.innerHTML = completedTasks.map(t => `<div class="task-item opacity-75"><div class="flex justify-between items-start"><div><p class="font-semibold text-sm line-through text-gray-400">${escapeHtml(t.title)}</p><p class="text-xs text-gray-400">${escapeHtml(t.description)}</p></div><i class="fas fa-check-circle text-green-500"></i></div></div>`).join(''); } }
     }
     
-    async function toggleTask(id) { 
-        const task = tasks.find(t => t.id === id); 
-        if(task) { 
-            await toggleTaskInAPI(id, !task.completed); 
-            addActivityLog(task.completed ? `Task marked incomplete: ${task.title}` : `Task completed: ${task.title}`); 
-        } 
-    }
-    
+    async function toggleTask(id) { const task = tasks.find(t => t.id === id); if(task) { await toggleTaskInAPI(id, !task.completed); addActivityLog(task.completed ? `Task marked incomplete: ${task.title}` : `Task completed: ${task.title}`); } }
     function openAddTaskModal() { document.getElementById('taskModal').classList.remove('hidden'); document.getElementById('taskModal').classList.add('flex'); }
     function closeTaskModal() { document.getElementById('taskModal').classList.add('hidden'); document.getElementById('taskModal').classList.remove('flex'); document.getElementById('taskTitle').value = ''; document.getElementById('taskDescription').value = ''; }
-    
-    async function addNewTask() { 
-        const title = document.getElementById('taskTitle').value; 
-        if(!title) { showToast('Enter task title', true); return; } 
-        const taskData = { 
-            title, 
-            description: document.getElementById('taskDescription').value || 'No description', 
-            department: document.getElementById('taskDepartment').value 
-        }; 
-        await addTaskToAPI(taskData); 
-        addActivityLog(`Added new task: ${title}`); 
-        closeTaskModal(); 
-    }
+    async function addNewTask() { const title = document.getElementById('taskTitle').value; if(!title) { showToast('Enter task title', true); return; } const taskData = { title, description: document.getElementById('taskDescription').value || 'No description', department: document.getElementById('taskDepartment').value }; await addTaskToAPI(taskData); addActivityLog(`Added new task: ${title}`); closeTaskModal(); }
     
     // ==================== MESSAGES RENDER ====================
-    function formatTime(date) { 
-        if(!date) return 'Just now'; 
-        const d = new Date(date); 
-        const now = new Date(); 
-        const diff = now - d; 
-        const minutes = Math.floor(diff / 60000); 
-        const hours = Math.floor(diff / 3600000); 
-        const days = Math.floor(diff / 86400000); 
-        if(minutes < 60) return `${minutes} min ago`; 
-        if(hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`; 
-        return `${days} day${days > 1 ? 's' : ''} ago`; 
-    }
+    function formatTime(date) { if(!date) return 'Just now'; const d = new Date(date); const now = new Date(); const diff = now - d; const minutes = Math.floor(diff / 60000); const hours = Math.floor(diff / 3600000); const days = Math.floor(diff / 86400000); if(minutes < 60) return `${minutes} min ago`; if(hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`; return `${days} day${days > 1 ? 's' : ''} ago`; }
     
     function renderMessagesList() {
-        const convDiv = document.getElementById('messagesList'); 
-        if(!convDiv) return;
-        
-        let filteredMessages = messages;
-        if (currentSearchTerm && currentSearchTerm !== '') {
-            filteredMessages = messages.filter(m => 
-                m.from_department?.toLowerCase().includes(currentSearchTerm) ||
-                m.subject?.toLowerCase().includes(currentSearchTerm) ||
-                m.message?.toLowerCase().includes(currentSearchTerm)
-            );
-        }
-        
-        if(filteredMessages.length === 0 && currentSearchTerm && currentSearchTerm !== '') {
-            convDiv.innerHTML = `<div class="text-center text-gray-400 py-8">No messages matching "${currentSearchTerm}"</div>`;
-            return;
-        }
-        
-        if(filteredMessages.length === 0) {
-            convDiv.innerHTML = '<div class="text-center text-gray-400 py-8">No messages found</div>';
-            return;
-        }
-        
-        convDiv.innerHTML = filteredMessages.map(m => `
-            <div class="message-item p-3 rounded-lg ${!m.is_read ? 'message-unread' : 'hover:bg-gray-50'}" onclick="viewConversation(${m.id})">
-                <div class="flex justify-between">
-                    <span class="font-semibold">${escapeHtml(m.from_department)} Dept</span>
-                    <span class="text-xs text-gray-400">${formatTime(m.created_at)}</span>
-                </div>
-                <p class="text-sm truncate">${escapeHtml(m.subject)}</p>
-                <div class="flex justify-between items-center mt-1">
-                    <p class="text-xs text-gray-400">${m.reply_message ? 'Replied' : 'Awaiting reply'}</p>
-                    <button onclick="event.stopPropagation(); deleteMessage(${m.id})" class="text-red-500 hover:text-red-700 text-xs" title="Delete Message">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            </div>
-        `).join('');
+        const convDiv = document.getElementById('messagesList'); if(!convDiv) return;
+        if(messages.length === 0) { convDiv.innerHTML = '<div class="text-center text-gray-400 py-8">No messages found</div>'; return; }
+        convDiv.innerHTML = messages.map(m => `<div class="message-item p-3 rounded-lg ${!m.is_read ? 'message-unread' : 'hover:bg-gray-50'}" onclick="viewConversation(${m.id})"><div class="flex justify-between"><span class="font-semibold">${escapeHtml(m.from_department)} Dept</span><span class="text-xs text-gray-400">${formatTime(m.created_at)}</span></div><p class="text-sm truncate">${escapeHtml(m.subject)}</p><div class="flex justify-between items-center mt-1"><p class="text-xs text-gray-400">${m.reply_message ? 'Replied' : 'Awaiting reply'}</p><button onclick="event.stopPropagation(); deleteMessage(${m.id})" class="text-red-500 hover:text-red-700 text-xs" title="Delete Message"><i class="fas fa-trash"></i></button></div></div>`).join('');
         updateDashboardCounts();
     }
     
-    async function deleteMessage(id) {
-        if(confirm('Are you sure you want to delete this message?')) {
-            await deleteMessageFromAPI(id);
-            addActivityLog(`Deleted message ID ${id}`);
-        }
-    }
+    async function deleteMessage(id) { if(confirm('Are you sure you want to delete this message?')) { await deleteMessageFromAPI(id); addActivityLog(`Deleted message ID ${id}`); } }
     
     function viewConversation(id) {
-        const msg = messages.find(m => m.id === id); 
-        if(msg && !msg.is_read) { 
-            msg.is_read = true; 
-            renderMessagesList(); 
-            updateDashboardCounts(); 
-        }
-        
+        const msg = messages.find(m => m.id === id); if(msg && !msg.is_read) { msg.is_read = true; renderMessagesList(); updateDashboardCounts(); }
         const detailView = document.getElementById('messageDetailView');
-        let chatHtml = `
-            <div class="mb-4 pb-4 border-b">
-                <div class="flex justify-between items-center mb-3">
-                    <div>
-                        <h3 class="font-bold text-lg">${escapeHtml(msg.from_department)} Department</h3>
-                        <p class="text-sm text-gray-500">${formatTime(msg.created_at)}</p>
-                    </div>
-                    <div class="flex gap-2">
-                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">${escapeHtml(msg.subject)}</span>
-                        <button onclick="deleteMessage(${msg.id})" class="text-red-500 hover:text-red-700 text-sm" title="Delete Message">
-                            <i class="fas fa-trash"></i> Delete
-                        </button>
-                    </div>
-                </div>
-                <div class="chat-bubble chat-message">
-                    <p>${escapeHtml(msg.message)}</p>
-                </div>
-        `;
-        
-        if(msg.reply_message) { 
-            chatHtml += `
-                <div class="chat-bubble chat-reply">
-                    <p class="font-semibold text-sm">Admin replied:</p>
-                    <p>${escapeHtml(msg.reply_message)}</p>
-                    <p class="text-xs text-gray-500 mt-1">${formatTime(msg.replied_at)}</p>
-                </div>
-            `; 
-        }
-        
-        chatHtml += `
-            </div>
-            <div class="mt-4">
-                <textarea id="replyText" rows="3" placeholder="Type your reply..." class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
-                <div class="flex justify-end gap-2 mt-3">
-                    <button onclick="sendReply(${msg.id})" class="btn-primary text-white px-5 py-2 rounded-lg">
-                        <i class="fas fa-paper-plane mr-2"></i>Send Reply
-                    </button>
-                </div>
-            </div>
-        `;
+        let chatHtml = `<div class="mb-4 pb-4 border-b"><div class="flex justify-between items-center mb-3"><div><h3 class="font-bold text-lg">${escapeHtml(msg.from_department)} Department</h3><p class="text-sm text-gray-500">${formatTime(msg.created_at)}</p></div><div class="flex gap-2"><span class="text-xs bg-gray-100 px-2 py-1 rounded">${escapeHtml(msg.subject)}</span><button onclick="deleteMessage(${msg.id})" class="text-red-500 hover:text-red-700 text-sm" title="Delete Message"><i class="fas fa-trash"></i> Delete</button></div></div><div class="chat-bubble chat-message"><p>${escapeHtml(msg.message)}</p></div>`;
+        if(msg.reply_message) { chatHtml += `<div class="chat-bubble chat-reply"><p class="font-semibold text-sm">Admin replied:</p><p>${escapeHtml(msg.reply_message)}</p><p class="text-xs text-gray-500 mt-1">${formatTime(msg.replied_at)}</p></div>`; }
+        chatHtml += `</div><div class="mt-4"><textarea id="replyText" rows="3" placeholder="Type your reply..." class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea><div class="flex justify-end gap-2 mt-3"><button onclick="sendReply(${msg.id})" class="btn-primary text-white px-5 py-2 rounded-lg"><i class="fas fa-paper-plane mr-2"></i>Send Reply</button></div></div>`;
         detailView.innerHTML = chatHtml;
     }
     
-    async function sendReply(msgId) { 
-        const replyText = document.getElementById('replyText')?.value; 
-        if(!replyText || replyText.trim() === '') { showToast('Please enter a reply', true); return; } 
-        await sendReplyToAPI(msgId, replyText); 
-        addActivityLog(`Replied to message ID ${msgId}`); 
-        document.getElementById('replyText').value = ''; 
-    }
+    async function sendReply(msgId) { const replyText = document.getElementById('replyText')?.value; if(!replyText || replyText.trim() === '') { showToast('Please enter a reply', true); return; } await sendReplyToAPI(msgId, replyText); addActivityLog(`Replied to message ID ${msgId}`); document.getElementById('replyText').value = ''; }
     
     // ==================== PROJECTS RENDER ====================
     function renderProjects() { 
-        const projectsGrid = document.getElementById('projectsGrid'); 
-        if(!projectsGrid) return;
-        
-        if(projects.length === 0) {
-            projectsGrid.innerHTML = '<div class="col-span-3 text-center text-gray-400 py-8">No projects found</div>';
-            return;
-        }
-        
-        projectsGrid.innerHTML = projects.map(p => `
-            <div class="bg-white border rounded-xl overflow-hidden hover:shadow-lg cursor-pointer" onclick="showProjectDetails(${p.id})">
-                <div class="h-32 bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
-                    <i class="fas fa-building text-white text-4xl"></i>
-                </div>
-                <div class="p-4">
-                    <h4 class="font-bold">${escapeHtml(p.name)}</h4>
-                    <p class="text-sm text-gray-500">Client: ${escapeHtml(p.client_name)}</p>
-                    <p class="text-sm font-semibold text-blue-600">TZS ${parseFloat(p.amount).toLocaleString()}</p>
-                    <div class="mt-3">
-                        <div class="flex justify-between text-xs">
-                            <span>Progress</span>
-                            <span>${p.progress}%</span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2">
-                            <div class="bg-blue-600 h-2 rounded-full" style="width: ${p.progress}%"></div>
-                        </div>
-                    </div>
-                    <span class="inline-block mt-2 text-xs px-2 py-1 rounded-full ${p.status === 'completed' ? 'bg-green-100 text-green-700' : (p.status === 'in_progress' ? 'bg-orange-100 text-orange-700' : 'bg-blue-100 text-blue-700')}">
-                        ${p.status}
-                    </span>
-                </div>
-            </div>
-        `).join('');
+        const projectsGrid = document.getElementById('projectsGrid'); if(!projectsGrid) return;
+        if(projects.length === 0) { projectsGrid.innerHTML = '<div class="col-span-3 text-center text-gray-400 py-8">No projects found</div>'; return; }
+        projectsGrid.innerHTML = projects.map(p => `<div class="bg-white border rounded-xl overflow-hidden hover:shadow-lg cursor-pointer" onclick="showProjectDetails(${p.id})"><div class="h-32 bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center"><i class="fas fa-building text-white text-4xl"></i></div><div class="p-4"><h4 class="font-bold">${escapeHtml(p.name)}</h4><p class="text-sm text-gray-500">Client: ${escapeHtml(p.client_name)}</p><p class="text-sm font-semibold text-blue-600">TZS ${parseFloat(p.amount).toLocaleString()}</p><div class="mt-3"><div class="flex justify-between text-xs"><span>Progress</span><span>${p.progress}%</span></div><div class="w-full bg-gray-200 rounded-full h-2"><div class="bg-blue-600 h-2 rounded-full" style="width: ${p.progress}%"></div></div></div><span class="inline-block mt-2 text-xs px-2 py-1 rounded-full ${p.status === 'completed' ? 'bg-green-100 text-green-700' : (p.status === 'in_progress' ? 'bg-orange-100 text-orange-700' : 'bg-blue-100 text-blue-700')}">${p.status}</span></div></div>`).join('');
     }
     
-    function showProjectDetails(id) { 
-        const project = projects.find(p => p.id === id); 
-        if(project) alert(`Project: ${project.name}\nClient: ${project.client_name}\nAmount: TZS ${parseFloat(project.amount).toLocaleString()}\nStatus: ${project.status}\nProgress: ${project.progress}%`); 
-    }
+    function showProjectDetails(id) { const project = projects.find(p => p.id === id); if(project) alert(`Project: ${project.name}\nClient: ${project.client_name}\nAmount: TZS ${parseFloat(project.amount).toLocaleString()}\nStatus: ${project.status}\nProgress: ${project.progress}%`); }
     
     // ==================== REPORTS ====================
-    let currentDept = ''; 
-    let currentReportType = 'daily';
-    const reportDepartments = [
-        { name: "Managers", displayName: "Managers", color: "purple", icon: "fa-user-tie" }, 
-        { name: "Finance & Accounting", displayName: "Finance", color: "green", icon: "fa-calculator" }, 
-        { name: "Sales & Marketing", displayName: "Sales", color: "orange", icon: "fa-chart-line" }, 
-        { name: "Secretary", displayName: "Secretary", color: "red", icon: "fa-envelope" }
-    ];
+    let currentDept = ''; let currentReportType = 'daily';
+    const reportDepartments = [{ name: "Managers", displayName: "Managers", color: "purple", icon: "fa-user-tie" }, { name: "Finance & Accounting", displayName: "Finance", color: "green", icon: "fa-calculator" }, { name: "Sales & Marketing", displayName: "Sales", color: "orange", icon: "fa-chart-line" }, { name: "Secretary", displayName: "Secretary", color: "red", icon: "fa-envelope" }];
     
-    function renderReportDepartmentsGrid() { 
-        const grid = document.getElementById('reportDepartmentsGrid'); 
-        if(grid) grid.innerHTML = reportDepartments.map(dept => `
-            <div class="bg-white rounded-xl shadow-sm border-l-4 border-${dept.color}-500 p-5 cursor-pointer hover:shadow-lg transition" onclick="openDepartmentReports('${dept.displayName}')">
-                <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 bg-${dept.color}-100 rounded-full flex items-center justify-center">
-                        <i class="fas ${dept.icon} text-${dept.color}-600 text-xl"></i>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-lg">${dept.name}</h3>
-                        <p class="text-sm text-gray-500">Department Reports</p>
-                    </div>
-                </div>
-                <div class="mt-3 flex justify-between">
-                    <span class="text-gray-500 text-sm">Reports Available</span>
-                    <span class="font-semibold bg-${dept.color}-100 px-2 py-1 rounded text-xs">4 Types</span>
-                </div>
-            </div>
-        `).join(''); 
-    }
+    function renderReportDepartmentsGrid() { const grid = document.getElementById('reportDepartmentsGrid'); if(grid) grid.innerHTML = reportDepartments.map(dept => `<div class="bg-white rounded-xl shadow-sm border-l-4 border-${dept.color}-500 p-5 cursor-pointer hover:shadow-lg transition" onclick="openDepartmentReports('${dept.displayName}')"><div class="flex items-center gap-3"><div class="w-12 h-12 bg-${dept.color}-100 rounded-full flex items-center justify-center"><i class="fas ${dept.icon} text-${dept.color}-600 text-xl"></i></div><div><h3 class="font-bold text-lg">${dept.name}</h3><p class="text-sm text-gray-500">Department Reports</p></div></div><div class="mt-3 flex justify-between"><span class="text-gray-500 text-sm">Reports Available</span><span class="font-semibold bg-${dept.color}-100 px-2 py-1 rounded text-xs">4 Types</span></div></div>`).join(''); }
     
-    async function openDepartmentReports(dept) { 
-        currentDept = dept; 
-        document.getElementById('reportDeptTitle').innerText = `${dept} Department Reports`; 
-        document.getElementById('reportDeptDesc').innerText = `${dept} department performance reports`; 
-        document.getElementById('departmentReportView').classList.remove('hidden'); 
-        document.getElementById('reportDepartmentsGrid').classList.add('hidden'); 
-        await loadReport('daily'); 
-    }
+    async function openDepartmentReports(dept) { currentDept = dept; document.getElementById('reportDeptTitle').innerText = `${dept} Department Reports`; document.getElementById('reportDeptDesc').innerText = `${dept} department performance reports`; document.getElementById('departmentReportView').classList.remove('hidden'); document.getElementById('reportDepartmentsGrid').classList.add('hidden'); await loadReport('daily'); }
     
-    async function loadReport(type) { 
-        currentReportType = type; 
-        document.querySelectorAll('.report-tab').forEach(t => t.classList.remove('active')); 
-        document.getElementById(`tab${type.charAt(0).toUpperCase() + type.slice(1)}`).classList.add('active'); 
-        
-        const reportData = await loadDepartmentReportFromAPI(currentDept, type);
-        if(reportData) {
-            renderReportContent(currentDept, type, reportData);
-        } else {
-            renderMockReportContent(currentDept, type);
-        }
-    }
+    async function loadReport(type) { currentReportType = type; document.querySelectorAll('.report-tab').forEach(t => t.classList.remove('active')); document.getElementById(`tab${type.charAt(0).toUpperCase() + type.slice(1)}`).classList.add('active'); const reportData = await loadDepartmentReportFromAPI(currentDept, type); if(reportData) { renderReportContent(currentDept, type, reportData); } else { renderMockReportContent(currentDept, type); } }
+    
+    async function loadDepartmentReportFromAPI(department, period) { return { completed_projects: 0, in_progress_projects: 0, total_projects: 0, total_revenue: 0, total_income: 0, total_expenses: 0, net_profit: 0, pending_invoices: 0, total_orders: 0, revenue: 0, new_leads: 0, conversions: 0, messages: 0, appointments: 0, documents: 0, pending_tasks: 0 }; }
     
     function renderReportContent(dept, type, data) {
-        const periodText = type === 'daily' ? new Date().toDateString() :
-                          type === 'weekly' ? `Week of ${new Date().toDateString()}` :
-                          type === 'monthly' ? new Date().toLocaleString('default', { month: 'long', year: 'numeric' }) :
-                          new Date().getFullYear().toString();
-        
-        let html = `
-            <div class="report-export-content">
-                <div class="mb-6 text-center">
-                    <h2 class="text-xl font-bold">${dept} Department - ${type.charAt(0).toUpperCase() + type.slice(1)} Report</h2>
-                    <p class="text-gray-500">Period: ${periodText}</p>
-                    <p class="text-gray-400 text-sm">Generated: ${new Date().toLocaleString()}</p>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        `;
-        
-        // Show zeros until data is added
-        if(dept === 'Managers') {
-            html += `
-                <div class="bg-green-50 p-4 rounded-xl text-center">
-                    <p class="text-sm text-gray-600">Completed Projects</p>
-                    <p class="text-2xl font-bold text-green-600">0</p>
-                </div>
-                <div class="bg-orange-50 p-4 rounded-xl text-center">
-                    <p class="text-sm text-gray-600">In Progress</p>
-                    <p class="text-2xl font-bold text-orange-600">0</p>
-                </div>
-                <div class="bg-blue-50 p-4 rounded-xl text-center">
-                    <p class="text-sm text-gray-600">Total Projects</p>
-                    <p class="text-2xl font-bold text-blue-600">0</p>
-                </div>
-                <div class="bg-purple-50 p-4 rounded-xl text-center">
-                    <p class="text-sm text-gray-600">Total Revenue</p>
-                    <p class="text-2xl font-bold text-purple-600">TZS 0</p>
-                </div>
-            `;
-        } else if(dept === 'Finance') {
-            html += `
-                <div class="bg-green-50 p-4 rounded-xl text-center">
-                    <p class="text-sm text-gray-600">Total Income</p>
-                    <p class="text-2xl font-bold text-green-600">TZS 0</p>
-                </div>
-                <div class="bg-red-50 p-4 rounded-xl text-center">
-                    <p class="text-sm text-gray-600">Total Expenses</p>
-                    <p class="text-2xl font-bold text-red-600">TZS 0</p>
-                </div>
-                <div class="bg-blue-50 p-4 rounded-xl text-center">
-                    <p class="text-sm text-gray-600">Net Profit</p>
-                    <p class="text-2xl font-bold text-blue-600">TZS 0</p>
-                </div>
-                <div class="bg-yellow-50 p-4 rounded-xl text-center">
-                    <p class="text-sm text-gray-600">Pending Invoices</p>
-                    <p class="text-2xl font-bold text-yellow-600">0</p>
-                </div>
-            `;
-        } else if(dept === 'Sales') {
-            html += `
-                <div class="bg-blue-50 p-4 rounded-xl text-center">
-                    <p class="text-sm text-gray-600">Total Orders</p>
-                    <p class="text-2xl font-bold text-blue-600">0</p>
-                </div>
-                <div class="bg-green-50 p-4 rounded-xl text-center">
-                    <p class="text-sm text-gray-600">Revenue</p>
-                    <p class="text-2xl font-bold text-green-600">TZS 0</p>
-                </div>
-                <div class="bg-purple-50 p-4 rounded-xl text-center">
-                    <p class="text-sm text-gray-600">New Leads</p>
-                    <p class="text-2xl font-bold text-purple-600">0</p>
-                </div>
-                <div class="bg-orange-50 p-4 rounded-xl text-center">
-                    <p class="text-sm text-gray-600">Conversions</p>
-                    <p class="text-2xl font-bold text-orange-600">0</p>
-                </div>
-            `;
-        } else if(dept === 'Secretary') {
-            html += `
-                <div class="bg-blue-50 p-4 rounded-xl text-center">
-                    <p class="text-sm text-gray-600">Messages</p>
-                    <p class="text-2xl font-bold text-blue-600">0</p>
-                </div>
-                <div class="bg-green-50 p-4 rounded-xl text-center">
-                    <p class="text-sm text-gray-600">Appointments</p>
-                    <p class="text-2xl font-bold text-green-600">0</p>
-                </div>
-                <div class="bg-purple-50 p-4 rounded-xl text-center">
-                    <p class="text-sm text-gray-600">Documents</p>
-                    <p class="text-2xl font-bold text-purple-600">0</p>
-                </div>
-                <div class="bg-orange-50 p-4 rounded-xl text-center">
-                    <p class="text-sm text-gray-600">Pending Tasks</p>
-                    <p class="text-2xl font-bold text-orange-600">0</p>
-                </div>
-            `;
-        }
-        
-        html += `
-                </div>
-                <div class="border-t pt-4 mt-4">
-                    <p class="text-gray-600">This ${type} report shows the performance of the ${dept} department.</p>
-                    <p class="text-gray-500 text-sm mt-2">Report will show data once departments submit their reports.</p>
-                </div>
-            </div>
-        `;
+        const periodText = type === 'daily' ? new Date().toDateString() : type === 'weekly' ? `Week of ${new Date().toDateString()}` : type === 'monthly' ? new Date().toLocaleString('default', { month: 'long', year: 'numeric' }) : new Date().getFullYear().toString();
+        let html = `<div class="report-export-content"><div class="mb-6 text-center"><h2 class="text-xl font-bold">${dept} Department - ${type.charAt(0).toUpperCase() + type.slice(1)} Report</h2><p class="text-gray-500">Period: ${periodText}</p><p class="text-gray-400 text-sm">Generated: ${new Date().toLocaleString()}</p></div><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">`;
+        if(dept === 'Managers') { html += `<div class="bg-green-50 p-4 rounded-xl text-center"><p class="text-sm text-gray-600">Completed Projects</p><p class="text-2xl font-bold text-green-600">0</p></div><div class="bg-orange-50 p-4 rounded-xl text-center"><p class="text-sm text-gray-600">In Progress</p><p class="text-2xl font-bold text-orange-600">0</p></div><div class="bg-blue-50 p-4 rounded-xl text-center"><p class="text-sm text-gray-600">Total Projects</p><p class="text-2xl font-bold text-blue-600">0</p></div><div class="bg-purple-50 p-4 rounded-xl text-center"><p class="text-sm text-gray-600">Total Revenue</p><p class="text-2xl font-bold text-purple-600">TZS 0</p></div>`; }
+        else if(dept === 'Finance') { html += `<div class="bg-green-50 p-4 rounded-xl text-center"><p class="text-sm text-gray-600">Total Income</p><p class="text-2xl font-bold text-green-600">TZS 0</p></div><div class="bg-red-50 p-4 rounded-xl text-center"><p class="text-sm text-gray-600">Total Expenses</p><p class="text-2xl font-bold text-red-600">TZS 0</p></div><div class="bg-blue-50 p-4 rounded-xl text-center"><p class="text-sm text-gray-600">Net Profit</p><p class="text-2xl font-bold text-blue-600">TZS 0</p></div><div class="bg-yellow-50 p-4 rounded-xl text-center"><p class="text-sm text-gray-600">Pending Invoices</p><p class="text-2xl font-bold text-yellow-600">0</p></div>`; }
+        else if(dept === 'Sales') { html += `<div class="bg-blue-50 p-4 rounded-xl text-center"><p class="text-sm text-gray-600">Total Orders</p><p class="text-2xl font-bold text-blue-600">0</p></div><div class="bg-green-50 p-4 rounded-xl text-center"><p class="text-sm text-gray-600">Revenue</p><p class="text-2xl font-bold text-green-600">TZS 0</p></div><div class="bg-purple-50 p-4 rounded-xl text-center"><p class="text-sm text-gray-600">New Leads</p><p class="text-2xl font-bold text-purple-600">0</p></div><div class="bg-orange-50 p-4 rounded-xl text-center"><p class="text-sm text-gray-600">Conversions</p><p class="text-2xl font-bold text-orange-600">0</p></div>`; }
+        else if(dept === 'Secretary') { html += `<div class="bg-blue-50 p-4 rounded-xl text-center"><p class="text-sm text-gray-600">Messages</p><p class="text-2xl font-bold text-blue-600">0</p></div><div class="bg-green-50 p-4 rounded-xl text-center"><p class="text-sm text-gray-600">Appointments</p><p class="text-2xl font-bold text-green-600">0</p></div><div class="bg-purple-50 p-4 rounded-xl text-center"><p class="text-sm text-gray-600">Documents</p><p class="text-2xl font-bold text-purple-600">0</p></div><div class="bg-orange-50 p-4 rounded-xl text-center"><p class="text-sm text-gray-600">Pending Tasks</p><p class="text-2xl font-bold text-orange-600">0</p></div>`; }
+        html += `</div><div class="border-t pt-4 mt-4"><p class="text-gray-600">This ${type} report shows the performance of the ${dept} department.</p><p class="text-gray-500 text-sm mt-2">Report will show data once departments submit their reports.</p></div></div>`;
         document.getElementById('reportContent').innerHTML = html;
     }
     
     function renderMockReportContent(dept, type) {
-        const periodText = type === 'daily' ? new Date().toDateString() :
-                          type === 'weekly' ? `Week of ${new Date().toDateString()}` :
-                          type === 'monthly' ? new Date().toLocaleString('default', { month: 'long', year: 'numeric' }) :
-                          new Date().getFullYear().toString();
-        
-        let html = `
-            <div class="report-export-content">
-                <div class="mb-6 text-center">
-                    <h2 class="text-xl font-bold">${dept} Department - ${type.charAt(0).toUpperCase() + type.slice(1)} Report</h2>
-                    <p class="text-gray-500">Period: ${periodText}</p>
-                    <p class="text-gray-400 text-sm">Generated: ${new Date().toLocaleString()}</p>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                    <div class="bg-gray-50 p-4 rounded-xl text-center col-span-4">
-                        <p class="text-sm text-gray-600">No Data Available</p>
-                        <p class="text-lg text-gray-500 mt-2">Reports will appear here once departments submit their data</p>
-                    </div>
-                </div>
-                <div class="border-t pt-4 mt-4">
-                    <p class="text-gray-600">No report data available for ${dept} department yet.</p>
-                    <p class="text-gray-500 text-sm mt-2">Departments can submit reports from their dashboards.</p>
-                </div>
-            </div>
-        `;
+        const periodText = type === 'daily' ? new Date().toDateString() : type === 'weekly' ? `Week of ${new Date().toDateString()}` : type === 'monthly' ? new Date().toLocaleString('default', { month: 'long', year: 'numeric' }) : new Date().getFullYear().toString();
+        let html = `<div class="report-export-content"><div class="mb-6 text-center"><h2 class="text-xl font-bold">${dept} Department - ${type.charAt(0).toUpperCase() + type.slice(1)} Report</h2><p class="text-gray-500">Period: ${periodText}</p><p class="text-gray-400 text-sm">Generated: ${new Date().toLocaleString()}</p></div><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6"><div class="bg-gray-50 p-4 rounded-xl text-center col-span-4"><p class="text-sm text-gray-600">No Data Available</p><p class="text-lg text-gray-500 mt-2">Reports will appear here once departments submit their data</p></div></div><div class="border-t pt-4 mt-4"><p class="text-gray-600">No report data available for ${dept} department yet.</p><p class="text-gray-500 text-sm mt-2">Departments can submit reports from their dashboards.</p></div></div>`;
         document.getElementById('reportContent').innerHTML = html;
     }
     
-    function closeDepartmentReport() { 
-        document.getElementById('departmentReportView').classList.add('hidden'); 
-        document.getElementById('reportDepartmentsGrid').classList.remove('hidden'); 
-        renderReportDepartmentsGrid(); 
-    }
+    function closeDepartmentReport() { document.getElementById('departmentReportView').classList.add('hidden'); document.getElementById('reportDepartmentsGrid').classList.remove('hidden'); renderReportDepartmentsGrid(); }
     
-    // ==================== EXPORT FUNCTIONS ====================
-    function exportToPDF() {
-        const reportContent = document.getElementById('reportContent');
-        if (!reportContent) {
-            showToast('No report data to export', true);
-            return;
-        }
-        
-        const element = reportContent.cloneNode(true);
-        const filename = `${currentDept}_${currentReportType}_report_${new Date().toISOString().slice(0,10)}`;
-        
-        const opt = {
-            margin: [0.5, 0.5, 0.5, 0.5],
-            filename: `${filename}.pdf`,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, letterRendering: true },
-            jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-        };
-        
-        html2pdf().set(opt).from(element).save();
-        showToast('PDF downloaded successfully!');
-    }
+    function exportToPDF() { const reportContent = document.getElementById('reportContent'); if (!reportContent) { showToast('No report data to export', true); return; } const element = reportContent.cloneNode(true); const filename = `${currentDept}_${currentReportType}_report_${new Date().toISOString().slice(0,10)}`; const opt = { margin: [0.5, 0.5, 0.5, 0.5], filename: `${filename}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, letterRendering: true }, jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' } }; html2pdf().set(opt).from(element).save(); showToast('PDF downloaded successfully!'); }
     
-    function exportToExcel() {
-        const reportContent = document.getElementById('reportContent');
-        if (!reportContent) {
-            showToast('No report data to export', true);
-            return;
-        }
-        
-        const titleElement = reportContent.querySelector('h2');
-        const title = titleElement ? titleElement.innerText : `${currentDept} ${currentReportType} Report`;
-        
-        const statsBoxes = reportContent.querySelectorAll('.rounded-xl');
-        let excelData = [];
-        
-        excelData.push([`${title}`]);
-        excelData.push([`Generated on: ${new Date().toLocaleString()}`]);
-        excelData.push([]);
-        excelData.push(['Metric', 'Value']);
-        
-        statsBoxes.forEach(box => {
-            const label = box.querySelector('p:first-child')?.innerText || '';
-            const value = box.querySelector('.text-2xl, .text-xl')?.innerText || '';
-            if (label && value && !label.includes('No Data')) {
-                excelData.push([label, value]);
-            }
-        });
-        
-        if (excelData.length <= 4) {
-            excelData.push(['No data available', 'Reports will appear once departments submit data']);
-        }
-        
-        excelData.push([]);
-        excelData.push([`Department: ${currentDept}`]);
-        excelData.push([`Report Type: ${currentReportType}`]);
-        
-        const wb = XLSX.utils.book_new();
-        const ws = XLSX.utils.aoa_to_sheet(excelData);
-        ws['!cols'] = [{wch:25}, {wch:20}];
-        
-        XLSX.utils.book_append_sheet(wb, ws, `${currentDept}_${currentReportType}_Report`);
-        XLSX.writeFile(wb, `${currentDept}_${currentReportType}_report_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.xlsx`);
-        
-        showToast('Excel report downloaded successfully!');
-    }
+    function exportToExcel() { const reportContent = document.getElementById('reportContent'); if (!reportContent) { showToast('No report data to export', true); return; } const titleElement = reportContent.querySelector('h2'); const title = titleElement ? titleElement.innerText : `${currentDept} ${currentReportType} Report`; const statsBoxes = reportContent.querySelectorAll('.rounded-xl'); let excelData = []; excelData.push([`${title}`]); excelData.push([`Generated on: ${new Date().toLocaleString()}`]); excelData.push([]); excelData.push(['Metric', 'Value']); statsBoxes.forEach(box => { const label = box.querySelector('p:first-child')?.innerText || ''; const value = box.querySelector('.text-2xl, .text-xl')?.innerText || ''; if (label && value && !label.includes('No Data')) { excelData.push([label, value]); } }); if (excelData.length <= 4) { excelData.push(['No data available', 'Reports will appear once departments submit data']); } excelData.push([]); excelData.push([`Department: ${currentDept}`]); excelData.push([`Report Type: ${currentReportType}`]); const wb = XLSX.utils.book_new(); const ws = XLSX.utils.aoa_to_sheet(excelData); ws['!cols'] = [{wch:25}, {wch:20}]; XLSX.utils.book_append_sheet(wb, ws, `${currentDept}_${currentReportType}_Report`); XLSX.writeFile(wb, `${currentDept}_${currentReportType}_report_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.xlsx`); showToast('Excel report downloaded successfully!'); }
     
-    // ==================== SETTINGS FUNCTIONS ====================
-    function togglePassword(inputId, element) { 
-        const input = document.getElementById(inputId); 
-        if(input.type === 'password') { 
-            input.type = 'text'; 
-            element.classList.remove('fa-eye'); 
-            element.classList.add('fa-eye-slash'); 
-        } else { 
-            input.type = 'password'; 
-            element.classList.remove('fa-eye-slash'); 
-            element.classList.add('fa-eye'); 
-        } 
-    }
+    function togglePassword(inputId, element) { const input = document.getElementById(inputId); if(input.type === 'password') { input.type = 'text'; element.classList.remove('fa-eye'); element.classList.add('fa-eye-slash'); } else { input.type = 'password'; element.classList.remove('fa-eye-slash'); element.classList.add('fa-eye'); } }
     
-    function changeAdminPassword() { 
-        const currentPwd = document.getElementById('currentPassword').value; 
-        const newPwd = document.getElementById('newAdminPassword').value; 
-        const confirmPwd = document.getElementById('confirmAdminPassword').value; 
-        if(!currentPwd) { showToast('Enter current password', true); return; } 
-        if(!newPwd) { showToast('Enter new password', true); return; } 
-        if(newPwd !== confirmPwd) { showToast('Passwords do not match', true); return; } 
-        showToast('Password changed successfully'); 
-        addActivityLog('Admin password changed'); 
-        document.getElementById('currentPassword').value = ''; 
-        document.getElementById('newAdminPassword').value = ''; 
-        document.getElementById('confirmAdminPassword').value = ''; 
-    }
+    function changeAdminPassword() { const currentPwd = document.getElementById('currentPassword').value; const newPwd = document.getElementById('newAdminPassword').value; const confirmPwd = document.getElementById('confirmAdminPassword').value; if(!currentPwd) { showToast('Enter current password', true); return; } if(!newPwd) { showToast('Enter new password', true); return; } if(newPwd !== confirmPwd) { showToast('Passwords do not match', true); return; } showToast('Password changed successfully'); addActivityLog('Admin password changed'); document.getElementById('currentPassword').value = ''; document.getElementById('newAdminPassword').value = ''; document.getElementById('confirmAdminPassword').value = ''; }
     
-    function changeSidebarColor(color, element) { 
-        const sidebar = document.getElementById('mainSidebar'); 
-        sidebar.style.background = color; 
-        sidebar.style.backgroundImage = 'none'; 
-        document.querySelectorAll('.color-option').forEach(opt => { opt.classList.remove('selected'); opt.style.transform = 'scale(1)'; }); 
-        if(element) { element.classList.add('selected'); element.style.transform = 'scale(1.05)'; } 
-        localStorage.setItem('sidebar_color', color); 
-        showToast('Sidebar color changed'); 
-        addActivityLog('Sidebar color changed'); 
-    }
+    function changeSidebarColor(color, element) { const sidebar = document.getElementById('mainSidebar'); sidebar.style.background = color; sidebar.style.backgroundImage = 'none'; document.querySelectorAll('.color-option').forEach(opt => { opt.classList.remove('selected'); opt.style.transform = 'scale(1)'; }); if(element) { element.classList.add('selected'); element.style.transform = 'scale(1.05)'; } localStorage.setItem('sidebar_color', color); showToast('Sidebar color changed'); addActivityLog('Sidebar color changed'); }
     
-    function loadSavedSidebarColor() { 
-        const savedColor = localStorage.getItem('sidebar_color'); 
-        const sidebar = document.getElementById('mainSidebar'); 
-        if(savedColor && sidebar) { sidebar.style.background = savedColor; sidebar.style.backgroundImage = 'none'; } 
-    }
+    function loadSavedSidebarColor() { const savedColor = localStorage.getItem('sidebar_color'); const sidebar = document.getElementById('mainSidebar'); if(savedColor && sidebar) { sidebar.style.background = savedColor; sidebar.style.backgroundImage = 'none'; } }
     
     function createBackup() { 
-        const backup = { employees, tasks, messages, projects, timestamp: new Date().toISOString() }; 
+        const backup = { employees: JSON.parse(JSON.stringify(employees)), tasks: JSON.parse(JSON.stringify(tasks)), messages: JSON.parse(JSON.stringify(messages)), projects: JSON.parse(JSON.stringify(projects)), timestamp: new Date().toISOString() }; 
         localStorage.setItem('geotraverse_backup', JSON.stringify(backup)); 
         showToast('Backup created successfully'); 
         addActivityLog('System backup created'); 
@@ -1788,7 +1375,6 @@
     
     function saveGeneralSettings() { showToast('General settings saved'); addActivityLog('General settings updated'); }
     function saveEmailConfig() { showToast('Email configuration saved'); addActivityLog('Email configuration updated'); }
-    
     function updateDashboardCounts() { 
         const pendingTasks = tasks.filter(t => !t.completed).length; 
         const unreadMessages = messages.filter(m => !m.is_read).length; 
@@ -1798,106 +1384,24 @@
         document.getElementById('unreadMessagesBadge') && (document.getElementById('unreadMessagesBadge').innerText = unreadMessages); 
     }
     
-    // ==================== SEARCH FUNCTION (Real-time, inafanya kazi vizuri) ====================
-    let currentSearchTerm = '';
-    let searchTimeout = null;
-    
-    function performSearch() { 
-        const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim(); 
-        currentSearchTerm = searchTerm;
-        
-        if (searchTimeout) clearTimeout(searchTimeout);
-        
-        searchTimeout = setTimeout(() => {
-            const activeSection = document.querySelector('.nav-item.active')?.getAttribute('data-section');
-            
-            if (activeSection === 'employees') {
-                renderEmployeeTable();
-            } else if (activeSection === 'tasks') {
-                renderTasks();
-            } else if (activeSection === 'messages') {
-                renderMessagesList();
-            }
-            
-            if (!activeSection || activeSection === 'dashboard') {
-                console.log('Search term:', searchTerm);
-            }
-        }, 300);
-    }
-    
     // ==================== NAVIGATION ====================
-    const sections = { 
-        dashboard: 'dashboardSection', 
-        employees: 'employeeSection', 
-        departments: 'departmentsSection', 
-        reports: 'reportsSection', 
-        tasks: 'tasksSection', 
-        messages: 'messagesSection', 
-        settings: 'settingsSection' 
-    };
+    const sections = { dashboard: 'dashboardSection', employees: 'employeeSection', departments: 'departmentsSection', reports: 'reportsSection', tasks: 'tasksSection', messages: 'messagesSection', projects: 'projectsSection', settings: 'settingsSection' };
+    function showSection(sectionId) { Object.values(sections).forEach(id => { const el = document.getElementById(id); if(el) el.classList.add('hidden'); }); document.getElementById(sectionId).classList.remove('hidden'); closeMobileSidebar(); }
     
-    function showSection(sectionId) { 
-        Object.values(sections).forEach(id => { const el = document.getElementById(id); if(el) el.classList.add('hidden'); }); 
-        document.getElementById(sectionId).classList.remove('hidden'); 
-        
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput) {
-            searchInput.value = '';
-            currentSearchTerm = '';
-        }
-        
-        if(sectionId === 'employees') renderEmployeeTable(); 
-        if(sectionId === 'tasks') renderTasks(); 
-        if(sectionId === 'messages') renderMessagesList(); 
-        if(sectionId === 'projects') renderProjects(); 
-        if(sectionId === 'departments') renderDepartmentsGrid(); 
-        if(sectionId === 'reports') renderReportDepartmentsGrid(); 
-        closeMobileSidebar(); 
-    }
+    document.querySelectorAll('.nav-item').forEach(item => { item.addEventListener('click', (e) => { e.preventDefault(); const section = item.getAttribute('data-section'); if(section && sections[section]) { showSection(sections[section]); document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active')); item.classList.add('active'); } }); });
+    document.getElementById('homeButton')?.addEventListener('click', () => { showSection('dashboardSection'); document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active')); document.querySelector('.nav-item[data-section="dashboard"]')?.classList.add('active'); });
     
-    document.querySelectorAll('.nav-item').forEach(item => { 
-        item.addEventListener('click', (e) => { 
-            e.preventDefault(); 
-            const section = item.getAttribute('data-section'); 
-            if(section && sections[section]) { 
-                showSection(sections[section]); 
-                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active')); 
-                item.classList.add('active'); 
-            } 
-        }); 
-    });
-    
-    document.getElementById('homeButton')?.addEventListener('click', () => { 
-        showSection('dashboardSection'); 
-        document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active')); 
-        document.querySelector('.nav-item[data-section="dashboard"]')?.classList.add('active'); 
-    });
-    
-    // ==================== MOBILE SIDEBAR ====================
     function openMobileSidebar() { document.getElementById('mainSidebar')?.classList.add('mobile-open'); document.getElementById('mobileMenuOverlay')?.classList.add('open'); }
     function closeMobileSidebar() { document.getElementById('mainSidebar')?.classList.remove('mobile-open'); document.getElementById('mobileMenuOverlay')?.classList.remove('open'); }
     document.getElementById('mobileMenuBtn')?.addEventListener('click', openMobileSidebar);
     
-    // ==================== DARK MODE ====================
     let isDark = false; 
-    document.getElementById('darkModeToggle')?.addEventListener('click', () => { 
-        isDark = !isDark; 
-        document.body.classList.toggle('dark-mode', isDark); 
-        const icon = document.getElementById('darkModeIcon'); 
-        if(icon) { icon.classList.toggle('fa-sun', isDark); icon.classList.toggle('fa-moon', !isDark); } 
-        localStorage.setItem('dark_mode', isDark); 
-    });
+    document.getElementById('darkModeToggle')?.addEventListener('click', () => { isDark = !isDark; document.body.classList.toggle('dark-mode', isDark); const icon = document.getElementById('darkModeIcon'); if(icon) { icon.classList.toggle('fa-sun', isDark); icon.classList.toggle('fa-moon', !isDark); } localStorage.setItem('dark_mode', isDark); });
+    function loadDarkMode() { const saved = localStorage.getItem('dark_mode'); if(saved === 'true') { isDark = true; document.body.classList.add('dark-mode'); const icon = document.getElementById('darkModeIcon'); if(icon) { icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); } } }
     
-    function loadDarkMode() { 
-        const saved = localStorage.getItem('dark_mode'); 
-        if(saved === 'true') { isDark = true; document.body.classList.add('dark-mode'); const icon = document.getElementById('darkModeIcon'); if(icon) { icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); } } 
-    }
-    
-    // ==================== SCROLL TO TOP ====================
     window.addEventListener('scroll', () => { const scrollBtn = document.getElementById('scrollTopBtn'); if(scrollBtn) scrollBtn.classList.toggle('visible', window.scrollY > 300); });
     document.getElementById('scrollTopBtn')?.addEventListener('click', () => { window.scrollTo({ top: 0, behavior: 'smooth' }); });
     
-    // ==================== INITIALIZATION ====================
     async function init() { 
         showLoading(true);
         loadDashboardChart();
@@ -1917,50 +1421,13 @@
         loadDarkMode(); 
         loadActivityLogs();
         showSection('dashboardSection'); 
-        
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput) {
-            searchInput.addEventListener('input', performSearch);
-        }
-        
+        document.getElementById('globalSearchInput')?.addEventListener('input', performAutoSearch);
         showLoading(false);
-        console.log('Dashboard initialized successfully!'); 
+        console.log('Dashboard initialized with auto-logout (1 hour) and auto search!'); 
     }
     init();
     
-    // Expose global functions
-    window.openAddEmployeeModal = openAddEmployeeModal; 
-    window.closeModal = closeModal; 
-    window.openEditEmployeeModal = openEditEmployeeModal; 
-    window.closeEditModal = closeEditModal; 
-    window.deleteEmployee = deleteEmployee; 
-    window.openChangePwdModal = openChangePwdModal; 
-    window.closePwdModal = closePwdModal; 
-    window.toggleTask = toggleTask; 
-    window.openAddTaskModal = openAddTaskModal; 
-    window.closeTaskModal = closeTaskModal; 
-    window.addNewTask = addNewTask; 
-    window.viewConversation = viewConversation; 
-    window.sendReply = sendReply; 
-    window.deleteMessage = deleteMessage;
-    window.showProjectDetails = showProjectDetails; 
-    window.showToast = showToast; 
-    window.openDepartmentDashboard = openDepartmentDashboard; 
-    window.goBackToDepartments = goBackToDepartments; 
-    window.openDepartmentReports = openDepartmentReports; 
-    window.loadReport = loadReport; 
-    window.closeDepartmentReport = closeDepartmentReport; 
-    window.exportToPDF = exportToPDF; 
-    window.exportToExcel = exportToExcel; 
-    window.changeAdminPassword = changeAdminPassword; 
-    window.changeSidebarColor = changeSidebarColor; 
-    window.createBackup = createBackup; 
-    window.restoreBackup = restoreBackup; 
-    window.clearAllLogs = clearAllLogs; 
-    window.saveGeneralSettings = saveGeneralSettings; 
-    window.saveEmailConfig = saveEmailConfig; 
-    window.togglePassword = togglePassword; 
-    window.exportEmployeesToExcel = exportEmployeesToExcel;
+    window.openAddEmployeeModal = openAddEmployeeModal; window.closeModal = closeModal; window.openEditEmployeeModal = openEditEmployeeModal; window.closeEditModal = closeEditModal; window.deleteEmployee = deleteEmployee; window.openChangePwdModal = openChangePwdModal; window.closePwdModal = closePwdModal; window.toggleTask = toggleTask; window.openAddTaskModal = openAddTaskModal; window.closeTaskModal = closeTaskModal; window.addNewTask = addNewTask; window.viewConversation = viewConversation; window.sendReply = sendReply; window.deleteMessage = deleteMessage; window.showProjectDetails = showProjectDetails; window.showToast = showToast; window.openDepartmentDashboard = openDepartmentDashboard; window.goBackToDepartments = goBackToDepartments; window.openDepartmentReports = openDepartmentReports; window.loadReport = loadReport; window.closeDepartmentReport = closeDepartmentReport; window.exportToPDF = exportToPDF; window.exportToExcel = exportToExcel; window.changeAdminPassword = changeAdminPassword; window.changeSidebarColor = changeSidebarColor; window.createBackup = createBackup; window.restoreBackup = restoreBackup; window.clearAllLogs = clearAllLogs; window.saveGeneralSettings = saveGeneralSettings; window.saveEmailConfig = saveEmailConfig; window.togglePassword = togglePassword; window.exportEmployeesToExcel = exportEmployeesToExcel; window.closeGlobalSearch = closeGlobalSearch; window.resetSessionTimer = resetSessionTimer;
 </script>
 </body>
 </html>
