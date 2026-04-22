@@ -28,7 +28,7 @@
         .shape-3 { width: 120px; height: 120px; top: 50%; right: 5%; animation-delay: 10s; }
         
         @keyframes float {
-            0%, 100% { transform: translate(0,0) rotate(0deg); }
+            0%,100% { transform: translate(0,0) rotate(0deg); }
             33% { transform: translate(25px,-25px) rotate(120deg); }
             66% { transform: translate(-15px,15px) rotate(240deg); }
         }
@@ -117,6 +117,19 @@
         }
         .password-toggle:hover { color: #0f74ba; }
         
+        .reset-link-box {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 10px;
+        }
+        .reset-link-box p {
+            font-size: 11px;
+            color: #166534;
+            word-break: break-all;
+        }
+        
         @media (max-width: 640px) {
             .login-card { margin: 16px; padding: 20px !important; }
             .shape-1, .shape-2, .shape-3 { display: none; }
@@ -136,7 +149,7 @@
         <!-- Logo Section -->
         <div class="text-center mb-6">
             <img src="https://i.postimg.cc/MT6jTVHh/weblogo.png" alt="GeoTraverse Logo" class="w-16 h-16 mx-auto">
-            <h2 class="text-xl font-bold text-gray-800 mt-3">Welcome Back!</h2>
+            <h2 class="text-xl font-bold text-gray-800 mt-3">Admin Login</h2>
             <p class="text-gray-500 text-xs mt-1">Sign in to your admin dashboard</p>
         </div>
         
@@ -151,8 +164,9 @@
                 <div class="relative">
                     <input type="email" id="loginEmail" 
                            class="input-field w-full pl-10 pr-3 py-2.5 rounded-xl border border-gray-200 focus:border-blue-500 focus:outline-none transition-all text-sm"
-                           placeholder="admin@geotraverse.com" 
+                           placeholder="jacksonmyula773@gmail.com" 
                            autocomplete="email"
+                           value="jacksonmyula773@gmail.com"
                            required>
                     <i class="fas fa-user absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
                 </div>
@@ -224,15 +238,25 @@
             
             <div class="p-5">
                 <p class="text-gray-600 mb-3 text-center text-sm">
-                    Enter your email address and we'll send you instructions to reset your password.
+                    Enter your email address to reset your password.
                 </p>
                 <input type="email" id="resetEmail" 
                        class="w-full p-2.5 border border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-all mb-3 text-sm"
-                       placeholder="admin@geotraverse.com">
+                       placeholder="jacksonmyula773@gmail.com"
+                       value="jacksonmyula773@gmail.com">
                 <button id="sendResetBtn" 
                         class="w-full bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white py-2.5 rounded-xl font-semibold transition-all text-sm">
                     <i class="fas fa-paper-plane mr-1"></i> Send Reset Instructions
                 </button>
+                
+                <!-- Reset Link Container (will show when reset link is generated) -->
+                <div id="resetLinkContainer" class="hidden mt-3 reset-link-box">
+                    <p class="text-xs font-semibold text-green-700 mb-1">✅ Reset Link Generated:</p>
+                    <p id="resetLinkText" class="text-xs text-blue-600 break-all"></p>
+                    <button id="copyResetLinkBtn" class="mt-2 text-xs bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 transition">
+                        <i class="fas fa-copy mr-1"></i> Copy Link
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -240,6 +264,7 @@
     <script>
         // ==================== API CONFIGURATION ====================
         const API_BASE = 'http://localhost/geotraverse/backend/api';
+        let currentResetLink = '';
         
         // ==================== TOGGLE PASSWORD VISIBILITY ====================
         function togglePasswordVisibility() {
@@ -281,9 +306,9 @@
         
         // ==================== REMEMBER ME FUNCTIONALITY ====================
         function loadSavedCredentials() {
-            const savedEmail = localStorage.getItem('remembered_email');
-            const savedPassword = localStorage.getItem('remembered_password');
-            const rememberChecked = localStorage.getItem('remember_me') === 'true';
+            const savedEmail = localStorage.getItem('admin_remembered_email');
+            const savedPassword = localStorage.getItem('admin_remembered_password');
+            const rememberChecked = localStorage.getItem('admin_remember_me') === 'true';
             
             if (savedEmail && rememberChecked) {
                 document.getElementById('loginEmail').value = savedEmail;
@@ -294,14 +319,23 @@
         
         function saveCredentials(email, password, remember) {
             if (remember) {
-                localStorage.setItem('remembered_email', email);
-                localStorage.setItem('remembered_password', password);
-                localStorage.setItem('remember_me', 'true');
+                localStorage.setItem('admin_remembered_email', email);
+                localStorage.setItem('admin_remembered_password', password);
+                localStorage.setItem('admin_remember_me', 'true');
             } else {
-                localStorage.removeItem('remembered_email');
-                localStorage.removeItem('remembered_password');
-                localStorage.setItem('remember_me', 'false');
+                localStorage.removeItem('admin_remembered_email');
+                localStorage.removeItem('admin_remembered_password');
+                localStorage.setItem('admin_remember_me', 'false');
             }
+        }
+        
+        // ==================== COPY TO CLIPBOARD ====================
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('✅ Link copied to clipboard!');
+            }).catch(() => {
+                showToast('Failed to copy link', true);
+            });
         }
         
         // ==================== LOGIN FUNCTION ====================
@@ -331,7 +365,7 @@
                     showToast('Login successful! Redirecting to dashboard...');
                     
                     setTimeout(() => {
-                        window.location.href = 'admin/dashboard.html';
+                        window.location.href = 'dashboard.html';
                     }, 500);
                 } else {
                     showToast(result.message || 'Invalid email or password', true);
@@ -355,9 +389,15 @@
         async function handleForgotPassword(email) {
             const sendBtn = document.getElementById('sendResetBtn');
             const originalHtml = sendBtn.innerHTML;
+            const resetLinkContainer = document.getElementById('resetLinkContainer');
+            const resetLinkText = document.getElementById('resetLinkText');
+            
+            // Hide previous reset link
+            resetLinkContainer.classList.add('hidden');
+            currentResetLink = '';
             
             sendBtn.disabled = true;
-            sendBtn.innerHTML = '<div class="spinner"></div><span class="ml-2">Sending...</span>';
+            sendBtn.innerHTML = '<div class="spinner"></div><span class="ml-2">Processing...</span>';
             
             try {
                 const response = await fetch(`${API_BASE}/forgot_password.php`, {
@@ -371,10 +411,18 @@
                 const result = await response.json();
                 
                 if (result.success) {
-                    showToast(`✅ Password reset instructions sent to ${email}`);
-                    setTimeout(() => {
-                        closeForgotModal();
-                    }, 2000);
+                    // Check if we have a reset link
+                    if (result.reset_link) {
+                        currentResetLink = result.reset_link;
+                        resetLinkText.innerHTML = currentResetLink;
+                        resetLinkContainer.classList.remove('hidden');
+                        showToast('✅ Reset link generated! Copy the link below.', false);
+                    } else {
+                        showToast(`✅ Password reset instructions sent to ${email}`, false);
+                        setTimeout(() => {
+                            closeForgotModal();
+                        }, 2000);
+                    }
                 } else {
                     showToast(result.message || 'Email address not found', true);
                     shakeElement(document.getElementById('resetEmail'));
@@ -426,6 +474,7 @@
         const closeModalBtn = document.getElementById('closeModalBtn');
         const sendResetBtn = document.getElementById('sendResetBtn');
         const resetEmail = document.getElementById('resetEmail');
+        const copyResetLinkBtn = document.getElementById('copyResetLinkBtn');
         
         forgotPasswordBtn?.addEventListener('click', function(e) {
             e.preventDefault();
@@ -436,12 +485,18 @@
             if (resetEmail && currentEmail) {
                 resetEmail.value = currentEmail;
             }
+            
+            // Hide reset link container when modal opens
+            document.getElementById('resetLinkContainer').classList.add('hidden');
+            currentResetLink = '';
         });
         
         function closeForgotModal() {
             forgotModal.classList.add('hidden');
             forgotModal.classList.remove('flex');
             if (resetEmail) resetEmail.value = '';
+            document.getElementById('resetLinkContainer').classList.add('hidden');
+            currentResetLink = '';
         }
         
         closeModalBtn?.addEventListener('click', closeForgotModal);
@@ -475,6 +530,12 @@
             await handleForgotPassword(email);
         });
         
+        copyResetLinkBtn?.addEventListener('click', function() {
+            if (currentResetLink) {
+                copyToClipboard(currentResetLink);
+            }
+        });
+        
         resetEmail?.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
@@ -504,7 +565,7 @@
             
             if (token && user) {
                 console.log('Existing session found, redirecting to dashboard...');
-                window.location.href = 'admin/dashboard.html';
+                window.location.href = 'dashboard.html';
             }
         }
         
