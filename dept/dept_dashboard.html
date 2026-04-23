@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeoTraverse | Department Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        body { background: #f0f2f5; }
+        .dashboard-card { transition: all 0.3s; }
+        .dashboard-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .toast-message {
+            position: fixed; bottom: 20px; right: 20px;
+            background: #10b981; color: white; padding: 12px 20px;
+            border-radius: 8px; z-index: 1000; animation: slideInRight 0.3s ease;
+        }
+        .toast-message.error { background: #ef4444; }
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .logout-btn { transition: all 0.3s; }
+        .logout-btn:hover { background-color: #dc2626 !important; }
+    </style>
+</head>
+<body class="min-h-screen">
+
+<div class="bg-white shadow-sm border-b sticky top-0 z-10">
+    <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center space-x-3">
+            <img src="https://i.postimg.cc/MT6jTVHh/weblogo.png" alt="Logo" class="w-10 h-10">
+            <div>
+                <h1 class="text-xl font-bold text-blue-600">GeoTraverse</h1>
+                <p class="text-xs text-gray-500" id="deptName">Department Dashboard</p>
+            </div>
+        </div>
+        <div class="flex items-center space-x-4">
+            <span class="text-sm text-gray-600" id="userEmail"></span>
+            <button id="logoutBtn" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm transition logout-btn">
+                <i class="fas fa-sign-out-alt mr-2"></i> Logout
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="container mx-auto px-6 py-8">
+    <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+        <h2 class="text-2xl font-bold text-gray-800" id="welcomeMessage">Welcome!</h2>
+        <p class="text-gray-500 mt-1">You have successfully logged into your department dashboard.</p>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div class="dashboard-card bg-white rounded-xl p-6 text-center border-l-4 border-blue-500">
+            <i class="fas fa-building text-3xl text-blue-500 mb-3"></i>
+            <p class="text-gray-500 text-sm">Department Projects</p>
+            <p class="text-2xl font-bold text-gray-800" id="projectsCount">0</p>
+        </div>
+        <div class="dashboard-card bg-white rounded-xl p-6 text-center border-l-4 border-orange-500">
+            <i class="fas fa-tasks text-3xl text-orange-500 mb-3"></i>
+            <p class="text-gray-500 text-sm">Pending Tasks</p>
+            <p class="text-2xl font-bold text-gray-800" id="tasksCount">0</p>
+        </div>
+        <div class="dashboard-card bg-white rounded-xl p-6 text-center border-l-4 border-green-500">
+            <i class="fas fa-chart-line text-3xl text-green-500 mb-3"></i>
+            <p class="text-gray-500 text-sm">Reports Sent</p>
+            <p class="text-2xl font-bold text-gray-800" id="reportsCount">0</p>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-xl shadow-sm p-6">
+        <h3 class="font-semibold text-lg mb-4"><i class="fas fa-list-check mr-2 text-purple-500"></i>Quick Actions</h3>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+            <button onclick="showToast('View Projects - Feature coming soon')" class="bg-purple-100 text-purple-600 p-3 rounded-lg text-center hover:bg-purple-200 transition">
+                <i class="fas fa-building mr-2"></i> View Projects
+            </button>
+            <button onclick="showToast('View Tasks - Feature coming soon')" class="bg-orange-100 text-orange-600 p-3 rounded-lg text-center hover:bg-orange-200 transition">
+                <i class="fas fa-tasks mr-2"></i> View Tasks
+            </button>
+            <button onclick="showToast('Send Report - Feature coming soon')" class="bg-green-100 text-green-600 p-3 rounded-lg text-center hover:bg-green-200 transition">
+                <i class="fas fa-paper-plane mr-2"></i> Send Report
+            </button>
+            <button onclick="showToast('Messages - Feature coming soon')" class="bg-blue-100 text-blue-600 p-3 rounded-lg text-center hover:bg-blue-200 transition">
+                <i class="fas fa-envelope mr-2"></i> Messages
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showToast(message, isError = false) {
+        const toast = document.createElement('div');
+        toast.className = `toast-message ${isError ? 'error' : ''}`;
+        toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-circle' : 'fa-check-circle'} mr-2"></i>${message}`;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+    
+    // Check if user is logged in
+    const isLoggedIn = localStorage.getItem('dept_logged_in');
+    const userData = JSON.parse(localStorage.getItem('dept_user') || '{}');
+    
+    if (!isLoggedIn || !userData.email) {
+        window.location.href = 'dept_login.html';
+    }
+    
+    // Display user info
+    document.getElementById('deptName').innerText = userData.department || 'Department Dashboard';
+    document.getElementById('userEmail').innerText = userData.email || '';
+    document.getElementById('welcomeMessage').innerHTML = `Welcome, ${userData.name || userData.role || 'User'}!`;
+    
+    // Load sample counts based on department
+    const projectsByDept = {
+        manager: 5,
+        finance: 3,
+        sales: 4,
+        secretary: 2
+    };
+    const tasksByDept = {
+        manager: 3,
+        finance: 2,
+        sales: 4,
+        secretary: 3
+    };
+    const reportsByDept = {
+        manager: 8,
+        finance: 6,
+        sales: 5,
+        secretary: 4
+    };
+    
+    document.getElementById('projectsCount').innerText = projectsByDept[userData.role] || 0;
+    document.getElementById('tasksCount').innerText = tasksByDept[userData.role] || 0;
+    document.getElementById('reportsCount').innerText = reportsByDept[userData.role] || 0;
+    
+    // Logout handler
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+        localStorage.removeItem('dept_logged_in');
+        localStorage.removeItem('dept_user');
+        showToast('Logged out successfully');
+        setTimeout(() => {
+            window.location.href = 'dept_login.html';
+        }, 500);
+    });
+    
+    // Expose functions to window
+    window.showToast = showToast;
+</script>
+</body>
+</html>

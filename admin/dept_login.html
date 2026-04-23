@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeoTraverse | Department Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body {
+            background: linear-gradient(135deg, #0f74ba 0%, #0a5a8e 100%);
+            min-height: 100vh;
+        }
+        .login-card {
+            animation: fadeInUp 0.6s ease-out;
+            backdrop-filter: blur(10px);
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .input-field:focus {
+            transform: scale(1.01);
+            box-shadow: 0 0 0 3px rgba(15,116,186,0.2);
+            border-color: #0f74ba;
+        }
+        .login-btn {
+            transition: all 0.3s ease;
+        }
+        .login-btn:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 8px 20px -5px rgba(0,0,0,0.2); 
+        }
+        .login-btn.disabled { opacity: 0.7; cursor: not-allowed; }
+        .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.6s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .toast-message {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            z-index: 1000;
+            animation: slideInRight 0.3s ease;
+            font-size: 13px;
+        }
+        .toast-message.error { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .shake { animation: shake 0.3s ease-in-out; }
+        @keyframes shake {
+            0%,100% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
+        }
+        .password-field { position: relative; }
+        .password-field input { padding-right: 45px; }
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #9ca3af;
+        }
+        .password-toggle:hover { color: #0f74ba; }
+        @media (max-width: 640px) {
+            .login-card { margin: 16px; padding: 20px !important; }
+        }
+        
+        /* Department card styles */
+        .dept-selector {
+            transition: all 0.3s ease;
+        }
+        .dept-option {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .dept-option:hover {
+            transform: translateX(5px);
+        }
+        .dept-option.selected {
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+            border-left: 3px solid #0f74ba;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center p-4">
+
+<div class="login-card bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl w-full max-w-sm p-6 border border-white/20">
+    
+    <div class="text-center mb-6">
+        <img src="https://i.postimg.cc/MT6jTVHh/weblogo.png" alt="Logo" class="w-16 h-16 mx-auto">
+        <h2 class="text-xl font-bold text-gray-800 mt-3">Department Login</h2>
+        <p class="text-gray-500 text-xs mt-1">Sign in to your department dashboard</p>
+    </div>
+    
+    <!-- Department Selection Cards -->
+    <div class="mb-4">
+        <label class="block text-xs font-semibold text-gray-700 mb-2">Select Your Department</label>
+        <div class="space-y-2" id="departmentSelector">
+            <div class="dept-option p-3 rounded-lg border border-gray-200 flex items-center gap-3 cursor-pointer" data-dept="manager" data-email="manager@geotraverse.com" data-password="1234">
+                <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-user-tie text-purple-600"></i>
+                </div>
+                <div class="flex-1">
+                    <p class="font-semibold text-gray-800">Management Department</p>
+                    <p class="text-xs text-gray-500">Housing Projects & Land Survey Management</p>
+                </div>
+                <i class="fas fa-chevron-right text-gray-400 text-sm"></i>
+            </div>
+            
+            <div class="dept-option p-3 rounded-lg border border-gray-200 flex items-center gap-3 cursor-pointer" data-dept="finance" data-email="finance@geotraverse.com" data-password="1234">
+                <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-calculator text-green-600"></i>
+                </div>
+                <div class="flex-1">
+                    <p class="font-semibold text-gray-800">Finance Department</p>
+                    <p class="text-xs text-gray-500">Financial management & accounting</p>
+                </div>
+                <i class="fas fa-chevron-right text-gray-400 text-sm"></i>
+            </div>
+            
+            <div class="dept-option p-3 rounded-lg border border-gray-200 flex items-center gap-3 cursor-pointer" data-dept="sales" data-email="sales@geotraverse.com" data-password="1234">
+                <div class="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-chart-line text-orange-600"></i>
+                </div>
+                <div class="flex-1">
+                    <p class="font-semibold text-gray-800">Sales & Marketing Department</p>
+                    <p class="text-xs text-gray-500">Track promotions and customer engagements</p>
+                </div>
+                <i class="fas fa-chevron-right text-gray-400 text-sm"></i>
+            </div>
+            
+            <div class="dept-option p-3 rounded-lg border border-gray-200 flex items-center gap-3 cursor-pointer" data-dept="secretary" data-email="secretary@geotraverse.com" data-password="1234">
+                <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-envelope text-red-600"></i>
+                </div>
+                <div class="flex-1">
+                    <p class="font-semibold text-gray-800">Secretary Department</p>
+                    <p class="text-xs text-gray-500">Administration & communication management</p>
+                </div>
+                <i class="fas fa-chevron-right text-gray-400 text-sm"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="relative my-4">
+        <div class="absolute inset-0 flex items-center">
+            <div class="w-full border-t border-gray-200"></div>
+        </div>
+        <div class="relative flex justify-center text-xs">
+            <span class="bg-white px-2 text-gray-400">OR</span>
+        </div>
+    </div>
+    
+    <form id="deptLoginForm">
+        <div class="mb-4">
+            <label class="block text-xs font-semibold text-gray-700 mb-1">Email Address</label>
+            <input type="email" id="deptEmail" 
+                   class="input-field w-full p-2.5 rounded-xl border border-gray-200 focus:border-blue-500 focus:outline-none text-sm"
+                   placeholder="department@geotraverse.com" 
+                   value="manager@geotraverse.com"
+                   required>
+        </div>
+        
+        <div class="mb-5">
+            <label class="block text-xs font-semibold text-gray-700 mb-1">Password</label>
+            <div class="password-field relative">
+                <input type="password" id="deptPassword" 
+                       class="input-field w-full p-2.5 rounded-xl border border-gray-200 focus:border-blue-500 focus:outline-none text-sm pr-10"
+                       placeholder="Enter your password" 
+                       value="1234"
+                       required>
+                <i class="fas fa-eye password-toggle" onclick="togglePasswordVisibility()"></i>
+            </div>
+        </div>
+        
+        <div class="flex justify-between items-center mb-5">
+            <label class="flex items-center cursor-pointer">
+                <input type="checkbox" id="rememberMe" class="w-3.5 h-3.5 text-blue-600 rounded">
+                <span class="ml-1.5 text-xs text-gray-600">Remember me</span>
+            </label>
+            <div class="text-xs text-gray-400">
+                <i class="fas fa-lock mr-1"></i> Secure Login
+            </div>
+        </div>
+        
+        <button type="submit" id="loginBtn" 
+                class="login-btn w-full bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white py-2.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-2">
+            <i class="fas fa-sign-in-alt text-sm"></i> Sign In
+        </button>
+    </form>
+    
+    <div class="text-center mt-5 pt-3 border-t border-gray-100">
+        <p class="text-xs text-gray-400"><i class="fas fa-building mr-1"></i> Department Portal</p>
+        <p class="text-xs text-gray-400 mt-1">Contact your administrator for password issues</p>
+    </div>
+    
+    <!-- Department Info Footer -->
+    <div class="mt-4 p-3 bg-gray-50 rounded-lg">
+        <p class="text-xs text-gray-500 text-center">
+            <i class="fas fa-info-circle mr-1"></i> 
+            Demo Credentials:
+        </p>
+        <p class="text-xs text-gray-400 text-center mt-1">
+            Management: manager@geotraverse.com / 1234<br>
+            Finance: finance@geotraverse.com / 1234<br>
+            Sales: sales@geotraverse.com / 1234<br>
+            Secretary: secretary@geotraverse.com / 1234
+        </p>
+    </div>
+</div>
+
+<script>
+    // Department credentials mapping
+    const departmentCredentials = {
+        manager: { email: "manager@geotraverse.com", password: "1234", name: "Management Department", role: "manager", dashboard: "dept_dashboard.html" },
+        finance: { email: "finance@geotraverse.com", password: "1234", name: "Finance Department", role: "finance", dashboard: "dept_dashboard.html" },
+        sales: { email: "sales@geotraverse.com", password: "1234", name: "Sales & Marketing Department", role: "sales", dashboard: "dept_dashboard.html" },
+        secretary: { email: "secretary@geotraverse.com", password: "1234", name: "Secretary Department", role: "secretary", dashboard: "dept_dashboard.html" }
+    };
+    
+    let selectedDept = "manager";
+    
+    function togglePasswordVisibility() {
+        const input = document.getElementById('deptPassword');
+        const icon = document.querySelector('.password-toggle');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+    
+    function showToast(message, isError = false) {
+        const existingToast = document.querySelector('.toast-message');
+        if (existingToast) existingToast.remove();
+        
+        const toast = document.createElement('div');
+        toast.className = `toast-message ${isError ? 'error' : ''}`;
+        toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-circle' : 'fa-check-circle'} mr-1"></i>${message}`;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+    
+    function shakeElement(element) {
+        element.classList.add('shake');
+        setTimeout(() => element.classList.remove('shake'), 300);
+    }
+    
+    function saveCredentials(email, password, remember) {
+        if (remember) {
+            localStorage.setItem('dept_remembered_email', email);
+            localStorage.setItem('dept_remembered_password', password);
+            localStorage.setItem('dept_remember_me', 'true');
+        } else {
+            localStorage.removeItem('dept_remembered_email');
+            localStorage.removeItem('dept_remembered_password');
+            localStorage.setItem('dept_remember_me', 'false');
+        }
+    }
+    
+    function loadSavedCredentials() {
+        const savedEmail = localStorage.getItem('dept_remembered_email');
+        const savedPassword = localStorage.getItem('dept_remembered_password');
+        const rememberChecked = localStorage.getItem('dept_remember_me') === 'true';
+        
+        if (savedEmail && rememberChecked) {
+            document.getElementById('deptEmail').value = savedEmail;
+            if (savedPassword) document.getElementById('deptPassword').value = savedPassword;
+            document.getElementById('rememberMe').checked = true;
+            
+            // Find which department this email belongs to
+            for (const [key, value] of Object.entries(departmentCredentials)) {
+                if (value.email === savedEmail) {
+                    selectedDept = key;
+                    highlightSelectedDepartment(key);
+                    break;
+                }
+            }
+        }
+    }
+    
+    function highlightSelectedDepartment(deptKey) {
+        document.querySelectorAll('.dept-option').forEach(opt => {
+            opt.classList.remove('selected');
+            opt.style.background = '';
+            opt.style.borderLeft = '';
+        });
+        const selected = document.querySelector(`.dept-option[data-dept="${deptKey}"]`);
+        if (selected) {
+            selected.classList.add('selected');
+            selected.style.background = 'linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%)';
+            selected.style.borderLeft = '3px solid #0f74ba';
+        }
+    }
+    
+    function handleLogin(email, password, remember) {
+        // Find which department matches these credentials
+        let matchedDept = null;
+        let userData = null;
+        
+        for (const [key, value] of Object.entries(departmentCredentials)) {
+            if (value.email === email && value.password === password) {
+                matchedDept = key;
+                userData = value;
+                break;
+            }
+        }
+        
+        if (matchedDept && userData) {
+            // Save session
+            localStorage.setItem('dept_logged_in', 'true');
+            localStorage.setItem('dept_user', JSON.stringify({
+                name: userData.name,
+                email: email,
+                role: userData.role,
+                department: userData.name,
+                loginTime: new Date().toISOString()
+            }));
+            
+            // Save remember me preference
+            saveCredentials(email, password, remember);
+            
+            // Show success message
+            showToast(`Welcome ${userData.name}! Redirecting...`);
+            
+            // Redirect to department dashboard
+            setTimeout(() => {
+                window.location.href = userData.dashboard;
+            }, 1000);
+            
+            return true;
+        } else {
+            showToast('Invalid email or password. Please check your credentials.', true);
+            shakeElement(document.querySelector('.login-card'));
+            return false;
+        }
+    }
+    
+    // Department selector click handlers
+    document.querySelectorAll('.dept-option').forEach(option => {
+        option.addEventListener('click', () => {
+            const dept = option.getAttribute('data-dept');
+            const email = option.getAttribute('data-email');
+            const password = option.getAttribute('data-password');
+            
+            selectedDept = dept;
+            document.getElementById('deptEmail').value = email;
+            document.getElementById('deptPassword').value = password;
+            
+            // Highlight selected
+            highlightSelectedDepartment(dept);
+            
+            // Auto-focus on password field for convenience
+            document.getElementById('deptPassword').focus();
+        });
+    });
+    
+    // Check if already logged in
+    if (localStorage.getItem('dept_logged_in') === 'true') {
+        const user = JSON.parse(localStorage.getItem('dept_user') || '{}');
+        if (user.role) {
+            window.location.href = 'dept_dashboard.html';
+        }
+    }
+    
+    // Load saved credentials
+    loadSavedCredentials();
+    
+    // Initially highlight the default selected department
+    highlightSelectedDepartment('manager');
+    
+    // Login form submission
+    document.getElementById('deptLoginForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const email = document.getElementById('deptEmail').value.trim();
+        const password = document.getElementById('deptPassword').value;
+        const remember = document.getElementById('rememberMe').checked;
+        
+        if (!email || !password) {
+            showToast('Please enter email and password', true);
+            return;
+        }
+        
+        // Disable button and show loading
+        const btn = document.getElementById('loginBtn');
+        const originalHTML = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<div class="spinner"></div><span class="ml-2">Signing in...</span>';
+        
+        // Simulate network delay
+        setTimeout(() => {
+            handleLogin(email, password, remember);
+            btn.disabled = false;
+            btn.innerHTML = originalHTML;
+        }, 500);
+    });
+    
+    // Enter key press
+    document.getElementById('deptPassword').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            document.getElementById('deptLoginForm').dispatchEvent(new Event('submit'));
+        }
+    });
+    
+    // Auto-fill when department card is clicked - also trigger highlight on page load for default
+    const defaultDept = document.querySelector('.dept-option[data-dept="manager"]');
+    if (defaultDept) {
+        defaultDept.click();
+    }
+</script>
+</body>
+</html>
