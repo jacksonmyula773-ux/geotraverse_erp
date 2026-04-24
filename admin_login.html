@@ -271,7 +271,7 @@
             
             // Redirect to dashboard
             setTimeout(() => {
-                window.location.href = 'dashboard.html';
+                window.location.href = 'admin_dashboard.html';
             }, 1000);
             
             return true;
@@ -304,7 +304,7 @@
     
     // Check if already logged in
     if (localStorage.getItem('admin_logged_in') === 'true') {
-        window.location.href = 'dashboard.html';
+        window.location.href = 'admin_dashboard.html';
     }
     
     // Load saved credentials

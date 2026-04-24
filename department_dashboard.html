@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>GeoTraverse | Department Dashboard</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body { background: #f0f2f5; transition: background 0.3s ease; }
+        
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #e4e4e7; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #a1a1aa; border-radius: 10px; }
+        
+        .sidebar {
+            background: linear-gradient(180deg, #0f74ba 0%, #0a5a8e 100%);
+            transition: background-color 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            position: fixed;
+            width: 260px;
+            z-index: 30;
+        }
+        
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 1.5rem 0.75rem;
+            scrollbar-width: thin;
+        }
+        
+        .sidebar-footer {
+            padding: 1rem;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            flex-shrink: 0;
+        }
+        
+        .nav-item {
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+            cursor: pointer;
+        }
+        .nav-item.active {
+            background-color: rgba(255,255,255,0.12);
+            border-left-color: #60a5fa;
+        }
+        .nav-item.active i { color: #60a5fa; }
+        .nav-item:hover:not(.active) { background-color: rgba(255,255,255,0.08); }
+        
+        .stat-card {
+            transition: all 0.3s ease;
+            border: 1px solid #e5e7eb;
+            cursor: pointer;
+            background: white;
+            border-radius: 12px;
+        }
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 25px -12px rgba(0,0,0,0.15);
+            border-color: #0f74ba;
+        }
+        
+        .project-card {
+            transition: all 0.2s;
+            cursor: pointer;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+            background: white;
+        }
+        .project-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        
+        .task-item {
+            background: white; border-radius: 12px; padding: 12px;
+            margin-bottom: 10px; border-left: 3px solid #0f74ba;
+            transition: all 0.2s;
+        }
+        .task-item:hover { transform: translateX(3px); }
+        
+        .message-item { transition: all 0.2s; cursor: pointer; }
+        .message-item:hover { background-color: #f8fafc; }
+        .message-unread { background-color: #eff6ff; border-left: 3px solid #3b82f6; }
+        
+        .chat-bubble { max-width: 80%; padding: 10px 14px; border-radius: 12px; margin-bottom: 8px; }
+        .chat-reply { background-color: #d1fae5; margin-left: auto; }
+        .chat-message { background-color: #e5e7eb; }
+        
+        .report-card {
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .report-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        .btn-primary { background: linear-gradient(135deg, #0f74ba, #0a5a8e); transition: all 0.2s ease; cursor: pointer; }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 10px 15px -3px rgba(15,116,186,0.3); }
+        
+        .gradient-text { background: linear-gradient(135deg, #0f74ba, #60a5fa); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        
+        .scroll-top {
+            position: fixed; bottom: 20px; right: 20px;
+            background: #0f74ba; width: 40px; height: 40px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; opacity: 0; transition: all 0.3s;
+            z-index: 99;
+        }
+        .scroll-top.visible { opacity: 1; }
+        
+        .toast-notification {
+            position: fixed; bottom: 20px; right: 20px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white; padding: 12px 20px; border-radius: 8px;
+            z-index: 1000; animation: slideInRight 0.3s ease;
+        }
+        .toast-notification.error { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        
+        body.dark-mode { background-color: #0f172a; }
+        body.dark-mode .bg-white { background-color: #1e293b; }
+        body.dark-mode .text-gray-800, body.dark-mode .text-gray-700 { color: #f1f5f9; }
+        body.dark-mode .text-gray-500, body.dark-mode .text-gray-400 { color: #94a3b8; }
+        body.dark-mode .stat-card { background-color: #1e293b; border-color: #334155; }
+        body.dark-mode .project-card { background-color: #1e293b; }
+        body.dark-mode .task-item { background-color: #1e293b; }
+        body.dark-mode .chat-message { background-color: #334155; }
+        body.dark-mode .chat-message p { color: #f1f5f9; }
+        body.dark-mode .chat-reply { background-color: #065f46; }
+        
+        .main-content { margin-left: 260px; }
+        @media (max-width: 768px) {
+            .sidebar { left: -260px; transition: left 0.3s; }
+            .sidebar.mobile-open { left: 0; }
+            .mobile-menu-overlay {
+                position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.5); z-index: 99; display: none;
+            }
+            .mobile-menu-overlay.open { display: block; }
+            .main-content { margin-left: 0; }
+        }
+        
+        .report-modal { max-height: 85vh; overflow-y: auto; }
+        .status-badge { padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 500; }
+        .status-pending { background: #fef3c7; color: #d97706; }
+        .status-progress { background: #dbeafe; color: #2563eb; }
+        .status-completed { background: #d1fae5; color: #059669; }
+    </style>
+</head>
+<body>
+
+<div id="loadingOverlay" class="loading-overlay" style="display: none;">
+    <div class="loading-spinner"></div>
+</div>
+
+<div id="mobileMenuOverlay" class="mobile-menu-overlay" onclick="closeMobileSidebar()"></div>
+
+<div id="dashboardApp">
+<div class="flex h-screen overflow-hidden">
+    
+    <!-- SIDEBAR -->
+    <aside id="mainSidebar" class="sidebar w-64 shadow-xl flex flex-col z-20">
+        <div class="px-6 py-6 border-b border-white/20 flex-shrink-0">
+            <div class="flex items-center space-x-3">
+                <i class="fas fa-map-marked-alt text-white text-2xl"></i>
+                <div>
+                    <span class="text-xl font-bold text-white">GeoTraverse</span>
+                    <p class="text-[10px] text-white/60" id="deptDisplayBadge">Department Portal</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="sidebar-nav flex-1 overflow-y-auto">
+            <nav class="space-y-1">
+                <a href="#" class="nav-item active flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white" data-section="dashboard">
+                    <i class="fas fa-tachometer-alt w-5 text-white/70"></i><span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white" data-section="projects">
+                    <i class="fas fa-tasks w-5 text-white/70"></i><span>My Projects</span>
+                </a>
+                <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white" data-section="tasks">
+                    <i class="fas fa-check-square w-5 text-white/70"></i><span>My Tasks</span>
+                </a>
+                <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white" data-section="reports">
+                    <i class="fas fa-chart-line w-5 text-white/70"></i><span>My Reports</span>
+                </a>
+                <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white" data-section="messages">
+                    <i class="fas fa-envelope w-5 text-white/70"></i><span>Messages</span>
+                    <span class="ml-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full" id="unreadMsgBadge">0</span>
+                </a>
+                <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white" data-section="team">
+                    <i class="fas fa-users w-5 text-white/70"></i><span>My Team</span>
+                </a>
+            </nav>
+        </div>
+        
+        <div class="sidebar-footer flex-shrink-0">
+            <div class="flex items-center space-x-3 mb-3">
+                <div class="w-9 h-9 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full flex items-center justify-center">
+                    <i class="fas fa-user text-white text-sm"></i>
+                </div>
+                <div class="flex-1">
+                    <p class="text-sm font-semibold text-white" id="userName">Loading...</p>
+                    <p class="text-xs text-white/70" id="userDept">Department</p>
+                </div>
+            </div>
+            <button id="logoutBtn" class="w-full bg-red-600/80 hover:bg-red-600 text-white py-2 rounded-lg text-sm transition">
+                <i class="fas fa-sign-out-alt mr-2"></i>Logout
+            </button>
+        </div>
+    </aside>
+    
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 overflow-y-auto main-content">
+        <header class="bg-white shadow-sm px-6 py-4 sticky top-0 z-10 border-b border-gray-200">
+            <div class="flex items-center justify-between flex-wrap gap-3">
+                <div class="flex items-center space-x-4">
+                    <button id="mobileMenuBtn" class="md:hidden text-gray-600 hover:text-blue-600 transition">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <h1 class="text-xl font-bold gradient-text" id="pageTitle">Department Dashboard</h1>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="darkModeToggle" class="text-gray-500 hover:text-blue-600 transition">
+                        <i id="darkModeIcon" class="fas fa-moon text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+        
+        <div class="p-6" id="mainContentContainer"></div>
+    </main>
+</div>
+</div>
+
+<!-- Generate Report Modal -->
+<div id="generateReportModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl w-full max-w-4xl modal-pop report-modal">
+        <div class="px-6 py-4 border-b flex justify-between items-center sticky top-0 bg-white">
+            <h3 class="text-lg font-bold"><i class="fas fa-file-alt text-purple-500 mr-2"></i>Generate New Report</h3>
+            <button onclick="closeGenerateReportModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+        </div>
+        <div class="p-6" id="generateReportForm">
+            <!-- Report form will be loaded here -->
+        </div>
+    </div>
+</div>
+
+<!-- View/Edit Report Modal -->
+<div id="viewReportModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl w-full max-w-4xl modal-pop report-modal">
+        <div class="px-6 py-4 border-b flex justify-between items-center sticky top-0 bg-white">
+            <h3 class="text-lg font-bold" id="viewReportTitle">Report Details</h3>
+            <button onclick="closeViewReportModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+        </div>
+        <div class="p-6" id="viewReportContent"></div>
+        <div class="px-6 py-4 border-t bg-gray-50 flex justify-end gap-3">
+            <button id="editReportBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg"><i class="fas fa-edit mr-2"></i>Edit</button>
+            <button id="deleteReportBtn" class="bg-red-600 text-white px-4 py-2 rounded-lg"><i class="fas fa-trash mr-2"></i>Delete</button>
+            <button id="submitReportBtn" class="bg-green-600 text-white px-4 py-2 rounded-lg"><i class="fas fa-paper-plane mr-2"></i>Submit to Admin</button>
+            <button onclick="closeViewReportModal()" class="bg-gray-600 text-white px-4 py-2 rounded-lg">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- Chat Modal -->
+<div id="chatModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl w-full max-w-2xl modal-pop">
+        <div class="px-6 py-4 border-b flex justify-between items-center">
+            <h3 class="text-lg font-bold"><i class="fas fa-comments text-blue-500 mr-2"></i>Chat with Admin</h3>
+            <button onclick="closeChatModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+        </div>
+        <div class="h-96 overflow-y-auto p-4 bg-gray-50" id="chatMessagesArea">
+            <!-- Chat messages will appear here -->
+        </div>
+        <div class="p-4 border-t">
+            <div class="flex gap-2">
+                <textarea id="chatInput" rows="2" placeholder="Type your message here..." class="flex-1 p-2 border rounded-lg resize-none focus:outline-none focus:border-blue-500"></textarea>
+                <button onclick="sendChatMessage()" class="bg-blue-600 text-white px-4 py-2 rounded-lg self-end">
+                    <i class="fas fa-paper-plane"></i> Send
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ==================== DEPARTMENT DATA ====================
+    let currentUser = {
+        id: 1,
+        name: "John Mwita",
+        email: "manager@geotraverse.com",
+        department: "Management",
+        role: "Manager"
+    };
+    
+    let currentReports = [];
+    let currentReportForEdit = null;
+    let currentChatId = null;
+    
+    // Department colors
+    const deptColors = {
+        "Management": { bg: "bg-purple-600", light: "bg-purple-100", text: "text-purple-600", border: "border-purple-200" },
+        "Finance": { bg: "bg-green-600", light: "bg-green-100", text: "text-green-600", border: "border-green-200" },
+        "Sales & Marketing": { bg: "bg-orange-600", light: "bg-orange-100", text: "text-orange-600", border: "border-orange-200" },
+        "Administration": { bg: "bg-red-600", light: "bg-red-100", text: "text-red-600", border: "border-red-200" }
+    };
+    
+    // ==================== INITIALIZE DATA ====================
+    function initializeData() {
+        // Department Projects
+        if (!localStorage.getItem('dept_projects')) {
+            localStorage.setItem('dept_projects', JSON.stringify([
+                { id: 1, name: "Modern Villa - Kigamboni", client_name: "John Mwita", amount: "180000000", status: "completed", progress: 100, location: "Kigamboni", department: "Management", created_at: "2026-04-01" },
+                { id: 2, name: "Commercial Complex - Pwani", client_name: "Sarah Kijazi", amount: "350000000", status: "in_progress", progress: 65, location: "Pwani", department: "Management", created_at: "2026-03-15" },
+                { id: 3, name: "Residential Estate - Mbezi", client_name: "James Ndege", amount: "520000000", status: "in_progress", progress: 45, location: "Mbezi Beach", department: "Management", created_at: "2026-02-10" },
+                { id: 4, name: "Annual Budget Planning", client_name: "Internal", amount: "50000000", status: "in_progress", progress: 80, location: "Head Office", department: "Finance", created_at: "2026-03-01" },
+                { id: 5, name: "Q1 Financial Audit", client_name: "Internal", amount: "25000000", status: "completed", progress: 100, location: "Head Office", department: "Finance", created_at: "2026-02-15" },
+                { id: 6, name: "New Client Acquisition Campaign", client_name: "Various", amount: "75000000", status: "in_progress", progress: 60, location: "Dar es Salaam", department: "Sales & Marketing", created_at: "2026-03-10" },
+                { id: 7, name: "Staff Onboarding Program", client_name: "Internal", amount: "15000000", status: "completed", progress: 100, location: "Head Office", department: "Administration", created_at: "2026-01-20" }
+            ]));
+        }
+        
+        // Department Tasks
+        if (!localStorage.getItem('dept_tasks')) {
+            localStorage.setItem('dept_tasks', JSON.stringify([
+                { id: 1, title: "Review Q1 Budget", description: "Review and approve Q1 budget allocation", department: "Finance", completed: false, due_date: "2026-04-30", created_at: "2026-04-01" },
+                { id: 2, title: "Client Meeting Preparation", description: "Prepare presentation for upcoming client meeting", department: "Sales & Marketing", completed: false, due_date: "2026-04-25", created_at: "2026-04-02" },
+                { id: 3, title: "Update Employee Records", description: "Update all employee records in the system", department: "Administration", completed: true, due_date: "2026-04-15", created_at: "2026-04-01" },
+                { id: 4, title: "Site Visit Report", description: "Visit Mbezi project site and prepare report", department: "Management", completed: false, due_date: "2026-04-28", created_at: "2026-04-03" },
+                { id: 5, title: "Weekly Sales Report", description: "Compile weekly sales data", department: "Sales & Marketing", completed: false, due_date: "2026-04-24", created_at: "2026-04-20" }
+            ]));
+        }
+        
+        // Department Reports (with draft status)
+        if (!localStorage.getItem('dept_reports')) {
+            localStorage.setItem('dept_reports', JSON.stringify([
+                { id: 1, department: "Management", type: "weekly", title: "Week 15 Progress Report", content: "This week we completed the foundation for Commercial Complex project. All teams are working efficiently.", status: "draft", created_at: "2026-04-18", submitted_at: null },
+                { id: 2, department: "Finance", type: "monthly", title: "March Financial Summary", content: "Total revenue: TZS 28,750,000. Expenses: TZS 15,200,000. Net profit: TZS 13,550,000.", status: "submitted", created_at: "2026-04-01", submitted_at: "2026-04-02" },
+                { id: 3, department: "Management", type: "weekly", title: "Week 14 Progress Report", content: "Completed Modern Villa project handover. Client is satisfied.", status: "submitted", created_at: "2026-04-11", submitted_at: "2026-04-12" }
+            ]));
+        }
+        
+        // Department Messages (chat with admin)
+        if (!localStorage.getItem('dept_messages')) {
+            localStorage.setItem('dept_messages', JSON.stringify([
+                { id: 1, department: "Management", from: "Management", to: "admin", message: "The Modern Villa project has been completed successfully. Please review.", is_read: true, created_at: new Date(Date.now() - 3*24*60*60*1000).toISOString(), replies: [
+                    { from: "admin", message: "Excellent work! Please prepare the final handover documents.", timestamp: new Date(Date.now() - 2*24*60*60*1000).toISOString() }
+                ] },
+                { id: 2, department: "Finance", from: "Finance", to: "admin", message: "Monthly budget report for March is ready for review.", is_read: false, created_at: new Date(Date.now() - 1*24*60*60*1000).toISOString(), replies: [] }
+            ]));
+        }
+        
+        // Team members per department
+        if (!localStorage.getItem('dept_team_members')) {
+            localStorage.setItem('dept_team_members', JSON.stringify([
+                { id: 1, name: "John Mwita", email: "manager@geotraverse.com", role: "Manager", department: "Management", phone: "+255 712 345 678", join_date: "2024-01-15" },
+                { id: 2, name: "Daniel Mambo", email: "daniel@geotraverse.com", role: "Assistant Manager", department: "Management", phone: "+255 718 901 234", join_date: "2024-03-10" },
+                { id: 3, name: "Sarah Kijazi", email: "finance@geotraverse.com", role: "Accountant", department: "Finance", phone: "+255 713 456 789", join_date: "2024-02-01" },
+                { id: 4, name: "Elizabeth Mwakyusa", email: "elizabeth@geotraverse.com", role: "Senior Accountant", department: "Finance", phone: "+255 717 890 123", join_date: "2023-11-20" },
+                { id: 5, name: "Michael Mushi", email: "sales@geotraverse.com", role: "Sales Executive", department: "Sales & Marketing", phone: "+255 714 567 890", join_date: "2024-01-10" },
+                { id: 6, name: "James Ndege", email: "james@geotraverse.com", role: "Marketing Specialist", department: "Sales & Marketing", phone: "+255 716 789 012", join_date: "2024-02-15" },
+                { id: 7, name: "Grace Mrema", email: "secretary@geotraverse.com", role: "Secretary", department: "Administration", phone: "+255 715 678 901", join_date: "2024-01-20" }
+            ]));
+        }
+    }
+    
+    // ==================== HELPER FUNCTIONS ====================
+    function showToast(message, isError = false) {
+        const toast = document.createElement('div');
+        toast.className = `toast-notification ${isError ? 'error' : ''}`;
+        toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-circle' : 'fa-check-circle'} mr-2"></i>${message}`;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+    
+    function escapeHtml(text) { if (!text) return ''; const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+    
+    function formatDate(dateStr) {
+        if (!dateStr) return 'N/A';
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('en-GB');
+    }
+    
+    function formatDateTime(dateStr) {
+        if (!dateStr) return 'N/A';
+        const date = new Date(dateStr);
+        return date.toLocaleString('en-GB');
+    }
+    
+    function getStatusBadge(status) {
+        if (status === 'completed') return '<span class="status-badge status-completed"><i class="fas fa-check-circle mr-1"></i>Completed</span>';
+        if (status === 'in_progress') return '<span class="status-badge status-progress"><i class="fas fa-spinner mr-1"></i>In Progress</span>';
+        return '<span class="status-badge status-pending"><i class="fas fa-clock mr-1"></i>Pending</span>';
+    }
+    
+    function addActivityLog(action) {
+        let logs = JSON.parse(localStorage.getItem('dept_activity_logs') || '[]');
+        logs.unshift({ action: action, department: currentUser.department, created_at: new Date().toISOString() });
+        if (logs.length > 50) logs.pop();
+        localStorage.setItem('dept_activity_logs', JSON.stringify(logs));
+    }
+    
+    // ==================== RENDER DASHBOARD ====================
+    function renderDashboard() {
+        const projects = JSON.parse(localStorage.getItem('dept_projects') || '[]');
+        const tasks = JSON.parse(localStorage.getItem('dept_tasks') || '[]');
+        const reports = JSON.parse(localStorage.getItem('dept_reports') || '[]');
+        const messages = JSON.parse(localStorage.getItem('dept_messages') || '[]');
+        const team = JSON.parse(localStorage.getItem('dept_team_members') || '[]');
+        
+        const deptProjects = projects.filter(p => p.department === currentUser.department);
+        const deptTasks = tasks.filter(t => t.department === currentUser.department);
+        const deptReports = reports.filter(r => r.department === currentUser.department);
+        const deptMessages = messages.filter(m => m.department === currentUser.department);
+        const deptTeam = team.filter(t => t.department === currentUser.department);
+        const colors = deptColors[currentUser.department] || deptColors["Management"];
+        
+        const completedTasks = deptTasks.filter(t => t.completed === true).length;
+        const pendingTasks = deptTasks.filter(t => t.completed === false).length;
+        const draftReports = deptReports.filter(r => r.status === 'draft').length;
+        const submittedReports = deptReports.filter(r => r.status === 'submitted').length;
+        const unreadMessages = deptMessages.filter(m => !m.is_read).length;
+        
+        document.getElementById('unreadMsgBadge').innerText = unreadMessages;
+        
+        document.getElementById('dashboardSection').innerHTML = `
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+                <div class="stat-card p-5" onclick="showSection('projects')">
+                    <div class="flex justify-between">
+                        <div><p class="text-gray-500 text-sm">My Projects</p><p class="text-3xl font-bold">${deptProjects.length}</p></div>
+                        <div class="w-12 h-12 ${colors.light} rounded-xl flex items-center justify-center"><i class="fas fa-building ${colors.text} text-xl"></i></div>
+                    </div>
+                </div>
+                <div class="stat-card p-5" onclick="showSection('tasks')">
+                    <div class="flex justify-between">
+                        <div><p class="text-gray-500 text-sm">Pending Tasks</p><p class="text-3xl font-bold text-orange-600">${pendingTasks}</p></div>
+                        <div class="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center"><i class="fas fa-tasks text-orange-500 text-xl"></i></div>
+                    </div>
+                </div>
+                <div class="stat-card p-5" onclick="showSection('reports')">
+                    <div class="flex justify-between">
+                        <div><p class="text-gray-500 text-sm">My Reports</p><p class="text-3xl font-bold text-purple-600">${deptReports.length}</p></div>
+                        <div class="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center"><i class="fas fa-chart-line text-purple-500 text-xl"></i></div>
+                    </div>
+                    <div class="flex gap-2 mt-2 text-xs"><span class="text-yellow-600">Draft: ${draftReports}</span><span class="text-green-600">Submitted: ${submittedReports}</span></div>
+                </div>
+                <div class="stat-card p-5" onclick="openChatModal()">
+                    <div class="flex justify-between">
+                        <div><p class="text-gray-500 text-sm">Messages</p><p class="text-3xl font-bold text-red-600">${unreadMessages}</p></div>
+                        <div class="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center"><i class="fas fa-envelope text-red-500 text-xl"></i></div>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-1">Click to chat with Admin</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-white rounded-xl shadow-sm p-5">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-semibold"><i class="fas fa-chart-line mr-2 text-blue-500"></i>Quick Actions</h3>
+                    </div>
+                    <div class="space-y-3">
+                        <button onclick="openGenerateReportModal()" class="w-full bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 transition flex items-center justify-center gap-2">
+                            <i class="fas fa-plus-circle"></i> Generate New Report
+                        </button>
+                        <button onclick="openChatModal()" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition flex items-center justify-center gap-2">
+                            <i class="fas fa-comment"></i> Message Admin
+                        </button>
+                        <button onclick="showSection('projects')" class="w-full border border-gray-300 py-3 rounded-lg hover:bg-gray-50 transition flex items-center justify-center gap-2">
+                            <i class="fas fa-building"></i> View All Projects
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-sm p-5">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-semibold"><i class="fas fa-users mr-2 text-green-500"></i>My Team (${deptTeam.length})</h3>
+                        <button onclick="showSection('team')" class="text-blue-500 text-sm">View All →</button>
+                    </div>
+                    <div class="space-y-2 max-h-64 overflow-y-auto">
+                        ${deptTeam.slice(0,3).map(m => `
+                            <div class="flex items-center gap-3 p-2 border-b">
+                                <div class="w-8 h-8 ${colors.light} rounded-full flex items-center justify-center"><i class="fas fa-user ${colors.text}"></i></div>
+                                <div><p class="font-medium text-sm">${m.name}</p><p class="text-xs text-gray-400">${m.role}</p></div>
+                            </div>
+                        `).join('')}
+                        ${deptTeam.length === 0 ? '<p class="text-gray-400 text-center py-4">No team members found</p>' : ''}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-6 bg-white rounded-xl shadow-sm p-5">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-semibold"><i class="fas fa-file-alt mr-2 text-purple-500"></i>Recent Reports</h3>
+                    <button onclick="openGenerateReportModal()" class="bg-purple-600 text-white px-3 py-1 rounded-lg text-sm">+ New Report</button>
+                </div>
+                <div class="space-y-2">
+                    ${deptReports.slice(0,3).map(r => `
+                        <div class="report-card border rounded-lg p-3 flex justify-between items-center hover:bg-gray-50" onclick="viewReport(${r.id})">
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs px-2 py-0.5 rounded-full ${r.status === 'draft' ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700'}">${r.status === 'draft' ? 'Draft' : 'Submitted'}</span>
+                                    <span class="text-xs bg-gray-100 px-2 py-0.5 rounded-full">${r.type}</span>
+                                </div>
+                                <p class="font-medium mt-1">${escapeHtml(r.title)}</p>
+                                <p class="text-xs text-gray-400">Created: ${formatDate(r.created_at)}</p>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                    `).join('')}
+                    ${deptReports.length === 0 ? '<p class="text-gray-400 text-center py-4">No reports yet. Click "New Report" to create one.</p>' : ''}
+                </div>
+            </div>
+        `;
+    }
+    
+    // ==================== PROJECTS SECTION ====================
+    function renderProjects() {
+        const projects = JSON.parse(localStorage.getItem('dept_projects') || '[]');
+        const deptProjects = projects.filter(p => p.department === currentUser.department);
+        const colors = deptColors[currentUser.department] || deptColors["Management"];
+        
+        document.getElementById('projectsSection').innerHTML = `
+            <div class="bg-white rounded-xl shadow-sm p-5">
+                <h3 class="font-semibold mb-4"><i class="fas fa-building mr-2 text-green-500"></i>My Projects (${deptProjects.length})</h3>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    ${deptProjects.map(p => `
+                        <div class="project-card">
+                            <div class="h-28 ${colors.light} flex items-center justify-center"><i class="fas fa-building ${colors.text} text-4xl"></i></div>
+                            <div class="p-4">
+                                <h4 class="font-bold">${escapeHtml(p.name)}</h4>
+                                <p class="text-sm text-gray-500">Client: ${escapeHtml(p.client_name)}</p>
+                                <p class="text-sm font-semibold text-blue-600">TZS ${parseFloat(p.amount).toLocaleString()}</p>
+                                <div class="mt-2"><div class="flex justify-between text-xs"><span>Progress</span><span>${p.progress}%</span></div><div class="w-full bg-gray-200 rounded-full h-2"><div class="bg-blue-600 h-2 rounded-full" style="width: ${p.progress}%"></div></div></div>
+                                ${getStatusBadge(p.status)}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                ${deptProjects.length === 0 ? '<p class="text-gray-400 text-center py-8">No projects assigned to your department yet.</p>' : ''}
+            </div>
+        `;
+    }
+    
+    // ==================== TASKS SECTION ====================
+    function renderTasks() {
+        const tasks = JSON.parse(localStorage.getItem('dept_tasks') || '[]');
+        const deptTasks = tasks.filter(t => t.department === currentUser.department);
+        const pending = deptTasks.filter(t => !t.completed);
+        const completed = deptTasks.filter(t => t.completed);
+        
+        document.getElementById('tasksSection').innerHTML = `
+            <div class="flex justify-between mb-4 flex-wrap gap-2">
+                <h3 class="font-semibold"><i class="fas fa-tasks mr-2 text-orange-500"></i>My Tasks</h3>
+                <button onclick="openAddTaskModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm"><i class="fas fa-plus mr-1"></i>Add Task</button>
+            </div>
+            <div class="grid lg:grid-cols-2 gap-6">
+                <div class="bg-white rounded-xl p-5"><h4 class="font-semibold text-orange-600 mb-3">Pending (${pending.length})</h4><div id="pendingTasksList"></div></div>
+                <div class="bg-white rounded-xl p-5"><h4 class="font-semibold text-green-600 mb-3">Completed (${completed.length})</h4><div id="completedTasksList"></div></div>
+            </div>
+        `;
+        
+        document.getElementById('pendingTasksList').innerHTML = pending.map(t => `
+            <div class="task-item"><div class="flex justify-between items-start"><div><p class="font-semibold">${escapeHtml(t.title)}</p><p class="text-xs text-gray-500">${escapeHtml(t.description || '')}</p><p class="text-xs text-blue-500 mt-1">Due: ${formatDate(t.due_date)}</p></div><input type="checkbox" onchange="toggleTask(${t.id})" class="w-5 h-5 mt-1"></div></div>
+        `).join('');
+        
+        document.getElementById('completedTasksList').innerHTML = completed.map(t => `
+            <div class="task-item opacity-75"><div class="flex justify-between items-start"><div><p class="font-semibold line-through">${escapeHtml(t.title)}</p><p class="text-xs text-gray-400">${escapeHtml(t.description || '')}</p></div><i class="fas fa-check-circle text-green-500 mt-1"></i></div></div>
+        `).join('');
+    }
+    
+    function openAddTaskModal() {
+        const title = prompt('Enter task title:');
+        if (!title) return;
+        const description = prompt('Enter task description:');
+        const due_date = prompt('Enter due date (YYYY-MM-DD):');
+        
+        const tasks = JSON.parse(localStorage.getItem('dept_tasks') || '[]');
+        tasks.push({ id: Date.now(), title, description, department: currentUser.department, completed: false, due_date: due_date || '', created_at: new Date().toISOString().split('T')[0] });
+        localStorage.setItem('dept_tasks', JSON.stringify(tasks));
+        showToast('Task added successfully');
+        renderTasks();
+        renderDashboard();
+    }
+    
+    function toggleTask(id) {
+        const tasks = JSON.parse(localStorage.getItem('dept_tasks') || '[]');
+        const task = tasks.find(t => t.id === id);
+        if (task) {
+            task.completed = !task.completed;
+            localStorage.setItem('dept_tasks', JSON.stringify(tasks));
+            showToast(task.completed ? 'Task completed! Great job!' : 'Task reopened');
+            renderTasks();
+            renderDashboard();
+        }
+    }
+    
+    // ==================== REPORTS SECTION ====================
+    function renderReports() {
+        const reports = JSON.parse(localStorage.getItem('dept_reports') || '[]');
+        const deptReports = reports.filter(r => r.department === currentUser.department);
+        
+        document.getElementById('reportsSection').innerHTML = `
+            <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
+                <h3 class="font-semibold"><i class="fas fa-chart-line mr-2 text-purple-500"></i>My Reports</h3>
+                <button onclick="openGenerateReportModal()" class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm"><i class="fas fa-plus mr-1"></i>Generate Report</button>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50"><tr><th class="px-4 py-3 text-left text-xs">Type</th><th class="px-4 py-3 text-left text-xs">Title</th><th class="px-4 py-3 text-left text-xs">Created</th><th class="px-4 py-3 text-left text-xs">Status</th><th class="px-4 py-3 text-left text-xs">Actions</th></tr></thead>
+                        <tbody id="reportsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('reportsTableBody').innerHTML = deptReports.map(r => `
+            <tr class="border-b hover:bg-gray-50 cursor-pointer" onclick="viewReport(${r.id})">
+                <td class="px-4 py-3"><span class="text-xs px-2 py-1 rounded-full bg-gray-100">${r.type}</span></td>
+                <td class="px-4 py-3 font-medium">${escapeHtml(r.title)}</td>
+                <td class="px-4 py-3 text-sm">${formatDate(r.created_at)}</td>
+                <td class="px-4 py-3"><span class="text-xs px-2 py-1 rounded-full ${r.status === 'draft' ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700'}">${r.status === 'draft' ? 'Draft' : 'Submitted'}</span></td>
+                <td class="px-4 py-3"><button onclick="event.stopPropagation(); viewReport(${r.id})" class="text-blue-600 mr-2"><i class="fas fa-eye"></i></button><button onclick="event.stopPropagation(); deleteReport(${r.id})" class="text-red-600"><i class="fas fa-trash"></i></button></td>
+            </tr>
+        `).join('');
+        
+        if (deptReports.length === 0) {
+            document.getElementById('reportsTableBody').innerHTML = '<tr><td colspan="5" class="text-center py-8 text-gray-400">No reports yet. Click "Generate Report" to create one.</td></tr>';
+        }
+    }
+    
+    function openGenerateReportModal() {
+        const colors = deptColors[currentUser.department] || deptColors["Management"];
+        document.getElementById('generateReportForm').innerHTML = `
+            <div class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="block text-sm font-semibold mb-1">Report Type</label><select id="reportType" class="w-full p-2 border rounded-lg"><option value="daily">📅 Daily Report</option><option value="weekly">📊 Weekly Report</option><option value="monthly">📈 Monthly Report</option><option value="quarterly">📉 Quarterly Report</option></select></div>
+                    <div><label class="block text-sm font-semibold mb-1">Report Period</label><input type="text" id="reportPeriod" placeholder="e.g., Week 16, 2026" class="w-full p-2 border rounded-lg"></div>
+                </div>
+                <div><label class="block text-sm font-semibold mb-1">Report Title</label><input type="text" id="reportTitle" placeholder="Enter report title" class="w-full p-2 border rounded-lg"></div>
+                
+                <div class="border-t pt-4"><h4 class="font-semibold mb-3">SECTION 1: Executive Summary</h4><textarea id="executiveSummary" rows="3" placeholder="Brief summary of achievements and challenges..." class="w-full p-2 border rounded-lg"></textarea></div>
+                
+                <div class="border-t pt-4"><h4 class="font-semibold mb-3">SECTION 2: Projects Status</h4><div id="projectsStatusList"></div><button type="button" onclick="addProjectStatusField()" class="text-blue-600 text-sm mt-2"><i class="fas fa-plus"></i> Add Project</button></div>
+                
+                <div class="border-t pt-4"><h4 class="font-semibold mb-3">SECTION 3: Tasks Completed</h4><textarea id="tasksCompleted" rows="2" placeholder="List completed tasks..." class="w-full p-2 border rounded-lg"></textarea></div>
+                
+                <div class="border-t pt-4"><h4 class="font-semibold mb-3">SECTION 4: Ongoing Tasks</h4><textarea id="ongoingTasks" rows="2" placeholder="List ongoing tasks with progress..." class="w-full p-2 border rounded-lg"></textarea></div>
+                
+                ${currentUser.department === 'Finance' ? `
+                    <div class="border-t pt-4"><h4 class="font-semibold mb-3">SECTION 5: Financial Summary</h4><div class="grid grid-cols-2 gap-3"><input type="text" id="totalRevenue" placeholder="Total Revenue (TZS)" class="p-2 border rounded-lg"><input type="text" id="totalExpenses" placeholder="Total Expenses (TZS)" class="p-2 border rounded-lg"><input type="text" id="netProfit" placeholder="Net Profit/Loss (TZS)" class="p-2 border rounded-lg"><input type="text" id="budgetVsActual" placeholder="Budget vs Actual (%)" class="p-2 border rounded-lg"></div></div>
+                ` : currentUser.department === 'Sales & Marketing' ? `
+                    <div class="border-t pt-4"><h4 class="font-semibold mb-3">SECTION 5: Sales Summary</h4><div class="grid grid-cols-2 gap-3"><input type="text" id="newClients" placeholder="New Clients Acquired" class="p-2 border rounded-lg"><input type="text" id="totalSales" placeholder="Total Sales Value (TZS)" class="p-2 border rounded-lg"><input type="text" id="activeLeads" placeholder="Active Leads" class="p-2 border rounded-lg"><input type="text" id="closedDeals" placeholder="Closed Deals" class="p-2 border rounded-lg"></div></div>
+                ` : currentUser.department === 'Administration' ? `
+                    <div class="border-t pt-4"><h4 class="font-semibold mb-3">SECTION 5: Administrative Summary</h4><div class="grid grid-cols-2 gap-3"><input type="text" id="documentsProcessed" placeholder="Documents Processed" class="p-2 border rounded-lg"><input type="text" id="staffRequests" placeholder="Staff Requests Handled" class="p-2 border rounded-lg"><input type="text" id="meetingsOrganized" placeholder="Meetings Organized" class="p-2 border rounded-lg"></div></div>
+                ` : ''}
+                
+                <div class="border-t pt-4"><h4 class="font-semibold mb-3">SECTION 6: Challenges & Solutions</h4><div id="challengesList"></div><button type="button" onclick="addChallengeField()" class="text-blue-600 text-sm mt-2"><i class="fas fa-plus"></i> Add Challenge</button></div>
+                
+                <div class="border-t pt-4"><h4 class="font-semibold mb-3">SECTION 7: Next Period Plan</h4><textarea id="nextPlan" rows="3" placeholder="List priorities for next period..." class="w-full p-2 border rounded-lg"></textarea></div>
+                
+                <div class="border-t pt-4"><h4 class="font-semibold mb-3">SECTION 8: Admin Assistance Needed</h4><div class="space-y-2"><label class="flex items-center"><input type="checkbox" value="budget" class="mr-2"> Budget approval needed</label><label class="flex items-center"><input type="checkbox" value="staff" class="mr-2"> Additional staff needed</label><label class="flex items-center"><input type="checkbox" value="equipment" class="mr-2"> Equipment/resources needed</label><label class="flex items-center"><input type="checkbox" value="other" class="mr-2"> Other</label><textarea id="otherAssistance" rows="2" placeholder="Describe other assistance needed..." class="w-full p-2 border rounded-lg mt-2"></textarea></div></div>
+                
+                <div class="border-t pt-4"><h4 class="font-semibold mb-3">Additional Comments</h4><textarea id="additionalComments" rows="2" placeholder="Any other information..." class="w-full p-2 border rounded-lg"></textarea></div>
+                
+                <div class="flex gap-3 pt-4"><button onclick="saveReportAsDraft()" class="flex-1 bg-yellow-600 text-white py-2 rounded-lg"><i class="fas fa-save mr-2"></i>Save as Draft</button><button onclick="submitReportToAdmin()" class="flex-1 bg-green-600 text-white py-2 rounded-lg"><i class="fas fa-paper-plane mr-2"></i>Submit to Admin</button><button onclick="closeGenerateReportModal()" class="flex-1 bg-gray-200 py-2 rounded-lg">Cancel</button></div>
+            </div>
+        `;
+        document.getElementById('projectsStatusList').innerHTML = '<div class="project-status-item flex gap-2 mb-2"><input type="text" placeholder="Project Name" class="flex-1 p-2 border rounded-lg"><input type="text" placeholder="Progress (%)" class="w-24 p-2 border rounded-lg"><select class="w-32 p-2 border rounded-lg"><option>On Track</option><option>Delayed</option><option>Completed</option></select><button onclick="this.closest(\'.project-status-item\').remove()" class="text-red-500"><i class="fas fa-trash"></i></button></div>';
+        document.getElementById('challengesList').innerHTML = '<div class="challenge-item border rounded-lg p-3 mb-2"><input type="text" placeholder="Challenge" class="w-full p-2 border rounded-lg mb-2"><textarea placeholder="Solution" rows="2" class="w-full p-2 border rounded-lg"></textarea><button onclick="this.closest(\'.challenge-item\').remove()" class="text-red-500 text-sm mt-1">Remove</button></div>';
+        
+        document.getElementById('generateReportModal').classList.remove('hidden');
+        document.getElementById('generateReportModal').classList.add('flex');
+    }
+    
+    function addProjectStatusField() {
+        const container = document.getElementById('projectsStatusList');
+        const div = document.createElement('div');
+        div.className = 'project-status-item flex gap-2 mb-2';
+        div.innerHTML = '<input type="text" placeholder="Project Name" class="flex-1 p-2 border rounded-lg"><input type="text" placeholder="Progress (%)" class="w-24 p-2 border rounded-lg"><select class="w-32 p-2 border rounded-lg"><option>On Track</option><option>Delayed</option><option>Completed</option></select><button onclick="this.closest(\'.project-status-item\').remove()" class="text-red-500"><i class="fas fa-trash"></i></button>';
+        container.appendChild(div);
+    }
+    
+    function addChallengeField() {
+        const container = document.getElementById('challengesList');
+        const div = document.createElement('div');
+        div.className = 'challenge-item border rounded-lg p-3 mb-2';
+        div.innerHTML = '<input type="text" placeholder="Challenge" class="w-full p-2 border rounded-lg mb-2"><textarea placeholder="Solution" rows="2" class="w-full p-2 border rounded-lg"></textarea><button onclick="this.closest(\'.challenge-item\').remove()" class="text-red-500 text-sm mt-1">Remove</button>';
+        container.appendChild(div);
+    }
+    
+    function collectReportData() {
+        const projectsData = [];
+        document.querySelectorAll('.project-status-item').forEach(item => {
+            const inputs = item.querySelectorAll('input, select');
+            if (inputs[0]?.value) {
+                projectsData.push({ name: inputs[0].value, progress: inputs[1]?.value, status: inputs[2]?.value });
+            }
+        });
+        
+        const challengesData = [];
+        document.querySelectorAll('.challenge-item').forEach(item => {
+            const inputs = item.querySelectorAll('input, textarea');
+            if (inputs[0]?.value) {
+                challengesData.push({ challenge: inputs[0].value, solution: inputs[1]?.value });
+            }
+        });
+        
+        const assistanceNeeded = [];
+        document.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
+            if (cb.value !== 'other') assistanceNeeded.push(cb.value);
+        });
+        if (document.getElementById('otherAssistance')?.value) {
+            assistanceNeeded.push(document.getElementById('otherAssistance').value);
+        }
+        
+        let departmentSpecific = {};
+        if (currentUser.department === 'Finance') {
+            departmentSpecific = { totalRevenue: document.getElementById('totalRevenue')?.value, totalExpenses: document.getElementById('totalExpenses')?.value, netProfit: document.getElementById('netProfit')?.value, budgetVsActual: document.getElementById('budgetVsActual')?.value };
+        } else if (currentUser.department === 'Sales & Marketing') {
+            departmentSpecific = { newClients: document.getElementById('newClients')?.value, totalSales: document.getElementById('totalSales')?.value, activeLeads: document.getElementById('activeLeads')?.value, closedDeals: document.getElementById('closedDeals')?.value };
+        } else if (currentUser.department === 'Administration') {
+            departmentSpecific = { documentsProcessed: document.getElementById('documentsProcessed')?.value, staffRequests: document.getElementById('staffRequests')?.value, meetingsOrganized: document.getElementById('meetingsOrganized')?.value };
+        }
+        
+        return {
+            type: document.getElementById('reportType')?.value || 'weekly',
+            period: document.getElementById('reportPeriod')?.value || '',
+            title: document.getElementById('reportTitle')?.value || '',
+            executiveSummary: document.getElementById('executiveSummary')?.value || '',
+            projectsStatus: projectsData,
+            tasksCompleted: document.getElementById('tasksCompleted')?.value || '',
+            ongoingTasks: document.getElementById('ongoingTasks')?.value || '',
+            departmentSpecific: departmentSpecific,
+            challenges: challengesData,
+            nextPlan: document.getElementById('nextPlan')?.value || '',
+            assistanceNeeded: assistanceNeeded,
+            additionalComments: document.getElementById('additionalComments')?.value || ''
+        };
+    }
+    
+    function saveReportAsDraft() {
+        const reportData = collectReportData();
+        if (!reportData.title) { showToast('Please enter a report title', true); return; }
+        
+        const reports = JSON.parse(localStorage.getItem('dept_reports') || '[]');
+        const newReport = {
+            id: Date.now(),
+            department: currentUser.department,
+            type: reportData.type,
+            period: reportData.period,
+            title: reportData.title,
+            content: JSON.stringify(reportData),
+            status: 'draft',
+            created_at: new Date().toISOString().split('T')[0],
+            submitted_at: null
+        };
+        reports.push(newReport);
+        localStorage.setItem('dept_reports', JSON.stringify(reports));
+        showToast('Report saved as draft successfully!');
+        closeGenerateReportModal();
+        renderReports();
+        renderDashboard();
+    }
+    
+    function submitReportToAdmin() {
+        const reportData = collectReportData();
+        if (!reportData.title) { showToast('Please enter a report title', true); return; }
+        
+        const reports = JSON.parse(localStorage.getItem('dept_reports') || '[]');
+        const newReport = {
+            id: Date.now(),
+            department: currentUser.department,
+            type: reportData.type,
+            period: reportData.period,
+            title: reportData.title,
+            content: JSON.stringify(reportData),
+            status: 'submitted',
+            created_at: new Date().toISOString().split('T')[0],
+            submitted_at: new Date().toISOString()
+        };
+        reports.push(newReport);
+        localStorage.setItem('dept_reports', JSON.stringify(reports));
+        addActivityLog(`Submitted report: ${reportData.title}`);
+        showToast(`✅ Report "${reportData.title}" submitted to Admin successfully!`);
+        closeGenerateReportModal();
+        renderReports();
+        renderDashboard();
+    }
+    
+    function viewReport(id) {
+        const reports = JSON.parse(localStorage.getItem('dept_reports') || '[]');
+        const report = reports.find(r => r.id === id);
+        if (!report) return;
+        
+        currentReportForEdit = report;
+        let content = {};
+        try { content = JSON.parse(report.content); } catch(e) { content = { executiveSummary: report.content }; }
+        
+        const colors = deptColors[currentUser.department] || deptColors["Management"];
+        
+        document.getElementById('viewReportTitle').innerHTML = `${report.type.toUpperCase()} Report: ${escapeHtml(report.title)}`;
+        document.getElementById('viewReportContent').innerHTML = `
+            <div class="space-y-4">
+                <div class="grid grid-cols-2 gap-3 p-3 ${colors.light} rounded-lg">
+                    <div><span class="font-semibold">Department:</span> ${report.department}</div>
+                    <div><span class="font-semibold">Report Type:</span> ${report.type}</div>
+                    <div><span class="font-semibold">Period:</span> ${content.period || 'N/A'}</div>
+                    <div><span class="font-semibold">Created:</span> ${formatDate(report.created_at)}</div>
+                    <div><span class="font-semibold">Status:</span> <span class="px-2 py-0.5 rounded-full ${report.status === 'draft' ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700'}">${report.status}</span></div>
+                    ${report.submitted_at ? `<div><span class="font-semibold">Submitted:</span> ${formatDateTime(report.submitted_at)}</div>` : ''}
+                </div>
+                
+                <div><h4 class="font-semibold">Executive Summary</h4><div class="p-3 bg-gray-50 rounded-lg">${escapeHtml(content.executiveSummary || 'N/A')}</div></div>
+                
+                ${content.projectsStatus && content.projectsStatus.length ? `<div><h4 class="font-semibold">Projects Status</h4><div class="space-y-2">${content.projectsStatus.map(p => `<div class="p-2 border rounded-lg">📌 ${escapeHtml(p.name)} - Progress: ${p.progress}% - Status: ${p.status}</div>`).join('')}</div></div>` : ''}
+                
+                ${content.tasksCompleted ? `<div><h4 class="font-semibold">Tasks Completed</h4><div class="p-3 bg-gray-50 rounded-lg">${escapeHtml(content.tasksCompleted)}</div></div>` : ''}
+                ${content.ongoingTasks ? `<div><h4 class="font-semibold">Ongoing Tasks</h4><div class="p-3 bg-gray-50 rounded-lg">${escapeHtml(content.ongoingTasks)}</div></div>` : ''}
+                
+                ${content.departmentSpecific && Object.keys(content.departmentSpecific).length ? `<div><h4 class="font-semibold">${currentUser.department === 'Finance' ? 'Financial Summary' : currentUser.department === 'Sales & Marketing' ? 'Sales Summary' : 'Administrative Summary'}</h4><div class="grid grid-cols-2 gap-2 p-3 bg-gray-50 rounded-lg">${Object.entries(content.departmentSpecific).map(([k,v]) => `<div><span class="font-semibold">${k}:</span> ${escapeHtml(v) || 'N/A'}</div>`).join('')}</div></div>` : ''}
+                
+                ${content.challenges && content.challenges.length ? `<div><h4 class="font-semibold">Challenges & Solutions</h4>${content.challenges.map(c => `<div class="p-3 border rounded-lg mb-2"><p class="font-medium">Challenge:</p><p>${escapeHtml(c.challenge)}</p><p class="font-medium mt-2">Solution:</p><p>${escapeHtml(c.solution)}</p></div>`).join('')}</div>` : ''}
+                
+                ${content.nextPlan ? `<div><h4 class="font-semibold">Next Period Plan</h4><div class="p-3 bg-gray-50 rounded-lg">${escapeHtml(content.nextPlan)}</div></div>` : ''}
+                
+                ${content.assistanceNeeded && content.assistanceNeeded.length ? `<div><h4 class="font-semibold">Admin Assistance Needed</h4><div class="p-3 bg-gray-50 rounded-lg">${content.assistanceNeeded.map(a => `• ${escapeHtml(a)}`).join('<br>')}</div></div>` : ''}
+                
+                ${content.additionalComments ? `<div><h4 class="font-semibold">Additional Comments</h4><div class="p-3 bg-gray-50 rounded-lg">${escapeHtml(content.additionalComments)}</div></div>` : ''}
+            </div>
+        `;
+        
+        const editBtn = document.getElementById('editReportBtn');
+        const deleteBtn = document.getElementById('deleteReportBtn');
+        const submitBtn = document.getElementById('submitReportBtn');
+        
+        if (report.status === 'draft') {
+            editBtn.style.display = 'block';
+            submitBtn.style.display = 'block';
+            deleteBtn.style.display = 'block';
+            editBtn.onclick = () => { closeViewReportModal(); editReport(report.id); };
+            submitBtn.onclick = () => { submitDraftReport(report.id); };
+            deleteBtn.onclick = () => { deleteReport(report.id); };
+        } else {
+            editBtn.style.display = 'none';
+            submitBtn.style.display = 'none';
+            deleteBtn.style.display = 'block';
+            deleteBtn.onclick = () => { deleteReport(report.id); };
+        }
+        
+        document.getElementById('viewReportModal').classList.remove('hidden');
+        document.getElementById('viewReportModal').classList.add('flex');
+    }
+    
+    function editReport(id) {
+        const reports = JSON.parse(localStorage.getItem('dept_reports') || '[]');
+        const report = reports.find(r => r.id === id);
+        if (!report || report.status !== 'draft') { showToast('Only draft reports can be edited', true); return; }
+        
+        let content = {};
+        try { content = JSON.parse(report.content); } catch(e) { content = { executiveSummary: report.content }; }
+        
+        document.getElementById('generateReportForm').innerHTML = `
+            <div class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="block text-sm font-semibold mb-1">Report Type</label><select id="reportType" class="w-full p-2 border rounded-lg"><option value="daily" ${report.type === 'daily' ? 'selected' : ''}>Daily</option><option value="weekly" ${report.type === 'weekly' ? 'selected' : ''}>Weekly</option><option value="monthly" ${report.type === 'monthly' ? 'selected' : ''}>Monthly</option><option value="quarterly" ${report.type === 'quarterly' ? 'selected' : ''}>Quarterly</option></select></div>
+                    <div><label class="block text-sm font-semibold mb-1">Report Period</label><input type="text" id="reportPeriod" value="${escapeHtml(content.period || '')}" class="w-full p-2 border rounded-lg"></div>
+                </div>
+                <div><label class="block text-sm font-semibold mb-1">Report Title</label><input type="text" id="reportTitle" value="${escapeHtml(report.title)}" class="w-full p-2 border rounded-lg"></div>
+                <div><label class="block text-sm font-semibold mb-1">Executive Summary</label><textarea id="executiveSummary" rows="3" class="w-full p-2 border rounded-lg">${escapeHtml(content.executiveSummary || '')}</textarea></div>
+                <div><label class="block text-sm font-semibold mb-1">Tasks Completed</label><textarea id="tasksCompleted" rows="2" class="w-full p-2 border rounded-lg">${escapeHtml(content.tasksCompleted || '')}</textarea></div>
+                <div><label class="block text-sm font-semibold mb-1">Ongoing Tasks</label><textarea id="ongoingTasks" rows="2" class="w-full p-2 border rounded-lg">${escapeHtml(content.ongoingTasks || '')}</textarea></div>
+                <div><label class="block text-sm font-semibold mb-1">Next Period Plan</label><textarea id="nextPlan" rows="3" class="w-full p-2 border rounded-lg">${escapeHtml(content.nextPlan || '')}</textarea></div>
+                <div><label class="block text-sm font-semibold mb-1">Additional Comments</label><textarea id="additionalComments" rows="2" class="w-full p-2 border rounded-lg">${escapeHtml(content.additionalComments || '')}</textarea></div>
+                <div class="flex gap-3"><button onclick="updateDraftReport(${id})" class="flex-1 bg-blue-600 text-white py-2 rounded-lg">Update Report</button><button onclick="closeGenerateReportModal()" class="flex-1 bg-gray-200 py-2 rounded-lg">Cancel</button></div>
+            </div>
+        `;
+        closeViewReportModal();
+        document.getElementById('generateReportModal').classList.remove('hidden');
+        document.getElementById('generateReportModal').classList.add('flex');
+    }
+    
+    function updateDraftReport(id) {
+        const reports = JSON.parse(localStorage.getItem('dept_reports') || '[]');
+        const index = reports.findIndex(r => r.id === id);
+        if (index !== -1) {
+            const updatedContent = {
+                period: document.getElementById('reportPeriod')?.value || '',
+                executiveSummary: document.getElementById('executiveSummary')?.value || '',
+                tasksCompleted: document.getElementById('tasksCompleted')?.value || '',
+                ongoingTasks: document.getElementById('ongoingTasks')?.value || '',
+                nextPlan: document.getElementById('nextPlan')?.value || '',
+                additionalComments: document.getElementById('additionalComments')?.value || ''
+            };
+            reports[index].title = document.getElementById('reportTitle')?.value || reports[index].title;
+            reports[index].type = document.getElementById('reportType')?.value || reports[index].type;
+            reports[index].content = JSON.stringify(updatedContent);
+            localStorage.setItem('dept_reports', JSON.stringify(reports));
+            showToast('Report updated successfully');
+            closeGenerateReportModal();
+            renderReports();
+            renderDashboard();
+        }
+    }
+    
+    function submitDraftReport(id) {
+        if (confirm('Submit this report to Admin? You will not be able to edit it after submission.')) {
+            const reports = JSON.parse(localStorage.getItem('dept_reports') || '[]');
+            const index = reports.findIndex(r => r.id === id);
+            if (index !== -1) {
+                reports[index].status = 'submitted';
+                reports[index].submitted_at = new Date().toISOString();
+                localStorage.setItem('dept_reports', JSON.stringify(reports));
+                addActivityLog(`Submitted report: ${reports[index].title}`);
+                showToast('Report submitted to Admin successfully!');
+                closeViewReportModal();
+                renderReports();
+                renderDashboard();
+            }
+        }
+    }
+    
+    function deleteReport(id) {
+        if (confirm('Are you sure you want to delete this report?')) {
+            let reports = JSON.parse(localStorage.getItem('dept_reports') || '[]');
+            reports = reports.filter(r => r.id !== id);
+            localStorage.setItem('dept_reports', JSON.stringify(reports));
+            showToast('Report deleted successfully');
+            closeViewReportModal();
+            renderReports();
+            renderDashboard();
+        }
+    }
+    
+    function closeGenerateReportModal() {
+        document.getElementById('generateReportModal').classList.add('hidden');
+        document.getElementById('generateReportModal').classList.remove('flex');
+    }
+    
+    function closeViewReportModal() {
+        document.getElementById('viewReportModal').classList.add('hidden');
+        document.getElementById('viewReportModal').classList.remove('flex');
+    }
+    
+    // ==================== MESSAGES & CHAT ====================
+    function renderMessages() {
+        const messages = JSON.parse(localStorage.getItem('dept_messages') || '[]');
+        const deptMessages = messages.filter(m => m.department === currentUser.department);
+        
+        document.getElementById('messagesSection').innerHTML = `
+            <div class="bg-white rounded-xl p-5">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-semibold"><i class="fas fa-envelope mr-2 text-blue-500"></i>Messages with Admin</h3>
+                    <button onclick="openChatModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm"><i class="fas fa-plus-circle mr-1"></i>New Message</button>
+                </div>
+                <div class="space-y-2" id="messagesListArea">
+                    ${deptMessages.map(m => `
+                        <div class="message-item p-3 rounded-lg ${!m.is_read ? 'message-unread' : 'border'}" onclick="viewConversation(${m.id})">
+                            <div class="flex justify-between items-start">
+                                <div><p class="font-semibold">${m.from === 'admin' ? 'Admin' : 'Me'}</p><p class="text-sm">${escapeHtml(m.message.substring(0, 80))}${m.message.length > 80 ? '...' : ''}</p><p class="text-xs text-gray-400">${formatDateTime(m.created_at)}</p></div>
+                                ${!m.is_read && m.from !== currentUser.department ? '<span class="bg-red-500 text-white text-xs px-2 py-1 rounded-full">New</span>' : ''}
+                            </div>
+                        </div>
+                    `).join('')}
+                    ${deptMessages.length === 0 ? '<p class="text-center text-gray-400 py-8">No messages yet. Click "New Message" to chat with Admin.</p>' : ''}
+                </div>
+            </div>
+        `;
+    }
+    
+    function openChatModal() {
+        currentChatId = null;
+        loadChatMessages();
+        document.getElementById('chatModal').classList.remove('hidden');
+        document.getElementById('chatModal').classList.add('flex');
+    }
+    
+    function closeChatModal() {
+        document.getElementById('chatModal').classList.add('hidden');
+        document.getElementById('chatModal').classList.remove('flex');
+        renderMessages();
+        renderDashboard();
+    }
+    
+    function loadChatMessages() {
+        const messages = JSON.parse(localStorage.getItem('dept_messages') || '[]');
+        const deptMessages = messages.filter(m => m.department === currentUser.department);
+        
+        let html = '';
+        deptMessages.forEach(msg => {
+            html += `<div class="chat-bubble chat-message"><p class="font-semibold text-xs text-gray-500 mb-1">Me (${formatDateTime(msg.created_at)})</p><p>${escapeHtml(msg.message)}</p></div>`;
+            msg.replies?.forEach(reply => {
+                if (reply.from === 'admin') {
+                    html += `<div class="chat-bubble chat-reply"><p class="font-semibold text-xs text-gray-500 mb-1">Admin (${formatDateTime(reply.timestamp)})</p><p>${escapeHtml(reply.message)}</p></div>`;
+                } else {
+                    html += `<div class="chat-bubble chat-message"><p class="font-semibold text-xs text-gray-500 mb-1">Me (${formatDateTime(reply.timestamp)})</p><p>${escapeHtml(reply.message)}</p></div>`;
+                }
+            });
+        });
+        
+        if (deptMessages.length === 0) {
+            html = '<div class="text-center text-gray-400 py-8">No conversation yet. Send a message to start chatting with Admin.</div>';
+        }
+        
+        document.getElementById('chatMessagesArea').innerHTML = html;
+        document.getElementById('chatMessagesArea').scrollTop = document.getElementById('chatMessagesArea').scrollHeight;
+    }
+    
+    function sendChatMessage() {
+        const message = document.getElementById('chatInput').value.trim();
+        if (!message) { showToast('Please enter a message', true); return; }
+        
+        const messages = JSON.parse(localStorage.getItem('dept_messages') || '[]');
+        const existingChat = messages.find(m => m.department === currentUser.department);
+        
+        if (existingChat) {
+            existingChat.replies.push({ from: currentUser.department, message: message, timestamp: new Date().toISOString() });
+            existingChat.is_read = false;
+            localStorage.setItem('dept_messages', JSON.stringify(messages));
+        } else {
+            messages.push({
+                id: Date.now(),
+                department: currentUser.department,
+                from: currentUser.department,
+                to: 'admin',
+                message: message,
+                is_read: false,
+                created_at: new Date().toISOString(),
+                replies: []
+            });
+            localStorage.setItem('dept_messages', JSON.stringify(messages));
+        }
+        
+        addActivityLog(`Sent message to Admin: ${message.substring(0, 50)}`);
+        showToast('Message sent to Admin');
+        document.getElementById('chatInput').value = '';
+        loadChatMessages();
+        renderDashboard();
+    }
+    
+    function viewConversation(id) {
+        const messages = JSON.parse(localStorage.getItem('dept_messages') || '[]');
+        const msg = messages.find(m => m.id === id);
+        if (msg && !msg.is_read && msg.from !== currentUser.department) {
+            msg.is_read = true;
+            localStorage.setItem('dept_messages', JSON.stringify(messages));
+            renderMessages();
+            renderDashboard();
+        }
+        openChatModal();
+    }
+    
+    // ==================== TEAM SECTION ====================
+    function renderTeam() {
+        const team = JSON.parse(localStorage.getItem('dept_team_members') || '[]');
+        const deptTeam = team.filter(t => t.department === currentUser.department);
+        const colors = deptColors[currentUser.department] || deptColors["Management"];
+        
+        document.getElementById('teamSection').innerHTML = `
+            <div class="bg-white rounded-xl shadow-sm p-5">
+                <h3 class="font-semibold mb-4"><i class="fas fa-users mr-2 text-green-500"></i>My Team (${deptTeam.length})</h3>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    ${deptTeam.map(m => `
+                        <div class="border rounded-lg p-4">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-12 h-12 ${colors.light} rounded-full flex items-center justify-center"><i class="fas fa-user ${colors.text} text-xl"></i></div>
+                                <div><p class="font-semibold">${escapeHtml(m.name)}</p><p class="text-sm text-gray-500">${m.role}</p></div>
+                            </div>
+                            <div class="space-y-1 text-sm"><p><i class="fas fa-envelope text-gray-400 w-5"></i> ${escapeHtml(m.email)}</p><p><i class="fas fa-phone text-gray-400 w-5"></i> ${m.phone || 'N/A'}</p><p><i class="fas fa-calendar text-gray-400 w-5"></i> Joined: ${formatDate(m.join_date)}</p></div>
+                        </div>
+                    `).join('')}
+                </div>
+                ${deptTeam.length === 0 ? '<p class="text-gray-400 text-center py-8">No team members found for your department.</p>' : ''}
+            </div>
+        `;
+    }
+    
+    // ==================== NAVIGATION ====================
+    function showSection(sectionId) {
+        const sections = ['dashboardSection', 'projectsSection', 'tasksSection', 'reportsSection', 'messagesSection', 'teamSection'];
+        sections.forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('hidden'); });
+        
+        let targetId = '';
+        if (sectionId === 'dashboard') targetId = 'dashboardSection';
+        else if (sectionId === 'projects') targetId = 'projectsSection';
+        else if (sectionId === 'tasks') targetId = 'tasksSection';
+        else if (sectionId === 'reports') targetId = 'reportsSection';
+        else if (sectionId === 'messages') targetId = 'messagesSection';
+        else if (sectionId === 'team') targetId = 'teamSection';
+        
+        const targetEl = document.getElementById(targetId);
+        if (targetEl) targetEl.classList.remove('hidden');
+        
+        document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+        const activeNav = document.querySelector(`.nav-item[data-section="${sectionId}"]`);
+        if (activeNav) activeNav.classList.add('active');
+        
+        const titles = { dashboard: 'Department Dashboard', projects: 'My Projects', tasks: 'My Tasks', reports: 'My Reports', messages: 'Messages', team: 'My Team' };
+        document.getElementById('pageTitle').innerText = titles[sectionId] || 'Department Dashboard';
+        
+        if (sectionId === 'projects') renderProjects();
+        else if (sectionId === 'tasks') renderTasks();
+        else if (sectionId === 'reports') renderReports();
+        else if (sectionId === 'messages') renderMessages();
+        else if (sectionId === 'team') renderTeam();
+    }
+    
+    // ==================== INITIAL SETUP ====================
+    function init() {
+        initializeData();
+        
+        // Check login
+        const loggedInDept = localStorage.getItem('dept_logged_in');
+        if (!loggedInDept) {
+            window.location.href = 'department_login.html';
+            return;
+        }
+        
+        const deptData = JSON.parse(loggedInDept);
+        currentUser = { ...currentUser, ...deptData };
+        
+        document.getElementById('userName').innerText = currentUser.name;
+        document.getElementById('userDept').innerText = `${currentUser.department} Department`;
+        document.getElementById('deptDisplayBadge').innerText = `${currentUser.department} Portal`;
+        
+        const container = document.getElementById('mainContentContainer');
+        container.innerHTML = `
+            <div id="dashboardSection" class=""></div>
+            <div id="projectsSection" class="hidden"></div>
+            <div id="tasksSection" class="hidden"></div>
+            <div id="reportsSection" class="hidden"></div>
+            <div id="messagesSection" class="hidden"></div>
+            <div id="teamSection" class="hidden"></div>
+        `;
+        
+        renderDashboard();
+        
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const section = item.getAttribute('data-section');
+                if (section) showSection(section);
+            });
+        });
+        
+        document.getElementById('logoutBtn')?.addEventListener('click', () => {
+            localStorage.removeItem('dept_logged_in');
+            window.location.href = 'department_login.html';
+        });
+        
+        if (localStorage.getItem('dept_dark_mode') === 'true') document.body.classList.add('dark-mode');
+        document.getElementById('darkModeToggle')?.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('dept_dark_mode', document.body.classList.contains('dark-mode'));
+        });
+        
+        document.getElementById('mobileMenuBtn')?.addEventListener('click', () => {
+            document.getElementById('mainSidebar')?.classList.add('mobile-open');
+            document.getElementById('mobileMenuOverlay')?.classList.add('open');
+        });
+    }
+    
+    function closeMobileSidebar() {
+        document.getElementById('mainSidebar')?.classList.remove('mobile-open');
+        document.getElementById('mobileMenuOverlay')?.classList.remove('open');
+    }
+    
+    const scrollBtn = document.createElement('div');
+    scrollBtn.className = 'scroll-top';
+    scrollBtn.innerHTML = '<i class="fas fa-arrow-up text-white"></i>';
+    document.body.appendChild(scrollBtn);
+    scrollBtn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.addEventListener('scroll', () => scrollBtn.classList.toggle('visible', window.scrollY > 300));
+    
+    init();
+    
+    window.showSection = showSection;
+    window.openGenerateReportModal = openGenerateReportModal;
+    window.closeGenerateReportModal = closeGenerateReportModal;
+    window.saveReportAsDraft = saveReportAsDraft;
+    window.submitReportToAdmin = submitReportToAdmin;
+    window.addProjectStatusField = addProjectStatusField;
+    window.addChallengeField = addChallengeField;
+    window.viewReport = viewReport;
+    window.deleteReport = deleteReport;
+    window.editReport = editReport;
+    window.closeViewReportModal = closeViewReportModal;
+    window.openAddTaskModal = openAddTaskModal;
+    window.toggleTask = toggleTask;
+    window.openChatModal = openChatModal;
+    window.closeChatModal = closeChatModal;
+    window.sendChatMessage = sendChatMessage;
+    window.viewConversation = viewConversation;
+    window.closeMobileSidebar = closeMobileSidebar;
+</script>
+</body>
+</html>
