@@ -32,6 +32,14 @@
             z-index: 30;
         }
         
+        .sidebar-logo-link {
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .sidebar-logo-link:hover {
+            opacity: 0.8;
+        }
+        
         .sidebar-nav {
             flex: 1;
             overflow-y: auto;
@@ -242,12 +250,17 @@
         .dark-mode .search-result-item { border-bottom-color: #334155; }
         .dark-mode .search-result-item:hover { background-color: #334155; }
         
-        .image-preview {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 8px;
-            margin-top: 10px;
+        .home-link-btn {
+            transition: all 0.2s;
+        }
+        .home-link-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .logo-img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
         }
     </style>
 </head>
@@ -266,8 +279,8 @@
     <!-- SIDEBAR -->
     <aside id="mainSidebar" class="sidebar w-64 shadow-xl flex flex-col z-20">
         <div class="px-6 py-6 border-b border-white/20 flex-shrink-0">
-            <div class="flex items-center space-x-3">
-                <img src="https://i.postimg.cc/MT6jTVHh/weblogo.png" alt="Logo" class="w-10 h-10 rounded-lg object-cover">
+            <div class="sidebar-logo-link flex items-center space-x-3" onclick="goToMainWebsite()">
+                <img src="https://i.postimg.cc/MT6jTVHh/weblogo.png" alt="GeoTraverse Logo" class="logo-img rounded-lg">
                 <div>
                     <span class="text-xl font-bold text-white">GeoTraverse</span>
                     <p class="text-[10px] text-white/60">Admin Dashboard</p>
@@ -331,9 +344,13 @@
                     <button id="mobileMenuBtn" class="md:hidden text-gray-600 hover:text-blue-600 transition">
                         <i class="fas fa-bars text-xl"></i>
                     </button>
-                    <button id="homeButton" class="text-gray-600 hover:text-blue-600 transition">
+                    <button id="homeButton" class="home-link-btn text-gray-600 hover:text-blue-600 transition" onclick="goToMainWebsite()" title="Go to Main Website">
                         <i class="fas fa-home text-xl"></i>
                     </button>
+                    <span class="text-sm text-gray-400 hidden md:inline">|</span>
+                    <a href="#" onclick="goToMainWebsite(); return false;" class="text-sm text-gray-500 hover:text-blue-600 transition hidden md:inline">
+                        <i class="fas fa-globe mr-1"></i> geotraverse.co.tz
+                    </a>
                 </div>
                 <div class="flex-1 max-w-md mx-4 relative">
                     <div class="relative">
@@ -361,6 +378,37 @@
             <button onclick="closeDeptViewModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
         </div>
         <div class="p-6" id="deptViewContent"></div>
+    </div>
+</div>
+
+<!-- Start Chat Modal (No Subject Field) -->
+<div id="startChatModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl w-full max-w-lg modal-pop">
+        <div class="px-6 py-4 border-b flex justify-between items-center">
+            <h3 class="text-lg font-bold"><i class="fas fa-comment-dots text-blue-500 mr-2"></i>Start New Chat</h3>
+            <button onclick="closeStartChatModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+        </div>
+        <div class="p-6 space-y-4">
+            <div>
+                <label class="block text-sm font-semibold mb-2">Select Department</label>
+                <select id="chatDepartment" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                    <option value="Management">Management Department</option>
+                    <option value="Finance">Finance Department</option>
+                    <option value="Sales & Marketing">Sales & Marketing Department</option>
+                    <option value="Administration">Administration Department</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-semibold mb-2">Message</label>
+                <textarea id="chatMessage" rows="5" placeholder="Type your message here..." class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
+            </div>
+            <div class="flex gap-3 pt-3">
+                <button onclick="sendNewChatMessage()" class="flex-1 bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
+                    <i class="fas fa-paper-plane mr-2"></i>Send Message
+                </button>
+                <button onclick="closeStartChatModal()" class="flex-1 bg-gray-200 py-3 rounded-lg font-semibold">Cancel</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -393,19 +441,6 @@
             <textarea id="addProjectDesc" rows="3" placeholder="Project Description" class="w-full p-2 border rounded-lg"></textarea>
             <input type="number" id="addProjectAmount" placeholder="Amount (TZS)" class="w-full p-2 border rounded-lg">
             <input type="text" id="addProjectLocation" placeholder="Location" class="w-full p-2 border rounded-lg">
-            
-            <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:border-blue-500 transition" id="imageUploadArea">
-                <input type="file" id="projectImageFile" accept="image/*" class="hidden">
-                <div id="uploadPlaceholder">
-                    <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
-                    <p class="text-sm text-gray-500">Click to upload project image</p>
-                </div>
-                <div id="imagePreviewContainer" class="hidden mt-2">
-                    <img id="imagePreview" class="w-full h-32 object-cover rounded-lg">
-                    <button type="button" onclick="removeSelectedImage()" class="mt-2 text-red-500 text-xs">Remove Image</button>
-                </div>
-            </div>
-            
             <select id="addProjectStatus" class="w-full p-2 border rounded-lg">
                 <option value="pending">Pending</option>
                 <option value="in_progress">In Progress</option>
@@ -413,7 +448,6 @@
                 <option value="approved">Approved</option>
             </select>
             <input type="number" id="addProjectProgress" placeholder="Progress (0-100%)" class="w-full p-2 border rounded-lg" min="0" max="100">
-            
             <div class="flex gap-3 pt-3">
                 <button onclick="saveProjectSubmit()" class="flex-1 bg-blue-600 text-white py-2 rounded-lg">Save Project</button>
                 <button onclick="closeAddProjectModal()" class="flex-1 bg-gray-200 py-2 rounded-lg">Cancel</button>
@@ -491,7 +525,6 @@
 <script>
     // ==================== INITIAL DATA ====================
     function initializeData() {
-        // Employees Sample Data - with password column
         if (!localStorage.getItem('geotraverse_employees')) {
             localStorage.setItem('geotraverse_employees', JSON.stringify([
                 { id: 1, name: "John Mwita", email: "manager@geotraverse.com", phone: "+255 712 345 678", role: "Manager", department: "Management", salary: "2500000", password: "1234", status: "Active" },
@@ -504,7 +537,6 @@
             ]));
         }
         
-        // Projects Data
         if (!localStorage.getItem('geotraverse_projects')) {
             localStorage.setItem('geotraverse_projects', JSON.stringify([
                 { id: 1, name: "Modern Villa - Kigamboni", client_name: "John Mwita", amount: "180000000", status: "completed", progress: 100, location: "Kigamboni", image_url: "", description: "Luxury villa", created_by_dept: "Management" },
@@ -513,7 +545,6 @@
             ]));
         }
         
-        // Tasks Data
         if (!localStorage.getItem('geotraverse_tasks')) {
             localStorage.setItem('geotraverse_tasks', JSON.stringify([
                 { id: 1, title: "Review Q1 Budget", description: "Review financial budget", department: "Finance", completed: false },
@@ -523,7 +554,6 @@
             ]));
         }
         
-        // Messages Data - for chat between admin and departments
         if (!localStorage.getItem('geotraverse_messages')) {
             localStorage.setItem('geotraverse_messages', JSON.stringify([
                 { id: 1, from_department: "Management", from_user: "John Mwita", subject: "Project Update", message: "The Modern Villa project has been completed successfully.", is_read: false, created_at: new Date().toISOString(), replies: [
@@ -538,7 +568,6 @@
             ]));
         }
         
-        // Reports Data
         if (!localStorage.getItem('geotraverse_reports')) {
             localStorage.setItem('geotraverse_reports', JSON.stringify([
                 { id: 1, from_department: "Management", category: "weekly", title: "Weekly Project Report", content: "All projects are progressing well.", is_read: false, created_at: new Date().toISOString() },
@@ -548,14 +577,12 @@
             ]));
         }
         
-        // Activity Logs
         if (!localStorage.getItem('geotraverse_activity_logs')) {
             localStorage.setItem('geotraverse_activity_logs', JSON.stringify([
                 { action: "Admin logged in", created_at: new Date().toISOString() }
             ]));
         }
         
-        // Settings
         if (!localStorage.getItem('geotraverse_settings')) {
             localStorage.setItem('geotraverse_settings', JSON.stringify({
                 company_name: "GeoTraverse",
@@ -574,7 +601,12 @@
     let currentEditProjectId = null;
     let currentReportForExport = null;
     let searchTimeout = null;
-    let currentProjectImage = null;
+    let currentSelectedChatId = null;
+    
+    // ==================== MAIN WEBSITE NAVIGATION ====================
+    function goToMainWebsite() {
+        window.location.href = "index.html";
+    }
     
     // ==================== HELPER FUNCTIONS ====================
     function showToast(message, isError = false) {
@@ -626,16 +658,6 @@
         return texts[status] || status;
     }
     
-    function getImageAsBase64(file) {
-        return new Promise((resolve, reject) => {
-            if (!file) { resolve(''); return; }
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-        });
-    }
-    
     // ==================== GLOBAL SEARCH ====================
     function performGlobalSearch() {
         const searchTerm = document.getElementById('globalSearchInput').value.toLowerCase().trim();
@@ -659,7 +681,7 @@
             const empResults = employees.filter(e => e.name.toLowerCase().includes(searchTerm) || e.email.toLowerCase().includes(searchTerm));
             const projResults = projects.filter(p => p.name.toLowerCase().includes(searchTerm) || (p.client_name && p.client_name.toLowerCase().includes(searchTerm)));
             const taskResults = tasks.filter(t => t.title.toLowerCase().includes(searchTerm));
-            const msgResults = messages.filter(m => m.subject.toLowerCase().includes(searchTerm));
+            const msgResults = messages.filter(m => m.message.toLowerCase().includes(searchTerm));
             const repResults = reports.filter(r => r.title.toLowerCase().includes(searchTerm));
             
             let html = '';
@@ -697,8 +719,8 @@
             if (msgResults.length) {
                 html += `<div class="p-2 bg-gray-50"><span class="text-xs font-semibold text-blue-600"><i class="fas fa-envelope mr-1"></i> Messages (${msgResults.length})</span></div>`;
                 msgResults.slice(0, 5).forEach(m => {
-                    html += `<div class="search-result-item" onclick="goToSectionAndSearch('messages', '${m.subject}')">
-                        <div class="font-medium">${escapeHtml(m.subject)}</div>
+                    html += `<div class="search-result-item" onclick="goToSectionAndSearch('messages', '${m.message.substring(0,30)}')">
+                        <div class="font-medium">${escapeHtml(m.message.substring(0,30))}...</div>
                         <div class="text-xs text-gray-500">From: ${m.from_department}</div>
                     </div>`;
                 });
@@ -812,7 +834,7 @@
         document.getElementById('unreadMessagesBadge').innerText = messages.filter(m => !m.is_read).length;
     }
     
-    // ==================== EMPLOYEES SECTION (with Password column) ====================
+    // ==================== EMPLOYEES SECTION ====================
     function renderEmployeesTable() {
         const employees = JSON.parse(localStorage.getItem('geotraverse_employees') || '[]');
         
@@ -831,7 +853,7 @@
         `;
         
         document.getElementById('empTableBody').innerHTML = employees.map(emp => `
-            <tr class="border-b hover:bg-gray-50"><td class="px-4 py-3">${emp.id}</td><td class="px-4 py-3 font-medium">${emp.name}</td><td class="px-4 py-3 hidden md:table-cell">${emp.email}</td><td class="px-4 py-3 hidden lg:table-cell">${emp.phone}</td><td class="px-4 py-3"><span class="px-2 py-1 text-xs rounded-full bg-purple-100">${emp.role}</span></td><td class="px-4 py-3 hidden xl:table-cell">${emp.department}</td><td class="px-4 py-3 text-green-600 font-semibold">TZS ${parseFloat(emp.salary).toLocaleString()}</td><td class="px-4 py-3"><span class="px-2 py-1 text-xs rounded-full bg-gray-100 font-mono">${emp.password || '****'}</span></td><td class="px-4 py-3"><button onclick="openEditEmployeeModal(${emp.id})" class="text-blue-600 mr-2"><i class="fas fa-edit"></i></button><button onclick="deleteEmployee(${emp.id})" class="text-red-600"><i class="fas fa-trash"></i></button></td></tr>
+            <tr class="border-b hover:bg-gray-50"><td class="px-4 py-3">${emp.id}</td><td class="px-4 py-3 font-medium">${emp.name}</td><td class="px-4 py-3 hidden md:table-cell">${emp.email}</td><td class="px-4 py-3 hidden lg:table-cell">${emp.phone}</td><td class="px-4 py-3"><span class="px-2 py-1 text-xs rounded-full bg-purple-100">${emp.role}</span></td><td class="px-4 py-3 hidden xl:table-cell">${emp.department}</td><td class="px-4 py-3 text-green-600 font-semibold">TZS ${parseFloat(emp.salary).toLocaleString()}</td><td class="px-3 py-3"><span class="px-2 py-1 text-xs rounded-full bg-gray-100 font-mono">${emp.password || '****'}</span></td><td class="px-4 py-3"><button onclick="openEditEmployeeModal(${emp.id})" class="text-blue-600 mr-2"><i class="fas fa-edit"></i></button><button onclick="deleteEmployee(${emp.id})" class="text-red-600"><i class="fas fa-trash"></i></button></td></tr>
         `).join('');
     }
     
@@ -949,7 +971,6 @@
     }
     
     function openAddProjectModal() {
-        currentProjectImage = null;
         document.getElementById('addProjectName').value = '';
         document.getElementById('addProjectClient').value = '';
         document.getElementById('addProjectDesc').value = '';
@@ -957,43 +978,17 @@
         document.getElementById('addProjectLocation').value = '';
         document.getElementById('addProjectStatus').value = 'pending';
         document.getElementById('addProjectProgress').value = '0';
-        document.getElementById('uploadPlaceholder').classList.remove('hidden');
-        document.getElementById('imagePreviewContainer').classList.add('hidden');
-        document.getElementById('projectImageFile').value = '';
         document.getElementById('addProjectModal').classList.remove('hidden');
         document.getElementById('addProjectModal').classList.add('flex');
     }
     
-    function closeAddProjectModal() { document.getElementById('addProjectModal').classList.add('hidden'); document.getElementById('addProjectModal').classList.remove('flex'); currentProjectImage = null; }
-    
-    document.getElementById('imageUploadArea')?.addEventListener('click', function() { document.getElementById('projectImageFile').click(); });
-    document.getElementById('projectImageFile')?.addEventListener('change', function(e) {
-        if (e.target.files && e.target.files[0]) {
-            currentProjectImage = e.target.files[0];
-            const reader = new FileReader();
-            reader.onload = function(ev) {
-                document.getElementById('imagePreview').src = ev.target.result;
-                document.getElementById('uploadPlaceholder').classList.add('hidden');
-                document.getElementById('imagePreviewContainer').classList.remove('hidden');
-            };
-            reader.readAsDataURL(e.target.files[0]);
-        }
-    });
-    
-    function removeSelectedImage() {
-        currentProjectImage = null;
-        document.getElementById('projectImageFile').value = '';
-        document.getElementById('uploadPlaceholder').classList.remove('hidden');
-        document.getElementById('imagePreviewContainer').classList.add('hidden');
-    }
+    function closeAddProjectModal() { document.getElementById('addProjectModal').classList.add('hidden'); document.getElementById('addProjectModal').classList.remove('flex'); }
     
     async function saveProjectSubmit() {
         const name = document.getElementById('addProjectName').value;
         if (!name) { showToast('Project name is required', true); return; }
-        let imageUrl = '';
-        if (currentProjectImage) imageUrl = await getImageAsBase64(currentProjectImage);
         const projects = JSON.parse(localStorage.getItem('geotraverse_projects') || '[]');
-        projects.push({ id: Date.now(), name: name, client_name: document.getElementById('addProjectClient').value, description: document.getElementById('addProjectDesc').value, amount: document.getElementById('addProjectAmount').value || '0', location: document.getElementById('addProjectLocation').value, status: document.getElementById('addProjectStatus').value, progress: document.getElementById('addProjectProgress').value || 0, image_url: imageUrl, created_by_dept: 'Management' });
+        projects.push({ id: Date.now(), name: name, client_name: document.getElementById('addProjectClient').value, description: document.getElementById('addProjectDesc').value, amount: document.getElementById('addProjectAmount').value || '0', location: document.getElementById('addProjectLocation').value, status: document.getElementById('addProjectStatus').value, progress: document.getElementById('addProjectProgress').value || 0, image_url: '', created_by_dept: 'Management' });
         localStorage.setItem('geotraverse_projects', JSON.stringify(projects));
         addActivityLog(`Added project: ${name}`);
         showToast('Project added successfully');
@@ -1098,14 +1093,19 @@
         }
     }
     
-    // ==================== MESSAGES SECTION (with Delete Options) ====================
+    // ==================== MESSAGES SECTION WITH START CHAT (No Subject Field) ====================
     function renderMessagesList() {
         const messages = JSON.parse(localStorage.getItem('geotraverse_messages') || '[]');
         document.getElementById('messagesSection').innerHTML = `
             <div class="bg-white rounded-xl p-5">
-                <div class="flex justify-between items-center mb-4">
+                <div class="flex justify-between items-center mb-4 flex-wrap gap-3">
                     <h3 class="font-semibold"><i class="fas fa-envelope mr-2 text-blue-500"></i>Messages from Departments (Chat System)</h3>
-                    ${messages.length > 0 ? `<button onclick="deleteAllMessages()" class="bg-red-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-red-700 transition"><i class="fas fa-trash-alt mr-2"></i>Delete All Messages</button>` : ''}
+                    <div class="flex gap-2">
+                        <button onclick="openStartChatModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm transition flex items-center gap-2">
+                            <i class="fas fa-plus-circle"></i> Start New Chat
+                        </button>
+                        ${messages.length > 0 ? `<button onclick="deleteAllMessages()" class="bg-red-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-red-700 transition"><i class="fas fa-trash-alt mr-2"></i>Delete All</button>` : ''}
+                    </div>
                 </div>
                 <div class="grid lg:grid-cols-3 gap-6">
                     <div class="lg:col-span-1 border-r pr-4">
@@ -1114,14 +1114,17 @@
                     <div class="lg:col-span-2">
                         <div id="messageDetailView" class="text-center py-12 text-gray-400">
                             <i class="fas fa-comments text-5xl mb-3"></i>
-                            <p>Select a conversation to chat with department</p>
+                            <p>Select a conversation or start a new chat to communicate with departments</p>
+                            <button onclick="openStartChatModal()" class="mt-4 btn-primary text-white px-6 py-2 rounded-lg">
+                                <i class="fas fa-plus-circle mr-2"></i> Start New Chat
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
         `;
         
-        document.getElementById('messagesList').innerHTML = messages.map(m => `
+        document.getElementById('messagesList').innerHTML = messages.sort((a,b) => new Date(b.created_at) - new Date(a.created_at)).map(m => `
             <div class="message-item p-3 rounded-lg ${!m.is_read ? 'message-unread' : 'hover:bg-gray-50'}" onclick="viewConversation(${m.id})">
                 <div class="flex justify-between items-start">
                     <div class="flex-1">
@@ -1129,7 +1132,7 @@
                             <span class="font-semibold">${m.from_department} Dept</span>
                             <span class="text-xs text-gray-400">${formatDate(m.created_at)}</span>
                         </div>
-                        <p class="text-sm truncate font-medium">${m.subject}</p>
+                        <p class="text-sm truncate font-medium">${m.message.substring(0, 50)}${m.message.length > 50 ? '...' : ''}</p>
                         <p class="text-xs text-gray-500">${m.replies.length} replies • Last: ${m.replies.length > 0 ? formatDate(m.replies[m.replies.length-1].timestamp) : formatDate(m.created_at)}</p>
                     </div>
                     <button onclick="event.stopPropagation(); deleteMessage(${m.id})" class="text-red-500 hover:text-red-700 ml-2 p-1" title="Delete this conversation">
@@ -1138,6 +1141,52 @@
                 </div>
             </div>
         `).join('');
+    }
+    
+    function openStartChatModal() {
+        document.getElementById('chatDepartment').value = 'Management';
+        document.getElementById('chatMessage').value = '';
+        document.getElementById('startChatModal').classList.remove('hidden');
+        document.getElementById('startChatModal').classList.add('flex');
+    }
+    
+    function closeStartChatModal() {
+        document.getElementById('startChatModal').classList.add('hidden');
+        document.getElementById('startChatModal').classList.remove('flex');
+    }
+    
+    function sendNewChatMessage() {
+        const department = document.getElementById('chatDepartment').value;
+        const message = document.getElementById('chatMessage').value.trim();
+        
+        if (!message) {
+            showToast('Please enter a message', true);
+            return;
+        }
+        
+        const messages = JSON.parse(localStorage.getItem('geotraverse_messages') || '[]');
+        const newMessage = {
+            id: Date.now(),
+            from_department: department,
+            from_user: "Department Staff",
+            subject: "New Message from Admin",
+            message: message,
+            is_read: false,
+            created_at: new Date().toISOString(),
+            replies: []
+        };
+        
+        messages.push(newMessage);
+        localStorage.setItem('geotraverse_messages', JSON.stringify(messages));
+        addActivityLog(`Admin started new chat with ${department} department`);
+        showToast(`Message sent to ${department} department successfully!`);
+        closeStartChatModal();
+        renderMessagesList();
+        renderDashboard();
+        
+        setTimeout(() => {
+            viewConversation(newMessage.id);
+        }, 100);
     }
     
     function viewConversation(id) {
@@ -1150,21 +1199,22 @@
                 renderMessagesList();
                 renderDashboard();
             }
+            currentSelectedChatId = id;
             
             let chatHtml = `
                 <div class="mb-4 pb-4">
-                    <div class="flex justify-between items-center mb-3">
+                    <div class="flex justify-between items-center mb-3 flex-wrap gap-2">
                         <div>
                             <h3 class="font-bold text-lg">${msg.from_department} Department</h3>
-                            <p class="text-sm text-gray-500">${msg.subject} • Started: ${formatDate(msg.created_at)}</p>
+                            <p class="text-sm text-gray-500">Started: ${formatDate(msg.created_at)}</p>
                         </div>
                         <button onclick="deleteMessage(${msg.id})" class="text-red-500 hover:text-red-700 text-sm">
-                            <i class="fas fa-trash-alt mr-1"></i> Delete Conversation
+                            <i class="fas fa-trash-alt mr-1"></i> Delete
                         </button>
                     </div>
                     <div class="chat-bubble chat-message">
                         <p class="font-semibold text-xs text-gray-500 mb-1">${msg.from_user || msg.from_department} (${formatDate(msg.created_at)})</p>
-                        <p>${msg.message}</p>
+                        <p>${escapeHtml(msg.message)}</p>
                     </div>
             `;
             
@@ -1172,12 +1222,12 @@
                 if (reply.from === 'admin') {
                     chatHtml += `<div class="chat-bubble chat-reply">
                         <p class="font-semibold text-xs text-gray-500 mb-1">Admin (${formatDate(reply.timestamp)})</p>
-                        <p>${reply.message}</p>
+                        <p>${escapeHtml(reply.message)}</p>
                     </div>`;
                 } else {
                     chatHtml += `<div class="chat-bubble chat-message">
-                        <p class="font-semibold text-xs text-gray-500 mb-1">${reply.from} (${formatDate(reply.timestamp)})</p>
-                        <p>${reply.message}</p>
+                        <p class="font-semibold text-xs text-gray-500 mb-1">${escapeHtml(reply.from)} (${formatDate(reply.timestamp)})</p>
+                        <p>${escapeHtml(reply.message)}</p>
                     </div>`;
                 }
             });
@@ -1235,7 +1285,10 @@
             document.getElementById('messageDetailView').innerHTML = `
                 <div class="text-center py-12 text-gray-400">
                     <i class="fas fa-envelope-open-text text-5xl mb-3"></i>
-                    <p>Select a message to view and reply</p>
+                    <p>Select a message to view and reply, or start a new chat</p>
+                    <button onclick="openStartChatModal()" class="mt-4 btn-primary text-white px-6 py-2 rounded-lg">
+                        <i class="fas fa-plus-circle mr-2"></i> Start New Chat
+                    </button>
                 </div>
             `;
         }
@@ -1251,7 +1304,10 @@
             document.getElementById('messageDetailView').innerHTML = `
                 <div class="text-center py-12 text-gray-400">
                     <i class="fas fa-envelope-open-text text-5xl mb-3"></i>
-                    <p>Select a message to view and reply</p>
+                    <p>No messages yet. Start a new chat with a department!</p>
+                    <button onclick="openStartChatModal()" class="mt-4 btn-primary text-white px-6 py-2 rounded-lg">
+                        <i class="fas fa-plus-circle mr-2"></i> Start New Chat
+                    </button>
                 </div>
             `;
         }
@@ -1562,7 +1618,7 @@
             });
         });
         
-        document.getElementById('homeButton')?.addEventListener('click', () => showSection('dashboard'));
+        document.getElementById('homeButton')?.addEventListener('click', () => goToMainWebsite());
         document.getElementById('logoutBtn')?.addEventListener('click', () => {
             localStorage.removeItem('admin_logged_in');
             window.location.href = 'admin_login.html';
@@ -1599,6 +1655,7 @@
     
     init();
     
+    window.goToMainWebsite = goToMainWebsite;
     window.openAddEmployeeModal = openAddEmployeeModal;
     window.openEditEmployeeModal = openEditEmployeeModal;
     window.closeEditEmployeeModal = closeEditEmployeeModal;
@@ -1619,6 +1676,9 @@
     window.sendChatReply = sendChatReply;
     window.deleteMessage = deleteMessage;
     window.deleteAllMessages = deleteAllMessages;
+    window.openStartChatModal = openStartChatModal;
+    window.closeStartChatModal = closeStartChatModal;
+    window.sendNewChatMessage = sendNewChatMessage;
     window.viewReportDetail = viewReportDetail;
     window.closeReportModal = closeReportModal;
     window.exportReportToPDF = exportReportToPDF;
@@ -1640,7 +1700,6 @@
     window.closeDeptViewModal = closeDeptViewModal;
     window.closeMobileSidebar = closeMobileSidebar;
     window.goToSectionAndSearch = goToSectionAndSearch;
-    window.removeSelectedImage = removeSelectedImage;
 </script>
 </body>
 </html>
