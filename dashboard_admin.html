@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>GeoTraverse | Admin Dashboard - Full Project Management</title>
+    <title>GeoTraverse | Admin Dashboard - ERP System</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -15,7 +15,9 @@
     <style>
         * { font-family: 'Inter', sans-serif; }
         body { background: #f0f2f5; transition: background 0.3s ease; }
-        ::-webkit-scrollbar { width: 5px; background: #e4e4e7; border-radius: 10px; }
+        
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #e4e4e7; border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: #a1a1aa; border-radius: 10px; }
         
         .sidebar {
@@ -29,33 +31,115 @@
             width: 260px;
             z-index: 30;
         }
-        .sidebar-logo-link { cursor: pointer; transition: opacity 0.2s; display: flex; align-items: center; gap: 12px; }
+        
+        .sidebar-logo-link {
+            cursor: pointer;
+            transition: opacity 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
         .sidebar-logo-link:hover { opacity: 0.8; }
-        .sidebar-nav { flex: 1; overflow-y: auto; padding: 1.5rem 0.75rem; scrollbar-width: thin; }
-        .sidebar-footer { padding: 1rem; border-top: 1px solid rgba(255,255,255,0.2); flex-shrink: 0; }
-        .nav-item { transition: all 0.2s ease; border-left: 3px solid transparent; cursor: pointer; }
-        .nav-item.active { background-color: rgba(255,255,255,0.12); border-left-color: #60a5fa; }
+        
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 1.5rem 0.75rem;
+            scrollbar-width: thin;
+        }
+        
+        .sidebar-footer {
+            padding: 1rem;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            flex-shrink: 0;
+        }
+        
+        .nav-item {
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+            cursor: pointer;
+        }
+        .nav-item.active {
+            background-color: rgba(255,255,255,0.12);
+            border-left-color: #60a5fa;
+        }
         .nav-item.active i { color: #60a5fa; }
         .nav-item:hover:not(.active) { background-color: rgba(255,255,255,0.08); }
         
-        .stat-card { transition: all 0.3s ease; border: 1px solid #e5e7eb; cursor: pointer; background: white; border-radius: 16px; }
-        .stat-card:hover { transform: translateY(-3px); border-color: #0f74ba; box-shadow: 0 10px 20px -10px rgba(0,0,0,0.1); }
-        .dept-link { transition: all 0.2s ease; cursor: pointer; background: white; border-radius: 12px; border: 1px solid #e5e7eb; }
-        .dept-link:hover { transform: translateX(5px); border-color: #0f74ba; background-color: #f0f9ff; }
-        .project-card { transition: all 0.2s; cursor: pointer; border-radius: 12px; overflow: hidden; border: 1px solid #e5e7eb; background: white; }
+        .stat-card {
+            transition: all 0.3s ease;
+            border: 1px solid #e5e7eb;
+            cursor: pointer;
+            background: white;
+            border-radius: 16px;
+        }
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 25px -12px rgba(0,0,0,0.15);
+            border-color: #0f74ba;
+        }
+        
+        .dept-link {
+            transition: all 0.2s ease;
+            cursor: pointer;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+        }
+        .dept-link:hover {
+            transform: translateX(5px);
+            border-color: #0f74ba;
+            background-color: #f0f9ff;
+        }
+        
+        .project-card {
+            transition: all 0.2s;
+            cursor: pointer;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+            background: white;
+        }
         .project-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-        .message-unread { background-color: #eff6ff; border-left: 3px solid #3b82f6; }
+        
         .chat-bubble { max-width: 80%; padding: 10px 14px; border-radius: 12px; margin-bottom: 8px; }
-        .chat-sent { background-color: #d1fae5; margin-left: auto; }
-        .chat-received { background-color: #e5e7eb; }
-        .setting-card { transition: all 0.3s ease; cursor: pointer; border: 1px solid #e5e7eb; background: white; border-radius: 16px; }
-        .setting-card:hover { transform: translateY(-3px); border-color: #0f74ba; }
-        .color-option { transition: all 0.2s; cursor: pointer; border: 2px solid transparent; width: 36px; height: 36px; border-radius: 50%; }
+        .chat-reply { background-color: #d1fae5; margin-left: auto; }
+        .chat-message { background-color: #e5e7eb; }
+        
+        .setting-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid #e5e7eb;
+            background: white;
+            border-radius: 16px;
+        }
+        .setting-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            border-color: #0f74ba;
+        }
+        
+        .color-option {
+            transition: all 0.2s;
+            cursor: pointer;
+            border: 2px solid transparent;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+        }
         .color-option:hover { transform: scale(1.1); }
         .color-option.selected { border-color: white; box-shadow: 0 0 0 2px #333; }
+        
         @keyframes modalPop { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         .modal-pop { animation: modalPop 0.2s ease-out; }
-        .toast-notification { position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 12px 20px; border-radius: 8px; z-index: 1000; animation: slideInRight 0.3s ease; }
+        
+        .toast-notification {
+            position: fixed; bottom: 20px; right: 20px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white; padding: 12px 20px; border-radius: 8px;
+            z-index: 1000; animation: slideInRight 0.3s ease;
+        }
         .toast-notification.error { background: linear-gradient(135deg, #ef4444, #dc2626); }
         @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         
@@ -63,382 +147,1693 @@
         body.dark-mode .bg-white { background-color: #1e293b; }
         body.dark-mode .text-gray-800, body.dark-mode .text-gray-700 { color: #f1f5f9; }
         body.dark-mode .text-gray-500, body.dark-mode .text-gray-400 { color: #94a3b8; }
-        body.dark-mode .stat-card, body.dark-mode .setting-card, body.dark-mode .dept-link, body.dark-mode .project-card, body.dark-mode .task-item { background-color: #1e293b; border-color: #334155; }
-        body.dark-mode .dept-link:hover { background-color: #1e3a5f; }
-        body.dark-mode .chat-received { background-color: #334155; }
-        body.dark-mode .chat-sent { background-color: #065f46; }
-        body.dark-mode .message-unread { background-color: #1e3a5f; border-left-color: #60a5fa; }
+        body.dark-mode .stat-card { background-color: #1e293b; border-color: #334155; }
+        body.dark-mode .setting-card { background-color: #1e293b; border-color: #334155; }
+        body.dark-mode .dept-link { background-color: #1e293b; border-color: #334155; }
+        body.dark-mode .dept-link:hover { background-color: #1e3a5f; border-color: #0f74ba; }
+        body.dark-mode .chat-message { background-color: #334155; }
+        body.dark-mode .chat-message p { color: #f1f5f9; }
+        body.dark-mode .chat-reply { background-color: #065f46; }
+        body.dark-mode .chat-reply p { color: #f1f5f9; }
+        body.dark-mode .project-card { background-color: #1e293b; }
+        body.dark-mode .task-item { background-color: #1e293b; }
+        body.dark-mode .employee-row:hover { background-color: #334155; }
         
         .btn-primary { background: linear-gradient(135deg, #0f74ba, #0a5a8e); transition: all 0.2s ease; cursor: pointer; }
-        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 5px 15px rgba(15,116,186,0.3); }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 10px 15px -3px rgba(15,116,186,0.3); }
+        
         .gradient-text { background: linear-gradient(135deg, #0f74ba, #60a5fa); -webkit-background-clip: text; background-clip: text; color: transparent; }
-        .scroll-top { position: fixed; bottom: 20px; right: 20px; background: #0f74ba; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: all 0.3s; z-index: 99; }
+        
+        .scroll-top {
+            position: fixed; bottom: 20px; right: 20px;
+            background: #0f74ba; width: 40px; height: 40px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; opacity: 0; transition: all 0.3s;
+            z-index: 99;
+        }
         .scroll-top.visible { opacity: 1; }
-        .task-item { background: white; border-radius: 12px; padding: 12px; margin-bottom: 10px; border-left: 3px solid #0f74ba; }
+        
+        .task-item {
+            background: white; border-radius: 12px; padding: 12px;
+            margin-bottom: 10px; border-left: 3px solid #0f74ba;
+            transition: all 0.2s;
+        }
         .task-item:hover { transform: translateX(3px); }
+        
         .main-content { margin-left: 260px; }
         @media (max-width: 768px) {
             .sidebar { left: -260px; transition: left 0.3s; }
             .sidebar.mobile-open { left: 0; }
-            .mobile-menu-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 99; display: none; }
+            .mobile-menu-overlay {
+                position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.5); z-index: 99; display: none;
+            }
             .mobile-menu-overlay.open { display: block; }
             .main-content { margin-left: 0; }
         }
-        .search-results-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: white; border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); z-index: 50; max-height: 400px; overflow-y: auto; display: none; }
+        
+        .search-results-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+            z-index: 50;
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+        }
         .search-results-dropdown.active { display: block; }
-        .search-result-item { padding: 12px 16px; border-bottom: 1px solid #e5e7eb; cursor: pointer; }
+        .search-result-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid #e5e7eb;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
         .search-result-item:hover { background-color: #f3f4f6; }
         .dark-mode .search-results-dropdown { background: #1e293b; }
         .dark-mode .search-result-item { border-bottom-color: #334155; }
         .dark-mode .search-result-item:hover { background-color: #334155; }
+        
+        .status-badge { padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 500; }
+        .status-pending { background: #fef3c7; color: #d97706; }
+        .status-progress { background: #dbeafe; color: #2563eb; }
+        .status-completed { background: #d1fae5; color: #059669; }
+        .status-approved { background: #e9d5ff; color: #7e22ce; }
+        
+        .home-link-btn { transition: all 0.2s; }
+        .home-link-btn:hover { transform: scale(1.05); }
+        
         .password-field { position: relative; }
         .password-field input { padding-right: 40px; }
-        .password-toggle { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #9ca3af; }
+        .password-toggle {
+            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+            cursor: pointer; color: #9ca3af;
+        }
         .password-toggle:hover { color: #0f74ba; }
+        
+        .logo-img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            border-color: #0f74ba;
+            box-shadow: 0 0 0 3px rgba(15,116,186,0.1);
+            outline: none;
+        }
+        
+        .project-image {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+        }
+        
+        .image-upload-area {
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .image-upload-area:hover {
+            border-color: #0f74ba;
+            background-color: #f0f9ff;
+        }
+        
+        .request-card {
+            background: #fffbeb;
+            border-left: 4px solid #f59e0b;
+        }
+        .dark-mode .request-card {
+            background: #422006;
+            border-left-color: #fbbf24;
+        }
+        
+        .chat-conversation {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .chat-conversation:hover {
+            background-color: #f3f4f6;
+        }
+        .dark-mode .chat-conversation:hover {
+            background-color: #334155;
+        }
+        .chat-conversation-unread {
+            background-color: #eff6ff;
+            border-left: 3px solid #3b82f6;
+        }
+        .dark-mode .chat-conversation-unread {
+            background-color: #1e3a5f;
+        }
     </style>
 </head>
 <body>
 
 <div id="mobileMenuOverlay" class="mobile-menu-overlay" onclick="closeMobileSidebar()"></div>
 
+<div id="dashboardApp">
 <div class="flex h-screen overflow-hidden">
+    
+    <!-- SIDEBAR -->
     <aside id="mainSidebar" class="sidebar w-64 shadow-xl flex flex-col z-20">
         <div class="px-6 py-6 border-b border-white/20 flex-shrink-0">
             <div class="sidebar-logo-link" onclick="goToMainWebsite()">
-                <img src="https://i.postimg.cc/MT6jTVHh/weblogo.png" alt="GeoTraverse Logo" class="w-10 h-10 object-contain rounded-lg">
-                <div><span class="text-xl font-bold text-white">GeoTraverse</span><p class="text-[10px] text-white/60">Admin Dashboard</p></div>
+                <img src="https://i.postimg.cc/MT6jTVHh/weblogo.png" alt="GeoTraverse Logo" class="logo-img">
+                <div>
+                    <span class="text-xl font-bold text-white">GeoTraverse</span>
+                    <p class="text-[10px] text-white/60">Admin Dashboard</p>
+                </div>
             </div>
         </div>
+        
         <div class="sidebar-nav flex-1 overflow-y-auto">
             <nav class="space-y-1">
-                <a href="#" class="nav-item active flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white" data-section="dashboard"><i class="fas fa-tachometer-alt w-5"></i><span>Dashboard</span></a>
-                <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white" data-section="employees"><i class="fas fa-users w-5"></i><span>Employees</span></a>
-                <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white" data-section="departments"><i class="fas fa-building w-5"></i><span>Departments</span></a>
-                <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white" data-section="projects"><i class="fas fa-tasks w-5"></i><span>Projects</span></a>
-                <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white" data-section="tasks"><i class="fas fa-check-square w-5"></i><span>Tasks</span><span class="ml-auto bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full" id="pendingTasksBadge">0</span></a>
-                <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white" data-section="messages"><i class="fas fa-envelope w-5"></i><span>Messages</span><span class="ml-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full" id="unreadMessagesBadge">0</span></a>
-                <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white" data-section="reports"><i class="fas fa-chart-line w-5"></i><span>Reports</span><span class="ml-auto bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full" id="unreadReportsBadge">0</span></a>
-                <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white" data-section="settings"><i class="fas fa-cog w-5"></i><span>Settings</span></a>
+                <a href="#" class="nav-item active flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white" data-section="dashboard">
+                    <i class="fas fa-tachometer-alt w-5 text-white/70"></i><span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white" data-section="employees">
+                    <i class="fas fa-users w-5 text-white/70"></i><span>Employees</span>
+                </a>
+                <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white" data-section="departments">
+                    <i class="fas fa-building w-5 text-white/70"></i><span>Departments</span>
+                </a>
+                <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white" data-section="projects">
+                    <i class="fas fa-tasks w-5 text-white/70"></i><span>Projects</span>
+                    <span id="projectRequestBadge" class="ml-auto bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">0</span>
+                </a>
+                <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white" data-section="tasks">
+                    <i class="fas fa-check-square w-5 text-white/70"></i><span>Tasks</span>
+                    <span class="ml-auto bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full" id="pendingTasksBadge">0</span>
+                </a>
+                <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white" data-section="messages">
+                    <i class="fas fa-envelope w-5 text-white/70"></i><span>Messages</span>
+                    <span id="unreadMessagesBadge" class="ml-auto bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">0</span>
+                </a>
+                <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white" data-section="reports">
+                    <i class="fas fa-chart-line w-5 text-white/70"></i><span>Reports</span>
+                    <span id="unreadReportsBadge" class="ml-auto bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">0</span>
+                </a>
+                <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white" data-section="settings">
+                    <i class="fas fa-cog w-5 text-white/70"></i><span>Settings</span>
+                </a>
             </nav>
         </div>
+        
         <div class="sidebar-footer flex-shrink-0">
             <div class="flex items-center space-x-3 mb-3">
-                <div class="w-9 h-9 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full flex items-center justify-center"><i class="fas fa-user text-white text-sm"></i></div>
-                <div class="flex-1"><p class="text-sm font-semibold text-white">Admin User</p><p class="text-xs text-white/70">admin@geotraverse.com</p></div>
+                <div class="w-9 h-9 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full flex items-center justify-center">
+                    <i class="fas fa-user text-white text-sm"></i>
+                </div>
+                <div class="flex-1">
+                    <p class="text-sm font-semibold text-white" id="adminName">Admin User</p>
+                    <p class="text-xs text-white/70" id="adminEmail">admin@geotraverse.com</p>
+                </div>
             </div>
-            <button id="logoutBtn" class="w-full bg-red-600/80 hover:bg-red-600 text-white py-2 rounded-lg text-sm"><i class="fas fa-sign-out-alt mr-2"></i>Logout</button>
+            <button id="logoutBtn" class="w-full bg-red-600/80 hover:bg-red-600 text-white py-2 rounded-lg text-sm transition">
+                <i class="fas fa-sign-out-alt mr-2"></i>Logout
+            </button>
         </div>
     </aside>
     
+    <!-- MAIN CONTENT -->
     <main class="flex-1 overflow-y-auto main-content">
+        
         <header class="bg-white shadow-sm px-6 py-4 sticky top-0 z-10 border-b border-gray-200">
             <div class="flex items-center justify-between flex-wrap gap-3">
                 <div class="flex items-center space-x-4">
-                    <button id="mobileMenuBtn" class="md:hidden text-gray-600 hover:text-blue-600"><i class="fas fa-bars text-xl"></i></button>
-                    <button id="homeButton" class="text-gray-600 hover:text-blue-600" onclick="goToMainWebsite()"><i class="fas fa-home text-xl"></i></button>
+                    <button id="mobileMenuBtn" class="md:hidden text-gray-600 hover:text-blue-600 transition">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <button id="homeButton" class="home-link-btn text-gray-600 hover:text-blue-600 transition" onclick="goToMainWebsite()" title="Go to Main Website">
+                        <i class="fas fa-home text-xl"></i>
+                    </button>
+                    <span class="text-sm text-gray-400 hidden md:inline">|</span>
+                    <a href="#" onclick="goToMainWebsite(); return false;" class="text-sm text-gray-500 hover:text-blue-600 transition hidden md:inline">
+                        <i class="fas fa-globe mr-1"></i> geotraverse.co.tz
+                    </a>
                 </div>
                 <div class="flex-1 max-w-md mx-4 relative">
                     <div class="relative">
                         <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
-                        <input type="text" id="globalSearchInput" placeholder="Search employees, projects..." class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-500">
+                        <input type="text" id="globalSearchInput" placeholder="Search employees, projects, tasks, messages..." class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-500">
                         <div id="searchResultsDropdown" class="search-results-dropdown"></div>
                     </div>
                 </div>
-                <button id="darkModeToggle" class="text-gray-500 hover:text-blue-600"><i id="darkModeIcon" class="fas fa-moon text-xl"></i></button>
+                <button id="darkModeToggle" class="text-gray-500 hover:text-blue-600 transition">
+                    <i id="darkModeIcon" class="fas fa-moon text-xl"></i>
+                </button>
             </div>
         </header>
+        
         <div class="p-6" id="mainContentContainer"></div>
     </main>
 </div>
+</div>
 
-<!-- All Modals (Employee, Project, Task, Chat, Report, Department, Backup, Password) -->
-<div id="employeeModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">...</div>
-<div id="projectModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">...</div>
-<div id="taskModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">...</div>
-<div id="chatModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">...</div>
-<div id="startChatModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">...</div>
-<div id="reportViewModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">...</div>
-<div id="deptViewModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">...</div>
-<div id="backupRestoreModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">...</div>
-<div id="passwordModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">...</div>
+<!-- Add Employee Modal -->
+<div id="addEmployeeModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl w-full max-w-md modal-pop">
+        <div class="px-6 py-4 border-b flex justify-between items-center">
+            <h3 class="text-lg font-bold"><i class="fas fa-user-plus mr-2 text-blue-500"></i>Add New Employee</h3>
+            <button onclick="closeAddEmployeeModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+        </div>
+        <div class="p-6 space-y-3">
+            <input type="text" id="newEmpName" placeholder="Full Name" class="w-full p-2 border rounded-lg">
+            <input type="email" id="newEmpEmail" placeholder="Email Address" class="w-full p-2 border rounded-lg">
+            <input type="text" id="newEmpPhone" placeholder="Phone Number" class="w-full p-2 border rounded-lg">
+            <select id="newEmpRole" class="w-full p-2 border rounded-lg">
+                <option value="">Select Role</option>
+                <option value="Manager">Manager</option>
+                <option value="Accountant">Accountant</option>
+                <option value="Sales Executive">Sales Executive</option>
+                <option value="Secretary">Secretary</option>
+                <option value="Staff">Staff</option>
+            </select>
+            <select id="newEmpDepartment" class="w-full p-2 border rounded-lg">
+                <option value="">Select Department</option>
+                <option value="Management">Management</option>
+                <option value="Finance">Finance</option>
+                <option value="Sales & Marketing">Sales & Marketing</option>
+                <option value="Administration">Administration</option>
+            </select>
+            <input type="number" id="newEmpSalary" placeholder="Salary (TZS)" class="w-full p-2 border rounded-lg">
+            <div class="password-field relative">
+                <input type="password" id="newEmpPassword" placeholder="Password (default: 1234)" class="w-full p-2 border rounded-lg pr-10">
+                <i class="fas fa-eye password-toggle" onclick="togglePasswordField('newEmpPassword')"></i>
+            </div>
+            <div class="flex gap-3 pt-3">
+                <button onclick="saveNewEmployee()" class="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">Add Employee</button>
+                <button onclick="closeAddEmployeeModal()" class="flex-1 bg-gray-200 py-2 rounded-lg">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Employee Modal -->
+<div id="employeeModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl w-full max-w-md modal-pop">
+        <div class="px-6 py-4 border-b flex justify-between items-center">
+            <h3 class="text-lg font-bold">Edit Employee</h3>
+            <button onclick="closeEmployeeModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+        </div>
+        <div class="p-6 space-y-3">
+            <input type="hidden" id="editEmpId">
+            <input type="text" id="editEmpName" placeholder="Full Name" class="w-full p-2 border rounded-lg">
+            <input type="email" id="editEmpEmail" placeholder="Email" class="w-full p-2 border rounded-lg">
+            <input type="text" id="editEmpPhone" placeholder="Phone Number" class="w-full p-2 border rounded-lg">
+            <select id="editEmpRole" class="w-full p-2 border rounded-lg">
+                <option value="Manager">Manager</option>
+                <option value="Accountant">Accountant</option>
+                <option value="Sales Executive">Sales Executive</option>
+                <option value="Secretary">Secretary</option>
+                <option value="Staff">Staff</option>
+            </select>
+            <select id="editEmpDepartment" class="w-full p-2 border rounded-lg">
+                <option value="Management">Management</option>
+                <option value="Finance">Finance</option>
+                <option value="Sales & Marketing">Sales & Marketing</option>
+                <option value="Administration">Administration</option>
+            </select>
+            <input type="number" id="editEmpSalary" placeholder="Salary (TZS)" class="w-full p-2 border rounded-lg">
+            <div class="password-field relative">
+                <input type="password" id="editEmpPassword" placeholder="New Password (leave blank to keep current)" class="w-full p-2 border rounded-lg pr-10">
+                <i class="fas fa-eye password-toggle" onclick="togglePasswordField('editEmpPassword')"></i>
+            </div>
+            <div class="flex gap-3 pt-3">
+                <button onclick="updateEmployee()" class="flex-1 bg-blue-600 text-white py-2 rounded-lg">Update Employee</button>
+                <button onclick="closeEmployeeModal()" class="flex-1 bg-gray-200 py-2 rounded-lg">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Task Modal -->
+<div id="taskModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl w-full max-w-md modal-pop">
+        <div class="px-6 py-4 border-b flex justify-between items-center">
+            <h3 class="text-lg font-bold">Add New Task</h3>
+            <button onclick="closeTaskModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+        </div>
+        <div class="p-6 space-y-3">
+            <input type="text" id="taskTitle" placeholder="Task Title" class="w-full p-2 border rounded-lg">
+            <textarea id="taskDesc" rows="3" placeholder="Task Description" class="w-full p-2 border rounded-lg"></textarea>
+            <select id="taskDepartment" class="w-full p-2 border rounded-lg">
+                <option value="Management">Management</option>
+                <option value="Finance">Finance</option>
+                <option value="Sales & Marketing">Sales & Marketing</option>
+                <option value="Administration">Administration</option>
+            </select>
+            <input type="date" id="taskDueDate" class="w-full p-2 border rounded-lg">
+            <div class="flex gap-3 pt-3">
+                <button onclick="saveTask()" class="flex-1 bg-blue-600 text-white py-2 rounded-lg">Add Task</button>
+                <button onclick="closeTaskModal()" class="flex-1 bg-gray-200 py-2 rounded-lg">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit Project Modal -->
+<div id="projectModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl w-full max-w-md modal-pop" style="max-height: 90vh; overflow-y: auto;">
+        <div class="px-6 py-4 border-b flex justify-between items-center sticky top-0 bg-white">
+            <h3 class="text-lg font-bold" id="projectModalTitle">Add New Project</h3>
+            <button onclick="closeProjectModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+        </div>
+        <div class="p-6 space-y-3">
+            <input type="hidden" id="editProjectId">
+            <input type="text" id="projectName" placeholder="Project Name" class="w-full p-2 border rounded-lg">
+            <input type="text" id="projectClient" placeholder="Client Name" class="w-full p-2 border rounded-lg">
+            <input type="number" id="projectAmount" placeholder="Amount (TZS)" class="w-full p-2 border rounded-lg">
+            <input type="text" id="projectLocation" placeholder="Location" class="w-full p-2 border rounded-lg">
+            <textarea id="projectDesc" rows="2" placeholder="Project Description" class="w-full p-2 border rounded-lg"></textarea>
+            
+            <div>
+                <label class="block text-sm font-semibold mb-2">Project Image</label>
+                <div id="imageUploadArea" class="image-upload-area" onclick="document.getElementById('projectImageFile').click()">
+                    <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                    <p class="text-sm text-gray-500">Click to upload project image</p>
+                    <p class="text-xs text-gray-400">PNG, JPG, GIF up to 2MB</p>
+                </div>
+                <input type="file" id="projectImageFile" accept="image/*" class="hidden">
+                <div id="imagePreviewContainer" class="hidden mt-3">
+                    <img id="imagePreview" class="w-full h-32 object-cover rounded-lg border">
+                    <button type="button" onclick="removeProjectImage()" class="mt-2 text-red-500 text-sm w-full text-center hover:text-red-700">Remove Image</button>
+                </div>
+            </div>
+            
+            <select id="projectStatus" class="w-full p-2 border rounded-lg">
+                <option value="pending">Pending</option>
+                <option value="in_progress">In Progress</option>
+                <option value="completed">Completed</option>
+                <option value="approved">Approved</option>
+            </select>
+            <select id="projectDepartment" class="w-full p-2 border rounded-lg">
+                <option value="Management">Management</option>
+                <option value="Finance">Finance</option>
+                <option value="Sales & Marketing">Sales & Marketing</option>
+                <option value="Administration">Administration</option>
+            </select>
+            <input type="number" id="projectProgress" placeholder="Progress (0-100%)" class="w-full p-2 border rounded-lg" min="0" max="100">
+            
+            <div class="flex gap-3 pt-3">
+                <button onclick="saveProject()" class="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">Save Project</button>
+                <button onclick="closeProjectModal()" class="flex-1 bg-gray-200 py-2 rounded-lg">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Backup & Restore Modal -->
+<div id="backupRestoreModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl w-full max-w-md modal-pop">
+        <div class="px-6 py-4 border-b flex justify-between items-center">
+            <h3 class="text-lg font-bold">Backup & Restore</h3>
+            <button onclick="closeBackupRestoreModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+        </div>
+        <div class="p-6 space-y-4">
+            <p class="text-sm text-gray-600">Backup includes: Employees, Projects, Tasks, Messages, Reports, Settings, Activity Logs</p>
+            <div class="flex gap-3">
+                <button onclick="createBackup()" class="flex-1 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition">
+                    <i class="fas fa-download mr-2"></i>Backup Data
+                </button>
+                <button onclick="restoreBackupFromFile()" class="flex-1 bg-orange-600 text-white py-2 rounded-lg hover:bg-orange-700 transition">
+                    <i class="fas fa-upload mr-2"></i>Restore Data
+                </button>
+            </div>
+            <div class="mt-3 pt-3 border-t">
+                <p class="text-xs text-gray-400 text-center">Backup file will be downloaded as JSON. Keep it safe!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- General Settings Modal -->
+<div id="generalSettingsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl w-full max-w-md modal-pop">
+        <div class="px-6 py-4 border-b flex justify-between items-center">
+            <h3 class="text-lg font-bold"><i class="fas fa-globe text-blue-600 mr-2"></i>General Settings</h3>
+            <button onclick="closeGeneralSettingsModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+        </div>
+        <div class="p-6 space-y-3">
+            <input type="text" id="modalCompanyName" placeholder="Company Name" class="w-full p-2 border rounded-lg">
+            <input type="text" id="modalCompanyAddress" placeholder="Company Address" class="w-full p-2 border rounded-lg">
+            <input type="email" id="modalCompanyEmail" placeholder="Company Email" class="w-full p-2 border rounded-lg">
+            <input type="text" id="modalCompanyPhone" placeholder="Company Phone" class="w-full p-2 border rounded-lg">
+            <div class="flex gap-3 pt-3">
+                <button onclick="saveGeneralSettingsModal()" class="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">Save Settings</button>
+                <button onclick="closeGeneralSettingsModal()" class="flex-1 bg-gray-200 py-2 rounded-lg">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Email Config Modal -->
+<div id="emailConfigModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl w-full max-w-md modal-pop">
+        <div class="px-6 py-4 border-b flex justify-between items-center">
+            <h3 class="text-lg font-bold"><i class="fas fa-envelope text-blue-600 mr-2"></i>Email Configuration</h3>
+            <button onclick="closeEmailConfigModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+        </div>
+        <div class="p-6 space-y-3">
+            <input type="text" id="modalSmtpServer" placeholder="SMTP Server" class="w-full p-2 border rounded-lg">
+            <input type="text" id="modalSmtpPort" placeholder="SMTP Port" class="w-full p-2 border rounded-lg">
+            <input type="email" id="modalSenderEmail" placeholder="Sender Email" class="w-full p-2 border rounded-lg">
+            <div class="flex gap-3 pt-3">
+                <button onclick="saveEmailConfigModal()" class="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">Save Config</button>
+                <button onclick="closeEmailConfigModal()" class="flex-1 bg-gray-200 py-2 rounded-lg">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Start Chat Modal -->
+<div id="startChatModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl max-w-md w-full modal-pop">
+        <div class="px-5 py-3 border-b flex justify-between items-center">
+            <h3 class="text-lg font-bold"><i class="fas fa-comment-dots text-blue-500 mr-2"></i>Start New Chat</h3>
+            <button onclick="closeStartChatModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+        </div>
+        <div class="p-5 space-y-3">
+            <select id="chatRecipientSelect" class="w-full p-2 border rounded-lg text-sm">
+                <option value="Management">Management</option>
+                <option value="Finance">Finance</option>
+                <option value="Sales & Marketing">Sales & Marketing</option>
+                <option value="Administration">Administration</option>
+            </select>
+            <textarea id="newChatMessage" rows="3" placeholder="Type your message..." class="w-full p-2 border rounded-lg text-sm"></textarea>
+            <div class="flex gap-3">
+                <button onclick="sendNewChatMessage()" class="flex-1 bg-blue-600 text-white py-2 rounded-lg text-sm"><i class="fas fa-paper-plane mr-1"></i>Send</button>
+                <button onclick="closeStartChatModal()" class="flex-1 bg-gray-200 py-2 rounded-lg text-sm">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
-    // ========== AUTO-INIT & DEFAULT DATA ==========
-    if (!localStorage.getItem('admin_logged_in')) localStorage.setItem('admin_logged_in', 'true');
+    // ==================== CENTRAL STORAGE KEYS ====================
+    // Reports storage
+    function getCentralReports() {
+        let reports = localStorage.getItem('geotraverse_central_reports');
+        if (!reports) {
+            // Initialize with some sample reports
+            let sample = [
+                { id: 1, department: "Finance", type: "monthly", title: "March Financial Summary", content: "Revenue: TZS 28.75M, Expenses: TZS 15.2M", status: "unread", created_at: "2024-04-01", submitted_at: "2024-04-01" },
+                { id: 2, department: "Management", type: "weekly", title: "Week 15 Progress Report", content: "All projects are on track.", status: "unread", created_at: "2024-04-18", submitted_at: "2024-04-18" }
+            ];
+            localStorage.setItem('geotraverse_central_reports', JSON.stringify(sample));
+            return sample;
+        }
+        return JSON.parse(reports);
+    }
     
-    function initializeDefaultData() {
-        if (!localStorage.getItem('geotraverse_central_messages')) {
-            localStorage.setItem('geotraverse_central_messages', JSON.stringify([
-                { id: 1, from: "Admin", to: "Manager", message: "Welcome to ERP!", read: false, created_at: new Date().toISOString() }
-            ]));
+    function saveCentralReports(reports) {
+        localStorage.setItem('geotraverse_central_reports', JSON.stringify(reports));
+    }
+    
+    // Projects requests storage
+    function getCentralProjects() {
+        let projectsReq = localStorage.getItem('geotraverse_central_projects');
+        if (!projectsReq) {
+            localStorage.setItem('geotraverse_central_projects', JSON.stringify([]));
+            return [];
         }
-        if (!localStorage.getItem('geotraverse_central_reports')) {
-            localStorage.setItem('geotraverse_central_reports', JSON.stringify([
-                { id: 1, from: "Manager", title: "Q1 Report", content: "All good", period: "quarterly", status: "unread", created_at: new Date().toISOString() }
-            ]));
+        return JSON.parse(projectsReq);
+    }
+    
+    function saveCentralProjects(requests) {
+        localStorage.setItem('geotraverse_central_projects', JSON.stringify(requests));
+    }
+    
+    // Messages storage
+    function getCentralMessages() {
+        let messages = localStorage.getItem('geotraverse_central_messages');
+        if (!messages) {
+            localStorage.setItem('geotraverse_central_messages', JSON.stringify([]));
+            return [];
         }
+        return JSON.parse(messages);
+    }
+    
+    function saveCentralMessages(messages) {
+        localStorage.setItem('geotraverse_central_messages', JSON.stringify(messages));
+    }
+    
+    function addCentralMessage(from, to, message) {
+        let messages = getCentralMessages();
+        messages.push({
+            id: Date.now(),
+            from: from,
+            to: to,
+            message: message,
+            read: false,
+            created_at: new Date().toISOString()
+        });
+        saveCentralMessages(messages);
+    }
+    
+    // ==================== INITIALIZE DATA ====================
+    function initializeData() {
         if (!localStorage.getItem('geotraverse_employees')) {
             localStorage.setItem('geotraverse_employees', JSON.stringify([
-                { id: 1, name: "John Mwita", email: "manager@geotraverse.com", phone: "+255712345678", role: "Manager", department: "Management", salary: "2500000", password: "1234", status: "Active", join_date: "2024-01-15" },
-                { id: 2, name: "Sarah Kijazi", email: "finance@geotraverse.com", phone: "+255713456789", role: "Accountant", department: "Finance", salary: "2000000", password: "1234", status: "Active", join_date: "2024-02-01" },
-                { id: 3, name: "Michael Mushi", email: "sales@geotraverse.com", phone: "+255714567890", role: "Sales Executive", department: "Sales & Marketing", salary: "1800000", password: "1234", status: "Active", join_date: "2024-01-10" },
-                { id: 4, name: "Grace Mrema", email: "secretary@geotraverse.com", phone: "+255715678901", role: "Secretary", department: "Administration", salary: "1500000", password: "1234", status: "Active", join_date: "2024-01-20" }
+                { id: 1, name: "John Mwita", email: "manager@geotraverse.com", phone: "+255 712 345 678", role: "Manager", department: "Management", salary: "2500000", password: "1234", status: "Active", join_date: "2024-01-15" },
+                { id: 2, name: "Sarah Kijazi", email: "finance@geotraverse.com", phone: "+255 713 456 789", role: "Accountant", department: "Finance", salary: "2000000", password: "1234", status: "Active", join_date: "2024-02-01" },
+                { id: 3, name: "Michael Mushi", email: "sales@geotraverse.com", phone: "+255 714 567 890", role: "Sales Executive", department: "Sales & Marketing", salary: "1800000", password: "1234", status: "Active", join_date: "2024-01-10" },
+                { id: 4, name: "Grace Mrema", email: "secretary@geotraverse.com", phone: "+255 715 678 901", role: "Secretary", department: "Administration", salary: "1500000", password: "1234", status: "Active", join_date: "2024-01-20" },
+                { id: 5, name: "James Ndege", email: "james@geotraverse.com", phone: "+255 716 789 012", role: "Sales Executive", department: "Sales & Marketing", salary: "1700000", password: "1234", status: "Active", join_date: "2024-02-15" },
+                { id: 6, name: "Elizabeth Mwakyusa", email: "elizabeth@geotraverse.com", phone: "+255 717 890 123", role: "Accountant", department: "Finance", salary: "2200000", password: "1234", status: "Active", join_date: "2024-01-25" },
+                { id: 7, name: "Daniel Mambo", email: "daniel@geotraverse.com", phone: "+255 718 901 234", role: "Assistant Manager", department: "Management", salary: "2800000", password: "1234", status: "Active", join_date: "2024-03-10" }
             ]));
         }
+        
         if (!localStorage.getItem('geotraverse_projects')) {
             localStorage.setItem('geotraverse_projects', JSON.stringify([
-                { id: 1, name: "Modern Villa", client_name: "John Mwita", amount: "180000000", status: "completed", progress: 100, department: "Management", start_date: "2024-01-10" },
-                { id: 2, name: "Commercial Complex", client_name: "Sarah Kijazi", amount: "350000000", status: "in_progress", progress: 65, department: "Management", start_date: "2024-02-01" }
+                { id: 1, name: "Modern Villa - Kigamboni", client_name: "John Mwita", amount: "180000000", status: "completed", progress: 100, department: "Management", location: "Kigamboni", description: "Luxury modern villa with swimming pool", image: "", start_date: "2024-01-10" },
+                { id: 2, name: "Commercial Complex - Pwani", client_name: "Sarah Kijazi", amount: "350000000", status: "in_progress", progress: 65, department: "Management", location: "Pwani", description: "Commercial office complex", image: "", start_date: "2024-02-01" },
+                { id: 3, name: "Residential Estate - Mbezi", client_name: "James Ndege", amount: "520000000", status: "in_progress", progress: 45, department: "Management", location: "Mbezi Beach", description: "20 unit residential apartments", image: "", start_date: "2024-02-15" },
+                { id: 4, name: "Annual Budget Planning", client_name: "Internal", amount: "50000000", status: "approved", progress: 100, department: "Finance", location: "Head Office", description: "Annual budget planning and allocation", image: "", start_date: "2024-01-01" },
+                { id: 5, name: "Q1 Financial Audit", client_name: "Internal", amount: "25000000", status: "completed", progress: 100, department: "Finance", location: "Head Office", description: "First quarter financial audit", image: "", start_date: "2024-02-01" },
+                { id: 6, name: "New Client Campaign", client_name: "Various", amount: "75000000", status: "in_progress", progress: 60, department: "Sales & Marketing", location: "Dar es Salaam", description: "Marketing campaign for new client acquisition", image: "", start_date: "2024-02-10" },
+                { id: 7, name: "Staff Onboarding", client_name: "Internal", amount: "15000000", status: "completed", progress: 100, department: "Administration", location: "Head Office", description: "New staff onboarding program", image: "", start_date: "2024-01-15" }
             ]));
         }
+        
         if (!localStorage.getItem('geotraverse_tasks')) {
             localStorage.setItem('geotraverse_tasks', JSON.stringify([
-                { id: 1, title: "Review Budget", description: "Q2 budget", department: "Finance", completed: false, due_date: "2024-05-10", created_at: "2024-04-01" }
+                { id: 1, title: "Review Q1 Budget", description: "Review and approve Q1 budget allocation", department: "Finance", completed: false, due_date: "2024-04-30", created_at: "2024-04-01" },
+                { id: 2, title: "Client Meeting Preparation", description: "Prepare presentation for client meeting", department: "Sales & Marketing", completed: false, due_date: "2024-04-25", created_at: "2024-04-02" },
+                { id: 3, title: "Update Employee Records", description: "Update all employee records in the system", department: "Administration", completed: true, due_date: "2024-04-15", created_at: "2024-04-01" },
+                { id: 4, title: "Site Visit Report", description: "Visit Mbezi project site and prepare report", department: "Management", completed: false, due_date: "2024-04-28", created_at: "2024-04-03" }
             ]));
         }
+        
         if (!localStorage.getItem('geotraverse_activity_logs')) {
-            localStorage.setItem('geotraverse_activity_logs', JSON.stringify([{ action: "System initialized", created_at: new Date().toISOString() }]));
+            localStorage.setItem('geotraverse_activity_logs', JSON.stringify([
+                { action: "Admin logged in", created_at: new Date().toISOString() }
+            ]));
+        }
+        
+        if (!localStorage.getItem('geotraverse_settings')) {
+            localStorage.setItem('geotraverse_settings', JSON.stringify({
+                company_name: "GeoTraverse",
+                company_email: "info@geotraverse.com",
+                company_phone: "+255 719 336 667",
+                company_address: "Dar es Salaam, Tanzania",
+                smtp_server: "smtp.gmail.com",
+                smtp_port: "587",
+                sender_email: "noreply@geotraverse.com"
+            }));
+        }
+        
+        // Initialize central reports if not exists (already done in getCentralReports)
+        getCentralReports();
+        getCentralProjects();
+        getCentralMessages();
+    }
+    
+    let revenueChart = null;
+    let currentEditEmployeeId = null;
+    let currentEditProjectId = null;
+    let currentProjectImageFile = null;
+    let searchTimeout = null;
+    let currentChatWith = null;
+    
+    // ==================== HELPER FUNCTIONS ====================
+    function showToast(message, isError) {
+        let toast = document.createElement('div');
+        toast.className = 'toast-notification' + (isError ? ' error' : '');
+        toast.innerHTML = '<i class="fas ' + (isError ? 'fa-exclamation-circle' : 'fa-check-circle') + ' mr-2"></i>' + message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+    
+    function escapeHtml(text) { if (!text) return ''; let div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+    
+    function formatDate(dateStr) {
+        if (!dateStr) return 'Just now';
+        let date = new Date(dateStr);
+        let now = new Date();
+        let diff = now - date;
+        let minutes = Math.floor(diff / 60000);
+        if (minutes < 60) return minutes + ' min ago';
+        let hours = Math.floor(diff / 3600000);
+        if (hours < 24) return hours + ' hour' + (hours > 1 ? 's' : '') + ' ago';
+        return Math.floor(hours / 24) + ' day(s) ago';
+    }
+    
+    function formatDateYMD(dateStr) { if (!dateStr) return 'N/A'; return new Date(dateStr).toLocaleDateString('en-GB'); }
+    
+    function togglePasswordField(fieldId) {
+        let input = document.getElementById(fieldId);
+        if (!input) return;
+        let icon = input.nextElementSibling;
+        if (input.type === 'password') { input.type = 'text'; if (icon) icon.classList.remove('fa-eye'); icon.classList.add('fa-eye-slash'); }
+        else { input.type = 'password'; if (icon) icon.classList.remove('fa-eye-slash'); icon.classList.add('fa-eye'); }
+    }
+    
+    function addActivityLog(action) {
+        let logs = JSON.parse(localStorage.getItem('geotraverse_activity_logs') || '[]');
+        logs.unshift({ action: action, created_at: new Date().toISOString() });
+        if (logs.length > 50) logs.pop();
+        localStorage.setItem('geotraverse_activity_logs', JSON.stringify(logs));
+    }
+    
+    function getStatusBadgeClass(status) {
+        if (status === 'pending') return 'status-pending';
+        if (status === 'in_progress') return 'status-progress';
+        if (status === 'completed') return 'status-completed';
+        if (status === 'approved') return 'status-approved';
+        return 'status-pending';
+    }
+    
+    function getStatusText(status) {
+        if (status === 'pending') return 'Pending';
+        if (status === 'in_progress') return 'In Progress';
+        if (status === 'completed') return 'Completed';
+        if (status === 'approved') return 'Approved';
+        return status;
+    }
+    
+    function goToMainWebsite() { window.location.href = "index.html"; }
+    
+    // ==================== MESSAGES (Centralized) ====================
+    function getUnreadMessagesCountForAdmin() {
+        let messages = getCentralMessages();
+        return messages.filter(m => m.to === "Admin" && !m.read).length;
+    }
+    
+    function getConversationsForAdmin() {
+        let messages = getCentralMessages();
+        let conversations = {};
+        messages.forEach(msg => {
+            if (msg.from === "Admin" || msg.to === "Admin") {
+                let other = msg.from === "Admin" ? msg.to : msg.from;
+                if (!conversations[other]) conversations[other] = [];
+                conversations[other].push(msg);
+            }
+        });
+        return conversations;
+    }
+    
+    function markMessageAsRead(messageId) {
+        let messages = getCentralMessages();
+        let msg = messages.find(m => m.id === messageId);
+        if (msg && msg.to === "Admin") {
+            msg.read = true;
+            saveCentralMessages(messages);
         }
     }
-    initializeDefaultData();
     
-    // ========== GLOBALS ==========
-    let employees = JSON.parse(localStorage.getItem('geotraverse_employees'));
-    let projects = JSON.parse(localStorage.getItem('geotraverse_projects'));
-    let tasks = JSON.parse(localStorage.getItem('geotraverse_tasks'));
-    let activityLogs = JSON.parse(localStorage.getItem('geotraverse_activity_logs'));
+    function deleteMessageFromCentral(messageId) {
+        let messages = getCentralMessages();
+        let newMessages = messages.filter(m => m.id !== messageId);
+        saveCentralMessages(newMessages);
+        renderMessages();
+        updateUnreadMessagesBadge();
+    }
     
-    function saveEmployees() { localStorage.setItem('geotraverse_employees', JSON.stringify(employees)); }
-    function saveProjects() { localStorage.setItem('geotraverse_projects', JSON.stringify(projects)); }
-    function saveTasks() { localStorage.setItem('geotraverse_tasks', JSON.stringify(tasks)); }
-    function addLog(action) { activityLogs.unshift({ action, created_at: new Date().toISOString() }); if(activityLogs.length>50) activityLogs.pop(); localStorage.setItem('geotraverse_activity_logs', JSON.stringify(activityLogs)); }
+    function deleteConversation(department) {
+        if (confirm(`Delete all messages with ${department} department?`)) {
+            let messages = getCentralMessages();
+            let remaining = messages.filter(m => !(m.from === department || m.to === department));
+            saveCentralMessages(remaining);
+            renderMessages();
+            updateUnreadMessagesBadge();
+            showToast(`Conversation with ${department} deleted`);
+        }
+    }
     
-    function getCentralMessages() { return JSON.parse(localStorage.getItem('geotraverse_central_messages') || '[]'); }
-    function saveCentralMessages(m) { localStorage.setItem('geotraverse_central_messages', JSON.stringify(m)); }
-    function addCentralMessage(from, to, message) { let msgs = getCentralMessages(); msgs.push({ id: Date.now(), from, to, message, read: false, created_at: new Date().toISOString() }); saveCentralMessages(msgs); }
-    function markMessageAsRead(id) { let msgs = getCentralMessages(); let msg = msgs.find(m=>m.id===id); if(msg && msg.to==="Admin") msg.read=true; saveCentralMessages(msgs); }
-    function getUnreadMessagesCount() { return getCentralMessages().filter(m=>m.to==="Admin" && !m.read).length; }
-    function getConversations() { let msgs=getCentralMessages(); let conv={}; msgs.forEach(m=>{ if(m.from==="Admin"||m.to==="Admin"){ let other=m.from==="Admin"?m.to:m.from; if(!conv[other]) conv[other]=[]; conv[other].push(m); } }); return conv; }
-    function deleteMessage(id) { let msgs=getCentralMessages(); saveCentralMessages(msgs.filter(m=>m.id!==id)); }
+    function openStartChatModal() {
+        document.getElementById('startChatModal').classList.remove('hidden');
+        document.getElementById('startChatModal').classList.add('flex');
+    }
     
-    function getCentralReports() { return JSON.parse(localStorage.getItem('geotraverse_central_reports') || '[]'); }
-    function saveCentralReports(r) { localStorage.setItem('geotraverse_central_reports', JSON.stringify(r)); }
-    function markReportRead(id) { let reports=getCentralReports(); let r=reports.find(rr=>rr.id===id); if(r) r.status="read"; saveCentralReports(reports); }
-    function getUnreadReportsCount() { return getCentralReports().filter(r=>r.status==="unread").length; }
+    function closeStartChatModal() {
+        document.getElementById('startChatModal').classList.add('hidden');
+        document.getElementById('startChatModal').classList.remove('flex');
+    }
     
-    function showToast(msg, err) { let t=document.createElement('div'); t.className='toast-notification'+(err?' error':''); t.innerHTML='<i class="fas '+(err?'fa-exclamation-circle':'fa-check-circle')+' mr-1"></i>'+msg; document.body.appendChild(t); setTimeout(()=>t.remove(),3000); }
-    function escapeHtml(t) { if(!t) return ''; let d=document.createElement('div'); d.textContent=t; return d.innerHTML; }
-    function formatDate(d) { let date=new Date(d); let now=new Date(); let diff=now-date; let mins=Math.floor(diff/60000); if(mins<60) return mins+' min ago'; let hrs=Math.floor(diff/3600000); if(hrs<24) return hrs+' hour'+(hrs>1?'s':'')+' ago'; return Math.floor(hrs/24)+' day(s) ago'; }
-    function formatDateTime(d) { return new Date(d).toLocaleString(); }
-    function goToMainWebsite() { window.location.href='index.html'; }
-    function togglePasswordField(id) { let i=document.getElementById(id); if(i.type==='password'){ i.type='text'; i.nextElementSibling.classList.remove('fa-eye'); i.nextElementSibling.classList.add('fa-eye-slash'); } else { i.type='password'; i.nextElementSibling.classList.remove('fa-eye-slash'); i.nextElementSibling.classList.add('fa-eye'); } }
+    function sendNewChatMessage() {
+        let toDept = document.getElementById('chatRecipientSelect').value;
+        let message = document.getElementById('newChatMessage').value.trim();
+        if (!message) { showToast('Please enter a message', true); return; }
+        addCentralMessage('Admin', toDept, message);
+        addActivityLog(`Sent message to ${toDept} department`);
+        showToast(`Message sent to ${toDept}`);
+        closeStartChatModal();
+        document.getElementById('newChatMessage').value = '';
+        renderMessages();
+        updateUnreadMessagesBadge();
+    }
     
-    // ========== EMPLOYEES (unchanged but working) ==========
-    function renderEmployees() {
-        let html=`<div class="bg-white rounded-xl shadow-sm"><div class="px-5 py-4 border-b flex justify-between"><h3 class="font-semibold"><i class="fas fa-users mr-2 text-blue-500"></i>Employees (${employees.length})</h3><button onclick="openAddEmployeeModal()" class="btn-primary text-white px-4 py-2 rounded-lg text-sm"><i class="fas fa-plus mr-1"></i>Add Employee</button></div><div class="overflow-x-auto"><table class="w-full"><thead class="bg-gray-50"><tr><th class="px-4 py-2 text-left text-xs">Name</th><th class="px-4 py-2 text-left text-xs">Email</th><th class="px-4 py-2 text-left text-xs">Phone</th><th class="px-4 py-2 text-left text-xs">Role</th><th class="px-4 py-2 text-left text-xs">Department</th><th class="px-4 py-2 text-left text-xs">Salary</th><th class="px-4 py-2 text-left text-xs">Actions</th></tr></thead><tbody>`;
-        employees.forEach(emp=>{
-            html+=`<tr class="border-b"><td class="px-4 py-2 text-sm font-medium">${escapeHtml(emp.name)}</td><td class="px-4 py-2 text-sm">${escapeHtml(emp.email)}</td><td class="px-4 py-2 text-sm">${emp.phone||'-'}</td><td class="px-4 py-2 text-sm">${emp.role}</td><td class="px-4 py-2 text-sm">${emp.department}</td><td class="px-4 py-2 text-sm text-green-600">TZS ${parseFloat(emp.salary).toLocaleString()}</td><td class="px-4 py-2 text-sm"><button onclick="openEditEmployee(${emp.id})" class="text-blue-500 mr-2"><i class="fas fa-edit"></i></button><button onclick="changeEmployeePassword(${emp.id})" class="text-yellow-500 mr-2"><i class="fas fa-key"></i></button><button onclick="deleteEmployee(${emp.id})" class="text-red-500"><i class="fas fa-trash"></i></button></td></tr>`;
+    function openChatWith(department) {
+        currentChatWith = department;
+        let messages = getCentralMessages();
+        let chatMessages = messages.filter(m => (m.from === "Admin" && m.to === department) || (m.from === department && m.to === "Admin"));
+        
+        chatMessages.forEach(m => {
+            if (m.to === "Admin" && !m.read) markMessageAsRead(m.id);
         });
-        html+=`</tbody></table></div></div>`;
-        document.getElementById('employeeSection').innerHTML=html;
-    }
-    function openAddEmployeeModal(){ document.getElementById('employeeModalTitle').innerText='Add Employee'; document.getElementById('editEmpId').value=''; document.getElementById('empName').value=''; document.getElementById('empEmail').value=''; document.getElementById('empPhone').value=''; document.getElementById('empRole').value='Manager'; document.getElementById('empDepartment').value='Management'; document.getElementById('empSalary').value=''; document.getElementById('empPassword').value=''; document.getElementById('employeeModal').classList.remove('hidden'); }
-    function openEditEmployee(id){ let emp=employees.find(e=>e.id===id); if(emp){ document.getElementById('employeeModalTitle').innerText='Edit Employee'; document.getElementById('editEmpId').value=emp.id; document.getElementById('empName').value=emp.name; document.getElementById('empEmail').value=emp.email; document.getElementById('empPhone').value=emp.phone||''; document.getElementById('empRole').value=emp.role; document.getElementById('empDepartment').value=emp.department; document.getElementById('empSalary').value=emp.salary; document.getElementById('empPassword').value=''; document.getElementById('employeeModal').classList.remove('hidden'); } }
-    function saveEmployee(){ let id=document.getElementById('editEmpId').value; let name=document.getElementById('empName').value; if(!name){ showToast('Name required',true); return; } let emp={ id:id?parseInt(id):Date.now(), name, email:document.getElementById('empEmail').value, phone:document.getElementById('empPhone').value, role:document.getElementById('empRole').value, department:document.getElementById('empDepartment').value, salary:document.getElementById('empSalary').value, password:document.getElementById('empPassword').value||'1234', status:'Active', join_date:new Date().toISOString().split('T')[0] }; if(id){ let idx=employees.findIndex(e=>e.id==id); if(idx!==-1) employees[idx]=emp; addLog(`Updated employee: ${name}`); showToast('Employee updated'); } else { employees.push(emp); addLog(`Added employee: ${name}`); showToast('Employee added'); } saveEmployees(); renderEmployees(); closeEmployeeModal(); renderDashboard(); }
-    function changeEmployeePassword(id){ let newPwd=prompt('New password'); if(newPwd){ let emp=employees.find(e=>e.id===id); if(emp){ emp.password=newPwd; saveEmployees(); showToast('Password changed'); } } }
-    function deleteEmployee(id){ if(confirm('Delete employee?')){ employees=employees.filter(e=>e.id!==id); saveEmployees(); renderEmployees(); renderDashboard(); addLog('Deleted employee'); showToast('Employee deleted'); } }
-    function closeEmployeeModal(){ document.getElementById('employeeModal').classList.add('hidden'); }
-    
-    // ========== PROJECTS (newest first + export per project) ==========
-    function sortProjectsNewestFirst() {
-        projects.sort((a,b) => b.id - a.id);
-    }
-    
-    function renderProjects() {
-        sortProjectsNewestFirst(); // ensure newest first
-        let html=`<div class="bg-white rounded-xl shadow-sm p-5"><div class="flex justify-between items-center mb-4 flex-wrap gap-2"><h3 class="font-semibold"><i class="fas fa-tasks mr-2 text-green-500"></i>All Projects (${projects.length})</h3><div><button onclick="openAddProjectModal()" class="bg-blue-600 text-white px-3 py-1 rounded text-sm mr-2"><i class="fas fa-plus"></i> Add Project</button><button onclick="exportAllProjectsToExcel()" class="bg-green-600 text-white px-3 py-1 rounded text-sm">Export All Excel</button></div></div><div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">`;
-        projects.forEach(p=>{
-            html+=`<div class="project-card p-3"><div class="flex justify-between"><h4 class="font-bold">${escapeHtml(p.name)}</h4><div><button onclick="editProject(${p.id})" class="text-blue-500 mr-1"><i class="fas fa-edit"></i></button><button onclick="deleteProject(${p.id})" class="text-red-500 mr-1"><i class="fas fa-trash"></i></button><button onclick="sendProjectToManager(${p.id})" class="text-purple-500"><i class="fas fa-paper-plane"></i></button></div></div>
-            <p class="text-sm">Client: ${escapeHtml(p.client_name)}</p><p class="text-sm font-semibold">TZS ${parseFloat(p.amount).toLocaleString()}</p>
-            <div class="mt-1"><div class="flex justify-between text-xs"><span>Progress</span><span>${p.progress}%</span></div><div class="w-full bg-gray-200 rounded-full h-1.5"><div class="bg-blue-500 h-1.5 rounded-full" style="width:${p.progress}%"></div></div></div>
-            <span class="inline-block mt-2 text-xs px-2 py-0.5 rounded-full ${p.status==='completed'?'bg-green-100 text-green-700':p.status==='in_progress'?'bg-yellow-100 text-yellow-700':'bg-gray-100'}">${p.status}</span>
-            <div class="flex gap-2 mt-3"><button onclick="exportSingleProjectToExcel(${p.id})" class="flex-1 text-xs bg-green-600 text-white py-1 rounded"><i class="fas fa-file-excel"></i> Excel</button><button onclick="exportSingleProjectToPDF(${p.id})" class="flex-1 text-xs bg-red-600 text-white py-1 rounded"><i class="fas fa-file-pdf"></i> PDF</button></div>
-            <button onclick="viewProject(${p.id})" class="mt-2 w-full text-center text-xs text-blue-500">View Details</button></div>`;
-        });
-        html+=`</div></div>`;
-        document.getElementById('projectsSection').innerHTML=html;
-    }
-    
-    function openAddProjectModal(){ document.getElementById('editProjectId').value=''; document.getElementById('projectName').value=''; document.getElementById('projectClient').value=''; document.getElementById('projectAmount').value=''; document.getElementById('projectStatus').value='pending'; document.getElementById('projectDepartment').value='Management'; document.getElementById('projectProgress').value='0'; document.getElementById('projectModal').classList.remove('hidden'); }
-    function editProject(id){ let p=projects.find(p=>p.id===id); if(p){ document.getElementById('editProjectId').value=p.id; document.getElementById('projectName').value=p.name; document.getElementById('projectClient').value=p.client_name; document.getElementById('projectAmount').value=p.amount; document.getElementById('projectStatus').value=p.status; document.getElementById('projectDepartment').value=p.department; document.getElementById('projectProgress').value=p.progress; document.getElementById('projectModal').classList.remove('hidden'); } }
-    function saveProject(){ let id=document.getElementById('editProjectId').value; let name=document.getElementById('projectName').value; if(!name){ showToast('Project name required',true); return; } let project={ id:id?parseInt(id):Date.now(), name, client_name:document.getElementById('projectClient').value, amount:document.getElementById('projectAmount').value, status:document.getElementById('projectStatus').value, department:document.getElementById('projectDepartment').value, progress:parseInt(document.getElementById('projectProgress').value), start_date:new Date().toISOString().split('T')[0], description:'', image:'' }; if(id){ let idx=projects.findIndex(p=>p.id==id); if(idx!==-1) projects[idx]=project; addLog(`Updated project: ${name}`); showToast('Project updated'); } else { projects.unshift(project); addLog(`Added project: ${name} (newest first)`); showToast('Project added'); } saveProjects(); renderProjects(); renderDashboard(); closeProjectModal(); }
-    function deleteProject(id){ if(confirm('Delete project?')){ projects=projects.filter(p=>p.id!==id); saveProjects(); renderProjects(); renderDashboard(); addLog('Deleted project'); showToast('Project deleted'); } }
-    function viewProject(id){ let p=projects.find(p=>p.id===id); if(p){ alert(`Project: ${p.name}\nClient: ${p.client_name}\nAmount: TZS ${parseFloat(p.amount).toLocaleString()}\nStatus: ${p.status}\nProgress: ${p.progress}%`); } }
-    function sendProjectToManager(id){ let p=projects.find(p=>p.id===id); if(p){ let msg=prompt(`Send message to Manager about "${p.name}":`, "Please review this project."); if(msg){ addCentralMessage("Admin", "Manager", `Project Note: ${p.name}\n\n${msg}`); addLog(`Sent project note to Manager: ${p.name}`); showToast(`Note sent to Manager`); } } }
-    function exportAllProjectsToExcel(){ let ws=[["ID","Name","Client","Amount","Status","Progress","Department"]]; projects.forEach(p=>ws.push([p.id,p.name,p.client_name,p.amount,p.status,p.progress,p.department])); let wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(ws),"All Projects"); XLSX.writeFile(wb,`all_projects_${new Date().toISOString().slice(0,10)}.xlsx`); showToast("All projects exported to Excel"); }
-    function exportSingleProjectToExcel(id){ let p=projects.find(p=>p.id===id); if(p){ let ws=[["Field","Value"],[["Project Name",p.name],["Client",p.client_name],["Amount",p.amount],["Status",p.status],["Progress",p.progress],["Department",p.department]]]; let wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(ws),p.name); XLSX.writeFile(wb,`${p.name.replace(/ /g,"_")}.xlsx`); showToast(`Exported ${p.name} to Excel`); } }
-    function exportSingleProjectToPDF(id){ let p=projects.find(p=>p.id===id); if(p){ let element=document.createElement('div'); element.innerHTML=`<div style="padding:20px;font-family:Arial"><h1 style="color:#0f74ba">${p.name}</h1><p><strong>Client:</strong> ${p.client_name}</p><p><strong>Amount:</strong> TZS ${parseFloat(p.amount).toLocaleString()}</p><p><strong>Status:</strong> ${p.status}</p><p><strong>Progress:</strong> ${p.progress}%</p><p><strong>Department:</strong> ${p.department}</p><p><strong>Start Date:</strong> ${p.start_date}</p><small>Exported on ${new Date().toLocaleString()}</small></div>`; html2pdf().set({margin:0.5,filename:`${p.name.replace(/ /g,"_")}.pdf`}).from(element).save(); showToast(`Exported ${p.name} to PDF`); } }
-    function closeProjectModal(){ document.getElementById('projectModal').classList.add('hidden'); }
-    
-    // ========== TASKS ==========
-    function renderTasks(){ let pending=tasks.filter(t=>!t.completed).length; document.getElementById('pendingTasksBadge').innerText=pending; let html=`<div class="bg-white rounded-xl p-5"><div class="flex justify-between mb-4"><h3 class="font-semibold"><i class="fas fa-tasks mr-2 text-orange-500"></i>Tasks (${tasks.length})</h3><button onclick="openAddTaskModal()" class="btn-primary text-white px-4 py-2 rounded-lg text-sm"><i class="fas fa-plus mr-1"></i>Add Task</button></div><div class="grid md:grid-cols-2 gap-4"><div><h4 class="font-semibold text-orange-600">Pending (${pending})</h4><div id="pendingTasksList"></div></div><div><h4 class="font-semibold text-green-600">Completed (${tasks.filter(t=>t.completed).length})</h4><div id="completedTasksList"></div></div></div></div>`;
-        document.getElementById('tasksSection').innerHTML=html;
-        document.getElementById('pendingTasksList').innerHTML=tasks.filter(t=>!t.completed).map(t=>`<div class="task-item flex justify-between"><div><p class="font-medium">${escapeHtml(t.title)}</p><p class="text-xs text-gray-500">${escapeHtml(t.description||'')} | Dept: ${t.department} | Due: ${t.due_date||'N/A'}</p></div><input type="checkbox" onchange="toggleTask(${t.id})" class="w-5 h-5"></div>`).join('');
-        document.getElementById('completedTasksList').innerHTML=tasks.filter(t=>t.completed).map(t=>`<div class="task-item opacity-75 flex justify-between"><div><p class="font-medium line-through">${escapeHtml(t.title)}</p><p class="text-xs text-gray-400">Completed</p></div><i class="fas fa-check-circle text-green-500 mt-1"></i></div>`).join('');
-    }
-    function openAddTaskModal(){ document.getElementById('taskTitle').value=''; document.getElementById('taskDesc').value=''; document.getElementById('taskDepartment').value='Management'; document.getElementById('taskDueDate').value=''; document.getElementById('taskModal').classList.remove('hidden'); }
-    function closeTaskModal(){ document.getElementById('taskModal').classList.add('hidden'); }
-    function saveTask(){ let title=document.getElementById('taskTitle').value; if(!title){ showToast('Title required',true); return; } tasks.push({ id:Date.now(), title, description:document.getElementById('taskDesc').value, department:document.getElementById('taskDepartment').value, completed:false, due_date:document.getElementById('taskDueDate').value, created_at:new Date().toISOString().split('T')[0] }); saveTasks(); renderTasks(); renderDashboard(); showToast('Task added'); closeTaskModal(); }
-    function toggleTask(id){ let t=tasks.find(t=>t.id===id); if(t){ t.completed=!t.completed; saveTasks(); renderTasks(); renderDashboard(); showToast(t.completed?'Task completed':'Task reopened'); } }
-    
-    // ========== DEPARTMENTS ==========
-    let departmentsList = [
-        { name:"Management", display:"Management Department", color:"purple", icon:"fa-user-tie" },
-        { name:"Finance", display:"Finance Department", color:"green", icon:"fa-calculator" },
-        { name:"Sales & Marketing", display:"Sales & Marketing Department", color:"orange", icon:"fa-chart-line" },
-        { name:"Administration", display:"Administration Department", color:"red", icon:"fa-envelope" }
-    ];
-    function renderDepartments(){
-        let html=`<div class="mb-4"><h2 class="text-2xl font-bold gradient-text">Departments</h2><p class="text-gray-500">Click to view full department dashboard</p></div><div class="space-y-3">`;
-        departmentsList.forEach(d=>{ html+=`<div class="dept-link p-4 flex items-center justify-between cursor-pointer" onclick="viewFullDepartment('${d.name}')"><div class="flex items-center gap-4"><div class="w-10 h-10 bg-${d.color}-100 rounded-full flex items-center justify-center"><i class="fas ${d.icon} text-${d.color}-600"></i></div><div><p class="font-semibold">${d.display}</p><p class="text-sm text-gray-500">Projects, Tasks & Messages</p></div></div><i class="fas fa-chevron-right text-gray-400"></i></div>`; });
-        html+=`</div>`;
-        document.getElementById('departmentsSection').innerHTML=html;
-    }
-    function viewFullDepartment(deptName){
-        let deptProjects=projects.filter(p=>p.department===deptName);
-        let deptTasks=tasks.filter(t=>t.department===deptName);
-        let deptMsgs=getCentralMessages().filter(m=>(m.from===deptName||m.to===deptName) && (m.from==="Admin"||m.to==="Admin"));
-        let color=departmentsList.find(d=>d.name===deptName)?.color||'blue';
-        document.getElementById('deptModalTitle').innerHTML=`${deptName} Department Dashboard`;
-        document.getElementById('deptViewContent').innerHTML=`
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6"><div class="bg-${color}-50 p-4 rounded-xl text-center"><i class="fas fa-tasks text-2xl text-${color}-600"></i><p class="text-2xl font-bold">${deptProjects.length}</p><p>Projects</p></div><div class="bg-${color}-50 p-4 rounded-xl text-center"><i class="fas fa-tasks text-2xl text-${color}-600"></i><p class="text-2xl font-bold">${deptTasks.length}</p><p>Tasks</p></div><div class="bg-${color}-50 p-4 rounded-xl text-center"><i class="fas fa-envelope text-2xl text-${color}-600"></i><p class="text-2xl font-bold">${deptMsgs.length}</p><p>Messages</p></div></div>
-            <h4 class="font-semibold mb-2">Projects</h4>${deptProjects.map(p=>`<div class="border p-2 rounded mb-1">${p.name} - ${p.status}</div>`).join('')||'<p>No projects</p>'}
-            <h4 class="font-semibold mt-4 mb-2">Tasks</h4>${deptTasks.map(t=>`<div class="border p-2 rounded mb-1">${t.title} - ${t.completed?'Completed':'Pending'}</div>`).join('')||'<p>No tasks</p>'}
-            <div class="mt-4"><button onclick="openChatWith('${deptName}')" class="bg-blue-600 text-white px-4 py-2 rounded-lg">Send Message</button></div>
-        `;
-        document.getElementById('deptViewModal').classList.remove('hidden');
-    }
-    function closeDeptViewModal(){ document.getElementById('deptViewModal').classList.add('hidden'); }
-    
-    // ========== MESSAGES & CHAT ==========
-    let currentChatWith=null;
-    function renderMessages(){
-        let conv=getConversations(); let unread=getUnreadMessagesCount(); document.getElementById('unreadMessagesBadge').innerText=unread;
-        let html=`<div class="bg-white rounded-xl shadow-sm"><div class="px-5 py-4 border-b flex justify-between"><h3 class="font-semibold"><i class="fas fa-comments mr-2 text-blue-500"></i>Messages (${Object.keys(conv).length} convos)</h3><button onclick="openStartChatModal()" class="btn-primary text-white px-3 py-1 rounded text-sm">New Message</button></div><div class="divide-y">`;
-        for(let dept in conv){ let last=conv[dept][conv[dept].length-1]; let un=conv[dept].filter(m=>m.to==="Admin" && !m.read).length; html+=`<div class="p-4 ${un>0?'message-unread':''} cursor-pointer flex justify-between" onclick="openChatWith('${dept}')"><div><p class="font-semibold">${dept}</p><p class="text-sm text-gray-600 truncate">${escapeHtml(last.message.substring(0,60))}</p>${un>0?`<span class="text-xs bg-red-500 text-white px-2 rounded-full">${un} new</span>`:''}</div><i class="fas fa-chevron-right text-gray-400"></i></div>`; }
-        html+=`</div></div>`;
-        document.getElementById('messagesSection').innerHTML=html;
-    }
-    function openChatWith(dept){
-        currentChatWith=dept; let messages=getCentralMessages().filter(m=>(m.from===dept&&m.to==="Admin")||(m.from==="Admin"&&m.to===dept));
-        messages.forEach(m=>{ if(m.to==="Admin" && !m.read) markMessageAsRead(m.id); });
-        renderMessages(); renderDashboard();
-        let chatHtml=''; messages.forEach(m=>{ chatHtml+=`<div class="chat-bubble ${m.from==="Admin"?"chat-sent":"chat-received"}"><p class="text-xs text-gray-500">${m.from==="Admin"?"You":dept} · ${formatDateTime(m.created_at)}</p><p>${escapeHtml(m.message)}</p><button onclick="deleteSingleMessage(${m.id})" class="text-red-500 text-xs mt-1">Delete</button></div>`; });
-        if(messages.length===0) chatHtml='<div class="text-center text-gray-400 py-8">No messages</div>';
-        document.getElementById('chatModalTitle').innerHTML=`Chat with ${dept}`;
-        document.getElementById('chatMessagesArea').innerHTML=chatHtml;
-        document.getElementById('chatModal').classList.remove('hidden');
-        document.getElementById('chatMessagesArea').scrollTop=document.getElementById('chatMessagesArea').scrollHeight;
-    }
-    function sendChatMessage(){ let msg=document.getElementById('chatInput').value; if(!msg || !currentChatWith) return; addCentralMessage("Admin", currentChatWith, msg); document.getElementById('chatInput').value=''; openChatWith(currentChatWith); renderMessages(); updateBadges(); }
-    function deleteSingleMessage(id){ deleteMessage(id); openChatWith(currentChatWith); renderMessages(); updateBadges(); showToast('Message deleted'); }
-    function closeChatModal(){ document.getElementById('chatModal').classList.add('hidden'); }
-    function openStartChatModal(){ document.getElementById('startChatModal').classList.remove('hidden'); }
-    function closeStartChatModal(){ document.getElementById('startChatModal').classList.add('hidden'); }
-    function sendNewChatMessage(){ let dept=document.getElementById('chatDepartmentSelect').value; let msg=document.getElementById('newChatMessage').value; if(!msg){ showToast('Enter message',true); return; } addCentralMessage("Admin", dept, msg); showToast(`Message sent to ${dept}`); closeStartChatModal(); renderMessages(); updateBadges(); }
-    
-    // ========== REPORTS ==========
-    function renderReports(){ let reports=getCentralReports(); let unread=getUnreadReportsCount(); document.getElementById('unreadReportsBadge').innerText=unread; let html=`<div class="bg-white rounded-xl shadow-sm p-5"><h3 class="font-semibold mb-3"><i class="fas fa-chart-line mr-2 text-purple-500"></i>Reports (${reports.length})</h3><div class="space-y-2">`; reports.forEach(r=>{ html+=`<div class="border-l-4 ${r.status==='unread'?'border-blue-500 bg-blue-50':'border-gray-200'} p-3 rounded"><div class="flex justify-between"><span class="font-semibold">${escapeHtml(r.from)}</span><span class="text-xs text-gray-400">${formatDate(r.created_at)}</span></div><p class="font-medium">${escapeHtml(r.title)}</p><p class="text-sm">${escapeHtml(r.content.substring(0,100))}...</p><div class="flex gap-2 mt-2"><button onclick="viewReportDetail(${r.id})" class="text-blue-500 text-sm"><i class="fas fa-eye"></i> View</button><button onclick="markReportAsRead(${r.id})" class="text-green-500 text-sm"><i class="fas fa-check"></i> Mark Read</button><button onclick="exportReportToPDF(${r.id})" class="text-red-500 text-sm"><i class="fas fa-file-pdf"></i> PDF</button></div></div>`; }); html+=`</div></div>`; document.getElementById('reportsSection').innerHTML=html; }
-    function viewReportDetail(id){ let r=getCentralReports().find(rr=>rr.id===id); if(r){ document.getElementById('reportViewContent').innerHTML=`<div><p class="text-gray-500">From: ${r.from}</p><h3 class="font-bold">${escapeHtml(r.title)}</h3><p class="mt-2">${escapeHtml(r.content)}</p><p class="text-xs text-gray-400 mt-3">${formatDateTime(r.created_at)}</p></div>`; document.getElementById('reportViewModal').classList.remove('hidden'); if(r.status==='unread') markReportAsRead(id); } }
-    function markReportAsRead(id){ markReportRead(id); renderReports(); updateBadges(); showToast('Report marked as read'); }
-    function exportReportToPDF(id){ let r=getCentralReports().find(rr=>rr.id===id); if(r){ let el=document.createElement('div'); el.innerHTML=`<div style="padding:20px"><h1>${r.title}</h1><p>From: ${r.from}</p><p>${r.content}</p><p>Date: ${formatDateTime(r.created_at)}</p></div>`; html2pdf().set({margin:0.5,filename:`${r.from}_report.pdf`}).from(el).save(); } }
-    function closeReportViewModal(){ document.getElementById('reportViewModal').classList.add('hidden'); }
-    
-    // ========== DASHBOARD ==========
-    function renderDashboard(){
-        let unreadMsg=getUnreadMessagesCount(); let unreadRep=getUnreadReportsCount(); let pendingTasks=tasks.filter(t=>!t.completed).length; let totalProjects=projects.length;
-        let recentMsgs=getCentralMessages().filter(m=>m.to==="Admin" || m.from==="Admin").slice(0,5);
-        let html=`<div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-6">
-            <div class="stat-card p-5 cursor-pointer" onclick="showSection('messages')"><div><p class="text-gray-500 text-sm">Unread Messages</p><p class="text-3xl font-bold text-red-600">${unreadMsg}</p></div></div>
-            <div class="stat-card p-5 cursor-pointer" onclick="showSection('reports')"><div><p class="text-gray-500 text-sm">Unread Reports</p><p class="text-3xl font-bold text-orange-600">${unreadRep}</p></div></div>
-            <div class="stat-card p-5 cursor-pointer" onclick="showSection('tasks')"><div><p class="text-gray-500 text-sm">Pending Tasks</p><p class="text-3xl font-bold text-blue-600">${pendingTasks}</p></div></div>
-            <div class="stat-card p-5 cursor-pointer" onclick="showSection('projects')"><div><p class="text-gray-500 text-sm">Total Projects</p><p class="text-3xl font-bold text-green-600">${totalProjects}</p></div></div>
+        
+        renderMessages();
+        updateUnreadMessagesBadge();
+        
+        let chatHtml = `<div class="flex justify-between items-center mb-3 pb-2 border-b">
+            <h4 class="font-bold">Chat with ${department}</h4>
+            <button onclick="deleteConversation('${department}')" class="text-red-500 text-sm"><i class="fas fa-trash-alt mr-1"></i>Delete All</button>
         </div>
-        <div class="bg-white rounded-xl p-5 mb-5"><h3 class="font-semibold mb-3"><i class="fas fa-history mr-2"></i>Recent Activity</h3><div id="recentActivityList" class="space-y-1 max-h-32 overflow-y-auto">${activityLogs.slice(0,10).map(l=>`<div class="text-xs py-1 border-b flex justify-between"><span>${escapeHtml(l.action)}</span><span class="text-gray-400">${formatDate(l.created_at)}</span></div>`).join('')}</div></div>
-        <div class="bg-white rounded-xl p-5"><h3 class="font-semibold mb-3"><i class="fas fa-envelope mr-2"></i>Recent Messages</h3>${recentMsgs.map(m=>`<div class="border-l-3 border-blue-500 pl-3 py-1 text-sm"><b>${m.from==="Admin"?"To "+m.to:"From "+m.from}:</b> ${escapeHtml(m.message.substring(0,80))}</div>`).join('')||'<p>No messages</p>'}</div>`;
-        document.getElementById('dashboardSection').innerHTML=html;
-        updateBadges();
+        <div class="space-y-2 max-h-96 overflow-y-auto" id="chatMessagesList">`;
+        
+        for (let msg of chatMessages) {
+            chatHtml += `<div class="chat-bubble ${msg.from === "Admin" ? "chat-reply" : "chat-message"}">
+                <p class="text-[10px] text-gray-500 mb-0.5">${msg.from === "Admin" ? "You" : department} · ${new Date(msg.created_at).toLocaleString()}</p>
+                <p class="text-sm">${escapeHtml(msg.message)}</p>
+                <button onclick="deleteMessageFromCentral(${msg.id})" class="text-red-500 text-[9px] mt-1 hover:text-red-700"><i class="fas fa-trash"></i> Delete</button>
+            </div>`;
+        }
+        if (chatMessages.length === 0) {
+            chatHtml += '<div class="text-center text-gray-400 py-4">No messages yet. Start the conversation!</div>';
+        }
+        chatHtml += `</div><div class="mt-3 flex gap-2"><textarea id="chatReplyInput" rows="2" placeholder="Type your reply..." class="flex-1 p-2 border rounded-lg text-sm"></textarea><button onclick="sendReplyToChat()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm">Send</button></div>`;
+        
+        document.getElementById('messagesSection').innerHTML = `
+            <div class="bg-white rounded-xl p-4">
+                <button onclick="renderMessages()" class="mb-3 text-blue-600 text-sm"><i class="fas fa-arrow-left mr-1"></i>Back to Conversations</button>
+                ${chatHtml}
+            </div>
+        `;
+        
+        window.sendReplyToChat = function() {
+            let reply = document.getElementById('chatReplyInput').value.trim();
+            if (!reply) return;
+            addCentralMessage('Admin', currentChatWith, reply);
+            document.getElementById('chatReplyInput').value = '';
+            openChatWith(currentChatWith);
+            showToast('Reply sent');
+        };
     }
-    function updateBadges(){ document.getElementById('unreadMessagesBadge').innerText=getUnreadMessagesCount(); document.getElementById('unreadReportsBadge').innerText=getUnreadReportsCount(); document.getElementById('pendingTasksBadge').innerText=tasks.filter(t=>!t.completed).length; }
     
-    // ========== SETTINGS ==========
-    function renderSettings(){
-        let logsHtml=activityLogs.slice(0,15).map(l=>`<div class="text-xs py-1 border-b"><span>${escapeHtml(l.action)}</span><span class="float-right text-gray-400">${formatDate(l.created_at)}</span></div>`).join('');
-        let html=`<div class="grid md:grid-cols-2 gap-5">
-            <div class="setting-card p-5"><h3 class="font-bold"><i class="fas fa-palette mr-2"></i>Sidebar Color</h3><div class="flex gap-2 mt-2"><div class="color-option selected" style="background:#0f74ba" onclick="changeColor('#0f74ba',this)"></div><div class="color-option" style="background:#1e3a5f" onclick="changeColor('#1e3a5f',this)"></div><div class="color-option" style="background:#059669" onclick="changeColor('#059669',this)"></div></div></div>
-            <div class="setting-card p-5"><h3 class="font-bold"><i class="fas fa-key mr-2"></i>Admin Password</h3><button onclick="openPasswordModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg mt-2 w-full">Change Admin Password</button></div>
-            <div class="setting-card p-5"><h3 class="font-bold"><i class="fas fa-database mr-2"></i>Backup & Restore</h3><button onclick="openBackupRestoreModal()" class="bg-green-600 text-white px-4 py-2 rounded-lg mt-2 w-full">Backup / Restore Data</button></div>
-            <div class="setting-card p-5"><h3 class="font-bold"><i class="fas fa-history mr-2"></i>Activity Logs</h3><div class="max-h-32 overflow-y-auto text-xs border rounded p-2 bg-gray-50">${logsHtml}</div><button onclick="clearAllLogs()" class="mt-2 bg-red-600 text-white px-3 py-1 rounded text-sm w-full">Clear All Logs</button></div>
-        </div>`;
-        document.getElementById('settingsSection').innerHTML=html;
+    function renderMessages() {
+        let conversations = getConversationsForAdmin();
+        let unreadCount = getUnreadMessagesCountForAdmin();
+        document.getElementById('unreadMessagesBadge').innerText = unreadCount;
+        
+        let convHtml = `<div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold text-gray-800"><i class="fas fa-comments text-blue-500 mr-2"></i>Messages</h2>
+            <button onclick="openStartChatModal()" class="btn-primary text-white px-4 py-2 rounded-lg text-sm"><i class="fas fa-plus-circle mr-1"></i>Start New Chat</button>
+        </div>
+        <div class="bg-white rounded-xl p-3">
+            <div class="space-y-2">`;
+        
+        let hasConv = false;
+        for (let dept in conversations) {
+            hasConv = true;
+            let lastMsg = conversations[dept][conversations[dept].length - 1];
+            let unread = conversations[dept].filter(m => m.to === "Admin" && !m.read).length;
+            let unreadClass = unread > 0 ? 'chat-conversation-unread' : '';
+            convHtml += `<div class="chat-conversation ${unreadClass} border rounded-lg p-3 mb-2 flex justify-between items-center" onclick="openChatWith('${dept}')">
+                <div><p class="font-semibold text-sm">${dept}</p><p class="text-xs text-gray-500 truncate max-w-[200px]">${escapeHtml(lastMsg.message.substring(0,50))}</p></div>
+                <div class="text-right"><span class="text-[10px] text-gray-400">${new Date(lastMsg.created_at).toLocaleTimeString()}</span>${unread > 0 ? `<span class="ml-2 bg-red-500 text-white text-[9px] px-1.5 py-0.5 rounded-full">${unread}</span>` : ''}</div>
+            </div>`;
+        }
+        convHtml += (hasConv ? "" : '<p class="text-gray-400 text-center py-6 text-sm">No messages yet. Start a new chat!</p>') + "</div></div>";
+        document.getElementById('messagesSection').innerHTML = convHtml;
+        updateUnreadMessagesBadge();
     }
-    function changeColor(color,el){ document.querySelectorAll('.color-option').forEach(o=>o.classList.remove('selected')); el.classList.add('selected'); document.getElementById('mainSidebar').style.background=color; document.getElementById('mainSidebar').style.backgroundImage='none'; localStorage.setItem('admin_sidebar_color',color); }
-    function openPasswordModal(){ document.getElementById('passwordModal').classList.remove('hidden'); }
-    function closePasswordModal(){ document.getElementById('passwordModal').classList.add('hidden'); }
-    function changeAdminPassword(){ let pwd=document.getElementById('adminNewPassword').value; let confirm=document.getElementById('adminConfirmPassword').value; if(!pwd){ showToast('Enter new password',true); return; } if(pwd!==confirm){ showToast('Passwords do not match',true); return; } localStorage.setItem('admin_password',pwd); showToast('Admin password changed'); closePasswordModal(); addLog('Admin changed password'); }
-    function openBackupRestoreModal(){ document.getElementById('backupRestoreModal').classList.remove('hidden'); }
-    function closeBackupRestoreModal(){ document.getElementById('backupRestoreModal').classList.add('hidden'); }
-    function createBackup(){ let data={ employees, projects, tasks, messages:getCentralMessages(), reports:getCentralReports(), logs:activityLogs }; let blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}); let a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`geotraverse_backup_${new Date().toISOString().slice(0,19)}.json`; a.click(); showToast('Backup created'); closeBackupRestoreModal(); }
-    function restoreBackupFile(){ let input=document.createElement('input'); input.type='file'; input.accept='application/json'; input.onchange=e=>{ let file=e.target.files[0]; if(!file) return; let reader=new FileReader(); reader.onload=ev=>{ try{ let data=JSON.parse(ev.target.result); if(data.employees) employees=data.employees; if(data.projects) projects=data.projects; if(data.tasks) tasks=data.tasks; if(data.messages) localStorage.setItem('geotraverse_central_messages',JSON.stringify(data.messages)); if(data.reports) localStorage.setItem('geotraverse_central_reports',JSON.stringify(data.reports)); if(data.logs) activityLogs=data.logs; saveEmployees(); saveProjects(); saveTasks(); addLog('Restored from backup'); showToast('Restore successful, reloading...'); setTimeout(()=>location.reload(),1500); } catch(err){ showToast('Invalid backup file',true); } }; reader.readAsText(file); }; input.click(); closeBackupRestoreModal(); }
-    function clearAllLogs(){ if(confirm('Clear all activity logs?')){ activityLogs=[]; addLog('Logs cleared'); renderSettings(); showToast('Logs cleared'); } }
     
-    // ========== GLOBAL SEARCH ==========
-    let searchTimeout;
-    function performGlobalSearch(){ let term=document.getElementById('globalSearchInput').value.toLowerCase().trim(); let dropdown=document.getElementById('searchResultsDropdown'); if(searchTimeout) clearTimeout(searchTimeout); if(!term){ dropdown.classList.remove('active'); dropdown.innerHTML=''; return; } searchTimeout=setTimeout(()=>{ let empRes=employees.filter(e=>e.name.toLowerCase().includes(term)); let projRes=projects.filter(p=>p.name.toLowerCase().includes(term)); let taskRes=tasks.filter(t=>t.title.toLowerCase().includes(term)); let html=''; if(empRes.length) html+=`<div class="p-2 bg-gray-50">Employees</div>`+empRes.slice(0,3).map(e=>`<div class="search-result-item" onclick="goToSectionAndSearch('employees','${e.name}')">${e.name}</div>`).join(''); if(projRes.length) html+=`<div class="p-2 bg-gray-50">Projects</div>`+projRes.slice(0,3).map(p=>`<div class="search-result-item" onclick="goToSectionAndSearch('projects','${p.name}')">${p.name}</div>`).join(''); if(taskRes.length) html+=`<div class="p-2 bg-gray-50">Tasks</div>`+taskRes.slice(0,3).map(t=>`<div class="search-result-item" onclick="goToSectionAndSearch('tasks','${t.title}')">${t.title}</div>`).join(''); if(!html) html='<div class="p-4 text-center text-gray-400">No results</div>'; dropdown.innerHTML=html; dropdown.classList.add('active'); },300); }
-    function goToSectionAndSearch(section,val){ document.getElementById('globalSearchInput').value=val; document.getElementById('searchResultsDropdown').classList.remove('active'); showSection(section); setTimeout(()=>{ if(section==='employees') renderEmployees(); else if(section==='projects') renderProjects(); else if(section==='tasks') renderTasks(); },100); }
-    document.addEventListener('click',e=>{ let inp=document.getElementById('globalSearchInput'); let drop=document.getElementById('searchResultsDropdown'); if(inp&&drop&&!inp.contains(e.target)&&!drop.contains(e.target)) drop.classList.remove('active'); });
-    
-    // ========== NAVIGATION ==========
-    function showSection(sectionId){
-        let ids=['dashboardSection','employeeSection','departmentsSection','projectsSection','tasksSection','messagesSection','reportsSection','settingsSection'];
-        ids.forEach(id=>{ let el=document.getElementById(id); if(el) el.classList.add('hidden'); });
-        let targetId=''; if(sectionId==='dashboard') targetId='dashboardSection'; else if(sectionId==='employees') targetId='employeeSection'; else if(sectionId==='departments') targetId='departmentsSection'; else if(sectionId==='projects') targetId='projectsSection'; else if(sectionId==='tasks') targetId='tasksSection'; else if(sectionId==='messages') targetId='messagesSection'; else if(sectionId==='reports') targetId='reportsSection'; else if(sectionId==='settings') targetId='settingsSection';
-        document.getElementById(targetId).classList.remove('hidden');
-        document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-        document.querySelector(`.nav-item[data-section="${sectionId}"]`).classList.add('active');
-        if(sectionId==='employees') renderEmployees(); else if(sectionId==='departments') renderDepartments(); else if(sectionId==='projects') renderProjects(); else if(sectionId==='tasks') renderTasks(); else if(sectionId==='messages') renderMessages(); else if(sectionId==='reports') renderReports(); else if(sectionId==='settings') renderSettings(); else renderDashboard();
+    function updateUnreadMessagesBadge() {
+        let badge = document.getElementById('unreadMessagesBadge');
+        if (badge) badge.innerText = getUnreadMessagesCountForAdmin();
     }
-    function logout(){ if(confirm('Logout?')){ localStorage.removeItem('admin_logged_in'); location.reload(); } }
-    function closeMobileSidebar(){ document.getElementById('mainSidebar').classList.remove('mobile-open'); document.getElementById('mobileMenuOverlay').classList.remove('open'); }
     
-    // ========== INIT ==========
-    function init(){
-        let container=document.getElementById('mainContentContainer');
-        container.innerHTML=`<div id="dashboardSection"></div><div id="employeeSection" class="hidden"></div><div id="departmentsSection" class="hidden"></div><div id="projectsSection" class="hidden"></div><div id="tasksSection" class="hidden"></div><div id="messagesSection" class="hidden"></div><div id="reportsSection" class="hidden"></div><div id="settingsSection" class="hidden"></div>`;
+    // ==================== PROJECT REQUESTS BADGE ====================
+    function updateProjectRequestBadge() {
+        let requests = getCentralProjects().filter(r => r.status === 'pending');
+        let count = requests.length;
+        let badge = document.getElementById('projectRequestBadge');
+        if (badge) badge.innerText = count;
+    }
+    
+    // ==================== REPORTS ====================
+    function getUnreadReportsCount() {
+        let reports = getCentralReports();
+        return reports.filter(r => r.status === 'unread').length;
+    }
+    
+    function updateUnreadReportsBadge() {
+        let badge = document.getElementById('unreadReportsBadge');
+        if (badge) badge.innerText = getUnreadReportsCount();
+    }
+    
+    function markReportRead(reportId) {
+        let reports = getCentralReports();
+        let report = reports.find(r => r.id === reportId);
+        if (report && report.status === 'unread') {
+            report.status = 'read';
+            saveCentralReports(reports);
+            renderReports();
+            updateUnreadReportsBadge();
+            showToast('Report marked as read');
+        }
+    }
+    
+    function viewReportDetail(reportId) {
+        let reports = getCentralReports();
+        let report = reports.find(r => r.id === reportId);
+        if (report) {
+            alert(`📄 ${report.title}\n\nFrom: ${report.department}\nType: ${report.type}\nDate: ${report.submitted_at || report.created_at}\n\nContent:\n${report.content}`);
+            if (report.status === 'unread') markReportRead(reportId);
+        }
+    }
+    
+    function exportAllReportsToExcel() {
+        let reports = getCentralReports();
+        let wsData = [['Department', 'Type', 'Title', 'Content', 'Date', 'Status']];
+        reports.forEach(r => wsData.push([r.department, r.type, r.title, r.content, r.submitted_at || r.created_at, r.status]));
+        let wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(wsData), 'Reports');
+        XLSX.writeFile(wb, `reports_${new Date().toISOString().slice(0,10)}.xlsx`);
+        showToast('All reports exported to Excel');
+    }
+    
+    function exportAllReportsToPDF() {
+        let reports = getCentralReports();
+        let element = document.createElement('div');
+        element.innerHTML = `<div style="padding:20px;font-family:Arial"><h1 style="color:#0f74ba">All Reports</h1><p>Generated: ${new Date().toLocaleString()}</p><hr>${reports.map(r => `<div style="margin-bottom:20px"><strong>${r.department}</strong> - ${r.type}<h3>${r.title}</h3><p>${r.content}</p><small>${r.submitted_at || r.created_at}</small></div>`).join('')}</div>`;
+        html2pdf().set({ margin: 0.5, filename: `all_reports_${new Date().toISOString().slice(0,10)}.pdf` }).from(element).save();
+        showToast('All reports exported to PDF');
+    }
+    
+    function renderReports() {
+        let reports = getCentralReports();
+        let html = `
+            <div class="bg-white rounded-xl shadow-sm p-5">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-semibold"><i class="fas fa-chart-line mr-2 text-purple-500"></i>Reports from Departments (${reports.length})</h3>
+                    <div class="flex gap-2">
+                        <button onclick="exportAllReportsToExcel()" class="bg-green-600 text-white px-3 py-2 rounded-lg text-sm"><i class="fas fa-file-excel mr-1"></i>Export Excel</button>
+                        <button onclick="exportAllReportsToPDF()" class="bg-red-600 text-white px-3 py-2 rounded-lg text-sm"><i class="fas fa-file-pdf mr-1"></i>Export PDF</button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr><th class="px-4 py-3 text-left text-sm font-semibold">Department</th><th class="px-4 py-3 text-left text-sm font-semibold">Type</th><th class="px-4 py-3 text-left text-sm font-semibold">Title</th><th class="px-4 py-3 text-left text-sm font-semibold">Submitted</th><th class="px-4 py-3 text-left text-sm font-semibold">Status</th><th class="px-4 py-3 text-left text-sm font-semibold">Actions</th></tr>
+                        </thead>
+                        <tbody id="reportsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+        document.getElementById('reportsSection').innerHTML = html;
+        
+        document.getElementById('reportsTableBody').innerHTML = reports.map(r => `
+            <tr class="border-b hover:bg-gray-50">
+                <td class="px-4 py-3 text-sm">${r.department}</td>
+                <td class="px-4 py-3 text-sm"><span class="px-2 py-1 text-xs rounded-full bg-gray-100">${r.type}</span></td>
+                <td class="px-4 py-3 text-sm font-medium">${escapeHtml(r.title)}</td>
+                <td class="px-4 py-3 text-sm">${r.submitted_at || r.created_at}</td>
+                <td class="px-4 py-3 text-sm"><span class="px-2 py-1 text-xs rounded-full ${r.status === 'read' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}">${r.status === 'read' ? 'Read' : 'Unread'}</span></td>
+                <td class="px-4 py-3 text-sm"><button onclick="viewReportDetail(${r.id})" class="text-blue-600 mr-2"><i class="fas fa-eye"></i></button><button onclick="markReportRead(${r.id})" class="text-green-600"><i class="fas fa-check-circle"></i></button></td>
+            </table>
+        `).join('');
+        updateUnreadReportsBadge();
+    }
+    
+    // ==================== GLOBAL SEARCH ====================
+    function performGlobalSearch() {
+        let searchTerm = document.getElementById('globalSearchInput').value.toLowerCase().trim();
+        let dropdown = document.getElementById('searchResultsDropdown');
+        if (searchTimeout) clearTimeout(searchTimeout);
+        if (searchTerm === '') { dropdown.classList.remove('active'); dropdown.innerHTML = ''; return; }
+        searchTimeout = setTimeout(() => {
+            let employees = JSON.parse(localStorage.getItem('geotraverse_employees') || '[]');
+            let projects = JSON.parse(localStorage.getItem('geotraverse_projects') || '[]');
+            let tasks = JSON.parse(localStorage.getItem('geotraverse_tasks') || '[]');
+            let messages = getCentralMessages();
+            let reports = getCentralReports();
+            
+            let empResults = employees.filter(e => e.name.toLowerCase().includes(searchTerm) || e.email.toLowerCase().includes(searchTerm));
+            let projResults = projects.filter(p => p.name.toLowerCase().includes(searchTerm) || (p.client_name && p.client_name.toLowerCase().includes(searchTerm)));
+            let taskResults = tasks.filter(t => t.title.toLowerCase().includes(searchTerm));
+            let msgResults = messages.filter(m => m.message.toLowerCase().includes(searchTerm));
+            let reportResults = reports.filter(r => r.title.toLowerCase().includes(searchTerm) || r.content.toLowerCase().includes(searchTerm));
+            
+            let html = '';
+            if (empResults.length) {
+                html += '<div class="p-2 bg-gray-50"><span class="text-xs font-semibold text-blue-600"><i class="fas fa-users mr-1"></i> Employees</span></div>';
+                empResults.slice(0,5).forEach(e => html += `<div class="search-result-item" onclick="goToSectionAndSearch('employees', '${e.name}')"><div class="font-medium">${escapeHtml(e.name)}</div><div class="text-xs text-gray-500">${escapeHtml(e.email)}</div></div>`);
+            }
+            if (projResults.length) {
+                html += '<div class="p-2 bg-gray-50"><span class="text-xs font-semibold text-green-600"><i class="fas fa-building mr-1"></i> Projects</span></div>';
+                projResults.slice(0,5).forEach(p => html += `<div class="search-result-item" onclick="goToSectionAndSearch('projects', '${p.name}')"><div class="font-medium">${escapeHtml(p.name)}</div><div class="text-xs text-gray-500">Client: ${escapeHtml(p.client_name || 'N/A')}</div></div>`);
+            }
+            if (taskResults.length) {
+                html += '<div class="p-2 bg-gray-50"><span class="text-xs font-semibold text-orange-600"><i class="fas fa-tasks mr-1"></i> Tasks</span></div>';
+                taskResults.slice(0,5).forEach(t => html += `<div class="search-result-item" onclick="goToSectionAndSearch('tasks', '${t.title}')"><div class="font-medium">${escapeHtml(t.title)}</div><div class="text-xs text-gray-500">${t.department}</div></div>`);
+            }
+            if (msgResults.length) {
+                html += '<div class="p-2 bg-gray-50"><span class="text-xs font-semibold text-blue-600"><i class="fas fa-envelope mr-1"></i> Messages</span></div>';
+                msgResults.slice(0,5).forEach(m => html += `<div class="search-result-item" onclick="goToSectionAndSearch('messages', '${m.message.substring(0,30)}')"><div class="font-medium">From: ${m.from}</div><div class="text-xs text-gray-500">${escapeHtml(m.message.substring(0,50))}</div></div>`);
+            }
+            if (reportResults.length) {
+                html += '<div class="p-2 bg-gray-50"><span class="text-xs font-semibold text-purple-600"><i class="fas fa-chart-line mr-1"></i> Reports</span></div>';
+                reportResults.slice(0,5).forEach(r => html += `<div class="search-result-item" onclick="goToSectionAndSearch('reports', '${r.title}')"><div class="font-medium">${escapeHtml(r.title)}</div><div class="text-xs text-gray-500">${r.department}</div></div>`);
+            }
+            if (html === '') html = '<div class="p-4 text-center text-gray-400"><i class="fas fa-search text-2xl mb-2"></i><p>No results found</p></div>';
+            dropdown.innerHTML = html;
+            dropdown.classList.add('active');
+        }, 300);
+    }
+    
+    function goToSectionAndSearch(section, searchValue) {
+        let dropdown = document.getElementById('searchResultsDropdown');
+        if (dropdown) dropdown.classList.remove('active');
+        document.getElementById('globalSearchInput').value = searchValue;
+        showSection(section);
+        setTimeout(() => {
+            if (section === 'employees') renderEmployees();
+            else if (section === 'projects') renderProjects();
+            else if (section === 'tasks') renderTasks();
+            else if (section === 'messages') renderMessages();
+            else if (section === 'reports') renderReports();
+        }, 100);
+        showToast(`Showing results for "${searchValue}"`);
+    }
+    
+    document.addEventListener('click', (e) => {
+        let searchInput = document.getElementById('globalSearchInput');
+        let dropdown = document.getElementById('searchResultsDropdown');
+        if (searchInput && dropdown && !searchInput.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.classList.remove('active');
+        }
+    });
+    
+    // ==================== DASHBOARD ====================
+    function renderDashboard() {
+        let employees = JSON.parse(localStorage.getItem('geotraverse_employees') || '[]');
+        let tasks = JSON.parse(localStorage.getItem('geotraverse_tasks') || '[]');
+        let projects = JSON.parse(localStorage.getItem('geotraverse_projects') || '[]');
+        let logs = JSON.parse(localStorage.getItem('geotraverse_activity_logs') || '[]');
+        let unreadMessages = getUnreadMessagesCountForAdmin();
+        let pendingTasks = tasks.filter(t => !t.completed).length;
+        
+        let dashboardHtml = `
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+                <div class="stat-card p-5 cursor-pointer" onclick="showSection('employees')">
+                    <div class="flex justify-between items-center"><div><p class="text-gray-500 text-sm">Total Employees</p><p class="text-3xl font-bold">${employees.length}</p><p class="text-xs text-green-600 mt-1"><i class="fas fa-arrow-up"></i> Active: ${employees.filter(e => e.status === 'Active').length}</p></div><div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center"><i class="fas fa-users text-blue-500 text-xl"></i></div></div>
+                </div>
+                <div class="stat-card p-5 cursor-pointer" onclick="showSection('tasks')">
+                    <div class="flex justify-between items-center"><div><p class="text-gray-500 text-sm">Pending Tasks</p><p class="text-3xl font-bold text-orange-600">${pendingTasks}</p><p class="text-xs text-gray-400 mt-1">Total: ${tasks.length} tasks</p></div><div class="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center"><i class="fas fa-tasks text-orange-500 text-xl"></i></div></div>
+                </div>
+                <div class="stat-card p-5 cursor-pointer" onclick="showSection('messages')">
+                    <div class="flex justify-between items-center"><div><p class="text-gray-500 text-sm">Unread Messages</p><p class="text-3xl font-bold text-red-600">${unreadMessages}</p><p class="text-xs text-gray-400 mt-1">From departments</p></div><div class="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center"><i class="fas fa-envelope text-red-500 text-xl"></i></div></div>
+                </div>
+                <div class="stat-card p-5 cursor-pointer" onclick="showSection('projects')">
+                    <div class="flex justify-between items-center"><div><p class="text-gray-500 text-sm">Total Projects</p><p class="text-3xl font-bold text-green-600">${projects.length}</p><p class="text-xs text-green-600 mt-1"><i class="fas fa-check-circle"></i> ${projects.filter(p => p.status === 'completed').length} completed</p></div><div class="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center"><i class="fas fa-building text-green-500 text-xl"></i></div></div>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                <div class="bg-white rounded-xl shadow-sm p-5 lg:col-span-2"><h3 class="text-base font-semibold mb-4"><i class="fas fa-chart-line mr-2 text-blue-500"></i>Revenue Overview (TZS Million)</h3><canvas id="revenueChart" height="200"></canvas></div>
+                <div class="bg-white rounded-xl shadow-sm p-5"><h3 class="text-base font-semibold mb-4"><i class="fas fa-history mr-2 text-blue-500"></i>Recent Activity</h3><div id="activityFeed" class="space-y-3 max-h-64 overflow-y-auto">${logs.slice(0,5).map(log => `<div class="flex items-start gap-3 p-2 border-b"><i class="fas fa-circle text-blue-500 text-xs mt-1"></i><div><p class="text-sm">${escapeHtml(log.action)}</p><p class="text-xs text-gray-400">${formatDate(log.created_at)}</p></div></div>`).join('')}</div></div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-6">
+                <div class="bg-white rounded-xl shadow-sm p-5"><h3 class="text-base font-semibold mb-3"><i class="fas fa-chart-pie mr-2 text-purple-500"></i>Project Status Distribution</h3><canvas id="statusChart" height="150"></canvas></div>
+                <div class="bg-white rounded-xl shadow-sm p-5"><h3 class="text-base font-semibold mb-3"><i class="fas fa-building mr-2 text-green-500"></i>Projects by Department</h3><canvas id="deptChart" height="150"></canvas></div>
+            </div>
+        `;
+        document.getElementById('dashboardSection').innerHTML = dashboardHtml;
+        
+        let ctx = document.getElementById('revenueChart')?.getContext('2d');
+        if (ctx) {
+            if (revenueChart) revenueChart.destroy();
+            revenueChart = new Chart(ctx, { type: 'line', data: { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], datasets: [{ label: 'Revenue (TZS M)', data: [12, 19, 15, 22, 28, 32], borderColor: '#0f74ba', fill: true, tension: 0.4 }] }, options: { responsive: true } });
+        }
+        let statusCtx = document.getElementById('statusChart')?.getContext('2d');
+        if (statusCtx) {
+            let pending = projects.filter(p => p.status === 'pending').length;
+            let progress = projects.filter(p => p.status === 'in_progress').length;
+            let completed = projects.filter(p => p.status === 'completed').length;
+            let approved = projects.filter(p => p.status === 'approved').length;
+            new Chart(statusCtx, { type: 'doughnut', data: { labels: ['Pending', 'In Progress', 'Completed', 'Approved'], datasets: [{ data: [pending, progress, completed, approved], backgroundColor: ['#f59e0b', '#3b82f6', '#10b981', '#8b5cf6'] }] }, options: { responsive: true } });
+        }
+        let deptCtx = document.getElementById('deptChart')?.getContext('2d');
+        if (deptCtx) {
+            let mgmt = projects.filter(p => p.department === 'Management').length;
+            let fin = projects.filter(p => p.department === 'Finance').length;
+            let sales = projects.filter(p => p.department === 'Sales & Marketing').length;
+            let admin = projects.filter(p => p.department === 'Administration').length;
+            new Chart(deptCtx, { type: 'bar', data: { labels: ['Management', 'Finance', 'Sales', 'Admin'], datasets: [{ label: 'Projects', data: [mgmt, fin, sales, admin], backgroundColor: '#0f74ba', borderRadius: 8 }] }, options: { responsive: true } });
+        }
+        document.getElementById('pendingTasksBadge').innerText = pendingTasks;
+        updateUnreadMessagesBadge();
+        updateProjectRequestBadge();
+        updateUnreadReportsBadge();
+    }
+    
+    // ==================== EMPLOYEES ====================
+    function renderEmployees() {
+        let employees = JSON.parse(localStorage.getItem('geotraverse_employees') || '[]');
+        document.getElementById('employeeSection').innerHTML = `
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                <div class="px-5 py-4 border-b flex flex-wrap justify-between items-center gap-3">
+                    <h3 class="font-semibold"><i class="fas fa-users mr-2 text-blue-500"></i>Employee Management (${employees.length})</h3>
+                    <div class="flex gap-2"><button onclick="exportEmployeesToPDF()" class="bg-red-600 text-white px-3 py-2 rounded-lg text-sm"><i class="fas fa-file-pdf mr-1"></i>PDF</button><button onclick="exportEmployeesToExcel()" class="bg-green-600 text-white px-3 py-2 rounded-lg text-sm"><i class="fas fa-file-excel mr-1"></i>Excel</button><button onclick="openAddEmployeeModal()" class="btn-primary text-white px-4 py-2 rounded-lg text-sm"><i class="fas fa-plus mr-1"></i>Add Employee</button></div>
+                </div>
+                <div class="overflow-x-auto"><table class="w-full"><thead class="bg-gray-50"><tr><th class="px-4 py-3 text-left text-xs">ID</th><th class="px-4 py-3 text-left text-xs">Name</th><th class="px-4 py-3 text-left text-xs">Email</th><th class="px-4 py-3 text-left text-xs">Phone</th><th class="px-4 py-3 text-left text-xs">Role</th><th class="px-4 py-3 text-left text-xs">Department</th><th class="px-4 py-3 text-left text-xs">Salary</th><th class="px-4 py-3 text-left text-xs">Status</th><th class="px-4 py-3 text-left text-xs">Actions</th></tr></thead><tbody id="empTableBody"></tbody></table></div>
+            </div>
+        `;
+        document.getElementById('empTableBody').innerHTML = employees.map(emp => `<tr class="border-b hover:bg-gray-50"><td class="px-4 py-3 text-sm">${emp.id}</td><td class="px-4 py-3 font-medium text-sm">${escapeHtml(emp.name)}</td><td class="px-4 py-3 text-sm">${escapeHtml(emp.email)}</td><td class="px-4 py-3 text-sm">${emp.phone || '-'}</td><td class="px-4 py-3 text-sm"><span class="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-700">${emp.role}</span></td><td class="px-4 py-3 text-sm">${emp.department}</td><td class="px-4 py-3 text-sm text-green-600 font-semibold">TZS ${parseFloat(emp.salary).toLocaleString()}</td><td class="px-4 py-3 text-sm"><span class="px-2 py-1 text-xs rounded-full ${emp.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${emp.status}</span></td><td class="px-4 py-3 text-sm"><button onclick="openEditEmployeeModal(${emp.id})" class="text-blue-600 mr-2"><i class="fas fa-edit"></i></button><button onclick="deleteEmployee(${emp.id})" class="text-red-600"><i class="fas fa-trash"></i></button></td></tr>`).join('');
+    }
+    
+    function exportEmployeesToPDF() {
+        let employees = JSON.parse(localStorage.getItem('geotraverse_employees') || '[]');
+        let element = document.createElement('div');
+        element.innerHTML = `<div style="padding:20px"><h1>Employees Report</h1><table border="1">${employees.map(e => `<tr><td>${e.id}</td><td>${e.name}</td><td>${e.email}</td></tr>`).join('')}</table></div>`;
+        html2pdf().set({ margin: 0.5, filename: 'employees.pdf' }).from(element).save();
+        showToast('Exported to PDF');
+    }
+    
+    function exportEmployeesToExcel() {
+        let employees = JSON.parse(localStorage.getItem('geotraverse_employees') || '[]');
+        let wsData = [['ID','Name','Email','Phone','Role','Department','Salary','Status']];
+        employees.forEach(e => wsData.push([e.id, e.name, e.email, e.phone, e.role, e.department, e.salary, e.status]));
+        let wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(wsData), 'Employees');
+        XLSX.writeFile(wb, 'employees.xlsx');
+        showToast('Exported to Excel');
+    }
+    
+    function openAddEmployeeModal() {
+        document.getElementById('newEmpName').value = '';
+        document.getElementById('newEmpEmail').value = '';
+        document.getElementById('newEmpPhone').value = '';
+        document.getElementById('newEmpRole').value = '';
+        document.getElementById('newEmpDepartment').value = '';
+        document.getElementById('newEmpSalary').value = '';
+        document.getElementById('newEmpPassword').value = '';
+        document.getElementById('addEmployeeModal').classList.remove('hidden');
+        document.getElementById('addEmployeeModal').classList.add('flex');
+    }
+    
+    function closeAddEmployeeModal() {
+        document.getElementById('addEmployeeModal').classList.add('hidden');
+        document.getElementById('addEmployeeModal').classList.remove('flex');
+    }
+    
+    function saveNewEmployee() {
+        let name = document.getElementById('newEmpName').value.trim();
+        if (!name) { showToast('Enter name', true); return; }
+        let email = document.getElementById('newEmpEmail').value.trim();
+        if (!email) { showToast('Enter email', true); return; }
+        let role = document.getElementById('newEmpRole').value;
+        if (!role) { showToast('Select role', true); return; }
+        let department = document.getElementById('newEmpDepartment').value;
+        if (!department) { showToast('Select department', true); return; }
+        let employees = JSON.parse(localStorage.getItem('geotraverse_employees') || '[]');
+        let newId = Date.now();
+        let password = document.getElementById('newEmpPassword').value || '1234';
+        employees.push({ id: newId, name, email, phone: document.getElementById('newEmpPhone').value || '', role, department, salary: document.getElementById('newEmpSalary').value || '0', password, status: 'Active', join_date: new Date().toISOString().split('T')[0] });
+        localStorage.setItem('geotraverse_employees', JSON.stringify(employees));
+        addActivityLog(`Added employee: ${name}`);
+        showToast('Employee added');
+        closeAddEmployeeModal();
+        renderEmployees();
         renderDashboard();
-        document.querySelectorAll('.nav-item').forEach(nav=>nav.addEventListener('click',e=>{ e.preventDefault(); showSection(nav.dataset.section); }));
-        document.getElementById('logoutBtn').addEventListener('click',logout);
-        document.getElementById('mobileMenuBtn').addEventListener('click',()=>{ document.getElementById('mainSidebar').classList.add('mobile-open'); document.getElementById('mobileMenuOverlay').classList.add('open'); });
-        document.getElementById('globalSearchInput').addEventListener('input',performGlobalSearch);
-        let savedDark=localStorage.getItem('admin_dark_mode'); if(savedDark==='true') document.body.classList.add('dark-mode');
-        document.getElementById('darkModeToggle').addEventListener('click',()=>{ document.body.classList.toggle('dark-mode'); localStorage.setItem('admin_dark_mode',document.body.classList.contains('dark-mode')); let icon=document.getElementById('darkModeIcon'); if(document.body.classList.contains('dark-mode')){ icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); } else { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); } });
-        let savedColor=localStorage.getItem('admin_sidebar_color'); if(savedColor) document.getElementById('mainSidebar').style.background=savedColor;
-        let scrollBtn=document.createElement('div'); scrollBtn.className='scroll-top'; scrollBtn.innerHTML='<i class="fas fa-arrow-up"></i>'; document.body.appendChild(scrollBtn); scrollBtn.onclick=()=>window.scrollTo({top:0,behavior:'smooth'}); window.addEventListener('scroll',()=>scrollBtn.classList.toggle('visible',window.scrollY>300));
-        setInterval(()=>{ if(document.getElementById('messagesSection')&&!document.getElementById('messagesSection').classList.contains('hidden')) renderMessages(); if(document.getElementById('reportsSection')&&!document.getElementById('reportsSection').classList.contains('hidden')) renderReports(); updateBadges(); if(document.getElementById('dashboardSection')&&!document.getElementById('dashboardSection').classList.contains('hidden')){ document.getElementById('recentActivityList').innerHTML=activityLogs.slice(0,10).map(l=>`<div class="text-xs py-1 border-b flex justify-between"><span>${escapeHtml(l.action)}</span><span class="text-gray-400">${formatDate(l.created_at)}</span></div>`).join(''); } },5000);
-        addLog('Admin Dashboard fully loaded with per-project exports');
     }
     
-    // Expose global functions
-    window.goToMainWebsite=goToMainWebsite; window.showSection=showSection; window.closeMobileSidebar=closeMobileSidebar;
-    window.openAddEmployeeModal=openAddEmployeeModal; window.openEditEmployee=openEditEmployee; window.closeEmployeeModal=closeEmployeeModal; window.saveEmployee=saveEmployee; window.changeEmployeePassword=changeEmployeePassword; window.deleteEmployee=deleteEmployee;
-    window.openAddProjectModal=openAddProjectModal; window.editProject=editProject; window.saveProject=saveProject; window.deleteProject=deleteProject; window.viewProject=viewProject; window.sendProjectToManager=sendProjectToManager; window.closeProjectModal=closeProjectModal; window.exportAllProjectsToExcel=exportAllProjectsToExcel; window.exportSingleProjectToExcel=exportSingleProjectToExcel; window.exportSingleProjectToPDF=exportSingleProjectToPDF;
-    window.openAddTaskModal=openAddTaskModal; window.closeTaskModal=closeTaskModal; window.saveTask=saveTask; window.toggleTask=toggleTask;
-    window.openChatWith=openChatWith; window.closeChatModal=closeChatModal; window.sendChatMessage=sendChatMessage; window.deleteSingleMessage=deleteSingleMessage; window.openStartChatModal=openStartChatModal; window.closeStartChatModal=closeStartChatModal; window.sendNewChatMessage=sendNewChatMessage;
-    window.viewReportDetail=viewReportDetail; window.markReportAsRead=markReportAsRead; window.exportReportToPDF=exportReportToPDF; window.closeReportViewModal=closeReportViewModal;
-    window.viewFullDepartment=viewFullDepartment; window.closeDeptViewModal=closeDeptViewModal;
-    window.changeColor=changeColor; window.openPasswordModal=openPasswordModal; window.closePasswordModal=closePasswordModal; window.changeAdminPassword=changeAdminPassword;
-    window.openBackupRestoreModal=openBackupRestoreModal; window.closeBackupRestoreModal=closeBackupRestoreModal; window.createBackup=createBackup; window.restoreBackupFile=restoreBackupFile;
-    window.clearAllLogs=clearAllLogs; window.logout=logout; window.togglePasswordField=togglePasswordField;
+    function openEditEmployeeModal(id) {
+        let employees = JSON.parse(localStorage.getItem('geotraverse_employees') || '[]');
+        let emp = employees.find(e => e.id === id);
+        if (emp) {
+            currentEditEmployeeId = id;
+            document.getElementById('editEmpId').value = emp.id;
+            document.getElementById('editEmpName').value = emp.name;
+            document.getElementById('editEmpEmail').value = emp.email;
+            document.getElementById('editEmpPhone').value = emp.phone || '';
+            document.getElementById('editEmpRole').value = emp.role;
+            document.getElementById('editEmpDepartment').value = emp.department;
+            document.getElementById('editEmpSalary').value = emp.salary;
+            document.getElementById('editEmpPassword').value = '';
+            document.getElementById('employeeModal').classList.remove('hidden');
+            document.getElementById('employeeModal').classList.add('flex');
+        }
+    }
+    
+    function updateEmployee() {
+        let employees = JSON.parse(localStorage.getItem('geotraverse_employees') || '[]');
+        let idx = employees.findIndex(e => e.id === currentEditEmployeeId);
+        if (idx !== -1) {
+            employees[idx].name = document.getElementById('editEmpName').value;
+            employees[idx].email = document.getElementById('editEmpEmail').value;
+            employees[idx].phone = document.getElementById('editEmpPhone').value;
+            employees[idx].role = document.getElementById('editEmpRole').value;
+            employees[idx].department = document.getElementById('editEmpDepartment').value;
+            employees[idx].salary = document.getElementById('editEmpSalary').value;
+            let newPwd = document.getElementById('editEmpPassword').value;
+            if (newPwd) employees[idx].password = newPwd;
+            localStorage.setItem('geotraverse_employees', JSON.stringify(employees));
+            addActivityLog(`Updated employee: ${employees[idx].name}`);
+            showToast('Employee updated');
+            closeEmployeeModal();
+            renderEmployees();
+            renderDashboard();
+        }
+    }
+    
+    function closeEmployeeModal() {
+        document.getElementById('employeeModal').classList.add('hidden');
+        document.getElementById('employeeModal').classList.remove('flex');
+    }
+    
+    function deleteEmployee(id) {
+        if (confirm('Delete this employee?')) {
+            let employees = JSON.parse(localStorage.getItem('geotraverse_employees') || '[]');
+            let emp = employees.find(e => e.id === id);
+            employees = employees.filter(e => e.id !== id);
+            localStorage.setItem('geotraverse_employees', JSON.stringify(employees));
+            addActivityLog(`Deleted employee: ${emp ? emp.name : ''}`);
+            showToast('Employee deleted');
+            renderEmployees();
+            renderDashboard();
+        }
+    }
+    
+    // ==================== DEPARTMENTS ====================
+    let departmentsList = [
+        { name: "Management", display: "Management Department", color: "purple", icon: "fa-user-tie", file: "dashboard_managers.html" },
+        { name: "Finance", display: "Finance Department", color: "green", icon: "fa-calculator", file: "dashboard_finance.html" },
+        { name: "Sales & Marketing", display: "Sales & Marketing Department", color: "orange", icon: "fa-chart-line", file: "dashboard_sales.html" },
+        { name: "Administration", display: "Administration Department", color: "red", icon: "fa-envelope", file: "dashboard_secretary.html" }
+    ];
+    
+    function renderDepartments() {
+        document.getElementById('departmentsSection').innerHTML = `
+            <div class="mb-6"><h2 class="text-2xl font-bold gradient-text">Departments</h2><p class="text-gray-500 mt-1">Click to open dashboard</p></div>
+            <div class="space-y-3" id="deptLinksList"></div>
+        `;
+        document.getElementById('deptLinksList').innerHTML = departmentsList.map(d => `<a href="${d.file}" target="_blank" class="dept-link p-4 flex items-center justify-between"><div class="flex items-center gap-4"><div class="w-10 h-10 bg-${d.color}-100 rounded-full flex items-center justify-center"><i class="fas ${d.icon} text-${d.color}-600"></i></div><div><p class="font-semibold">${d.display}</p><p class="text-sm text-gray-500">Open in new tab</p></div></div><i class="fas fa-external-link-alt text-gray-400"></i></a>`).join('');
+    }
+    
+    // ==================== PROJECTS ====================
+    function renderProjects() {
+        let projects = JSON.parse(localStorage.getItem('geotraverse_projects') || '[]');
+        let projectRequests = getCentralProjects().filter(req => req.status === 'pending');
+        
+        let requestsHtml = '';
+        if (projectRequests.length > 0) {
+            requestsHtml = `<div class="mb-6"><h3 class="font-semibold text-orange-600 mb-3"><i class="fas fa-inbox mr-2"></i>Project Requests from Manager (${projectRequests.length})</h3><div class="space-y-3">${projectRequests.map(req => `<div class="bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-500 p-4 rounded-lg shadow-sm"><div class="flex justify-between items-start"><div><h4 class="font-bold">${escapeHtml(req.projectData.name)}</h4><p class="text-sm">Client: ${escapeHtml(req.projectData.client_name)}</p><p class="text-sm">Amount: TZS ${parseFloat(req.projectData.amount).toLocaleString()}</p><p class="text-xs text-gray-500">Requested by: ${req.from} on ${new Date(req.createdAt).toLocaleString()}</p>${req.managerMessage ? `<p class="text-xs text-gray-500 mt-1">Message: ${escapeHtml(req.managerMessage)}</p>` : ''}</div><div class="flex gap-2"><button onclick="acceptProjectRequest(${req.id})" class="bg-green-600 text-white px-3 py-1 rounded-lg text-sm"><i class="fas fa-check mr-1"></i>Accept</button><button onclick="rejectProjectRequest(${req.id})" class="bg-red-600 text-white px-3 py-1 rounded-lg text-sm"><i class="fas fa-times mr-1"></i>Reject</button></div></div></div>`).join('')}</div></div>`;
+        }
+        
+        let projectsHtml = `<div class="bg-white rounded-xl shadow-sm p-5"><div class="flex justify-between items-center mb-4"><h3 class="font-semibold"><i class="fas fa-building mr-2 text-green-500"></i>All Projects (${projects.length})</h3><div class="flex gap-2"><button onclick="exportProjectsToExcel()" class="bg-green-600 text-white px-3 py-2 rounded-lg text-sm"><i class="fas fa-file-excel mr-1"></i>Export</button><button onclick="openAddProjectModal()" class="btn-primary text-white px-4 py-2 rounded-lg text-sm"><i class="fas fa-plus mr-1"></i>Add Project</button></div></div><div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4" id="projectsGrid"></div></div>`;
+        
+        document.getElementById('projectsSection').innerHTML = requestsHtml + projectsHtml;
+        
+        let sortedProjects = [...projects].sort((a,b) => b.id - a.id);
+        document.getElementById('projectsGrid').innerHTML = sortedProjects.map(p => {
+            let imgSrc = p.image && p.image !== '' ? p.image : 'https://via.placeholder.com/400x200?text=No+Image';
+            return `<div class="project-card"><img src="${imgSrc}" class="w-full h-40 object-cover" onerror="this.src='https://via.placeholder.com/400x200?text=No+Image'"><div class="p-4"><div class="flex justify-between items-start"><h4 class="font-bold">${escapeHtml(p.name)}</h4><div><button onclick="openEditProjectModal(${p.id})" class="text-blue-500 mr-2"><i class="fas fa-edit"></i></button><button onclick="deleteProject(${p.id})" class="text-red-500 mr-2"><i class="fas fa-trash"></i></button><button onclick="sendProjectToManager(${p.id})" class="text-purple-500"><i class="fas fa-paper-plane"></i> Send</button></div></div><p class="text-sm text-gray-500">Client: ${escapeHtml(p.client_name || 'N/A')}</p><p class="text-sm font-semibold text-blue-600">TZS ${parseFloat(p.amount).toLocaleString()}</p><div class="mt-2"><div class="flex justify-between text-xs"><span>Progress</span><span>${p.progress || 0}%</span></div><div class="w-full bg-gray-200 rounded-full h-2"><div class="bg-blue-600 h-2 rounded-full" style="width: ${p.progress || 0}%"></div></div></div><span class="inline-block mt-2 text-xs px-2 py-1 rounded-full ${getStatusBadgeClass(p.status)}">${getStatusText(p.status)}</span></div></div>`;
+        }).join('');
+        updateProjectRequestBadge();
+    }
+    
+    function sendProjectToManager(projectId) {
+        let projects = JSON.parse(localStorage.getItem('geotraverse_projects') || '[]');
+        let project = projects.find(p => p.id === projectId);
+        if (!project) return;
+        let message = `PROJECT_FROM_ADMIN: ${project.name}\nClient: ${project.client_name}\nAmount: TZS ${parseFloat(project.amount).toLocaleString()}\nStatus: ${project.status}\nProgress: ${project.progress}%`;
+        addCentralMessage('Admin', 'Management', message);
+        addActivityLog(`Sent project "${project.name}" to Manager`);
+        showToast(`Project sent to Manager`);
+    }
+    
+    function acceptProjectRequest(requestId) {
+        let requests = getCentralProjects();
+        let req = requests.find(r => r.id === requestId);
+        if (req && req.status === 'pending') {
+            let projects = JSON.parse(localStorage.getItem('geotraverse_projects') || '[]');
+            let newProject = { ...req.projectData, id: Date.now() };
+            projects.unshift(newProject);
+            localStorage.setItem('geotraverse_projects', JSON.stringify(projects));
+            req.status = 'accepted';
+            saveCentralProjects(requests);
+            addCentralMessage('Admin', 'Management', `Your project "${req.projectData.name}" has been ACCEPTED.`);
+            addActivityLog(`Accepted project: ${req.projectData.name}`);
+            showToast(`Project added`);
+            renderProjects();
+            renderDashboard();
+            updateProjectRequestBadge();
+        }
+    }
+    
+    function rejectProjectRequest(requestId) {
+        let requests = getCentralProjects();
+        let req = requests.find(r => r.id === requestId);
+        if (req && req.status === 'pending') {
+            req.status = 'rejected';
+            saveCentralProjects(requests);
+            addCentralMessage('Admin', 'Management', `Your project "${req.projectData.name}" has been REJECTED.`);
+            addActivityLog(`Rejected project: ${req.projectData.name}`);
+            showToast(`Project rejected`);
+            renderProjects();
+            updateProjectRequestBadge();
+        }
+    }
+    
+    // Project image functions
+    function previewProjectImage(input) {
+        if (input.files && input.files[0]) {
+            currentProjectImageFile = input.files[0];
+            let reader = new FileReader();
+            reader.onload = e => {
+                document.getElementById('imagePreview').src = e.target.result;
+                document.getElementById('imagePreviewContainer').classList.remove('hidden');
+                document.getElementById('imageUploadArea').classList.add('hidden');
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    document.getElementById('projectImageFile')?.addEventListener('change', function(e) { previewProjectImage(this); });
+    
+    function removeProjectImage() {
+        currentProjectImageFile = null;
+        document.getElementById('projectImageFile').value = '';
+        document.getElementById('imagePreviewContainer').classList.add('hidden');
+        document.getElementById('imageUploadArea').classList.remove('hidden');
+    }
+    
+    function getImageAsBase64(file) {
+        return new Promise((resolve, reject) => {
+            if (!file) resolve('');
+            let reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+    
+    function openAddProjectModal() {
+        currentEditProjectId = null;
+        currentProjectImageFile = null;
+        document.getElementById('projectModalTitle').innerText = 'Add New Project';
+        document.getElementById('editProjectId').value = '';
+        document.getElementById('projectName').value = '';
+        document.getElementById('projectClient').value = '';
+        document.getElementById('projectAmount').value = '';
+        document.getElementById('projectLocation').value = '';
+        document.getElementById('projectDesc').value = '';
+        document.getElementById('projectStatus').value = 'pending';
+        document.getElementById('projectDepartment').value = 'Management';
+        document.getElementById('projectProgress').value = '0';
+        document.getElementById('projectImageFile').value = '';
+        document.getElementById('imagePreviewContainer').classList.add('hidden');
+        document.getElementById('imageUploadArea').classList.remove('hidden');
+        document.getElementById('projectModal').classList.remove('hidden');
+        document.getElementById('projectModal').classList.add('flex');
+    }
+    
+    function openEditProjectModal(id) {
+        let projects = JSON.parse(localStorage.getItem('geotraverse_projects') || '[]');
+        let proj = projects.find(p => p.id === id);
+        if (proj) {
+            currentEditProjectId = id;
+            currentProjectImageFile = null;
+            document.getElementById('projectModalTitle').innerText = 'Edit Project';
+            document.getElementById('editProjectId').value = proj.id;
+            document.getElementById('projectName').value = proj.name;
+            document.getElementById('projectClient').value = proj.client_name || '';
+            document.getElementById('projectAmount').value = proj.amount;
+            document.getElementById('projectLocation').value = proj.location || '';
+            document.getElementById('projectDesc').value = proj.description || '';
+            document.getElementById('projectStatus').value = proj.status;
+            document.getElementById('projectDepartment').value = proj.department;
+            document.getElementById('projectProgress').value = proj.progress || 0;
+            if (proj.image && proj.image !== '') {
+                document.getElementById('imagePreview').src = proj.image;
+                document.getElementById('imagePreviewContainer').classList.remove('hidden');
+                document.getElementById('imageUploadArea').classList.add('hidden');
+            } else {
+                document.getElementById('imagePreviewContainer').classList.add('hidden');
+                document.getElementById('imageUploadArea').classList.remove('hidden');
+            }
+            document.getElementById('projectModal').classList.remove('hidden');
+            document.getElementById('projectModal').classList.add('flex');
+        }
+    }
+    
+    async function saveProject() {
+        let name = document.getElementById('projectName').value.trim();
+        if (!name) { showToast('Project name required', true); return; }
+        let projects = JSON.parse(localStorage.getItem('geotraverse_projects') || '[]');
+        let imageBase64 = '';
+        if (currentProjectImageFile) imageBase64 = await getImageAsBase64(currentProjectImageFile);
+        let projectData = {
+            name, client_name: document.getElementById('projectClient').value,
+            amount: document.getElementById('projectAmount').value || '0',
+            location: document.getElementById('projectLocation').value,
+            description: document.getElementById('projectDesc').value,
+            status: document.getElementById('projectStatus').value,
+            department: document.getElementById('projectDepartment').value,
+            progress: document.getElementById('projectProgress').value || 0,
+            image: imageBase64,
+            start_date: new Date().toISOString().split('T')[0]
+        };
+        if (currentEditProjectId) {
+            let idx = projects.findIndex(p => p.id === currentEditProjectId);
+            if (idx !== -1) {
+                if (!imageBase64 && projects[idx].image) projectData.image = projects[idx].image;
+                projects[idx] = { ...projects[idx], ...projectData };
+                addActivityLog(`Updated project: ${name}`);
+                showToast('Project updated');
+            }
+        } else {
+            projectData.id = Date.now();
+            projects.unshift(projectData);
+            addActivityLog(`Added project: ${name}`);
+            showToast('Project added');
+        }
+        localStorage.setItem('geotraverse_projects', JSON.stringify(projects));
+        closeProjectModal();
+        renderProjects();
+        renderDashboard();
+    }
+    
+    function closeProjectModal() {
+        document.getElementById('projectModal').classList.add('hidden');
+        document.getElementById('projectModal').classList.remove('flex');
+        currentProjectImageFile = null;
+    }
+    
+    function deleteProject(id) {
+        if (confirm('Delete this project?')) {
+            let projects = JSON.parse(localStorage.getItem('geotraverse_projects') || '[]');
+            let proj = projects.find(p => p.id === id);
+            projects = projects.filter(p => p.id !== id);
+            localStorage.setItem('geotraverse_projects', JSON.stringify(projects));
+            addActivityLog(`Deleted project: ${proj ? proj.name : ''}`);
+            showToast('Project deleted');
+            renderProjects();
+            renderDashboard();
+        }
+    }
+    
+    function exportProjectsToExcel() {
+        let projects = JSON.parse(localStorage.getItem('geotraverse_projects') || '[]');
+        let wsData = [['ID','Name','Client','Amount','Status','Progress']];
+        projects.forEach(p => wsData.push([p.id, p.name, p.client_name, p.amount, p.status, p.progress]));
+        let wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(wsData), 'Projects');
+        XLSX.writeFile(wb, 'projects.xlsx');
+        showToast('Exported to Excel');
+    }
+    
+    // ==================== TASKS ====================
+    function renderTasks() {
+        let tasks = JSON.parse(localStorage.getItem('geotraverse_tasks') || '[]');
+        let pending = tasks.filter(t => !t.completed);
+        let completed = tasks.filter(t => t.completed);
+        document.getElementById('tasksSection').innerHTML = `
+            <div class="flex justify-between items-center mb-4"><h3 class="font-semibold"><i class="fas fa-tasks mr-2 text-orange-500"></i>Task Management (${tasks.length})</h3><button onclick="openAddTaskModal()" class="btn-primary text-white px-4 py-2 rounded-lg text-sm"><i class="fas fa-plus mr-1"></i>Add Task</button></div>
+            <div class="grid lg:grid-cols-2 gap-6"><div class="bg-white rounded-xl p-5"><h4 class="font-semibold text-orange-600 mb-3">Pending (${pending.length})</h4><div id="pendingTasksList"></div></div><div class="bg-white rounded-xl p-5"><h4 class="font-semibold text-green-600 mb-3">Completed (${completed.length})</h4><div id="completedTasksList"></div></div></div>
+        `;
+        document.getElementById('pendingTasksList').innerHTML = pending.map(t => `<div class="task-item flex justify-between"><div><p class="font-semibold">${escapeHtml(t.title)}</p><p class="text-xs text-gray-500">${escapeHtml(t.description || '')} - ${t.department}</p></div><input type="checkbox" onchange="toggleTask(${t.id})" class="w-5 h-5"></div>`).join('');
+        document.getElementById('completedTasksList').innerHTML = completed.map(t => `<div class="task-item opacity-75"><p class="font-semibold line-through">${escapeHtml(t.title)}</p><p class="text-xs text-gray-400">${escapeHtml(t.description || '')}</p></div>`).join('');
+    }
+    
+    function openAddTaskModal() {
+        document.getElementById('taskTitle').value = '';
+        document.getElementById('taskDesc').value = '';
+        document.getElementById('taskDepartment').value = 'Management';
+        document.getElementById('taskDueDate').value = '';
+        document.getElementById('taskModal').classList.remove('hidden');
+        document.getElementById('taskModal').classList.add('flex');
+    }
+    
+    function closeTaskModal() {
+        document.getElementById('taskModal').classList.add('hidden');
+        document.getElementById('taskModal').classList.remove('flex');
+    }
+    
+    function saveTask() {
+        let title = document.getElementById('taskTitle').value.trim();
+        if (!title) { showToast('Task title required', true); return; }
+        let tasks = JSON.parse(localStorage.getItem('geotraverse_tasks') || '[]');
+        tasks.push({ id: Date.now(), title, description: document.getElementById('taskDesc').value, department: document.getElementById('taskDepartment').value, completed: false, due_date: document.getElementById('taskDueDate').value, created_at: new Date().toISOString().split('T')[0] });
+        localStorage.setItem('geotraverse_tasks', JSON.stringify(tasks));
+        addActivityLog(`Added task: ${title}`);
+        showToast('Task added');
+        closeTaskModal();
+        renderTasks();
+        renderDashboard();
+    }
+    
+    function toggleTask(id) {
+        let tasks = JSON.parse(localStorage.getItem('geotraverse_tasks') || '[]');
+        let task = tasks.find(t => t.id === id);
+        if (task) {
+            task.completed = !task.completed;
+            localStorage.setItem('geotraverse_tasks', JSON.stringify(tasks));
+            showToast(task.completed ? 'Task completed' : 'Task reopened');
+            renderTasks();
+            renderDashboard();
+        }
+    }
+    
+    // ==================== SETTINGS ====================
+    function renderSettings() {
+        let settings = JSON.parse(localStorage.getItem('geotraverse_settings') || '{}');
+        let logs = JSON.parse(localStorage.getItem('geotraverse_activity_logs') || '[]');
+        document.getElementById('settingsSection').innerHTML = `
+            <div class="mb-6"><h2 class="text-2xl font-bold gradient-text">Settings</h2><p class="text-gray-500 mt-1">Manage preferences</p></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                <div class="setting-card p-5"><div class="flex items-center gap-3 mb-3"><i class="fas fa-key text-2xl text-blue-600"></i><h3 class="font-bold">Reset Password</h3></div><div class="password-field relative"><input type="password" id="newAdminPwd" placeholder="New Password" class="w-full p-2 border rounded-lg pr-10"><i class="fas fa-eye password-toggle" onclick="togglePasswordField('newAdminPwd')"></i></div><div class="password-field relative mt-2"><input type="password" id="confirmAdminPwd" placeholder="Confirm" class="w-full p-2 border rounded-lg pr-10"><i class="fas fa-eye password-toggle" onclick="togglePasswordField('confirmAdminPwd')"></i></div><button onclick="changeAdminPassword()" class="w-full btn-primary text-white py-2 rounded-lg mt-2">Change Password</button></div>
+                <div class="setting-card p-5"><div class="flex items-center gap-3 mb-3"><i class="fas fa-palette text-2xl text-purple-600"></i><h3 class="font-bold">Sidebar Color</h3></div><div class="flex flex-wrap gap-2"><div class="color-option" style="background:#0f74ba" onclick="changeSidebarColor('#0f74ba', this)"></div><div class="color-option" style="background:#1e3a5f" onclick="changeSidebarColor('#1e3a5f', this)"></div><div class="color-option" style="background:#7c3aed" onclick="changeSidebarColor('#7c3aed', this)"></div><div class="color-option" style="background:#059669" onclick="changeSidebarColor('#059669', this)"></div><div class="color-option" style="background:#dc2626" onclick="changeSidebarColor('#dc2626', this)"></div><div class="color-option" style="background:#d97706" onclick="changeSidebarColor('#d97706', this)"></div></div><p class="text-xs text-gray-400 mt-3">Click to change color</p></div>
+                <div class="setting-card p-5"><div class="flex items-center gap-3 mb-3"><i class="fas fa-database text-2xl text-green-600"></i><h3 class="font-bold">Backup & Restore</h3></div><button onclick="openBackupRestoreModal()" class="w-full bg-green-600 text-white py-2 rounded-lg">Backup / Restore</button><p class="text-xs text-gray-400 mt-2">Backup all data</p></div>
+                <div class="setting-card p-5"><div class="flex items-center gap-3 mb-3"><i class="fas fa-history text-2xl text-blue-600"></i><h3 class="font-bold">System Logs</h3></div><div class="max-h-32 overflow-y-auto text-sm" id="systemLogsList"></div><button onclick="clearAllLogsFixed()" class="w-full mt-3 bg-red-600 text-white py-2 rounded-lg">Clear Logs</button></div>
+                <div class="setting-card p-5"><div class="flex items-center gap-3 mb-3"><i class="fas fa-globe text-2xl text-blue-600"></i><h3 class="font-bold">General Settings</h3></div><button onclick="openGeneralSettingsModal()" class="w-full bg-blue-600 text-white py-2 rounded-lg">Configure</button><p class="text-xs text-gray-400 mt-2">Company info</p></div>
+                <div class="setting-card p-5"><div class="flex items-center gap-3 mb-3"><i class="fas fa-envelope text-2xl text-blue-600"></i><h3 class="font-bold">Email Config</h3></div><button onclick="openEmailConfigModal()" class="w-full bg-blue-600 text-white py-2 rounded-lg">Configure</button><p class="text-xs text-gray-400 mt-2">SMTP settings</p></div>
+            </div>
+        `;
+        document.getElementById('systemLogsList').innerHTML = logs.slice(0,10).map(l => `<div class="text-xs border-b py-1">${escapeHtml(l.action)}<span class="float-right text-gray-400">${new Date(l.created_at).toLocaleString()}</span></div>`).join('');
+    }
+    
+    function clearAllLogsFixed() {
+        if (confirm('Clear all logs?')) {
+            localStorage.setItem('geotraverse_activity_logs', JSON.stringify([]));
+            showToast('Logs cleared');
+            renderSettings();
+            renderDashboard();
+        }
+    }
+    
+    function openGeneralSettingsModal() {
+        let settings = JSON.parse(localStorage.getItem('geotraverse_settings') || '{}');
+        document.getElementById('modalCompanyName').value = settings.company_name || '';
+        document.getElementById('modalCompanyAddress').value = settings.company_address || '';
+        document.getElementById('modalCompanyEmail').value = settings.company_email || '';
+        document.getElementById('modalCompanyPhone').value = settings.company_phone || '';
+        document.getElementById('generalSettingsModal').classList.remove('hidden');
+        document.getElementById('generalSettingsModal').classList.add('flex');
+    }
+    
+    function closeGeneralSettingsModal() {
+        document.getElementById('generalSettingsModal').classList.add('hidden');
+        document.getElementById('generalSettingsModal').classList.remove('flex');
+    }
+    
+    function saveGeneralSettingsModal() {
+        let settings = JSON.parse(localStorage.getItem('geotraverse_settings') || '{}');
+        settings.company_name = document.getElementById('modalCompanyName').value;
+        settings.company_address = document.getElementById('modalCompanyAddress').value;
+        settings.company_email = document.getElementById('modalCompanyEmail').value;
+        settings.company_phone = document.getElementById('modalCompanyPhone').value;
+        localStorage.setItem('geotraverse_settings', JSON.stringify(settings));
+        showToast('Settings saved');
+        closeGeneralSettingsModal();
+        renderSettings();
+    }
+    
+    function openEmailConfigModal() {
+        let settings = JSON.parse(localStorage.getItem('geotraverse_settings') || '{}');
+        document.getElementById('modalSmtpServer').value = settings.smtp_server || '';
+        document.getElementById('modalSmtpPort').value = settings.smtp_port || '';
+        document.getElementById('modalSenderEmail').value = settings.sender_email || '';
+        document.getElementById('emailConfigModal').classList.remove('hidden');
+        document.getElementById('emailConfigModal').classList.add('flex');
+    }
+    
+    function closeEmailConfigModal() {
+        document.getElementById('emailConfigModal').classList.add('hidden');
+        document.getElementById('emailConfigModal').classList.remove('flex');
+    }
+    
+    function saveEmailConfigModal() {
+        let settings = JSON.parse(localStorage.getItem('geotraverse_settings') || '{}');
+        settings.smtp_server = document.getElementById('modalSmtpServer').value;
+        settings.smtp_port = document.getElementById('modalSmtpPort').value;
+        settings.sender_email = document.getElementById('modalSenderEmail').value;
+        localStorage.setItem('geotraverse_settings', JSON.stringify(settings));
+        showToast('Email config saved');
+        closeEmailConfigModal();
+        renderSettings();
+    }
+    
+    function openBackupRestoreModal() {
+        document.getElementById('backupRestoreModal').classList.remove('hidden');
+        document.getElementById('backupRestoreModal').classList.add('flex');
+    }
+    
+    function closeBackupRestoreModal() {
+        document.getElementById('backupRestoreModal').classList.add('hidden');
+        document.getElementById('backupRestoreModal').classList.remove('flex');
+    }
+    
+    function createBackup() {
+        let backup = {
+            employees: localStorage.getItem('geotraverse_employees'),
+            projects: localStorage.getItem('geotraverse_projects'),
+            tasks: localStorage.getItem('geotraverse_tasks'),
+            reports: localStorage.getItem('geotraverse_central_reports'),
+            settings: localStorage.getItem('geotraverse_settings'),
+            activity_logs: localStorage.getItem('geotraverse_activity_logs'),
+            central_projects: localStorage.getItem('geotraverse_central_projects'),
+            central_messages: localStorage.getItem('geotraverse_central_messages'),
+            timestamp: new Date().toISOString()
+        };
+        let blob = new Blob([JSON.stringify(backup, null, 2)], {type: 'application/json'});
+        let url = URL.createObjectURL(blob);
+        let a = document.createElement('a');
+        a.href = url;
+        a.download = `geotraverse_backup_${new Date().toISOString().slice(0,19)}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('Backup created');
+        closeBackupRestoreModal();
+    }
+    
+    function restoreBackupFromFile() {
+        let input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'application/json';
+        input.onchange = e => {
+            let file = e.target.files[0];
+            if (!file) return;
+            let reader = new FileReader();
+            reader.onload = evt => {
+                try {
+                    let data = JSON.parse(evt.target.result);
+                    if (data.employees) localStorage.setItem('geotraverse_employees', data.employees);
+                    if (data.projects) localStorage.setItem('geotraverse_projects', data.projects);
+                    if (data.tasks) localStorage.setItem('geotraverse_tasks', data.tasks);
+                    if (data.reports) localStorage.setItem('geotraverse_central_reports', data.reports);
+                    if (data.settings) localStorage.setItem('geotraverse_settings', data.settings);
+                    if (data.activity_logs) localStorage.setItem('geotraverse_activity_logs', data.activity_logs);
+                    if (data.central_projects) localStorage.setItem('geotraverse_central_projects', data.central_projects);
+                    if (data.central_messages) localStorage.setItem('geotraverse_central_messages', data.central_messages);
+                    showToast('Backup restored! Reloading...');
+                    setTimeout(() => location.reload(), 1500);
+                } catch(err) { showToast('Invalid backup file', true); }
+            };
+            reader.readAsText(file);
+        };
+        input.click();
+    }
+    
+    function changeAdminPassword() {
+        let newPwd = document.getElementById('newAdminPwd').value;
+        let confirmPwd = document.getElementById('confirmAdminPwd').value;
+        if (!newPwd) { showToast('Enter new password', true); return; }
+        if (newPwd !== confirmPwd) { showToast('Passwords do not match', true); return; }
+        showToast('Password changed (demo)');
+        document.getElementById('newAdminPwd').value = '';
+        document.getElementById('confirmAdminPwd').value = '';
+    }
+    
+    function changeSidebarColor(color, element) {
+        document.getElementById('mainSidebar').style.background = color;
+        document.getElementById('mainSidebar').style.backgroundImage = 'none';
+        document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
+        element.classList.add('selected');
+        localStorage.setItem('sidebar_color', color);
+        showToast('Sidebar color changed');
+    }
+    
+    // ==================== NAVIGATION ====================
+    function showSection(sectionId) {
+        let sections = ['dashboardSection', 'employeeSection', 'departmentsSection', 'projectsSection', 'tasksSection', 'messagesSection', 'reportsSection', 'settingsSection'];
+        sections.forEach(s => { let el = document.getElementById(s); if (el) el.classList.add('hidden'); });
+        document.getElementById(`${sectionId}Section`).classList.remove('hidden');
+        document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+        document.querySelector(`.nav-item[data-section="${sectionId}"]`)?.classList.add('active');
+        if (sectionId === 'employees') renderEmployees();
+        else if (sectionId === 'departments') renderDepartments();
+        else if (sectionId === 'projects') renderProjects();
+        else if (sectionId === 'tasks') renderTasks();
+        else if (sectionId === 'messages') renderMessages();
+        else if (sectionId === 'reports') renderReports();
+        else if (sectionId === 'settings') renderSettings();
+    }
+    
+    // ==================== LOGOUT ====================
+    function logout() {
+        if (confirm('Logout?')) {
+            localStorage.removeItem('admin_logged_in');
+            window.location.href = 'admin_login.html';
+        }
+    }
+    
+    // ==================== INIT ====================
+    function init() {
+        initializeData();
+        if (!localStorage.getItem('admin_logged_in')) {
+            window.location.href = 'admin_login.html';
+            return;
+        }
+        let container = document.getElementById('mainContentContainer');
+        container.innerHTML = `<div id="dashboardSection"></div><div id="employeeSection" class="hidden"></div><div id="departmentsSection" class="hidden"></div><div id="projectsSection" class="hidden"></div><div id="tasksSection" class="hidden"></div><div id="messagesSection" class="hidden"></div><div id="reportsSection" class="hidden"></div><div id="settingsSection" class="hidden"></div>`;
+        renderDashboard();
+        
+        document.querySelectorAll('.nav-item').forEach(nav => nav.addEventListener('click', (e) => { e.preventDefault(); showSection(nav.dataset.section); }));
+        document.getElementById('mobileMenuBtn')?.addEventListener('click', () => { document.getElementById('mainSidebar').classList.add('mobile-open'); document.getElementById('mobileMenuOverlay').classList.add('open'); });
+        document.getElementById('logoutBtn')?.addEventListener('click', logout);
+        document.getElementById('globalSearchInput')?.addEventListener('input', performGlobalSearch);
+        
+        let savedDark = localStorage.getItem('dark_mode');
+        if (savedDark === 'true') document.body.classList.add('dark-mode');
+        document.getElementById('darkModeToggle')?.addEventListener('click', () => { document.body.classList.toggle('dark-mode'); localStorage.setItem('dark_mode', document.body.classList.contains('dark-mode')); showToast(document.body.classList.contains('dark-mode') ? 'Dark mode on' : 'Light mode on'); });
+        
+        let savedColor = localStorage.getItem('sidebar_color');
+        if (savedColor) document.getElementById('mainSidebar').style.background = savedColor;
+        
+        let scrollBtn = document.createElement('div'); scrollBtn.className = 'scroll-top'; scrollBtn.innerHTML = '<i class="fas fa-arrow-up"></i>'; document.body.appendChild(scrollBtn); scrollBtn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' }); window.addEventListener('scroll', () => scrollBtn.classList.toggle('visible', window.scrollY > 300));
+        addActivityLog('Admin Dashboard initialized');
+    }
+    
+    function closeMobileSidebar() {
+        document.getElementById('mainSidebar').classList.remove('mobile-open');
+        document.getElementById('mobileMenuOverlay').classList.remove('open');
+    }
+    
+    // Global exposure
+    window.showSection = showSection;
+    window.openAddEmployeeModal = openAddEmployeeModal; window.closeAddEmployeeModal = closeAddEmployeeModal; window.saveNewEmployee = saveNewEmployee;
+    window.openEditEmployeeModal = openEditEmployeeModal; window.closeEmployeeModal = closeEmployeeModal; window.updateEmployee = updateEmployee; window.deleteEmployee = deleteEmployee;
+    window.exportEmployeesToPDF = exportEmployeesToPDF; window.exportEmployeesToExcel = exportEmployeesToExcel;
+    window.openAddProjectModal = openAddProjectModal; window.openEditProjectModal = openEditProjectModal; window.closeProjectModal = closeProjectModal; window.saveProject = saveProject; window.deleteProject = deleteProject; window.exportProjectsToExcel = exportProjectsToExcel; window.sendProjectToManager = sendProjectToManager;
+    window.openAddTaskModal = openAddTaskModal; window.closeTaskModal = closeTaskModal; window.saveTask = saveTask; window.toggleTask = toggleTask;
+    window.openStartChatModal = openStartChatModal; window.closeStartChatModal = closeStartChatModal; window.sendNewChatMessage = sendNewChatMessage; window.openChatWith = openChatWith; window.deleteMessageFromCentral = deleteMessageFromCentral; window.deleteConversation = deleteConversation; window.renderMessages = renderMessages;
+    window.viewReportDetail = viewReportDetail; window.markReportRead = markReportRead; window.exportAllReportsToExcel = exportAllReportsToExcel; window.exportAllReportsToPDF = exportAllReportsToPDF;
+    window.changeAdminPassword = changeAdminPassword; window.changeSidebarColor = changeSidebarColor; window.openBackupRestoreModal = openBackupRestoreModal; window.closeBackupRestoreModal = closeBackupRestoreModal; window.createBackup = createBackup; window.restoreBackupFromFile = restoreBackupFromFile; window.clearAllLogsFixed = clearAllLogsFixed;
+    window.openGeneralSettingsModal = openGeneralSettingsModal; window.closeGeneralSettingsModal = closeGeneralSettingsModal; window.saveGeneralSettingsModal = saveGeneralSettingsModal;
+    window.openEmailConfigModal = openEmailConfigModal; window.closeEmailConfigModal = closeEmailConfigModal; window.saveEmailConfigModal = saveEmailConfigModal;
+    window.togglePasswordField = togglePasswordField; window.goToMainWebsite = goToMainWebsite; window.closeMobileSidebar = closeMobileSidebar; window.goToSectionAndSearch = goToSectionAndSearch; window.removeProjectImage = removeProjectImage;
+    window.acceptProjectRequest = acceptProjectRequest; window.rejectProjectRequest = rejectProjectRequest;
     
     init();
 </script>
