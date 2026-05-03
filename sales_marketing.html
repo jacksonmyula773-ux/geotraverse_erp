@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>GeoTraverse | Sales Dashboard - ERP System</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #e2e8f0; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #f97316; border-radius: 10px; }
+        
+        body.dark-mode { background: #0f172a; }
+        body.dark-mode .bg-white { background-color: #1e293b; }
+        body.dark-mode .bg-gray-50 { background-color: #0f172a; }
+        body.dark-mode .text-gray-600, body.dark-mode .text-gray-500 { color: #94a3b8; }
+        body.dark-mode .text-gray-700, body.dark-mode .text-gray-800 { color: #f1f5f9; }
+        body.dark-mode .border-gray-200, body.dark-mode .border-gray-100 { border-color: #334155; }
+        body.dark-mode .sidebar { background: #ea580c; }
+        body.dark-mode .stat-card { background-color: #1e293b; border-color: #334155; }
+        body.dark-mode .lead-card, body.dark-mode .ad-card, body.dark-mode .budget-card, body.dark-mode .report-card { background-color: #1e293b; border-color: #334155; }
+        body.dark-mode .chat-sent { background-color: #c2410c; }
+        body.dark-mode .chat-received { background-color: #334155; }
+        body.dark-mode .chat-conversation:hover { background-color: #334155; }
+        
+        .sidebar {
+            background: #ea580c;
+            transition: all 0.3s ease;
+            height: 100vh;
+            overflow-y: auto;
+            position: fixed;
+            width: 280px;
+            z-index: 30;
+        }
+        .sidebar-logo { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+        .sidebar-logo img { width: 100%; height: 100%; object-fit: contain; border-radius: 10px; }
+        .nav-item { transition: all 0.2s ease; border-left: 3px solid transparent; cursor: pointer; }
+        .nav-item.active { background: rgba(255,255,255,0.15); border-left-color: #fbbf24; }
+        .nav-item.active i { color: #fbbf24; }
+        .nav-item:hover:not(.active) { background: rgba(255,255,255,0.08); }
+        
+        .stat-card { transition: all 0.3s ease; background: white; border-radius: 20px; border: 1px solid #e5e7eb; cursor: pointer; }
+        .stat-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -12px rgba(0,0,0,0.15); border-color: #f97316; }
+        
+        .lead-card, .ad-card, .budget-card, .report-card { background: white; border-radius: 12px; padding: 12px; margin-bottom: 8px; border-left: 3px solid #f97316; transition: all 0.2s; cursor: pointer; }
+        .lead-card:hover, .ad-card:hover, .budget-card:hover, .report-card:hover { transform: translateX(5px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        
+        .btn-primary { background: linear-gradient(135deg, #f97316, #ea580c); transition: all 0.2s; }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 5px 15px rgba(249,115,22,0.3); }
+        
+        .toast-notification { position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, #f97316, #ea580c); color: white; padding: 10px 16px; border-radius: 10px; z-index: 1000; animation: slideInRight 0.3s ease; font-size: 12px; }
+        .toast-notification.error { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        
+        .main-content { margin-left: 280px; }
+        @media (max-width: 768px) { .sidebar { left: -280px; transition: left 0.3s; } .sidebar.mobile-open { left: 0; } .mobile-menu-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 99; display: none; } .mobile-menu-overlay.open { display: block; } .main-content { margin-left: 0; } }
+        
+        .scroll-top { position: fixed; bottom: 20px; right: 20px; background: #f97316; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: all 0.3s; z-index: 99; color: white; }
+        .scroll-top.visible { opacity: 1; }
+        
+        .color-option { transition: all 0.2s; cursor: pointer; border: 2px solid transparent; width: 36px; height: 36px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; }
+        .color-option:hover { transform: scale(1.1); }
+        .color-option.selected { border-color: white; box-shadow: 0 0 0 2px #333; }
+        
+        .status-new { background: #dbeafe; color: #2563eb; }
+        .status-contacted { background: #fef3c7; color: #d97706; }
+        .status-negotiation { background: #e9d5ff; color: #7e22ce; }
+        .status-won { background: #d1fae5; color: #059669; }
+        .status-lost { background: #fee2e2; color: #dc2626; }
+        
+        body.dark-mode .status-new { background: #1e3a5f; color: #60a5fa; }
+        body.dark-mode .status-contacted { background: #451a03; color: #fbbf24; }
+        body.dark-mode .status-negotiation { background: #3b0764; color: #c084fc; }
+        body.dark-mode .status-won { background: #064e3b; color: #34d399; }
+        body.dark-mode .status-lost { background: #7f1d1d; color: #f87171; }
+        
+        .table-responsive { overflow-x: auto; }
+        .modal-overlay { backdrop-filter: blur(4px); }
+        .fade-in { animation: fadeIn 0.2s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        
+        .chat-bubble { max-width: 80%; padding: 10px 14px; border-radius: 12px; margin-bottom: 8px; }
+        .chat-sent { background-color: #fff7ed; margin-left: auto; }
+        .chat-received { background-color: #e5e7eb; }
+        
+        .chat-conversation { cursor: pointer; transition: all 0.2s; }
+        .chat-conversation:hover { background-color: #f3f4f6; }
+        body.dark-mode .chat-conversation:hover { background-color: #334155; }
+        .chat-conversation-unread { background-color: #fff7ed; border-left: 3px solid #f97316; }
+        body.dark-mode .chat-conversation-unread { background-color: #431407; }
+        
+        .search-results-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+            z-index: 50;
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+        }
+        .search-results-dropdown.active { display: block; }
+        .search-result-item { padding: 12px 16px; border-bottom: 1px solid #e5e7eb; cursor: pointer; transition: background 0.2s; }
+        .search-result-item:hover { background-color: #f3f4f6; }
+        body.dark-mode .search-results-dropdown { background: #1e293b; }
+        body.dark-mode .search-result-item { border-bottom-color: #334155; }
+        body.dark-mode .search-result-item:hover { background-color: #334155; }
+        
+        .progress-bar { height: 6px; border-radius: 3px; }
+        .progress-low { background: #ef4444; }
+        .progress-medium { background: #f59e0b; }
+        .progress-high { background: #10b981; }
+        
+        .color-palette { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+<div id="mobileMenuOverlay" class="mobile-menu-overlay" onclick="closeMobileSidebar()"></div>
+
+<div class="flex h-screen overflow-hidden">
+    <!-- SIDEBAR -->
+    <aside id="mainSidebar" class="sidebar shadow-xl flex flex-col z-20">
+        <div class="px-5 py-5 border-b border-white/20 flex-shrink-0">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="goToMainWebsite()">
+                <div class="sidebar-logo"><img src="https://i.postimg.cc/MT6jTVHh/weblogo.png" alt="GeoTraverse Logo" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23f97316%22/%3E%3Ctext x=%2250%22 y=%2265%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2240%22 font-weight=%22bold%22%3EG%3C/text%3E%3C/svg%3E';"></div>
+                <div><span class="text-lg font-bold text-white">GeoTraverse</span><p class="text-[9px] text-white/50">SALES ERP</p></div>
+            </div>
+        </div>
+        <div class="flex-1 overflow-y-auto px-3 py-4">
+            <nav class="space-y-1">
+                <div class="text-white/40 text-[10px] px-3 py-2 uppercase font-semibold">MAIN</div>
+                <a href="#" class="nav-item active flex items-center gap-3 px-3 py-2.5 rounded-xl text-white text-sm" data-section="dashboard"><i class="fas fa-tachometer-alt w-4"></i><span>Dashboard</span></a>
+                <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-white text-sm" data-section="leads"><i class="fas fa-users w-4"></i><span>Leads</span></a>
+                <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-white text-sm" data-section="budget"><i class="fas fa-wallet w-4"></i><span>Budget</span><span class="ml-auto bg-green-500 text-white text-[9px] px-1.5 py-0.5 rounded-full">CRUD</span></a>
+                <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-white text-sm" data-section="marketing"><i class="fas fa-chart-line w-4"></i><span>Marketing</span></a>
+                <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-white text-sm" data-section="messages"><i class="fas fa-envelope w-4"></i><span>Messages</span><span class="ml-auto bg-red-500 text-white text-[9px] px-1.5 py-0.5 rounded-full" id="msgBadge">0</span></a>
+                <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-white text-sm" data-section="reports"><i class="fas fa-chart-bar w-4"></i><span>Reports</span><span class="ml-auto bg-blue-500 text-white text-[9px] px-1.5 py-0.5 rounded-full" id="reportBadge">0</span></a>
+                <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-white text-sm" data-section="targets"><i class="fas fa-bullseye w-4"></i><span>Targets</span></a>
+                <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-white text-sm" data-section="settings"><i class="fas fa-cog w-4"></i><span>Settings</span></a>
+            </nav>
+        </div>
+        <div class="flex-shrink-0 p-4 border-t border-white/20">
+            <div class="flex items-center gap-3 mb-2">
+                <div class="w-9 h-9 bg-orange-600 rounded-xl flex items-center justify-center"><i class="fas fa-user-tie text-white text-sm"></i></div>
+                <div class="flex-1"><p class="text-sm font-semibold text-white">Sales Manager</p><p class="text-[9px] text-white/50">sales@geotraverse.com</p></div>
+            </div>
+            <button id="logoutBtn" class="w-full bg-red-600/80 hover:bg-red-600 text-white py-2 rounded-lg text-xs transition"><i class="fas fa-sign-out-alt mr-1"></i>Logout</button>
+        </div>
+    </aside>
+    
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 overflow-y-auto main-content">
+        <header class="bg-white shadow-sm px-5 py-3 sticky top-0 z-10 border-b border-gray-200">
+            <div class="flex items-center justify-between flex-wrap gap-3">
+                <div class="flex items-center gap-3">
+                    <button id="mobileMenuBtn" class="md:hidden text-gray-600 hover:text-orange-600 text-xl"><i class="fas fa-bars"></i></button>
+                    <div><h1 class="text-lg font-bold text-gray-800">Sales Dashboard</h1><p class="text-xs text-gray-400">Lead Management & Performance</p></div>
+                </div>
+                <div class="flex-1 max-w-md relative">
+                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
+                    <input type="text" id="globalSearchInput" placeholder="Search leads, budget, marketing, reports..." class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-orange-500">
+                    <div id="searchResultsDropdown" class="search-results-dropdown"></div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="darkModeToggle" class="text-gray-500 hover:text-orange-600 w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center"><i id="darkModeIcon" class="fas fa-moon text-sm"></i></button>
+                    <div class="relative">
+                        <button id="profileBtn" class="flex items-center gap-2"><div class="w-8 h-8 bg-gradient-to-r from-orange-500 to-orange-700 rounded-full flex items-center justify-center"><span class="text-white text-sm font-semibold">SM</span></div><i class="fas fa-chevron-down text-gray-400 text-xs"></i></button>
+                        <div id="profileDropdown" class="absolute top-full right-0 mt-2 w-48 bg-white rounded-xl shadow-xl z-50 hidden">
+                            <a href="#" class="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 text-sm"><i class="fas fa-user text-gray-400"></i>Profile</a>
+                            <hr class="my-1">
+                            <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-2 hover:bg-gray-50 text-sm text-red-600"><i class="fas fa-sign-out-alt"></i>Logout</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <div class="p-4" id="mainContentContainer"></div>
+    </main>
+</div>
+
+<!-- Add Lead Modal -->
+<div id="leadModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
+    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
+        <div class="px-5 py-3 border-b flex justify-between items-center"><h3 class="text-lg font-bold"><i class="fas fa-plus-circle text-orange-500 mr-2"></i>Add New Lead</h3><button onclick="closeLeadModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button></div>
+        <div class="p-5 space-y-3">
+            <input type="hidden" id="editLeadId">
+            <input type="text" id="leadName" placeholder="Customer Name" class="w-full p-2 border rounded-xl text-sm">
+            <input type="text" id="leadPhone" placeholder="Phone Number" class="w-full p-2 border rounded-xl text-sm">
+            <input type="email" id="leadEmail" placeholder="Email Address" class="w-full p-2 border rounded-xl text-sm">
+            <select id="leadStatus" class="w-full p-2 border rounded-xl text-sm"><option value="new">New Lead</option><option value="contacted">Contacted</option><option value="negotiation">Negotiation</option><option value="won">Won</option><option value="lost">Lost</option></select>
+            <input type="number" id="leadValue" placeholder="Expected Value (TZS)" class="w-full p-2 border rounded-xl text-sm">
+            <textarea id="leadNotes" rows="2" placeholder="Additional Notes" class="w-full p-2 border rounded-xl text-sm"></textarea>
+            <div class="flex gap-3"><button onclick="saveLead()" class="flex-1 bg-orange-600 text-white py-2 rounded-xl text-sm">Save</button><button onclick="closeLeadModal()" class="flex-1 bg-gray-100 py-2 rounded-xl text-sm">Cancel</button></div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Budget Modal -->
+<div id="budgetModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
+    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
+        <div class="px-5 py-3 border-b flex justify-between items-center"><h3 class="text-lg font-bold" id="budgetModalTitle"><i class="fas fa-plus-circle text-orange-500 mr-2"></i>Add Budget</h3><button onclick="closeBudgetModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button></div>
+        <div class="p-5 space-y-3">
+            <input type="hidden" id="editBudgetId">
+            <select id="budgetCategory" class="w-full p-2 border rounded-xl text-sm">
+                <option value="Overall">Overall Budget</option>
+                <option value="Advertising">Advertising</option>
+                <option value="Events">Events & Seminars</option>
+                <option value="Digital Marketing">Digital Marketing</option>
+                <option value="Print Media">Print Media</option>
+                <option value="TV & Radio">TV & Radio</option>
+                <option value="Social Media">Social Media</option>
+                <option value="Sales Commission">Sales Commission</option>
+                <option value="Travel">Travel & Transport</option>
+                <option value="Training">Training</option>
+                <option value="Office Supplies">Office Supplies</option>
+            </select>
+            <input type="number" id="budgetAmount" placeholder="Budget Amount (TZS)" class="w-full p-2 border rounded-xl text-sm">
+            <input type="number" id="budgetSpent" placeholder="Amount Spent (TZS)" class="w-full p-2 border rounded-xl text-sm" value="0">
+            <textarea id="budgetDescription" rows="2" placeholder="Description (optional)" class="w-full p-2 border rounded-xl text-sm"></textarea>
+            <div class="flex gap-3"><button onclick="saveBudget()" class="flex-1 bg-orange-600 text-white py-2 rounded-xl text-sm">Save</button><button onclick="closeBudgetModal()" class="flex-1 bg-gray-100 py-2 rounded-xl text-sm">Cancel</button></div>
+        </div>
+    </div>
+</div>
+
+<!-- View Budget Modal -->
+<div id="viewBudgetModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
+    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
+        <div class="px-5 py-3 border-b flex justify-between items-center"><h3 class="text-lg font-bold">Budget Details</h3><button onclick="closeViewBudgetModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button></div>
+        <div class="p-5" id="viewBudgetContent"></div>
+        <div class="px-5 pb-5"><button onclick="closeViewBudgetModal()" class="w-full bg-gray-100 py-2 rounded-xl text-sm">Close</button></div>
+    </div>
+</div>
+
+<!-- Add Marketing Activity Modal -->
+<div id="marketingModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
+    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
+        <div class="px-5 py-3 border-b"><h3 class="text-lg font-bold"><i class="fas fa-plus-circle text-orange-500 mr-2"></i>Add Marketing Activity</h3></div>
+        <div class="p-5 space-y-3">
+            <input type="hidden" id="editActivityId">
+            <input type="text" id="adTitle" placeholder="Activity Title" class="w-full p-2 border rounded-xl text-sm">
+            <select id="adType" class="w-full p-2 border rounded-xl text-sm"><option value="social_media">Social Media</option><option value="tv_radio">TV / Radio</option><option value="print">Print / Billboard</option><option value="digital">Digital Ads</option><option value="event">Event / Seminar</option></select>
+            <input type="number" id="adBudget" placeholder="Budget (TZS)" class="w-full p-2 border rounded-xl text-sm">
+            <input type="date" id="adDate" class="w-full p-2 border rounded-xl text-sm">
+            <textarea id="adDescription" rows="2" placeholder="Activity Description" class="w-full p-2 border rounded-xl text-sm"></textarea>
+            <input type="text" id="adResults" placeholder="Results (optional)" class="w-full p-2 border rounded-xl text-sm">
+            <select id="adStatus" class="w-full p-2 border rounded-xl text-sm"><option value="planned">Planned</option><option value="active">Active</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select>
+            <div class="flex gap-3"><button onclick="saveMarketingActivity()" class="flex-1 bg-orange-600 text-white py-2 rounded-xl text-sm">Save</button><button onclick="closeMarketingModal()" class="flex-1 bg-gray-100 py-2 rounded-xl text-sm">Cancel</button></div>
+        </div>
+    </div>
+</div>
+
+<!-- Marketing Details Modal -->
+<div id="marketingDetailsModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
+    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
+        <div class="px-5 py-3 border-b flex justify-between items-center"><h3 class="text-lg font-bold">Marketing Activity Details</h3><button onclick="closeMarketingDetailsModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button></div>
+        <div class="p-5" id="marketingDetailsContent"></div>
+        <div class="px-5 pb-5"><button onclick="closeMarketingDetailsModal()" class="w-full bg-gray-100 py-2 rounded-xl text-sm">Close</button></div>
+    </div>
+</div>
+
+<!-- Chat Modal -->
+<div id="chatModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
+    <div class="bg-white rounded-2xl w-full max-w-2xl fade-in">
+        <div class="px-5 py-3 border-b flex justify-between items-center"><h3 class="text-lg font-bold" id="chatModalTitle">Chat</h3><button onclick="closeChatModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button></div>
+        <div class="h-96 overflow-y-auto p-4 bg-gray-50" id="chatMessagesArea"></div>
+        <div class="p-4 border-t"><div class="flex gap-2"><textarea id="chatInput" rows="2" placeholder="Type your message..." class="flex-1 p-2 border rounded-xl text-sm resize-none"></textarea><button onclick="sendChatMessage()" class="px-4 py-2 rounded-xl text-white bg-orange-600 text-sm">Send</button></div></div>
+    </div>
+</div>
+
+<!-- Start Chat Modal -->
+<div id="startChatModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
+    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
+        <div class="px-5 py-3 border-b"><h3 class="text-lg font-bold">Start New Chat</h3></div>
+        <div class="p-5 space-y-3">
+            <select id="chatRecipientSelect" class="w-full p-2 border rounded-xl text-sm">
+                <option value="Finance">Finance Department</option>
+                <option value="Manager">Manager Department</option>
+                <option value="Secretary">Secretary Department</option>
+                <option value="Admin">Admin</option>
+            </select>
+            <textarea id="newChatMsg" rows="3" placeholder="Type your message..." class="w-full p-2 border rounded-xl text-sm"></textarea>
+            <div class="flex gap-3"><button onclick="sendNewChat()" class="flex-1 bg-orange-600 text-white py-2 rounded-xl text-sm">Send</button><button onclick="closeStartChatModal()" class="flex-1 bg-gray-100 py-2 rounded-xl text-sm">Cancel</button></div>
+        </div>
+    </div>
+</div>
+
+<!-- Report Modals -->
+<div id="addReportModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
+    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
+        <div class="px-5 py-3 border-b"><h3 class="text-lg font-bold">Add New Report</h3></div>
+        <div class="p-5 space-y-3">
+            <input type="text" id="newReportTitle" placeholder="Report Title" class="w-full p-2 border rounded-xl text-sm">
+            <select id="newReportPeriod" class="w-full p-2 border rounded-xl text-sm"><option value="daily">Daily Report</option><option value="weekly">Weekly Report</option><option value="monthly">Monthly Report</option><option value="quarterly">Quarterly Report</option><option value="annual">Annual Report</option></select>
+            <textarea id="newReportContent" rows="4" placeholder="Report Content..." class="w-full p-2 border rounded-xl text-sm"></textarea>
+            <div class="flex gap-3"><button onclick="addReport()" class="flex-1 bg-orange-600 text-white py-2 rounded-xl text-sm">Add</button><button onclick="closeAddReportModal()" class="flex-1 bg-gray-100 py-2 rounded-xl text-sm">Cancel</button></div>
+        </div>
+    </div>
+</div>
+
+<div id="editReportModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
+    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
+        <div class="px-5 py-3 border-b"><h3 class="text-lg font-bold">Edit Report</h3></div>
+        <div class="p-5 space-y-3">
+            <input type="hidden" id="editReportId">
+            <input type="text" id="editReportTitle" placeholder="Report Title" class="w-full p-2 border rounded-xl text-sm">
+            <select id="editReportPeriod" class="w-full p-2 border rounded-xl text-sm"><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="quarterly">Quarterly</option><option value="annual">Annual</option></select>
+            <textarea id="editReportContent" rows="4" placeholder="Report Content..." class="w-full p-2 border rounded-xl text-sm"></textarea>
+            <div class="flex gap-3"><button onclick="updateReport()" class="flex-1 bg-orange-600 text-white py-2 rounded-xl text-sm">Update</button><button onclick="closeEditReportModal()" class="flex-1 bg-gray-100 py-2 rounded-xl text-sm">Cancel</button></div>
+        </div>
+    </div>
+</div>
+
+<div id="sendReportModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
+    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
+        <div class="px-5 py-3 border-b"><h3 class="text-lg font-bold"><i class="fas fa-paper-plane text-orange-500 mr-2"></i>Send Report</h3></div>
+        <div class="p-5 space-y-3">
+            <input type="hidden" id="sendReportId">
+            <div class="p-3 bg-orange-50 rounded-xl"><p class="text-sm" id="sendReportInfo"></p></div>
+            <select id="sendToDepartment" class="w-full p-2 border rounded-xl text-sm">
+                <option value="">Select Department</option>
+                <option value="Admin">Admin</option>
+                <option value="Finance">Finance Department</option>
+                <option value="Manager">Manager Department</option>
+                <option value="Secretary">Secretary Department</option>
+            </select>
+            <textarea id="sendAdditionalMessage" rows="3" placeholder="Additional message (optional)" class="w-full p-2 border rounded-xl text-sm"></textarea>
+            <div class="flex gap-3"><button onclick="confirmSendReport()" class="flex-1 bg-orange-600 text-white py-2 rounded-xl text-sm">Send</button><button onclick="closeSendReportModal()" class="flex-1 bg-gray-100 py-2 rounded-xl text-sm">Cancel</button></div>
+        </div>
+    </div>
+</div>
+
+<!-- Set Target Modal -->
+<div id="targetModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
+    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
+        <div class="px-5 py-3 border-b"><h3 class="text-lg font-bold"><i class="fas fa-bullseye text-orange-500 mr-2"></i>Set Monthly Target</h3></div>
+        <div class="p-5 space-y-3">
+            <select id="targetMonth" class="w-full p-2 border rounded-xl text-sm"><option value="January">January</option><option value="February">February</option><option value="March">March</option><option value="April">April</option><option value="May">May</option><option value="June">June</option><option value="July">July</option><option value="August">August</option><option value="September">September</option><option value="October">October</option><option value="November">November</option><option value="December">December</option></select>
+            <input type="number" id="targetAmount" placeholder="Target Amount (TZS)" class="w-full p-2 border rounded-xl text-sm">
+            <div class="flex gap-3"><button onclick="setTarget()" class="flex-1 bg-orange-600 text-white py-2 rounded-xl text-sm">Set Target</button><button onclick="closeTargetModal()" class="flex-1 bg-gray-100 py-2 rounded-xl text-sm">Cancel</button></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ==================== CENTRALIZED MESSAGES ====================
+    function getCentralMessages() {
+        let messages = localStorage.getItem('geotraverse_central_messages');
+        if (!messages) {
+            let defaultMessages = [
+                { id: 1, from: "Admin", to: "Sales", message: "Welcome to the ERP system!", read: false, created_at: new Date(Date.now() - 5*24*60*60*1000).toISOString() },
+                { id: 2, from: "Finance", to: "Sales", message: "Please provide Q2 sales forecast", read: false, created_at: new Date(Date.now() - 2*24*60*60*1000).toISOString() },
+                { id: 3, from: "Manager", to: "Sales", message: "Great job on the Q1 performance!", read: false, created_at: new Date(Date.now() - 1*24*60*60*1000).toISOString() }
+            ];
+            localStorage.setItem('geotraverse_central_messages', JSON.stringify(defaultMessages));
+            return defaultMessages;
+        }
+        return JSON.parse(messages);
+    }
+    
+    function saveCentralMessages(messages) { localStorage.setItem('geotraverse_central_messages', JSON.stringify(messages)); }
+    function addCentralMessage(from, to, message) { let messages = getCentralMessages(); messages.push({ id: Date.now(), from: from, to: to, message: message, read: false, created_at: new Date().toISOString() }); saveCentralMessages(messages); }
+    function markMessageAsRead(messageId) { let messages = getCentralMessages(); let msg = messages.find(m => m.id === messageId); if (msg && msg.to === "Sales") { msg.read = true; saveCentralMessages(messages); } }
+    function getUnreadMessagesCountForSales() { return getCentralMessages().filter(m => m.to === "Sales" && !m.read).length; }
+    function getConversationsForSales() { let conv = {}; getCentralMessages().forEach(msg => { if (msg.from === "Sales" || msg.to === "Sales") { let other = msg.from === "Sales" ? msg.to : msg.from; if (!conv[other]) conv[other] = []; conv[other].push(msg); } }); return conv; }
+    function deleteMessageFromCentral(messageId) { let messages = getCentralMessages().filter(m => m.id !== messageId); saveCentralMessages(messages); }
+    
+    // ==================== SALES DATA ====================
+    let leads = [
+        { id: 1, name: "Tanzania Breweries Ltd", phone: "+255 712 345 678", email: "procurement@tbl.co.tz", status: "negotiation", value: 450000000, notes: "Interested in commercial complex", created_at: "2024-03-01" },
+        { id: 2, name: "Vodacom Tanzania", phone: "+255 713 456 789", email: "facilities@vodacom.co.tz", status: "contacted", value: 280000000, notes: "Looking for office space", created_at: "2024-03-10" },
+        { id: 3, name: "CRDB Bank", phone: "+255 714 567 890", email: "properties@crdb.com", status: "new", value: 620000000, notes: "Potential residential project", created_at: "2024-03-15" },
+        { id: 4, name: "NMB Bank", phone: "+255 715 678 901", email: "realestate@nmb.co.tz", status: "won", value: 380000000, notes: "Signed contract", created_at: "2024-02-20" },
+        { id: 5, name: "ABC Construction", phone: "+255 716 789 012", email: "info@abcconstruction.com", status: "new", value: 150000000, notes: "New client inquiry", created_at: "2024-04-01" }
+    ];
+    
+    // Budget table with description column
+    let budgets = [
+        { id: 1, category: "Overall Budget", amount: 50000000, spent: 25000000, description: "Total marketing budget for Q2 2024", created_at: "2024-04-01" },
+        { id: 2, category: "Advertising", amount: 15000000, spent: 8000000, description: "Digital and print advertising campaigns", created_at: "2024-04-01" },
+        { id: 3, category: "Events & Seminars", amount: 10000000, spent: 4000000, description: "Industry events, trade shows, and customer seminars", created_at: "2024-04-05" },
+        { id: 4, category: "Digital Marketing", amount: 8000000, spent: 3000000, description: "Google Ads, SEO optimization, social media ads", created_at: "2024-04-10" },
+        { id: 5, category: "Sales Commission", amount: 12000000, spent: 6000000, description: "Sales team commissions and bonuses", created_at: "2024-04-01" },
+        { id: 6, category: "Travel & Transport", amount: 5000000, spent: 2000000, description: "Client visits, meetings, and travel expenses", created_at: "2024-04-01" }
+    ];
+    
+    let marketingActivities = [
+        { id: 1, title: "Facebook Ads Campaign", type: "social_media", budget: 5000000, date: "2024-03-01", description: "Targeted ads for young professionals", status: "completed", results: "Reached 50,000 people, 200+ clicks", created_at: "2024-03-01" },
+        { id: 2, title: "Radio Jingle - Clouds FM", type: "tv_radio", budget: 8000000, date: "2024-03-15", description: "30 seconds radio advertisement", status: "active", results: "Increased inquiries by 30%", created_at: "2024-03-10" },
+        { id: 3, title: "Billboard - Morogoro Road", type: "print", budget: 12000000, date: "2024-04-01", description: "Large billboard near TSN", status: "planned", results: "", created_at: "2024-03-20" }
+    ];
+    
+    let reportsList = [
+        { id: 1, title: "March Sales Report", period: "monthly", content: "Total sales: TZS 450M. Target: TZS 500M. Achievement: 90%", status: "sent", created_at: new Date(Date.now() - 10*24*60*60*1000).toISOString() },
+        { id: 2, title: "Q1 Performance Summary", period: "quarterly", content: "Q1 Revenue: TZS 1.2B, Won deals: 4, New leads: 15", status: "draft", created_at: new Date(Date.now() - 5*24*60*60*1000).toISOString() }
+    ];
+    
+    let targets = [
+        { month: "January", target: 500000000, achieved: 420000000 },
+        { month: "February", target: 550000000, achieved: 580000000 },
+        { month: "March", target: 600000000, achieved: 450000000 },
+        { month: "April", target: 650000000, achieved: 0 }
+    ];
+    
+    let activityLogs = [{ action: "Sales Dashboard initialized", created_at: new Date().toISOString() }];
+    
+    let revenueChart, statusChart;
+    let currentPage = 1;
+    let rowsPerPage = 5;
+    let currentBudgetPage = 1;
+    let budgetRowsPerPage = 5;
+    let currentChatWith = null;
+    let searchTimeout = null;
+    let pendingSendReportId = null;
+    
+    function getProgressClass(percent) { if (percent < 50) return 'progress-low'; if (percent < 80) return 'progress-medium'; return 'progress-high'; }
+    
+    // ==================== HELPER FUNCTIONS ====================
+    function showToast(msg, isError) { let t = document.createElement("div"); t.className = "toast-notification" + (isError ? " error" : ""); t.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-circle' : 'fa-check-circle'} mr-1"></i>${msg}`; document.body.appendChild(t); setTimeout(() => t.remove(), 3000); }
+    function formatCurrency(amt) { return "TZS " + parseFloat(amt).toLocaleString(); }
+    function escapeHtml(text) { if (!text) return ""; var div = document.createElement("div"); div.textContent = text; return div.innerHTML; }
+    function addLog(action) { activityLogs.unshift({ action: action, created_at: new Date().toISOString() }); if (activityLogs.length > 50) activityLogs.pop(); }
+    function logout() { if (confirm("Are you sure you want to logout?")) { window.location.href = "department_login.html"; } }
+    
+    function getStatusClass(status) {
+        switch(status) {
+            case "new": return "status-new";
+            case "contacted": return "status-contacted";
+            case "negotiation": return "status-negotiation";
+            case "won": return "status-won";
+            case "lost": return "status-lost";
+            default: return "status-new";
+        }
+    }
+    
+    function getStatusText(status) {
+        switch(status) {
+            case "new": return "New";
+            case "contacted": return "Contacted";
+            case "negotiation": return "Negotiation";
+            case "won": return "Won";
+            case "lost": return "Lost";
+            default: return status;
+        }
+    }
+    
+    function getAdTypeText(type) {
+        switch(type) {
+            case "social_media": return "Social Media";
+            case "tv_radio": return "TV / Radio";
+            case "print": return "Print / Billboard";
+            case "digital": return "Digital Ads";
+            case "event": return "Event / Seminar";
+            default: return type;
+        }
+    }
+    
+    // ==================== GLOBAL SEARCH ====================
+    function performGlobalSearch() {
+        let term = document.getElementById("globalSearchInput").value.toLowerCase().trim();
+        let dropdown = document.getElementById("searchResultsDropdown");
+        if (searchTimeout) clearTimeout(searchTimeout);
+        if (term === "") { dropdown.classList.remove("active"); dropdown.innerHTML = ""; return; }
+        searchTimeout = setTimeout(() => {
+            let leadResults = leads.filter(l => l.name.toLowerCase().includes(term));
+            let budgetResults = budgets.filter(b => b.category.toLowerCase().includes(term));
+            let marketingResults = marketingActivities.filter(m => m.title.toLowerCase().includes(term));
+            let reportResults = reportsList.filter(r => r.title.toLowerCase().includes(term));
+            let html = "";
+            if (leadResults.length) html += '<div class="p-2 bg-gray-50"><span class="text-xs font-semibold text-orange-600">Leads</span></div>';
+            leadResults.slice(0,5).forEach(l => html += `<div class="search-result-item" onclick="goToSectionAndSearch('leads','${l.name}')"><div class="font-medium">${l.name}</div><div class="text-xs text-gray-500">${formatCurrency(l.value)}</div></div>`);
+            if (budgetResults.length) html += '<div class="p-2 bg-gray-50"><span class="text-xs font-semibold text-green-600">Budget</span></div>';
+            budgetResults.slice(0,5).forEach(b => html += `<div class="search-result-item" onclick="goToSectionAndSearch('budget','${b.category}')"><div class="font-medium">${b.category}</div><div class="text-xs text-gray-500">${formatCurrency(b.amount)}</div></div>`);
+            if (marketingResults.length) html += '<div class="p-2 bg-gray-50"><span class="text-xs font-semibold text-blue-600">Marketing</span></div>';
+            marketingResults.slice(0,5).forEach(m => html += `<div class="search-result-item" onclick="goToSectionAndSearch('marketing','${m.title}')"><div class="font-medium">${m.title}</div><div class="text-xs text-gray-500">${formatCurrency(m.budget)}</div></div>`);
+            if (reportResults.length) html += '<div class="p-2 bg-gray-50"><span class="text-xs font-semibold text-purple-600">Reports</span></div>';
+            reportResults.slice(0,5).forEach(r => html += `<div class="search-result-item" onclick="goToSectionAndSearch('reports','${r.title}')"><div class="font-medium">${r.title}</div><div class="text-xs text-gray-500">${r.period}</div></div>`);
+            if (!html) html = '<div class="p-4 text-center text-gray-400">No results</div>';
+            dropdown.innerHTML = html; dropdown.classList.add("active");
+        }, 300);
+    }
+    
+    function goToSectionAndSearch(section, val) { let dd = document.getElementById("searchResultsDropdown"); if (dd) dd.classList.remove("active"); document.getElementById("globalSearchInput").value = val; showSection(section); showToast(`Showing results for "${val}"`); }
+    document.addEventListener("click", (e) => { let inp = document.getElementById("globalSearchInput"); let dd = document.getElementById("searchResultsDropdown"); if (inp && dd && !inp.contains(e.target) && !dd.contains(e.target)) dd.classList.remove("active"); });
+    
+    // ==================== MESSAGES ====================
+    function renderMessages() {
+        let conv = getConversationsForSales(); let unread = getUnreadMessagesCountForSales();
+        document.getElementById("msgBadge").innerText = unread;
+        let html = `<div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold"><i class="fas fa-envelope text-orange-500 mr-2"></i>Messages</h2><button onclick="openStartChatModal()" class="btn-primary text-white px-4 py-2 rounded-xl text-sm">+ New Chat</button></div><div class="bg-white rounded-xl p-3"><div class="space-y-2">`;
+        let has = false;
+        for (let d in conv) { has = true; let last = conv[d][conv[d].length-1]; let un = conv[d].filter(m => m.to === "Sales" && !m.read).length; html += `<div class="chat-conversation ${un>0?'chat-conversation-unread':''} border rounded-lg p-3 mb-2 flex justify-between items-center" onclick="openChatWith('${d}')"><div><p class="font-semibold text-sm">${d}</p><p class="text-xs text-gray-500 truncate w-48">${escapeHtml(last.message.substring(0,50))}</p></div><div class="text-right"><span class="text-[10px] text-gray-400">${new Date(last.created_at).toLocaleTimeString()}</span>${un>0?`<span class="ml-2 bg-red-500 text-white text-[9px] px-1.5 rounded-full">${un}</span>`:''}</div></div>`; }
+        html += (has?"":'<p class="text-gray-400 text-center py-6">No messages</p>')+"</div></div>";
+        document.getElementById("messagesSection").innerHTML = html;
+    }
+    function openStartChatModal() { document.getElementById("startChatModal").classList.remove("hidden"); document.getElementById("startChatModal").classList.add("flex"); }
+    function closeStartChatModal() { document.getElementById("startChatModal").classList.add("hidden"); document.getElementById("startChatModal").classList.remove("flex"); }
+    function sendNewChat() { let to = document.getElementById("chatRecipientSelect").value; let msg = document.getElementById("newChatMsg").value.trim(); if(!msg){ showToast("Enter message",true); return; } addCentralMessage("Sales", to, msg); addLog(`Sent message to ${to}`); showToast(`Sent to ${to}`); closeStartChatModal(); document.getElementById("newChatMsg").value=""; renderMessages(); document.getElementById("msgBadge").innerText=getUnreadMessagesCountForSales(); }
+    function openChatWith(dept) { currentChatWith=dept; let msgs=getCentralMessages().filter(m=>(m.from==="Sales"&&m.to===dept)||(m.from===dept&&m.to==="Sales")); msgs.forEach(m=>{ if(m.to==="Sales"&&!m.read) markMessageAsRead(m.id); }); renderMessages(); document.getElementById("msgBadge").innerText=getUnreadMessagesCountForSales(); let chatHtml=""; for(let m of msgs){ chatHtml+=`<div class="chat-bubble ${m.from==="Sales"?"chat-sent":"chat-received"}"><p class="text-[9px] text-gray-500">${m.from==="Sales"?"You":dept} · ${new Date(m.created_at).toLocaleTimeString()}</p><p class="text-sm">${escapeHtml(m.message)}</p><button onclick="deleteMessageFromChat(${m.id})" class="text-red-500 text-[9px] mt-1">Delete</button></div>`; } document.getElementById("chatModalTitle").innerHTML=`Chat with ${dept}`; document.getElementById("chatMessagesArea").innerHTML=chatHtml||'<div class="text-center text-gray-400 py-6">No messages</div>'; document.getElementById("chatModal").classList.remove("hidden"); document.getElementById("chatModal").classList.add("flex"); }
+    function sendChatMessage() { let msg=document.getElementById("chatInput").value.trim(); if(!msg||!currentChatWith) return; addCentralMessage("Sales", currentChatWith, msg); document.getElementById("chatInput").value=""; openChatWith(currentChatWith); }
+    function deleteMessageFromChat(id) { deleteMessageFromCentral(id); showToast("Message deleted"); openChatWith(currentChatWith); renderMessages(); document.getElementById("msgBadge").innerText=getUnreadMessagesCountForSales(); }
+    function closeChatModal() { document.getElementById("chatModal").classList.add("hidden"); document.getElementById("chatModal").classList.remove("flex"); renderMessages(); }
+    
+    // ==================== DASHBOARD ====================
+    function renderDashboard() {
+        let totalPipeline = leads.reduce((s, l) => s + parseFloat(l.value || 0), 0);
+        let wonValue = leads.filter(l => l.status === "won").reduce((s, l) => s + parseFloat(l.value || 0), 0);
+        let activeLeads = leads.filter(l => l.status !== "won" && l.status !== "lost").length;
+        let totalMarketingBudget = marketingActivities.reduce((s, a) => s + parseFloat(a.budget || 0), 0);
+        let activeAds = marketingActivities.filter(a => a.status === "active").length;
+        let totalBudget = budgets.reduce((s, b) => s + b.amount, 0);
+        let totalSpent = budgets.reduce((s, b) => s + b.spent, 0);
+        let budgetPercent = totalBudget > 0 ? (totalSpent / totalBudget * 100).toFixed(1) : 0;
+        let currentMonth = new Date().toLocaleString("default", { month: "long" });
+        let currentTarget = targets.find(t => t.month === currentMonth)?.target || 0;
+        let currentAchieved = targets.find(t => t.month === currentMonth)?.achieved || 0;
+        let targetPercent = currentTarget > 0 ? (currentAchieved / currentTarget * 100).toFixed(1) : 0;
+        
+        let html = `<div class="mb-4"><h2 class="text-xl font-bold text-gray-800">Sales Dashboard</h2><p class="text-xs text-gray-500">Track leads, budget, marketing, and performance</p></div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+                <div class="stat-card p-3 cursor-pointer" onclick="showSection('leads')"><div class="flex justify-between"><div><p class="text-gray-400 text-[9px] uppercase">Pipeline Value</p><p class="text-lg font-bold text-orange-600">${formatCurrency(totalPipeline)}</p><p class="text-[9px] text-gray-400">Active Leads: ${activeLeads}</p></div><div class="w-8 h-8 bg-orange-100 rounded-xl flex items-center justify-center"><i class="fas fa-chart-line text-orange-500 text-sm"></i></div></div></div>
+                <div class="stat-card p-3 cursor-pointer" onclick="showSection('leads')"><div class="flex justify-between"><div><p class="text-gray-400 text-[9px] uppercase">Won Deals</p><p class="text-lg font-bold text-green-600">${formatCurrency(wonValue)}</p><p class="text-[9px] text-gray-400">Closed won</p></div><div class="w-8 h-8 bg-green-100 rounded-xl flex items-center justify-center"><i class="fas fa-trophy text-green-500 text-sm"></i></div></div></div>
+                <div class="stat-card p-3 cursor-pointer" onclick="showSection('budget')"><div class="flex justify-between"><div><p class="text-gray-400 text-[9px] uppercase">Budget Usage</p><p class="text-lg font-bold text-blue-600">${budgetPercent}%</p><p class="text-[9px] text-gray-400">Spent: ${formatCurrency(totalSpent)}</p></div><div class="w-8 h-8 bg-blue-100 rounded-xl flex items-center justify-center"><i class="fas fa-wallet text-blue-500 text-sm"></i></div></div></div>
+                <div class="stat-card p-3 cursor-pointer" onclick="showSection('targets')"><div class="flex justify-between"><div><p class="text-gray-400 text-[9px] uppercase">Target Progress</p><p class="text-lg font-bold text-purple-600">${targetPercent}%</p><p class="text-[9px] text-gray-400">${currentMonth} target</p></div><div class="w-8 h-8 bg-purple-100 rounded-xl flex items-center justify-center"><i class="fas fa-bullseye text-purple-500 text-sm"></i></div></div></div>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-5">
+                <div class="bg-white rounded-xl p-3 shadow-sm"><h3 class="text-xs font-semibold mb-2"><i class="fas fa-chart-line text-orange-500 mr-1"></i>Monthly Sales Performance</h3><canvas id="salesChart" height="140"></canvas></div>
+                <div class="bg-white rounded-xl p-3 shadow-sm"><h3 class="text-xs font-semibold mb-2"><i class="fas fa-chart-pie text-purple-500 mr-1"></i>Lead Status Distribution</h3><canvas id="statusChart" height="140"></canvas></div>
+            </div>
+            <div class="bg-white rounded-xl p-3 shadow-sm"><div class="flex justify-between items-center mb-2"><h3 class="text-xs font-semibold"><i class="fas fa-chart-simple text-orange-500 mr-1"></i>Budget Summary</h3><button onclick="showSection('budget')" class="text-[10px] text-orange-500">View All →</button></div><div class="space-y-2 max-h-48 overflow-y-auto">${budgets.slice(0,4).map(b=>{ let p=(b.spent/b.amount)*100; return `<div><div class="flex justify-between text-[10px] mb-0.5"><span>${b.category}</span><span>${formatCurrency(b.spent)} / ${formatCurrency(b.amount)}</span></div><div class="w-full bg-gray-200 rounded-full h-1"><div class="${getProgressClass(p)} h-1 rounded-full" style="width:${Math.min(p,100)}%"></div></div></div>`; }).join('')}</div></div>`;
+        document.getElementById("dashboardSection").innerHTML = html;
+        
+        let monthlyData = {}; leads.forEach(l => { if (l.status === "won") { let m = new Date(l.created_at).toLocaleString("default", { month: "short" }); monthlyData[m] = (monthlyData[m] || 0) + parseFloat(l.value || 0); } });
+        let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"]; let chartData = months.map(m => (monthlyData[m] || 0) / 1000000);
+        let rc = document.getElementById("salesChart")?.getContext("2d"); if (rc) { if (revenueChart) revenueChart.destroy(); revenueChart = new Chart(rc, { type: "line", data: { labels: months, datasets: [{ label: "Won Deals (TZS M)", data: chartData, borderColor: "#f97316", fill: true, tension: 0.3 }] }, options: { responsive: true, maintainAspectRatio: true } }); }
+        
+        let statusCount = { new: 0, contacted: 0, negotiation: 0, won: 0, lost: 0 };
+        leads.forEach(l => statusCount[l.status] = (statusCount[l.status] || 0) + 1);
+        let sc = document.getElementById("statusChart")?.getContext("2d"); if (sc) { if (statusChart) statusChart.destroy(); statusChart = new Chart(sc, { type: "doughnut", data: { labels: ["New", "Contacted", "Negotiation", "Won", "Lost"], datasets: [{ data: [statusCount.new, statusCount.contacted, statusCount.negotiation, statusCount.won, statusCount.lost], backgroundColor: ["#3b82f6", "#f59e0b", "#8b5cf6", "#10b981", "#ef4444"] }] }, options: { responsive: true, maintainAspectRatio: true } }); }
+        document.getElementById("msgBadge").innerText = getUnreadMessagesCountForSales();
+    }
+    
+    // ==================== LEADS SECTION ====================
+    function renderLeads() {
+        let search = document.getElementById("globalSearchInput")?.value.toLowerCase() || "";
+        let filtered = leads.filter(l => l.name.toLowerCase().includes(search));
+        let totalPages = Math.ceil(filtered.length / rowsPerPage);
+        let start = (currentPage - 1) * rowsPerPage;
+        let paginated = filtered.slice(start, start + rowsPerPage);
+        
+        let html = `<div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold"><i class="fas fa-users text-orange-500 mr-2"></i>Leads Management</h2><button onclick="openLeadModal()" class="btn-primary text-white px-4 py-2 rounded-xl text-sm"><i class="fas fa-plus mr-1"></i>Add Lead</button></div>
+            <div class="bg-white rounded-xl shadow-sm p-3"><div class="table-responsive"><table class="w-full text-xs"><thead class="bg-gray-50"><tr><th class="px-2 py-2">Name</th><th class="px-2 py-2">Contact</th><th class="px-2 py-2">Value</th><th class="px-2 py-2">Status</th><th class="px-2 py-2">Date</th><th class="px-2 py-2">Actions</th></tr></thead><tbody>
+            ${paginated.map(l => `<tr class="border-b"><td class="px-2 py-2 font-medium">${escapeHtml(l.name)}<br><span class="text-[9px] text-gray-400">${escapeHtml(l.email || "-")}</span></td><td class="px-2 py-2 text-xs">${escapeHtml(l.phone || "-")}</td><td class="px-2 py-2 text-orange-600 font-semibold">${formatCurrency(l.value)}</td><td class="px-2 py-2"><span class="px-1.5 py-0.5 text-[8px] rounded-full ${getStatusClass(l.status)}">${getStatusText(l.status)}</span></td><td class="px-2 py-2 text-gray-400">${l.created_at}</td><td class="px-2 py-2"><button onclick="editLead(${l.id})" class="text-green-500 mr-1"><i class="fas fa-edit"></i></button><button onclick="deleteLead(${l.id})" class="text-red-500"><i class="fas fa-trash"></i></button></td></tr>`).join('')}
+            </tbody></table></div>${totalPages > 1 ? `<div class="flex justify-center gap-2 mt-3"><button onclick="changePage(${currentPage - 1})" class="px-2 py-1 border rounded text-xs">Prev</button><span class="text-xs">Page ${currentPage} of ${totalPages}</span><button onclick="changePage(${currentPage + 1})" class="px-2 py-1 border rounded text-xs">Next</button></div>` : ''}</div>
+            <div class="mt-3 flex gap-2"><button onclick="exportLeadsToExcel()" class="bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-excel mr-1"></i>Excel</button><button onclick="exportLeadsToPDF()" class="bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-pdf mr-1"></i>PDF</button></div>`;
+        document.getElementById("leadsSection").innerHTML = html;
+    }
+    
+    function openLeadModal() { document.getElementById("leadModal").classList.remove("hidden"); document.getElementById("leadModal").classList.add("flex"); document.getElementById("editLeadId").value = ""; document.getElementById("leadName").value = ""; document.getElementById("leadPhone").value = ""; document.getElementById("leadEmail").value = ""; document.getElementById("leadStatus").value = "new"; document.getElementById("leadValue").value = ""; document.getElementById("leadNotes").value = ""; }
+    function closeLeadModal() { document.getElementById("leadModal").classList.add("hidden"); document.getElementById("leadModal").classList.remove("flex"); }
+    function saveLead() { let name = document.getElementById("leadName").value.trim(); if (!name) { showToast("Enter customer name", true); return; } let id = document.getElementById("editLeadId").value; if (id) { let idx = leads.findIndex(l => l.id == id); if (idx !== -1) { leads[idx].name = name; leads[idx].phone = document.getElementById("leadPhone").value; leads[idx].email = document.getElementById("leadEmail").value; leads[idx].status = document.getElementById("leadStatus").value; leads[idx].value = parseFloat(document.getElementById("leadValue").value) || 0; leads[idx].notes = document.getElementById("leadNotes").value; addLog(`Updated lead: ${name}`); showToast("Lead updated"); } } else { leads.unshift({ id: Date.now(), name: name, phone: document.getElementById("leadPhone").value, email: document.getElementById("leadEmail").value, status: document.getElementById("leadStatus").value, value: parseFloat(document.getElementById("leadValue").value) || 0, notes: document.getElementById("leadNotes").value, created_at: new Date().toISOString().split("T")[0] }); addLog(`Added lead: ${name}`); showToast("Lead added"); } closeLeadModal(); renderLeads(); renderDashboard(); }
+    function editLead(id) { let lead = leads.find(l => l.id === id); if (lead) { document.getElementById("editLeadId").value = lead.id; document.getElementById("leadName").value = lead.name; document.getElementById("leadPhone").value = lead.phone || ""; document.getElementById("leadEmail").value = lead.email || ""; document.getElementById("leadStatus").value = lead.status; document.getElementById("leadValue").value = lead.value; document.getElementById("leadNotes").value = lead.notes || ""; document.getElementById("leadModal").classList.remove("hidden"); document.getElementById("leadModal").classList.add("flex"); } }
+    function deleteLead(id) { if (confirm("Delete this lead?")) { leads = leads.filter(l => l.id !== id); addLog("Deleted lead"); showToast("Lead deleted"); renderLeads(); renderDashboard(); } }
+    function changePage(page) { if (page > 0 && page <= Math.ceil(leads.length / rowsPerPage)) { currentPage = page; renderLeads(); } }
+    function exportLeadsToExcel() { let ws = [["Name","Phone","Email","Status","Value","Date"]]; leads.forEach(l => ws.push([l.name, l.phone || "", l.email || "", l.status, l.value, l.created_at])); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), "Leads"); XLSX.writeFile(wb, `leads_${new Date().toISOString().slice(0,10)}.xlsx`); showToast("Leads exported to Excel"); }
+    function exportLeadsToPDF() { let element = document.createElement("div"); element.innerHTML = `<div style="padding:15px"><h1 style="color:#f97316">Sales Leads Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr>${leads.map(l => `<div><strong>${l.name}</strong><br>Value: ${formatCurrency(l.value)}<br>Status: ${l.status}</div><hr>`).join("")}</div>`; html2pdf().set({ margin: 0.5, filename: `leads_report.pdf` }).from(element).save(); showToast("Leads exported to PDF"); }
+    
+    // ==================== BUDGET SECTION (with Description Column) ====================
+    function renderBudget() {
+        let search = document.getElementById("globalSearchInput")?.value.toLowerCase() || "";
+        let filtered = budgets.filter(b => b.category.toLowerCase().includes(search));
+        let totalBudget = filtered.reduce((s, b) => s + b.amount, 0);
+        let totalSpent = filtered.reduce((s, b) => s + b.spent, 0);
+        let totalRemaining = totalBudget - totalSpent;
+        let percent = totalBudget > 0 ? (totalSpent / totalBudget * 100).toFixed(1) : 0;
+        
+        let totalPages = Math.ceil(filtered.length / budgetRowsPerPage);
+        let start = (currentBudgetPage - 1) * budgetRowsPerPage;
+        let paginated = filtered.slice(start, start + budgetRowsPerPage);
+        
+        let html = `<div class="mb-4"><div class="flex justify-between items-center flex-wrap gap-2"><h2 class="text-xl font-bold"><i class="fas fa-wallet text-orange-500 mr-2"></i>Budget Management</h2><button onclick="openBudgetModal()" class="btn-primary text-white px-4 py-2 rounded-xl text-sm"><i class="fas fa-plus mr-1"></i>Add Budget</button></div>
+            <div class="grid grid-cols-3 gap-3 mt-3"><div class="bg-green-50 rounded-xl p-2 text-center"><p class="text-[9px] text-gray-500">Total Budget</p><p class="text-base font-bold text-green-600">${formatCurrency(totalBudget)}</p></div><div class="bg-orange-50 rounded-xl p-2 text-center"><p class="text-[9px] text-gray-500">Total Spent</p><p class="text-base font-bold text-orange-600">${formatCurrency(totalSpent)}</p></div><div class="bg-blue-50 rounded-xl p-2 text-center"><p class="text-[9px] text-gray-500">Remaining</p><p class="text-base font-bold text-blue-600">${formatCurrency(totalRemaining)}</p></div></div>
+            <div class="mt-3 w-full bg-gray-200 rounded-full h-2"><div class="${getProgressClass(percent)} h-2 rounded-full" style="width:${Math.min(percent,100)}%"></div></div><p class="text-[10px] text-gray-500 text-center mt-1">${percent}% of budget used</p></div>
+            <div class="bg-white rounded-xl shadow-sm p-3"><div class="table-responsive"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th class="px-3 py-2 text-left">Category</th><th class="px-3 py-2 text-left">Budget Amount</th><th class="px-3 py-2 text-left">Amount Spent</th><th class="px-3 py-2 text-left">Remaining</th><th class="px-3 py-2 text-left">Usage</th><th class="px-3 py-2 text-left">Description</th><th class="px-3 py-2 text-left">Actions</th></tr></thead><tbody>
+            ${paginated.map(b => { let remaining = b.amount - b.spent; let p = (b.spent / b.amount * 100).toFixed(1); return `<tr class="border-b hover:bg-gray-50"><td class="px-3 py-2 font-medium">${escapeHtml(b.category)}</td><td class="px-3 py-2 text-green-600 font-semibold">${formatCurrency(b.amount)}</td><td class="px-3 py-2 text-orange-600">${formatCurrency(b.spent)}</td><td class="px-3 py-2 ${remaining<0?'text-red-600':'text-blue-600'}">${formatCurrency(remaining)}</td><td class="px-3 py-2"><div class="w-24"><div class="w-full bg-gray-200 rounded-full h-1.5"><div class="${getProgressClass(p)} h-1.5 rounded-full" style="width:${Math.min(p,100)}%"></div></div><span class="text-[9px]">${p}%</span></div></td><td class="px-3 py-2 text-xs text-gray-500 max-w-[200px] truncate" title="${escapeHtml(b.description || '')}">${escapeHtml(b.description || '-')}</td><td class="px-3 py-2"><div class="flex gap-1"><button onclick="viewBudget(${b.id})" class="text-blue-500 text-sm p-1"><i class="fas fa-eye"></i></button><button onclick="editBudget(${b.id})" class="text-green-500 text-sm p-1"><i class="fas fa-edit"></i></button><button onclick="deleteBudget(${b.id})" class="text-red-500 text-sm p-1"><i class="fas fa-trash"></i></button></div></td></tr>`; }).join('')}
+            </tbody>}></div>${totalPages > 1 ? `<div class="flex justify-center gap-2 mt-3"><button onclick="changeBudgetPage(${currentBudgetPage - 1})" class="px-2 py-1 border rounded text-xs">Prev</button><span class="text-xs">Page ${currentBudgetPage} of ${totalPages}</span><button onclick="changeBudgetPage(${currentBudgetPage + 1})" class="px-2 py-1 border rounded text-xs">Next</button></div>` : ''}</div>
+            <div class="mt-3 flex gap-2"><button onclick="exportBudgetToExcel()" class="bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-excel mr-1"></i>Excel</button><button onclick="exportBudgetToPDF()" class="bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-pdf mr-1"></i>PDF</button></div>`;
+        document.getElementById("budgetSection").innerHTML = html;
+    }
+    
+    function changeBudgetPage(page) { if (page > 0 && page <= Math.ceil(budgets.length / budgetRowsPerPage)) { currentBudgetPage = page; renderBudget(); } }
+    
+    function openBudgetModal() { document.getElementById("editBudgetId").value = ""; document.getElementById("budgetCategory").value = "Overall"; document.getElementById("budgetAmount").value = ""; document.getElementById("budgetSpent").value = "0"; document.getElementById("budgetDescription").value = ""; document.getElementById("budgetModalTitle").innerHTML = '<i class="fas fa-plus-circle text-orange-500 mr-2"></i>Add Budget'; document.getElementById("budgetModal").classList.remove("hidden"); document.getElementById("budgetModal").classList.add("flex"); }
+    function closeBudgetModal() { document.getElementById("budgetModal").classList.add("hidden"); document.getElementById("budgetModal").classList.remove("flex"); }
+    
+    function saveBudget() { let id = document.getElementById("editBudgetId").value; let category = document.getElementById("budgetCategory").value; let amount = parseFloat(document.getElementById("budgetAmount").value); let spent = parseFloat(document.getElementById("budgetSpent").value) || 0; let description = document.getElementById("budgetDescription").value; if (!category || !amount) { showToast("Please fill category and amount", true); return; } if (id) { let idx = budgets.findIndex(b => b.id == id); if (idx !== -1) { budgets[idx] = { ...budgets[idx], category, amount, spent, description }; addLog(`Updated budget: ${category}`); showToast("Budget updated"); } } else { budgets.push({ id: Date.now(), category, amount, spent, description, created_at: new Date().toISOString().split("T")[0] }); addLog(`Added budget: ${category}`); showToast("Budget added"); } closeBudgetModal(); renderBudget(); renderDashboard(); }
+    
+    function editBudget(id) { let b = budgets.find(b => b.id === id); if (b) { document.getElementById("editBudgetId").value = b.id; document.getElementById("budgetCategory").value = b.category; document.getElementById("budgetAmount").value = b.amount; document.getElementById("budgetSpent").value = b.spent; document.getElementById("budgetDescription").value = b.description || ""; document.getElementById("budgetModalTitle").innerHTML = '<i class="fas fa-edit text-orange-500 mr-2"></i>Edit Budget'; document.getElementById("budgetModal").classList.remove("hidden"); document.getElementById("budgetModal").classList.add("flex"); } }
+    
+    function viewBudget(id) { let b = budgets.find(b => b.id === id); if (b) { let remaining = b.amount - b.spent; let percent = (b.spent / b.amount * 100).toFixed(1); document.getElementById("viewBudgetContent").innerHTML = `<div class="space-y-3"><div class="border-b pb-2"><h4 class="font-bold text-base">${escapeHtml(b.category)}</h4><p class="text-xs text-gray-500">Created: ${b.created_at || 'N/A'}</p></div><div class="grid grid-cols-2 gap-3 text-sm"><div><strong>Budget Amount:</strong></div><div class="text-green-600 font-semibold">${formatCurrency(b.amount)}</div><div><strong>Amount Spent:</strong></div><div class="text-orange-600">${formatCurrency(b.spent)}</div><div><strong>Remaining:</strong></div><div class="${remaining<0?'text-red-600':'text-blue-600'} font-semibold">${formatCurrency(remaining)}</div><div><strong>Usage:</strong></div><div><div class="w-full bg-gray-200 rounded-full h-1.5 mt-1"><div class="${getProgressClass(percent)} h-1.5 rounded-full" style="width:${Math.min(percent,100)}%"></div></div><span class="text-[10px]">${percent}% used</span></div></div>${b.description ? `<div class="border-t pt-2"><strong>Description:</strong><p class="text-sm mt-1">${escapeHtml(b.description)}</p></div>` : ''}</div>`; document.getElementById("viewBudgetModal").classList.remove("hidden"); document.getElementById("viewBudgetModal").classList.add("flex"); } }
+    function closeViewBudgetModal() { document.getElementById("viewBudgetModal").classList.add("hidden"); document.getElementById("viewBudgetModal").classList.remove("flex"); }
+    
+    function deleteBudget(id) { if (confirm("Delete this budget item?")) { budgets = budgets.filter(b => b.id !== id); addLog("Deleted budget item"); showToast("Budget deleted"); renderBudget(); renderDashboard(); } }
+    
+    function exportBudgetToExcel() { let ws = [["Category","Budget Amount","Amount Spent","Remaining","Usage %","Description"]]; budgets.forEach(b => { let remaining = b.amount - b.spent; let p = (b.spent / b.amount * 100).toFixed(1); ws.push([b.category, b.amount, b.spent, remaining, p, b.description || ""]); }); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), "Budget"); XLSX.writeFile(wb, `budget_${new Date().toISOString().slice(0,10)}.xlsx`); showToast("Budget exported to Excel"); }
+    function exportBudgetToPDF() { let element = document.createElement("div"); let rows = budgets.map(b => { let remaining = b.amount - b.spent; let p = (b.spent / b.amount * 100).toFixed(1); return `<tr><td>${b.category}</td><td>${formatCurrency(b.amount)}</td><td>${formatCurrency(b.spent)}</td><td>${formatCurrency(remaining)}</td><td>${p}%</td><td>${b.description || '-'}</td>`; }).join(''); element.innerHTML = `<div style="padding:20px"><h1 style="color:#f97316">Sales Budget Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr><table border="1" cellpadding="8"><thead><tr style="background:#f97316;color:white"><th>Category</th><th>Budget</th><th>Spent</th><th>Remaining</th><th>Usage</th><th>Description</th></tr></thead><tbody>${rows}</tbody>}</div>`; html2pdf().set({ margin: 0.5, filename: `budget_report.pdf` }).from(element).save(); showToast("Budget exported to PDF"); }
+    
+    // ==================== MARKETING SECTION (with Export) ====================
+    function renderMarketing() {
+        let html = `<div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold"><i class="fas fa-chart-line text-orange-500 mr-2"></i>Marketing Activities</h2><button onclick="openMarketingModal()" class="btn-primary text-white px-4 py-2 rounded-xl text-sm"><i class="fas fa-plus mr-1"></i>Add Activity</button></div>
+            <div class="grid gap-3 max-h-96 overflow-y-auto" id="marketingGrid"></div>
+            <div class="mt-3 bg-white rounded-xl p-3"><canvas id="marketingChart" height="120"></canvas></div>
+            <div class="mt-3 flex gap-2"><button onclick="exportMarketingToExcel()" class="bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-excel mr-1"></i>Excel</button><button onclick="exportMarketingToPDF()" class="bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-pdf mr-1"></i>PDF</button><button onclick="printMarketing()" class="bg-gray-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-print mr-1"></i>Print</button></div>`;
+        document.getElementById("marketingSection").innerHTML = html;
+        
+        let gridHtml = ""; marketingActivities.forEach(a => { gridHtml += `<div class="ad-card p-3 cursor-pointer" onclick="viewMarketingDetails(${a.id})"><div class="flex justify-between items-start"><div><div class="flex items-center gap-2"><i class="fas fa-${a.type === "social_media" ? "facebook" : a.type === "tv_radio" ? "tv" : a.type === "print" ? "newspaper" : a.type === "digital" ? "google" : "calendar-alt"} text-orange-500 text-sm"></i><h4 class="font-semibold text-sm">${escapeHtml(a.title)}</h4><span class="px-1.5 py-0.5 text-[8px] rounded-full ${getStatusClass(a.status)}">${getStatusText(a.status)}</span></div><p class="text-xs text-gray-500 mt-1"><i class="far fa-calendar-alt mr-1"></i>${a.date} | Budget: ${formatCurrency(a.budget)}</p><p class="text-xs text-gray-600 mt-1">${escapeHtml(a.description.substring(0, 80))}${a.description.length > 80 ? "..." : ""}</p>${a.results ? `<p class="text-[10px] text-green-600 mt-1"><i class="fas fa-chart-line"></i> Results: ${escapeHtml(a.results)}</p>` : ""}</div><div class="flex gap-1"><button onclick="event.stopPropagation(); editMarketingActivity(${a.id})" class="text-green-500 text-xs p-1"><i class="fas fa-edit"></i></button><button onclick="event.stopPropagation(); deleteMarketingActivity(${a.id})" class="text-red-500 text-xs p-1"><i class="fas fa-trash"></i></button><button onclick="event.stopPropagation(); viewMarketingDetails(${a.id})" class="text-blue-500 text-xs p-1"><i class="fas fa-eye"></i></button></div></div></div>`; });
+        document.getElementById("marketingGrid").innerHTML = gridHtml || "<p class='text-gray-400 text-center py-6 text-sm'>No marketing activities yet</p>";
+        
+        let budgetByType = {}; marketingActivities.forEach(a => { budgetByType[a.type] = (budgetByType[a.type] || 0) + parseFloat(a.budget); });
+        let mc = document.getElementById("marketingChart")?.getContext("2d"); if (mc) { new Chart(mc, { type: "bar", data: { labels: Object.keys(budgetByType).map(t => getAdTypeText(t)), datasets: [{ label: "Budget (TZS M)", data: Object.values(budgetByType).map(v => v / 1000000), backgroundColor: "#f97316", borderRadius: 8 }] }, options: { responsive: true, maintainAspectRatio: true } }); }
+    }
+    
+    function openMarketingModal() { document.getElementById("marketingModal").classList.remove("hidden"); document.getElementById("marketingModal").classList.add("flex"); document.getElementById("editActivityId").value = ""; document.getElementById("adTitle").value = ""; document.getElementById("adType").value = "social_media"; document.getElementById("adBudget").value = ""; document.getElementById("adDate").value = new Date().toISOString().split("T")[0]; document.getElementById("adDescription").value = ""; document.getElementById("adResults").value = ""; document.getElementById("adStatus").value = "planned"; }
+    function closeMarketingModal() { document.getElementById("marketingModal").classList.add("hidden"); document.getElementById("marketingModal").classList.remove("flex"); }
+    
+    function saveMarketingActivity() { let title = document.getElementById("adTitle").value.trim(); if (!title) { showToast("Please enter activity title", true); return; } let id = document.getElementById("editActivityId").value; if (id) { let idx = marketingActivities.findIndex(a => a.id == id); if (idx !== -1) { marketingActivities[idx].title = title; marketingActivities[idx].type = document.getElementById("adType").value; marketingActivities[idx].budget = parseFloat(document.getElementById("adBudget").value) || 0; marketingActivities[idx].date = document.getElementById("adDate").value; marketingActivities[idx].description = document.getElementById("adDescription").value; marketingActivities[idx].results = document.getElementById("adResults").value; marketingActivities[idx].status = document.getElementById("adStatus").value; addLog(`Updated marketing: ${title}`); showToast("Activity updated"); } } else { marketingActivities.unshift({ id: Date.now(), title: title, type: document.getElementById("adType").value, budget: parseFloat(document.getElementById("adBudget").value) || 0, date: document.getElementById("adDate").value, description: document.getElementById("adDescription").value, results: document.getElementById("adResults").value, status: document.getElementById("adStatus").value, created_at: new Date().toISOString().split("T")[0] }); addLog(`Added marketing: ${title}`); showToast("Activity added"); } closeMarketingModal(); renderMarketing(); renderDashboard(); }
+    
+    function editMarketingActivity(id) { let a = marketingActivities.find(a => a.id === id); if (a) { document.getElementById("editActivityId").value = a.id; document.getElementById("adTitle").value = a.title; document.getElementById("adType").value = a.type; document.getElementById("adBudget").value = a.budget; document.getElementById("adDate").value = a.date; document.getElementById("adDescription").value = a.description; document.getElementById("adResults").value = a.results || ""; document.getElementById("adStatus").value = a.status; document.getElementById("marketingModal").classList.remove("hidden"); document.getElementById("marketingModal").classList.add("flex"); } }
+    function deleteMarketingActivity(id) { if (confirm("Delete this activity?")) { marketingActivities = marketingActivities.filter(a => a.id !== id); addLog("Deleted marketing activity"); showToast("Activity deleted"); renderMarketing(); renderDashboard(); } }
+    function viewMarketingDetails(id) { let a = marketingActivities.find(a => a.id === id); if (a) { document.getElementById("marketingDetailsContent").innerHTML = `<div class="space-y-3"><div class="flex items-center gap-2"><i class="fas fa-${a.type === "social_media" ? "facebook" : a.type === "tv_radio" ? "tv" : a.type === "print" ? "newspaper" : a.type === "digital" ? "google" : "calendar-alt"} text-orange-500 text-xl"></i><h4 class="text-lg font-bold">${escapeHtml(a.title)}</h4></div><div class="grid grid-cols-2 gap-2 text-sm"><div><strong>Type:</strong> ${getAdTypeText(a.type)}</div><div><strong>Budget:</strong> ${formatCurrency(a.budget)}</div><div><strong>Date:</strong> ${a.date}</div><div><strong>Status:</strong> ${a.status}</div></div><div><strong>Description:</strong><p class="text-sm mt-1">${escapeHtml(a.description)}</p></div>${a.results ? `<div><strong>Results:</strong><p class="text-sm text-green-600 mt-1">${escapeHtml(a.results)}</p></div>` : ""}</div>`; document.getElementById("marketingDetailsModal").classList.remove("hidden"); document.getElementById("marketingDetailsModal").classList.add("flex"); } }
+    function closeMarketingDetailsModal() { document.getElementById("marketingDetailsModal").classList.add("hidden"); document.getElementById("marketingDetailsModal").classList.remove("flex"); }
+    function exportMarketingToExcel() { let ws = [["Title","Type","Budget","Date","Status","Description","Results"]]; marketingActivities.forEach(a => ws.push([a.title, getAdTypeText(a.type), a.budget, a.date, a.status, a.description, a.results || ""])); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), "Marketing"); XLSX.writeFile(wb, `marketing_${new Date().toISOString().slice(0,10)}.xlsx`); showToast("Marketing exported to Excel"); }
+    function exportMarketingToPDF() { let element = document.createElement("div"); element.innerHTML = `<div style="padding:15px"><h1 style="color:#f97316">Marketing Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr>${marketingActivities.map(a => `<div><strong>${a.title}</strong><br>Budget: ${formatCurrency(a.budget)}<br>Date: ${a.date}<br>Status: ${a.status}<br>${a.results ? `Results: ${a.results}` : ''}</div><hr>`).join("")}</div>`; html2pdf().set({ margin: 0.5, filename: `marketing_report.pdf` }).from(element).save(); showToast("Marketing exported to PDF"); }
+    function printMarketing() { window.print(); }
+    
+    // ==================== REPORTS SECTION (with View, Edit, Delete, Export, Send) ====================
+    function renderReports() {
+        let html = `<div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold"><i class="fas fa-chart-bar text-orange-500 mr-2"></i>Reports</h2><button onclick="openAddReportModal()" class="btn-primary text-white px-4 py-2 rounded-xl text-sm"><i class="fas fa-plus mr-1"></i>Add Report</button></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+                <div class="bg-white rounded-xl p-3 shadow-sm"><h3 class="text-xs font-semibold mb-2">Generate Report</h3><div class="grid grid-cols-2 gap-2 mb-3"><button onclick="generateReport('daily')" class="bg-orange-500 text-white py-1 rounded text-xs">Daily</button><button onclick="generateReport('weekly')" class="bg-orange-500 text-white py-1 rounded text-xs">Weekly</button><button onclick="generateReport('monthly')" class="bg-orange-500 text-white py-1 rounded text-xs">Monthly</button><button onclick="generateReport('yearly')" class="bg-orange-500 text-white py-1 rounded text-xs">Yearly</button></div><div class="flex gap-2"><button onclick="exportSalesToExcel()" class="flex-1 bg-green-600 text-white py-1.5 rounded text-xs"><i class="fas fa-file-excel mr-1"></i>Excel</button><button onclick="exportSalesToPDF()" class="flex-1 bg-red-600 text-white py-1.5 rounded text-xs"><i class="fas fa-file-pdf mr-1"></i>PDF</button><button onclick="window.print()" class="flex-1 bg-gray-600 text-white py-1.5 rounded text-xs"><i class="fas fa-print mr-1"></i>Print</button></div></div>
+                <div class="bg-white rounded-xl p-3 shadow-sm"><h3 class="text-xs font-semibold mb-2">Sales Summary</h3><div class="grid grid-cols-2 gap-2 text-sm"><div><p class="text-gray-400 text-[9px]">Total Leads</p><p class="font-bold">${leads.length}</p></div><div><p class="text-gray-400 text-[9px]">Pipeline Value</p><p class="font-bold text-orange-600">${formatCurrency(leads.reduce((s,l) => s + parseFloat(l.value), 0))}</p></div><div><p class="text-gray-400 text-[9px]">Won Deals</p><p class="font-bold text-green-600">${leads.filter(l => l.status === "won").length}</p></div><div><p class="text-gray-400 text-[9px]">Budget Used</p><p class="font-bold text-blue-600">${formatCurrency(budgets.reduce((s,b) => s + b.spent, 0))}</p></div></div></div>
+            </div>
+            <div class="bg-white rounded-xl p-3 shadow-sm"><h3 class="text-xs font-semibold mb-2">Saved Reports</h3><div class="space-y-2">${reportsList.map(r => `<div class="border rounded-lg p-3"><div class="flex justify-between items-start"><div><h4 class="font-semibold text-sm">${escapeHtml(r.title)}</h4><span class="text-[9px] px-1.5 py-0.5 rounded-full bg-${r.period === 'daily' ? 'blue' : r.period === 'weekly' ? 'green' : r.period === 'monthly' ? 'purple' : 'orange'}-100">${r.period}</span><p class="text-[10px] text-gray-500 mt-1">${escapeHtml(r.content.substring(0, 80))}...</p></div><div class="flex gap-1"><button onclick="viewReportDetail(${r.id})" class="text-blue-500 text-sm p-1" title="View"><i class="fas fa-eye"></i></button><button onclick="editReportDetail(${r.id})" class="text-green-500 text-sm p-1" title="Edit"><i class="fas fa-edit"></i></button><button onclick="deleteReportDetail(${r.id})" class="text-red-500 text-sm p-1" title="Delete"><i class="fas fa-trash"></i></button><button onclick="exportSingleReport(${r.id}, 'excel')" class="text-green-600 text-sm p-1" title="Export Excel"><i class="fas fa-file-excel"></i></button><button onclick="exportSingleReport(${r.id}, 'pdf')" class="text-red-600 text-sm p-1" title="Export PDF"><i class="fas fa-file-pdf"></i></button><button onclick="openSendReportModal(${r.id})" class="text-purple-600 text-sm p-1" title="Send"><i class="fas fa-paper-plane"></i></button></div></div></div>`).join('') || '<p class="text-gray-400 text-center py-4 text-sm">No reports yet</p>'}</div></div>`;
+        document.getElementById("reportsSection").innerHTML = html;
+    }
+    
+    function openAddReportModal() { document.getElementById("addReportModal").classList.remove("hidden"); document.getElementById("addReportModal").classList.add("flex"); document.getElementById("newReportTitle").value = ""; document.getElementById("newReportPeriod").value = "monthly"; document.getElementById("newReportContent").value = ""; }
+    function closeAddReportModal() { document.getElementById("addReportModal").classList.add("hidden"); document.getElementById("addReportModal").classList.remove("flex"); }
+    function addReport() { let title = document.getElementById("newReportTitle").value.trim(); let period = document.getElementById("newReportPeriod").value; let content = document.getElementById("newReportContent").value.trim(); if (!title || !content) { showToast("Please fill title and content", true); return; } reportsList.unshift({ id: Date.now(), title, period, content, status: "draft", created_at: new Date().toISOString() }); addLog(`Added report: ${title}`); showToast("Report added"); closeAddReportModal(); renderReports(); renderDashboard(); }
+    
+    function viewReportDetail(id) { let r = reportsList.find(r => r.id === id); if (r) { alert(`📄 ${r.title}\n\nPeriod: ${r.period}\nDate: ${new Date(r.created_at).toLocaleString()}\n\nContent:\n${r.content}`); } }
+    function editReportDetail(id) { let r = reportsList.find(r => r.id === id); if (r) { document.getElementById("editReportId").value = r.id; document.getElementById("editReportTitle").value = r.title; document.getElementById("editReportPeriod").value = r.period; document.getElementById("editReportContent").value = r.content; document.getElementById("editReportModal").classList.remove("hidden"); document.getElementById("editReportModal").classList.add("flex"); } }
+    function closeEditReportModal() { document.getElementById("editReportModal").classList.add("hidden"); document.getElementById("editReportModal").classList.remove("flex"); }
+    function updateReport() { let id = parseInt(document.getElementById("editReportId").value); let idx = reportsList.findIndex(r => r.id === id); if (idx !== -1) { reportsList[idx].title = document.getElementById("editReportTitle").value; reportsList[idx].period = document.getElementById("editReportPeriod").value; reportsList[idx].content = document.getElementById("editReportContent").value; addLog(`Updated report: ${reportsList[idx].title}`); showToast("Report updated"); closeEditReportModal(); renderReports(); } }
+    function deleteReportDetail(id) { if (confirm("Delete this report?")) { reportsList = reportsList.filter(r => r.id !== id); addLog("Deleted report"); showToast("Report deleted"); renderReports(); } }
+    
+    function exportSingleReport(reportId, format) {
+        let report = reportsList.find(r => r.id === reportId);
+        if (!report) return;
+        let title = report.title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+        let filename = `${title}_${new Date().toISOString().slice(0,10)}`;
+        if (format === 'excel') {
+            let ws = [["Title","Period","Content","Date","Status"]];
+            ws.push([report.title, report.period, report.content, report.created_at, report.status]);
+            let wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), "Report");
+            XLSX.writeFile(wb, `${filename}.xlsx`);
+            showToast("Report exported to Excel");
+        } else if (format === 'pdf') {
+            let element = document.createElement("div");
+            element.innerHTML = `<div style="padding:20px"><h1 style="color:#f97316">${escapeHtml(report.title)}</h1><p><strong>Period:</strong> ${report.period}</p><p><strong>Date:</strong> ${new Date(report.created_at).toLocaleString()}</p><hr><div style="margin-top:15px">${escapeHtml(report.content)}</div><p style="margin-top:20px">Generated: ${new Date().toLocaleString()}</p></div>`;
+            html2pdf().set({ margin: 0.5, filename: `${filename}.pdf` }).from(element).save();
+            showToast("Report exported to PDF");
+        }
+    }
+    
+    function openSendReportModal(reportId) {
+        let report = reportsList.find(r => r.id === reportId);
+        if (report) {
+            pendingSendReportId = reportId;
+            document.getElementById("sendReportId").value = reportId;
+            document.getElementById("sendReportInfo").innerHTML = `<strong>${escapeHtml(report.title)}</strong><br>Period: ${report.period}`;
+            document.getElementById("sendToDepartment").value = "";
+            document.getElementById("sendAdditionalMessage").value = "";
+            document.getElementById("sendReportModal").classList.remove("hidden");
+            document.getElementById("sendReportModal").classList.add("flex");
+        }
+    }
+    
+    function closeSendReportModal() { document.getElementById("sendReportModal").classList.add("hidden"); document.getElementById("sendReportModal").classList.remove("flex"); pendingSendReportId = null; }
+    
+    function confirmSendReport() {
+        let toDept = document.getElementById("sendToDepartment").value;
+        if (!toDept) { showToast("Please select department", true); return; }
+        let report = reportsList.find(r => r.id === pendingSendReportId);
+        if (report) {
+            let message = `REPORT FROM SALES:\nTitle: ${report.title}\nPeriod: ${report.period}\nDate: ${new Date(report.created_at).toLocaleString()}\n\n${report.content}`;
+            let extra = document.getElementById("sendAdditionalMessage").value.trim();
+            if (extra) message += `\n\nAdditional message: ${extra}`;
+            addCentralMessage("Sales", toDept, message);
+            addLog(`Sent report "${report.title}" to ${toDept}`);
+            showToast(`Report sent to ${toDept}`);
+            closeSendReportModal();
+            renderMessages();
+        }
+    }
+    
+    function generateReport(period) { alert(`📊 ${period.toUpperCase()} REPORT\n\nTotal Leads: ${leads.length}\nPipeline Value: ${formatCurrency(leads.reduce((s,l) => s + parseFloat(l.value), 0))}\nWon Deals: ${leads.filter(l => l.status === "won").length}\nBudget Used: ${formatCurrency(budgets.reduce((s,b)=>s+b.spent,0))} / ${formatCurrency(budgets.reduce((s,b)=>s+b.amount,0))}\n\nGenerated: ${new Date().toLocaleString()}`); showToast(`${period} report generated`); }
+    function exportSalesToExcel() { let ws = [["Lead Name","Phone","Email","Status","Value","Date"]]; leads.forEach(l => ws.push([l.name, l.phone || "", l.email || "", l.status, l.value, l.created_at])); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), "Sales Data"); XLSX.writeFile(wb, `sales_data_${new Date().toISOString().slice(0,10)}.xlsx`); showToast("Sales data exported to Excel"); }
+    function exportSalesToPDF() { let element = document.createElement("div"); element.innerHTML = `<div style="padding:15px"><h1 style="color:#f97316">Sales Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr><h3>Leads Summary</h3>${leads.map(l => `<div>${l.name} - ${formatCurrency(l.value)} - ${l.status}</div>`).join("")}<hr><h3>Budget Summary</h3>${budgets.map(b => `<div>${b.category}: ${formatCurrency(b.spent)} / ${formatCurrency(b.amount)}</div>`).join("")}</div>`; html2pdf().set({ margin: 0.5, filename: `sales_report.pdf` }).from(element).save(); showToast("Sales data exported to PDF"); }
+    
+    // ==================== TARGETS SECTION ====================
+    function renderTargets() {
+        let html = `<div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold"><i class="fas fa-bullseye text-orange-500 mr-2"></i>Sales Targets</h2><button onclick="openTargetModal()" class="btn-primary text-white px-4 py-2 rounded-xl text-sm"><i class="fas fa-plus mr-1"></i>Set Target</button></div>
+            <div class="bg-white rounded-xl p-4 shadow-sm"><div class="space-y-4">${targets.map(t => { let p = (t.achieved / t.target) * 100; return `<div><div class="flex justify-between text-sm mb-1"><span class="font-medium">${t.month}</span><span>${formatCurrency(t.achieved)} / ${formatCurrency(t.target)}</span></div><div class="w-full bg-gray-200 rounded-full h-2"><div class="${getProgressClass(p)} h-2 rounded-full" style="width: ${Math.min(p, 100)}%"></div></div><p class="text-[10px] text-gray-400 mt-0.5">${p.toFixed(1)}% achieved</p></div>`; }).join('')}</div></div>`;
+        document.getElementById("targetsSection").innerHTML = html;
+    }
+    function openTargetModal() { document.getElementById("targetModal").classList.remove("hidden"); document.getElementById("targetModal").classList.add("flex"); document.getElementById("targetAmount").value = ""; }
+    function closeTargetModal() { document.getElementById("targetModal").classList.add("hidden"); document.getElementById("targetModal").classList.remove("flex"); }
+    function setTarget() { let month = document.getElementById("targetMonth").value; let amount = parseFloat(document.getElementById("targetAmount").value); if (!amount) { showToast("Enter target amount", true); return; } let existing = targets.find(t => t.month === month); if (existing) existing.target = amount; else targets.push({ month: month, target: amount, achieved: 0 }); addLog(`Set target for ${month}: ${formatCurrency(amount)}`); showToast(`Target set for ${month}`); closeTargetModal(); renderTargets(); renderDashboard(); }
+    
+    // ==================== SETTINGS SECTION (with more color options) ====================
+    function renderSettings() {
+        let logsHtml = activityLogs.slice(0, 15).map(l => `<div class="text-[10px] border-b py-1"><span>${escapeHtml(l.action)}</span><span class="float-right text-gray-400">${new Date(l.created_at).toLocaleString()}</span></div>`).join('');
+        let html = `<h2 class="text-xl font-bold mb-4"><i class="fas fa-cog mr-2"></i>Settings</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-white rounded-xl p-4 shadow-sm"><h3 class="font-semibold text-sm mb-2"><i class="fas fa-palette mr-2 text-orange-500"></i>Dashboard Color</h3><div class="color-palette"><div class="color-option" style="background:#ea580c" onclick="changeColor('#ea580c', this)"></div><div class="color-option" style="background:#f97316" onclick="changeColor('#f97316', this)"></div><div class="color-option" style="background:#3b82f6" onclick="changeColor('#3b82f6', this)"></div><div class="color-option" style="background:#10b981" onclick="changeColor('#10b981', this)"></div><div class="color-option" style="background:#8b5cf6" onclick="changeColor('#8b5cf6', this)"></div><div class="color-option" style="background:#ef4444" onclick="changeColor('#ef4444', this)"></div><div class="color-option" style="background:#06b6d4" onclick="changeColor('#06b6d4', this)"></div><div class="color-option" style="background:#ec4899" onclick="changeColor('#ec4899', this)"></div><div class="color-option" style="background:#84cc16" onclick="changeColor('#84cc16', this)"></div><div class="color-option" style="background:#6366f1" onclick="changeColor('#6366f1', this)"></div></div><p class="text-xs text-gray-400 mt-2">Click any color to change sidebar</p></div>
+                <div class="bg-white rounded-xl p-4 shadow-sm"><h3 class="font-semibold text-sm mb-2"><i class="fas fa-database mr-2 text-green-500"></i>Backup & Restore</h3><div class="flex gap-2"><button onclick="createBackup()" class="flex-1 bg-green-600 text-white py-2 rounded-lg text-xs"><i class="fas fa-download mr-1"></i>Backup</button><button onclick="restoreBackup()" class="flex-1 bg-orange-600 text-white py-2 rounded-lg text-xs"><i class="fas fa-upload mr-1"></i>Restore</button></div></div>
+                <div class="bg-white rounded-xl p-4 shadow-sm"><h3 class="font-semibold text-sm mb-2"><i class="fas fa-history mr-2 text-blue-500"></i>Activity Logs</h3><div class="max-h-32 overflow-y-auto text-xs border rounded-lg p-2 bg-gray-50">${logsHtml}</div><button onclick="clearLogs()" class="w-full mt-2 bg-red-600 text-white py-1.5 rounded-lg text-xs"><i class="fas fa-trash mr-1"></i>Clear Logs</button></div>
+                <div class="bg-white rounded-xl p-4 shadow-sm"><h3 class="font-semibold text-sm mb-2"><i class="fas fa-info-circle mr-2 text-purple-500"></i>System Info</h3><p class="text-xs"><strong>Version:</strong> 2.0.0</p><p class="text-xs mt-1"><strong>Leads:</strong> ${leads.length}</p><p class="text-xs mt-1"><strong>Budget Items:</strong> ${budgets.length}</p><p class="text-xs mt-1"><strong>Marketing:</strong> ${marketingActivities.length}</p><p class="text-xs mt-1"><strong>Reports:</strong> ${reportsList.length}</p></div>
+            </div>`;
+        document.getElementById("settingsSection").innerHTML = html;
+    }
+    
+    function changeColor(color, el) { document.querySelectorAll(".color-option").forEach(opt => opt.classList.remove("selected")); el.classList.add("selected"); document.getElementById("mainSidebar").style.background = color; localStorage.setItem("sidebar_color", color); showToast("Sidebar color changed"); }
+    function createBackup() { let backup = { leads, budgets, marketingActivities, reportsList, targets, activityLogs, timestamp: new Date().toISOString() }; let blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" }); let url = URL.createObjectURL(blob); let a = document.createElement("a"); a.href = url; a.download = `sales_backup_${new Date().toISOString().slice(0,19)}.json`; a.click(); URL.revokeObjectURL(url); addLog("Created backup"); showToast("Backup created"); }
+    function restoreBackup() { let inp = document.createElement("input"); inp.type = "file"; inp.accept = "application/json"; inp.onchange = (e) => { let file = e.target.files[0]; if (!file) return; let reader = new FileReader(); reader.onload = (evt) => { try { let data = JSON.parse(evt.target.result); if (data.leads) leads = data.leads; if (data.budgets) budgets = data.budgets; if (data.marketingActivities) marketingActivities = data.marketingActivities; if (data.reportsList) reportsList = data.reportsList; if (data.targets) targets = data.targets; addLog("Restored from backup"); showToast("Backup restored! Reloading..."); setTimeout(() => location.reload(), 1500); } catch(err) { showToast("Invalid backup file", true); } }; reader.readAsText(file); }; inp.click(); }
+    function clearLogs() { if (confirm("Clear all activity logs?")) { activityLogs = [{ action: "Logs cleared", created_at: new Date().toISOString() }]; renderSettings(); showToast("Logs cleared"); } }
+    
+    // ==================== NAVIGATION ====================
+    function showSection(sectionId) {
+        let sections = ["dashboardSection","leadsSection","budgetSection","marketingSection","messagesSection","reportsSection","targetsSection","settingsSection"];
+        sections.forEach(s => { let el = document.getElementById(s); if (el) el.classList.add("hidden"); });
+        document.getElementById(`${sectionId}Section`).classList.remove("hidden");
+        document.querySelectorAll(".nav-item").forEach(nav => nav.classList.remove("active"));
+        document.querySelector(`.nav-item[data-section="${sectionId}"]`)?.classList.add("active");
+        if (sectionId === "dashboard") renderDashboard();
+        else if (sectionId === "leads") renderLeads();
+        else if (sectionId === "budget") renderBudget();
+        else if (sectionId === "marketing") renderMarketing();
+        else if (sectionId === "messages") renderMessages();
+        else if (sectionId === "reports") renderReports();
+        else if (sectionId === "targets") renderTargets();
+        else if (sectionId === "settings") renderSettings();
+    }
+    
+    // ==================== INIT ====================
+    function init() {
+        let container = document.getElementById("mainContentContainer");
+        container.innerHTML = `<div id="dashboardSection"></div><div id="leadsSection" class="hidden"></div><div id="budgetSection" class="hidden"></div><div id="marketingSection" class="hidden"></div><div id="messagesSection" class="hidden"></div><div id="reportsSection" class="hidden"></div><div id="targetsSection" class="hidden"></div><div id="settingsSection" class="hidden"></div>`;
+        renderDashboard();
+        
+        document.querySelectorAll(".nav-item").forEach(nav => nav.addEventListener("click", (e) => { e.preventDefault(); showSection(nav.dataset.section); }));
+        document.getElementById("mobileMenuBtn")?.addEventListener("click", () => { document.getElementById("mainSidebar").classList.add("mobile-open"); document.getElementById("mobileMenuOverlay").classList.add("open"); });
+        document.getElementById("logoutBtn")?.addEventListener("click", logout);
+        document.getElementById("profileBtn")?.addEventListener("click", () => document.getElementById("profileDropdown")?.classList.toggle("hidden"));
+        document.addEventListener("click", (e) => { if (!document.getElementById("profileBtn")?.contains(e.target)) document.getElementById("profileDropdown")?.classList.add("hidden"); });
+        
+        let searchInput = document.getElementById("globalSearchInput"); if (searchInput) searchInput.addEventListener("input", performGlobalSearch);
+        
+        let savedDark = localStorage.getItem("sales_dark_mode");
+        if (savedDark === "true") document.body.classList.add("dark-mode");
+        document.getElementById("darkModeToggle")?.addEventListener("click", () => { document.body.classList.toggle("dark-mode"); localStorage.setItem("sales_dark_mode", document.body.classList.contains("dark-mode")); let icon = document.getElementById("darkModeIcon"); if (document.body.classList.contains("dark-mode")) { icon.classList.remove("fa-moon"); icon.classList.add("fa-sun"); } else { icon.classList.remove("fa-sun"); icon.classList.add("fa-moon"); } showToast(document.body.classList.contains("dark-mode") ? "Dark mode enabled" : "Light mode enabled"); });
+        
+        let savedColor = localStorage.getItem("sidebar_color");
+        if (savedColor) document.getElementById("mainSidebar").style.background = savedColor;
+        
+        let scrollBtn = document.createElement("div"); scrollBtn.className = "scroll-top"; scrollBtn.innerHTML = '<i class="fas fa-arrow-up"></i>'; document.body.appendChild(scrollBtn); scrollBtn.onclick = () => window.scrollTo({ top: 0, behavior: "smooth" }); window.addEventListener("scroll", () => scrollBtn.classList.toggle("visible", window.scrollY > 300));
+        
+        addLog("Sales Dashboard initialized");
+    }
+    
+    window.closeMobileSidebar = () => { document.getElementById("mainSidebar").classList.remove("mobile-open"); document.getElementById("mobileMenuOverlay").classList.remove("open"); };
+    window.goToMainWebsite = () => window.location.href = "index.html";
+    window.showSection = showSection;
+    window.openLeadModal = openLeadModal; window.closeLeadModal = closeLeadModal; window.saveLead = saveLead;
+    window.editLead = editLead; window.deleteLead = deleteLead; window.changePage = changePage;
+    window.exportLeadsToExcel = exportLeadsToExcel; window.exportLeadsToPDF = exportLeadsToPDF;
+    window.openBudgetModal = openBudgetModal; window.closeBudgetModal = closeBudgetModal; window.saveBudget = saveBudget;
+    window.editBudget = editBudget; window.viewBudget = viewBudget; window.closeViewBudgetModal = closeViewBudgetModal;
+    window.deleteBudget = deleteBudget; window.changeBudgetPage = changeBudgetPage;
+    window.exportBudgetToExcel = exportBudgetToExcel; window.exportBudgetToPDF = exportBudgetToPDF;
+    window.openMarketingModal = openMarketingModal; window.closeMarketingModal = closeMarketingModal; window.saveMarketingActivity = saveMarketingActivity;
+    window.editMarketingActivity = editMarketingActivity; window.deleteMarketingActivity = deleteMarketingActivity;
+    window.viewMarketingDetails = viewMarketingDetails; window.closeMarketingDetailsModal = closeMarketingDetailsModal;
+    window.exportMarketingToExcel = exportMarketingToExcel; window.exportMarketingToPDF = exportMarketingToPDF; window.printMarketing = printMarketing;
+    window.openStartChatModal = openStartChatModal; window.closeStartChatModal = closeStartChatModal; window.sendNewChat = sendNewChat;
+    window.openChatWith = openChatWith; window.sendChatMessage = sendChatMessage; window.deleteMessageFromChat = deleteMessageFromChat; window.closeChatModal = closeChatModal;
+    window.openAddReportModal = openAddReportModal; window.closeAddReportModal = closeAddReportModal; window.addReport = addReport;
+    window.viewReportDetail = viewReportDetail; window.editReportDetail = editReportDetail; window.closeEditReportModal = closeEditReportModal;
+    window.updateReport = updateReport; window.deleteReportDetail = deleteReportDetail;
+    window.exportSingleReport = exportSingleReport;
+    window.openSendReportModal = openSendReportModal; window.closeSendReportModal = closeSendReportModal; window.confirmSendReport = confirmSendReport;
+    window.generateReport = generateReport; window.exportSalesToExcel = exportSalesToExcel; window.exportSalesToPDF = exportSalesToPDF;
+    window.openTargetModal = openTargetModal; window.closeTargetModal = closeTargetModal; window.setTarget = setTarget;
+    window.changeColor = changeColor; window.createBackup = createBackup; window.restoreBackup = restoreBackup; window.clearLogs = clearLogs;
+    window.logout = logout;
+    
+    init();
+</script>
+</body>
+</html>

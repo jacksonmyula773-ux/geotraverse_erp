@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>GeoTraverse | Super Admin Dashboard</title>
+    <title>GeoTraverse | Super Admin Dashboard - ERP System</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -66,7 +66,7 @@
         .report-card:hover { transform: translateY(-2px); box-shadow: 0 5px 12px rgba(0,0,0,0.08); }
         
         .relative { position: relative; }
-        [id^="exportDropdown-"], [id^="projectExportDropdown-"] { z-index: 100; }
+        [id^="exportDropdown-"], [id^="projectExportDropdown-"], [id^="transactionExportDropdown-"] { z-index: 100; }
         
         .dropdown-content { position: absolute; right: 0; margin-top: 4px; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 100; min-width: 100px; border: 1px solid #e5e7eb; }
         .dropdown-content button { display: flex; align-items: center; gap: 8px; padding: 8px 12px; font-size: 12px; width: 100%; text-align: left; }
@@ -145,6 +145,14 @@
         input, select, textarea { font-size: 13px; padding: 8px 12px; }
         
         .action-buttons { display: flex; flex-wrap: wrap; gap: 6px; }
+        
+        .transaction-row:hover { background-color: #f9fafb; }
+        .dark-mode .transaction-row:hover { background-color: #334155; }
+        
+        .income-row { background-color: #f0fdf4; }
+        .expense-row { background-color: #fef2f2; }
+        .dark-mode .income-row { background-color: #064e3b20; }
+        .dark-mode .expense-row { background-color: #7f1d1d20; }
     </style>
 </head>
 <body>
@@ -229,7 +237,7 @@
                 <div class="flex-1 max-w-md mx-4 relative">
                     <div class="relative">
                         <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
-                        <input type="text" id="globalSearchInput" placeholder="Search employees, projects, reports..." class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-purple-500">
+                        <input type="text" id="globalSearchInput" placeholder="Search employees, projects, reports, transactions..." class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-purple-500">
                         <div id="searchResultsDropdown" class="search-results-dropdown"></div>
                     </div>
                 </div>
@@ -242,45 +250,6 @@
         <div class="p-5" id="mainContentContainer"></div>
     </main>
 </div>
-</div>
-
-<!-- Add Report Modal -->
-<div id="addReportModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-xl w-full max-w-md modal-pop">
-        <div class="px-5 py-3 border-b flex justify-between items-center">
-            <h3 class="text-lg font-bold"><i class="fas fa-plus-circle mr-2 text-purple-500"></i>Add New Report</h3>
-            <button onclick="closeAddReportModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
-        </div>
-        <div class="p-5 space-y-3">
-            <input type="text" id="newReportTitle" placeholder="Report Title" class="w-full p-2.5 border rounded-lg text-sm">
-            <select id="newReportDepartment" class="w-full p-2.5 border rounded-lg text-sm">
-                <option value="super_admin">Super Admin</option>
-                <option value="finance">Finance</option>
-                <option value="sales_marketing">Sales & Marketing</option>
-                <option value="manager">Manager</option>
-                <option value="survey">Survey</option>
-                <option value="construction">Construction</option>
-                <option value="bricks_timber">Bricks & Timber</option>
-                <option value="aluminium">Aluminium</option>
-                <option value="town_planning">Town Planning</option>
-                <option value="hatimiliki">Hatimiliki</option>
-                <option value="architectural">Architectural</option>
-                <option value="secretary">Secretary</option>
-            </select>
-            <select id="newReportPeriod" class="w-full p-2.5 border rounded-lg text-sm">
-                <option value="daily">Daily Report</option>
-                <option value="weekly">Weekly Report</option>
-                <option value="monthly">Monthly Report</option>
-                <option value="quarterly">Quarterly Report</option>
-                <option value="annual">Annual Report</option>
-            </select>
-            <textarea id="newReportContent" rows="5" placeholder="Report Content..." class="w-full p-2.5 border rounded-lg text-sm"></textarea>
-            <div class="flex gap-3 pt-2">
-                <button onclick="createNewReport()" class="flex-1 bg-purple-600 text-white py-2 rounded-lg text-sm">Create Report</button>
-                <button onclick="closeAddReportModal()" class="flex-1 bg-gray-200 py-2 rounded-lg text-sm">Cancel</button>
-            </div>
-        </div>
-    </div>
 </div>
 
 <!-- Add Employee Modal -->
@@ -393,7 +362,51 @@
     </div>
 </div>
 
-<!-- Project Modal -->
+<!-- Add Transaction Modal -->
+<div id="addTransactionModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full modal-pop">
+        <div class="px-5 py-3 border-b flex justify-between items-center">
+            <h3 class="text-lg font-bold"><i class="fas fa-plus-circle text-purple-500 mr-2"></i>Add New Transaction</h3>
+            <button onclick="closeAddTransactionModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+        </div>
+        <div class="p-5 space-y-3">
+            <select id="addTransType" class="w-full p-2.5 border rounded-lg text-sm">
+                <option value="income">Income</option>
+                <option value="expense">Expense</option>
+            </select>
+            <select id="addTransDepartment" class="w-full p-2.5 border rounded-lg text-sm">
+                <option value="super_admin">Super Admin</option>
+                <option value="finance">Finance</option>
+                <option value="sales_marketing">Sales & Marketing</option>
+                <option value="manager">Manager</option>
+                <option value="survey">Survey</option>
+                <option value="construction">Construction</option>
+                <option value="bricks_timber">Bricks & Timber</option>
+                <option value="aluminium">Aluminium</option>
+                <option value="town_planning">Town Planning</option>
+                <option value="hatimiliki">Hatimiliki</option>
+                <option value="architectural">Architectural</option>
+                <option value="secretary">Secretary</option>
+            </select>
+            <input type="text" id="addTransSource" placeholder="Source/Category" class="w-full p-2.5 border rounded-lg text-sm">
+            <input type="number" id="addTransAmount" placeholder="Amount (TZS)" class="w-full p-2.5 border rounded-lg text-sm">
+            <input type="date" id="addTransDate" class="w-full p-2.5 border rounded-lg text-sm">
+            <input type="number" id="addTransPaidAmount" placeholder="Amount Paid (if partial)" class="w-full p-2.5 border rounded-lg text-sm" value="0">
+            <select id="addTransStatus" class="w-full p-2.5 border rounded-lg text-sm">
+                <option value="paid">Paid (Full)</option>
+                <option value="partial">Partial Payment</option>
+                <option value="pending">Pending</option>
+            </select>
+            <textarea id="addTransDesc" rows="2" placeholder="Description (optional)" class="w-full p-2.5 border rounded-lg text-sm"></textarea>
+            <div class="flex gap-3 pt-2">
+                <button onclick="saveNewTransaction()" class="flex-1 bg-purple-600 text-white py-2 rounded-lg text-sm">Save Transaction</button>
+                <button onclick="closeAddTransactionModal()" class="flex-1 bg-gray-200 py-2 rounded-lg text-sm">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Project Modal -->
 <div id="projectModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
     <div class="bg-white rounded-xl w-full max-w-md modal-pop" style="max-height: 85vh; overflow-y: auto;">
         <div class="px-5 py-3 border-b flex justify-between items-center sticky top-0 bg-white">
@@ -473,6 +486,50 @@
         </div>
         <div class="p-5" id="viewProjectContent"></div>
         <div class="px-5 pb-5"><button onclick="closeViewProjectModal()" class="w-full bg-gray-100 py-2 rounded-lg text-sm">Close</button></div>
+    </div>
+</div>
+
+<!-- View Transaction Modal -->
+<div id="viewTransactionModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl w-full max-w-md modal-pop">
+        <div class="px-5 py-3 border-b flex justify-between items-center">
+            <h3 class="text-lg font-bold">Transaction Details</h3>
+            <button onclick="closeViewTransactionModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+        </div>
+        <div class="p-5" id="viewTransactionContent"></div>
+        <div class="px-5 pb-5"><button onclick="closeViewTransactionModal()" class="w-full bg-gray-100 py-2 rounded-lg text-sm">Close</button></div>
+    </div>
+</div>
+
+<!-- Edit Transaction Modal -->
+<div id="editTransactionModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl w-full max-w-md modal-pop">
+        <div class="px-5 py-3 border-b flex justify-between items-center">
+            <h3 class="text-lg font-bold">Edit Transaction</h3>
+            <button onclick="closeEditTransactionModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+        </div>
+        <div class="p-5 space-y-3">
+            <input type="hidden" id="editTransactionId">
+            <select id="editTransType" class="w-full p-2 border rounded-lg text-sm">
+                <option value="income">Income</option>
+                <option value="expense">Expense</option>
+            </select>
+            <input type="text" id="editTransSource" placeholder="Source/Category" class="w-full p-2 border rounded-lg text-sm">
+            <input type="number" id="editTransAmount" placeholder="Amount (TZS)" class="w-full p-2 border rounded-lg text-sm">
+            <input type="date" id="editTransDate" class="w-full p-2 border rounded-lg text-sm">
+            <input type="number" id="editTransPaidAmount" placeholder="Paid Amount" class="w-full p-2 border rounded-lg text-sm">
+            <select id="editTransStatus" class="w-full p-2 border rounded-lg text-sm">
+                <option value="paid">Paid</option>
+                <option value="partial">Partial Payment</option>
+                <option value="pending">Pending</option>
+            </select>
+            <input type="text" id="editTransDepartment" placeholder="Department" class="w-full p-2 border rounded-lg text-sm">
+            <textarea id="editTransDesc" rows="2" placeholder="Description" class="w-full p-2 border rounded-lg text-sm"></textarea>
+            <div class="flex gap-3 pt-2">
+                <button onclick="updateTransaction()" class="flex-1 bg-purple-600 text-white py-2 rounded-lg text-sm">Update</button>
+                <button onclick="closeEditTransactionModal()" class="flex-1 bg-gray-200 py-2 rounded-lg text-sm">Cancel</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -632,22 +689,25 @@
         if (!localStorage.getItem('geotraverse_transactions')) {
             localStorage.setItem('geotraverse_transactions', JSON.stringify([
                 { id: 1, type: "income", department: "finance", source: "TBL Payment", amount: 450000000, paid_amount: 450000000, status: "paid", description: "Construction project payment", transaction_date: "2024-04-01" },
-                { id: 2, type: "expense", department: "finance", source: "Salaries", amount: 15000000, paid_amount: 15000000, status: "paid", description: "Staff salaries", transaction_date: "2024-04-05" },
-                { id: 3, type: "income", department: "sales_marketing", source: "Client Payment", amount: 380000000, paid_amount: 200000000, status: "partial", description: "Partial payment", transaction_date: "2024-04-10" }
+                { id: 2, type: "expense", department: "finance", source: "Salaries", amount: 15000000, paid_amount: 15000000, status: "paid", description: "Staff salaries March", transaction_date: "2024-04-05" },
+                { id: 3, type: "income", department: "sales_marketing", source: "Client Payment", amount: 380000000, paid_amount: 200000000, status: "partial", description: "Partial payment from client", transaction_date: "2024-04-10" },
+                { id: 4, type: "expense", department: "manager", source: "Office Supplies", amount: 2000000, paid_amount: 2000000, status: "paid", description: "Office stationery", transaction_date: "2024-04-12" }
             ]));
         }
         
         if (!localStorage.getItem('geotraverse_messages')) {
             localStorage.setItem('geotraverse_messages', JSON.stringify([
-                { id: 1, from_department: "finance", to_department: "super_admin", message: "Monthly report is ready", is_read: false, created_at: new Date(Date.now() - 2*24*60*60*1000).toISOString() },
-                { id: 2, from_department: "sales_marketing", to_department: "super_admin", message: "Q1 sales target achieved", is_read: false, created_at: new Date(Date.now() - 1*24*60*60*1000).toISOString() }
+                { id: 1, from_department: "finance", to_department: "super_admin", message: "Monthly financial report is ready for review", is_read: false, created_at: new Date(Date.now() - 2*24*60*60*1000).toISOString() },
+                { id: 2, from_department: "sales_marketing", to_department: "super_admin", message: "Q2 sales forecast has been submitted", is_read: false, created_at: new Date(Date.now() - 1*24*60*60*1000).toISOString() },
+                { id: 3, from_department: "manager", to_department: "super_admin", message: "Project update meeting scheduled for Friday", is_read: true, created_at: new Date(Date.now() - 3*24*60*60*1000).toISOString() }
             ]));
         }
         
         if (!localStorage.getItem('geotraverse_reports')) {
             localStorage.setItem('geotraverse_reports', JSON.stringify([
-                { id: 1, department: "finance", title: "March Report", period: "monthly", content: "Revenue: TZS 450M, Expenses: TZS 25M, Net Profit: TZS 425M", status: "unread", created_at: new Date(Date.now() - 5*24*60*60*1000).toISOString() },
-                { id: 2, department: "sales_marketing", title: "Q1 Sales Report", period: "quarterly", content: "Achieved 90% of target. Total sales: TZS 540M", status: "unread", created_at: new Date(Date.now() - 3*24*60*60*1000).toISOString() }
+                { id: 1, department: "finance", title: "March Financial Report", period: "monthly", content: "Revenue: TZS 450M, Expenses: TZS 25M, Net Profit: TZS 425M", status: "unread", created_at: new Date(Date.now() - 5*24*60*60*1000).toISOString() },
+                { id: 2, department: "sales_marketing", title: "Q1 Sales Performance", period: "quarterly", content: "Achieved 90% of target. Total sales: TZS 540M", status: "unread", created_at: new Date(Date.now() - 3*24*60*60*1000).toISOString() },
+                { id: 3, department: "manager", title: "Project Status Report", period: "weekly", content: "All projects on track. No major issues.", status: "read", created_at: new Date(Date.now() - 1*24*60*60*1000).toISOString() }
             ]));
         }
         
@@ -719,17 +779,21 @@
             let employees = JSON.parse(localStorage.getItem('geotraverse_employees') || '[]');
             let projects = JSON.parse(localStorage.getItem('geotraverse_projects') || '[]');
             let reports = JSON.parse(localStorage.getItem('geotraverse_reports') || '[]');
+            let transactions = JSON.parse(localStorage.getItem('geotraverse_transactions') || '[]');
             let empResults = employees.filter(e => e.name.toLowerCase().includes(term));
             let projResults = projects.filter(p => p.name.toLowerCase().includes(term));
             let reportResults = reports.filter(r => r.title.toLowerCase().includes(term));
+            let transResults = transactions.filter(t => t.source.toLowerCase().includes(term));
             let html = '';
             if (empResults.length) html += '<div class="p-2 bg-gray-50 text-xs font-semibold text-purple-600">Employees</div>';
-            empResults.slice(0,5).forEach(e => html += `<div class="search-result-item" onclick="goToSectionAndSearch('employees','${e.name}')">${escapeHtml(e.name)}<div class="text-[10px] text-gray-500">${escapeHtml(e.email)}</div></div>`);
+            empResults.slice(0,3).forEach(e => html += `<div class="search-result-item" onclick="goToSectionAndSearch('employees','${e.name}')">${escapeHtml(e.name)}</div>`);
             if (projResults.length) html += '<div class="p-2 bg-gray-50 text-xs font-semibold text-green-600">Projects</div>';
-            projResults.slice(0,5).forEach(p => html += `<div class="search-result-item" onclick="goToSectionAndSearch('projects','${p.name}')">${escapeHtml(p.name)}<div class="text-[10px] text-gray-500">Client: ${escapeHtml(p.client_name)}</div></div>`);
-            if (reportResults.length) html += '<div class="p-2 bg-gray-50 text-xs font-semibold text-orange-600">Reports</div>';
-            reportResults.slice(0,5).forEach(r => html += `<div class="search-result-item" onclick="goToSectionAndSearch('reports','${r.title}')">${escapeHtml(r.title)}<div class="text-[10px] text-gray-500">From: ${r.department}</div></div>`);
-            if (!html) html = '<div class="p-4 text-center text-gray-400">No results found</div>';
+            projResults.slice(0,3).forEach(p => html += `<div class="search-result-item" onclick="goToSectionAndSearch('projects','${p.name}')">${escapeHtml(p.name)}</div>`);
+            if (transResults.length) html += '<div class="p-2 bg-gray-50 text-xs font-semibold text-orange-600">Transactions</div>';
+            transResults.slice(0,3).forEach(t => html += `<div class="search-result-item" onclick="goToSectionAndSearch('cashflow','${t.source}')">${escapeHtml(t.source)}</div>`);
+            if (reportResults.length) html += '<div class="p-2 bg-gray-50 text-xs font-semibold text-blue-600">Reports</div>';
+            reportResults.slice(0,3).forEach(r => html += `<div class="search-result-item" onclick="goToSectionAndSearch('reports','${r.title}')">${escapeHtml(r.title)}</div>`);
+            if (!html) html = '<div class="p-3 text-center text-gray-400 text-xs">No results</div>';
             dropdown.innerHTML = html; dropdown.classList.add('active');
         }, 300);
     }
@@ -745,10 +809,10 @@
         let inp = document.getElementById('globalSearchInput');
         let dd = document.getElementById('searchResultsDropdown');
         if (inp && dd && !inp.contains(e.target) && !dd.contains(e.target)) dd.classList.remove('active');
-        // Close export dropdowns when clicking outside
-        if (!e.target.closest('[onclick*="toggleExportDropdown"]') && !e.target.closest('[onclick*="toggleProjectExportDropdown"]')) {
-            document.querySelectorAll('[id^="exportDropdown-"]').forEach(dropdown => dropdown.classList.add('hidden'));
-            document.querySelectorAll('[id^="projectExportDropdown-"]').forEach(dropdown => dropdown.classList.add('hidden'));
+        if (!e.target.closest('[onclick*="toggleExportDropdown"]') && !e.target.closest('[onclick*="toggleProjectExportDropdown"]') && !e.target.closest('[onclick*="toggleTransactionExportDropdown"]')) {
+            document.querySelectorAll('[id^="exportDropdown-"]').forEach(d => d.classList.add('hidden'));
+            document.querySelectorAll('[id^="projectExportDropdown-"]').forEach(d => d.classList.add('hidden'));
+            document.querySelectorAll('[id^="transactionExportDropdown-"]').forEach(d => d.classList.add('hidden'));
         }
     });
     
@@ -812,12 +876,15 @@
             employees.forEach(e => data.push([e.name, e.email, e.department, e.role, e.salary, e.status]));
         } else if (type === 'projects') {
             let projects = JSON.parse(localStorage.getItem('geotraverse_projects') || '[]');
-            data = [['Name','Client','Amount','Status','Progress','Location']];
-            projects.forEach(p => data.push([p.name, p.client_name, p.amount, p.status, p.progress, p.location]));
+            data = [['Name','Client','Amount','Status','Progress','Location','Start Date']];
+            projects.forEach(p => data.push([p.name, p.client_name, p.amount, p.status, p.progress, p.location || 'N/A', p.start_date || 'N/A']));
         } else if (type === 'transactions') {
             let trans = JSON.parse(localStorage.getItem('geotraverse_transactions') || '[]');
-            data = [['Date','Department','Type','Source','Amount','Paid','Status']];
-            trans.forEach(t => data.push([t.transaction_date, t.department, t.type, t.source, t.amount, t.paid_amount || 0, t.status]));
+            data = [['Date','Department','Type','Source','Amount','Paid','Balance','Status','Description']];
+            trans.forEach(t => {
+                let balance = t.type === 'income' ? (t.amount - (t.paid_amount || 0)) : 0;
+                data.push([t.transaction_date, t.department, t.type, t.source, t.amount, t.paid_amount || 0, balance, t.status, t.description || '']);
+            });
         } else if (type === 'reports') {
             let reports = JSON.parse(localStorage.getItem('geotraverse_reports') || '[]');
             data = [['Department','Title','Period','Content','Date','Status']];
@@ -833,16 +900,16 @@
         let content = '';
         if (type === 'employees') {
             let employees = JSON.parse(localStorage.getItem('geotraverse_employees') || '[]');
-            content = `<h1 style="color:#7c3aed">Employees Report</h1><table border="1" cellpadding="8" style="width:100%;border-collapse:collapse"><tr><th>Name</th><th>Email</th><th>Department</th><th>Role</th><th>Salary</th></tr>${employees.map(e => `<tr><td>${e.name}</td><td>${e.email}</td><td>${e.department}</td><td>${e.role}</td><td>${e.salary}</td></tr>`).join('')}</table>`;
+            content = `<h1 style="color:#7c3aed">Employees Report</h1><table border="1" cellpadding="8" style="width:100%;border-collapse:collapse"><tr><th>Name</th><th>Email</th><th>Department</th><th>Role</th><th>Salary</th></tr>${employees.map(e => `<tr><td>${e.name}</td><td>${e.email}</td><td>${e.department}</td><td>${e.role}</td><td>${e.salary}</td>`).join('')}</table>`;
         } else if (type === 'projects') {
             let projects = JSON.parse(localStorage.getItem('geotraverse_projects') || '[]');
-            content = `<h1 style="color:#7c3aed">Projects Report</h1><table border="1" cellpadding="8"><tr><th>Name</th><th>Client</th><th>Amount</th><th>Status</th><th>Progress</th></tr>${projects.map(p => `<tr><td>${p.name}</td><td>${p.client_name}</td><td>${p.amount}</td><td>${p.status}</td><td>${p.progress}%</td></tr>`).join('')}</table>`;
+            content = `<h1 style="color:#7c3aed">Projects Report</h1><table border="1" cellpadding="8"><tr><th>Name</th><th>Client</th><th>Amount</th><th>Status</th><th>Progress</th></tr>${projects.map(p => `<tr><td>${p.name}</td><td>${p.client_name}</td><td>${p.amount}</td><td>${p.status}</td><td>${p.progress}%</td>`).join('')}</table>`;
         } else if (type === 'transactions') {
             let trans = JSON.parse(localStorage.getItem('geotraverse_transactions') || '[]');
-            content = `<h1 style="color:#7c3aed">Transactions Report</h1><table border="1" cellpadding="8"><tr><th>Date</th><th>Department</th><th>Type</th><th>Source</th><th>Amount</th><th>Status</th></tr>${trans.map(t => `<tr><td>${t.transaction_date}</td><td>${t.department}</td><td>${t.type}</td><td>${t.source}</td><td>${t.amount}</td><td>${t.status}</td></tr>`).join('')}</table>`;
+            content = `<h1 style="color:#7c3aed">Transactions Report</h1><table border="1" cellpadding="8"><tr><th>Date</th><th>Department</th><th>Type</th><th>Source</th><th>Amount</th><th>Status</th></tr>${trans.map(t => `<tr><td class="px-2 py-1">${t.transaction_date}</td><td class="px-2 py-1">${t.department}</td><td class="px-2 py-1">${t.type}</td><td class="px-2 py-1">${t.source}</td><td class="px-2 py-1">${formatCurrency(t.amount)}</td><td class="px-2 py-1">${t.status}</td></tr>`).join('')}能得到`;
         } else if (type === 'reports') {
             let reports = JSON.parse(localStorage.getItem('geotraverse_reports') || '[]');
-            content = `<h1 style="color:#7c3aed">Reports Summary</h1><table border="1" cellpadding="8"><tr><th>Department</th><th>Title</th><th>Period</th><th>Content</th><th>Date</th></tr>${reports.map(r => `<tr><td>${r.department}</td><td>${r.title}</td><td>${r.period}</td><td>${r.content.substring(0,100)}</td><td>${r.created_at}</td></tr>`).join('')}</table>`;
+            content = `<h1 style="color:#7c3aed">Reports Summary</h1><table border="1" cellpadding="8"><tr><th>Department</th><th>Title</th><th>Period</th><th>Content</th><th>Date</th></tr>${reports.map(r => `<tr><td class="px-2 py-1">${r.department}</td><td class="px-2 py-1">${r.title}</td><td class="px-2 py-1">${r.period}</td><td class="px-2 py-1">${r.content.substring(0,100)}</td><td class="px-2 py-1">${r.created_at}</td></tr>`).join('')}能得到`;
         }
         let element = document.createElement('div');
         element.innerHTML = `<div style="padding:20px">${content}<p style="margin-top:20px">Generated: ${new Date().toLocaleString()}</p></div>`;
@@ -850,143 +917,162 @@
         showToast(`${type} exported to PDF`);
     }
     
+    // Export single transaction
+    function exportSingleTransaction(transactionId, format) {
+        let trans = JSON.parse(localStorage.getItem('geotraverse_transactions') || '[]');
+        let t = trans.find(t => t.id === transactionId);
+        if (!t) return;
+        let title = `${t.source.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${t.transaction_date}`;
+        let filename = `${title}_${new Date().toISOString().slice(0,10)}`;
+        if (format === 'excel') {
+            let wsData = [['Date','Department','Type','Source','Amount','Paid','Balance','Status','Description']];
+            let balance = t.type === 'income' ? (t.amount - (t.paid_amount || 0)) : 0;
+            wsData.push([t.transaction_date, t.department, t.type, t.source, t.amount, t.paid_amount || 0, balance, t.status, t.description || '']);
+            let wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(wsData), 'Transaction');
+            XLSX.writeFile(wb, `${filename}.xlsx`);
+            showToast('Transaction exported to Excel');
+        } else if (format === 'pdf') {
+            let balance = t.type === 'income' ? (t.amount - (t.paid_amount || 0)) : 0;
+            let element = document.createElement('div');
+            element.innerHTML = `<div style="padding:20px; font-family:Arial;">
+                <h1 style="color:#7c3aed">${escapeHtml(t.source)} - ${t.transaction_date}</h1>
+                <table style="width:100%; margin:15px 0;"><tr><td><strong>Date:</strong></td><td>${t.transaction_date}</td></tr>
+                <tr><td><strong>Department:</strong></td><td>${t.department}</td></tr>
+                <tr><td><strong>Type:</strong></td><td>${t.type === 'income' ? 'Income' : 'Expense'}</td></tr>
+                <tr><td><strong>Source:</strong></td><td>${escapeHtml(t.source)}</td></tr>
+                <tr><td><strong>Amount:</strong></td><td>${formatCurrency(t.amount)}</td></tr>
+                ${t.type === 'income' ? `<tr><td><strong>Paid:</strong></td><td>${formatCurrency(t.paid_amount || 0)}</td></tr><tr><td><strong>Balance:</strong></td><td>${formatCurrency(balance)}</td></tr>` : ''}
+                <tr><td><strong>Status:</strong></td><td>${t.status}</td></tr>
+                ${t.description ? `<tr><td><strong>Description:</strong></td><td>${escapeHtml(t.description)}</td></tr>` : ''}
+                </table>
+                <p style="margin-top:20px; font-size:10px;">Generated: ${new Date().toLocaleString()}</p>
+            </div>`;
+            html2pdf().set({ margin: 0.5, filename: `${filename}.pdf` }).from(element).save();
+            showToast('Transaction exported to PDF');
+        }
+        let dd = document.getElementById(`transactionExportDropdown-${transactionId}`);
+        if (dd) dd.classList.add('hidden');
+    }
+    
+    function toggleTransactionExportDropdown(transactionId) {
+        let dd = document.getElementById(`transactionExportDropdown-${transactionId}`);
+        document.querySelectorAll('[id^="transactionExportDropdown-"]').forEach(d => { if (d.id !== `transactionExportDropdown-${transactionId}`) d.classList.add('hidden'); });
+        if (dd) dd.classList.toggle('hidden');
+    }
+    
     // Export single project
     function exportSingleProject(projectId, format) {
         let projects = JSON.parse(localStorage.getItem('geotraverse_projects') || '[]');
-        let project = projects.find(p => p.id === projectId);
-        if (!project) return;
-        
-        let title = project.name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+        let p = projects.find(p => p.id === projectId);
+        if (!p) return;
+        let title = p.name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
         let filename = `${title}_${new Date().toISOString().slice(0,10)}`;
-        
         if (format === 'excel') {
-            let wsData = [['Name', 'Client', 'Amount', 'Status', 'Progress', 'Location', 'Start Date', 'Description']];
-            wsData.push([project.name, project.client_name, project.amount, project.status, project.progress, project.location || 'N/A', project.start_date || 'N/A', project.description || 'N/A']);
+            let wsData = [['Name','Client','Amount','Status','Progress','Location','Start Date','Description']];
+            wsData.push([p.name, p.client_name, p.amount, p.status, p.progress, p.location || 'N/A', p.start_date || 'N/A', p.description || 'N/A']);
             let wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(wsData), 'Project');
             XLSX.writeFile(wb, `${filename}.xlsx`);
-            showToast(`Project exported to Excel`);
+            showToast('Project exported to Excel');
         } else if (format === 'pdf') {
             let element = document.createElement('div');
-            element.innerHTML = `<div style="padding:20px; font-family:Arial;">
-                <h1 style="color:#7c3aed; border-bottom:2px solid #7c3aed; padding-bottom:10px;">${escapeHtml(project.name)}</h1>
-                <table style="width:100%; margin:15px 0; border-collapse:collapse;">
-                    <tr><td style="padding:5px 0;"><strong>Client:</strong></td><td>${escapeHtml(project.client_name)}</td></tr>
-                    <tr><td style="padding:5px 0;"><strong>Amount:</strong></td><td>${formatCurrency(project.amount)}</td></tr>
-                    <tr><td style="padding:5px 0;"><strong>Status:</strong></td><td><span style="background:${getStatusBadgeClass(project.status)}; padding:2px 8px; border-radius:20px;">${getStatusText(project.status)}</span></td></tr>
-                    <tr><td style="padding:5px 0;"><strong>Progress:</strong></td><td>${project.progress}%</td></tr>
-                    <tr><td style="padding:5px 0;"><strong>Location:</strong></td><td>${escapeHtml(project.location || 'N/A')}</td></tr>
-                    <tr><td style="padding:5px 0;"><strong>Start Date:</strong></td><td>${project.start_date || 'N/A'}</td></tr>
-                    <tr><td style="padding:5px 0;"><strong>Description:</strong></td><td>${escapeHtml(project.description || 'N/A')}</td></tr>
+            element.innerHTML = `<div style="padding:20px;"><h1 style="color:#7c3aed">${escapeHtml(p.name)}</h1>
+                <table><tr><td><strong>Client:</strong></td><td>${escapeHtml(p.client_name)}</td></tr>
+                <tr><td><strong>Amount:</strong></td><td>${formatCurrency(p.amount)}</td></tr>
+                <tr><td><strong>Status:</strong></td><td>${p.status}</td></tr>
+                <tr><td><strong>Progress:</strong></td><td>${p.progress}%</td></tr>
+                <tr><td><strong>Location:</strong></td><td>${escapeHtml(p.location || 'N/A')}</td></tr>
+                <tr><td><strong>Start Date:</strong></td><td>${p.start_date || 'N/A'}</td></tr>
+                ${p.description ? `<tr><td><strong>Description:</strong></td><td>${escapeHtml(p.description)}</td></tr>` : ''}
                 </table>
-                ${project.image ? `<div style="margin-top:15px;"><img src="${project.image}" style="max-width:100%; border-radius:8px;"></div>` : ''}
-                <p style="margin-top:20px; font-size:10px; color:#999; text-align:center;">Generated on ${new Date().toLocaleString()}</p>
-            </div>`;
+                <p>Generated: ${new Date().toLocaleString()}</p></div>`;
             html2pdf().set({ margin: 0.5, filename: `${filename}.pdf` }).from(element).save();
-            showToast(`Project exported to PDF`);
+            showToast('Project exported to PDF');
         }
-        
-        let dropdown = document.getElementById(`projectExportDropdown-${projectId}`);
-        if (dropdown) dropdown.classList.add('hidden');
+        let dd = document.getElementById(`projectExportDropdown-${projectId}`);
+        if (dd) dd.classList.add('hidden');
     }
     
     function toggleProjectExportDropdown(projectId) {
-        let dropdown = document.getElementById(`projectExportDropdown-${projectId}`);
-        document.querySelectorAll('[id^="projectExportDropdown-"]').forEach(d => {
-            if (d.id !== `projectExportDropdown-${projectId}`) d.classList.add('hidden');
-        });
-        if (dropdown) dropdown.classList.toggle('hidden');
+        let dd = document.getElementById(`projectExportDropdown-${projectId}`);
+        document.querySelectorAll('[id^="projectExportDropdown-"]').forEach(d => { if (d.id !== `projectExportDropdown-${projectId}`) d.classList.add('hidden'); });
+        if (dd) dd.classList.toggle('hidden');
     }
     
     // Export single report
     function exportSingleReport(reportId, format) {
         let reports = JSON.parse(localStorage.getItem('geotraverse_reports') || '[]');
-        let report = reports.find(r => r.id === reportId);
-        if (!report) return;
-        
-        let title = report.title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+        let r = reports.find(r => r.id === reportId);
+        if (!r) return;
+        let title = r.title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
         let filename = `${title}_${new Date().toISOString().slice(0,10)}`;
-        
         if (format === 'excel') {
-            let wsData = [['Department', 'Title', 'Period', 'Content', 'Date', 'Status']];
-            wsData.push([report.department, report.title, report.period, report.content, report.created_at, report.status]);
+            let wsData = [['Department','Title','Period','Content','Date','Status']];
+            wsData.push([r.department, r.title, r.period, r.content, r.created_at, r.status]);
             let wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(wsData), 'Report');
             XLSX.writeFile(wb, `${filename}.xlsx`);
-            showToast(`Report exported to Excel`);
+            showToast('Report exported to Excel');
         } else if (format === 'pdf') {
             let element = document.createElement('div');
-            element.innerHTML = `<div style="padding:20px; font-family:Arial;">
-                <h1 style="color:#7c3aed; border-bottom:2px solid #7c3aed; padding-bottom:10px;">${escapeHtml(report.title)}</h1>
-                <table style="width:100%; margin:15px 0; border-collapse:collapse;">
-                    <tr><td style="padding:5px 0;"><strong>Department:</strong></td><td>${escapeHtml(report.department)}</td></tr>
-                    <tr><td style="padding:5px 0;"><strong>Period:</strong></td><td>${escapeHtml(report.period)}</td></tr>
-                    <tr><td style="padding:5px 0;"><strong>Date:</strong></td><td>${formatDate(report.created_at)}</td></tr>
-                    <tr><td style="padding:5px 0;"><strong>Status:</strong></td><td>${report.status === 'read' ? 'Read' : 'Unread'}</td></tr>
-                </table>
-                <div style="margin-top:15px; border-top:1px solid #ccc; padding-top:15px;">
-                    <h3>Report Content:</h3>
-                    <div style="background:#f9fafb; padding:15px; border-radius:8px; white-space:pre-wrap;">${escapeHtml(report.content)}</div>
-                </div>
-                <p style="margin-top:20px; font-size:10px; color:#999; text-align:center;">Generated on ${new Date().toLocaleString()}</p>
-            </div>`;
+            element.innerHTML = `<div style="padding:20px;"><h1 style="color:#7c3aed">${escapeHtml(r.title)}</h1>
+                <table><tr><td><strong>Department:</strong></td><td>${r.department}</td></tr>
+                <tr><td><strong>Period:</strong></td><td>${r.period}</td></tr>
+                <tr><td><strong>Date:</strong></td><td>${formatDate(r.created_at)}</td></tr>
+                <tr><td><strong>Status:</strong></td><td>${r.status === 'read' ? 'Read' : 'Unread'}</td></tr>
+                </table><div style="margin-top:15px;"><h3>Content:</h3><p>${escapeHtml(r.content)}</p></div>
+                <p>Generated: ${new Date().toLocaleString()}</p></div>`;
             html2pdf().set({ margin: 0.5, filename: `${filename}.pdf` }).from(element).save();
-            showToast(`Report exported to PDF`);
+            showToast('Report exported to PDF');
         }
-        
-        let dropdown = document.getElementById(`exportDropdown-${reportId}`);
-        if (dropdown) dropdown.classList.add('hidden');
+        let dd = document.getElementById(`exportDropdown-${reportId}`);
+        if (dd) dd.classList.add('hidden');
     }
     
     function toggleExportDropdown(reportId) {
-        let dropdown = document.getElementById(`exportDropdown-${reportId}`);
-        document.querySelectorAll('[id^="exportDropdown-"]').forEach(d => {
-            if (d.id !== `exportDropdown-${reportId}`) d.classList.add('hidden');
-        });
-        if (dropdown) dropdown.classList.toggle('hidden');
+        let dd = document.getElementById(`exportDropdown-${reportId}`);
+        document.querySelectorAll('[id^="exportDropdown-"]').forEach(d => { if (d.id !== `exportDropdown-${reportId}`) d.classList.add('hidden'); });
+        if (dd) dd.classList.toggle('hidden');
     }
     
-    // Add Report Functions
-    function openAddReportModal() {
-        document.getElementById('newReportTitle').value = '';
-        document.getElementById('newReportDepartment').value = 'super_admin';
-        document.getElementById('newReportPeriod').value = 'monthly';
-        document.getElementById('newReportContent').value = '';
-        document.getElementById('addReportModal').classList.remove('hidden');
-        document.getElementById('addReportModal').classList.add('flex');
+    // Add Transaction Functions
+    function openAddTransactionModal() {
+        document.getElementById('addTransType').value = 'income';
+        document.getElementById('addTransDepartment').value = 'super_admin';
+        document.getElementById('addTransSource').value = '';
+        document.getElementById('addTransAmount').value = '';
+        document.getElementById('addTransDate').value = new Date().toISOString().split('T')[0];
+        document.getElementById('addTransPaidAmount').value = '0';
+        document.getElementById('addTransStatus').value = 'paid';
+        document.getElementById('addTransDesc').value = '';
+        document.getElementById('addTransactionModal').classList.remove('hidden');
+        document.getElementById('addTransactionModal').classList.add('flex');
     }
-    
-    function closeAddReportModal() {
-        document.getElementById('addReportModal').classList.add('hidden');
-        document.getElementById('addReportModal').classList.remove('flex');
+    function closeAddTransactionModal() {
+        document.getElementById('addTransactionModal').classList.add('hidden');
+        document.getElementById('addTransactionModal').classList.remove('flex');
     }
-    
-    function createNewReport() {
-        let title = document.getElementById('newReportTitle').value.trim();
-        let department = document.getElementById('newReportDepartment').value;
-        let period = document.getElementById('newReportPeriod').value;
-        let content = document.getElementById('newReportContent').value.trim();
-        
-        if (!title) { showToast('Please enter report title', true); return; }
-        if (!content) { showToast('Please enter report content', true); return; }
-        
-        let reports = JSON.parse(localStorage.getItem('geotraverse_reports') || '[]');
-        let newReport = {
-            id: Date.now(),
-            department: department,
-            title: title,
-            period: period,
-            content: content,
-            status: 'unread',
-            created_at: new Date().toISOString()
-        };
-        reports.unshift(newReport);
-        localStorage.setItem('geotraverse_reports', JSON.stringify(reports));
-        addActivityLog(`Created new report: ${title} (${department})`);
-        showToast('Report created successfully');
-        closeAddReportModal();
-        renderReports();
-        updateBadges();
+    function saveNewTransaction() {
+        let type = document.getElementById('addTransType').value;
+        let dept = document.getElementById('addTransDepartment').value;
+        let source = document.getElementById('addTransSource').value.trim();
+        let amount = parseFloat(document.getElementById('addTransAmount').value);
+        let date = document.getElementById('addTransDate').value;
+        let paid = parseFloat(document.getElementById('addTransPaidAmount').value) || 0;
+        let status = document.getElementById('addTransStatus').value;
+        let desc = document.getElementById('addTransDesc').value.trim();
+        if (!source) { showToast('Enter source', true); return; }
+        if (!amount || amount <= 0) { showToast('Enter valid amount', true); return; }
+        if (status === 'paid') paid = amount;
+        let trans = JSON.parse(localStorage.getItem('geotraverse_transactions') || '[]');
+        trans.unshift({ id: Date.now(), type, department: dept, source, amount, paid_amount: paid, status, description: desc, transaction_date: date });
+        localStorage.setItem('geotraverse_transactions', JSON.stringify(trans));
+        addActivityLog(`Added transaction: ${source} - ${formatCurrency(amount)}`);
+        showToast('Transaction added');
+        closeAddTransactionModal();
+        renderCashflow();
+        renderDashboard();
     }
     
     function openAddEmployeeModal() { document.getElementById('addEmployeeModal').classList.remove('hidden'); document.getElementById('addEmployeeModal').classList.add('flex'); }
@@ -1067,7 +1153,7 @@
     function renderProjects() {
         let projects = JSON.parse(localStorage.getItem('geotraverse_projects') || '[]');
         document.getElementById('projectsSection').innerHTML = `<div class="bg-white rounded-xl p-4"><div class="flex justify-between flex-wrap gap-3 mb-4"><h3 class="font-semibold text-base"><i class="fas fa-tasks text-green-500 mr-2"></i>Projects (${projects.length})</h3><div class="flex gap-2"><button onclick="exportToExcel('projects')" class="bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-excel mr-1"></i>Excel All</button><button onclick="exportToPDF('projects')" class="bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-pdf mr-1"></i>PDF All</button><button onclick="openAddProjectModal()" class="bg-purple-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-plus mr-1"></i>Add</button></div></div><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="projectsGrid"></div></div>`;
-        document.getElementById('projectsGrid').innerHTML = projects.sort((a,b)=>b.id-a.id).map(p => `<div class="project-card"><img src="${p.image || 'https://via.placeholder.com/400x200?text=Project'}" class="w-full h-36 object-cover"><div class="p-3"><div class="flex justify-between items-start"><h4 class="font-semibold text-sm">${escapeHtml(p.name)}</h4><div class="flex gap-1"><button onclick="viewProjectDetails(${p.id})" class="text-blue-500 text-xs p-1"><i class="fas fa-eye"></i></button><button onclick="openEditProjectModal(${p.id})" class="text-green-500 text-xs p-1"><i class="fas fa-edit"></i></button><button onclick="deleteProject(${p.id})" class="text-red-500 text-xs p-1"><i class="fas fa-trash"></i></button><button onclick="openSendProjectModal(${p.id})" class="text-purple-500 text-xs p-1"><i class="fas fa-paper-plane"></i></button><div class="relative inline-block"><button onclick="toggleProjectExportDropdown(${p.id})" class="text-purple-500 text-xs p-1" title="Export"><i class="fas fa-download"></i></button><div id="projectExportDropdown-${p.id}" class="dropdown-content hidden"><button onclick="exportSingleProject(${p.id}, 'excel')"><i class="fas fa-file-excel text-green-600"></i> Excel</button><button onclick="exportSingleProject(${p.id}, 'pdf')"><i class="fas fa-file-pdf text-red-600"></i> PDF</button></div></div></div></div><p class="text-xs text-gray-500 mt-1">${escapeHtml(p.client_name)}</p><p class="text-sm font-semibold text-purple-600 mt-1">${formatCurrency(p.amount)}</p><div class="mt-2"><div class="flex justify-between text-xs"><span>Progress</span><span>${p.progress||0}%</span></div><div class="w-full bg-gray-200 rounded-full h-1.5"><div class="bg-purple-600 h-1.5 rounded-full" style="width:${p.progress||0}%"></div></div></div><span class="inline-block mt-2 text-[10px] px-2 py-0.5 rounded-full ${getStatusBadgeClass(p.status)}">${getStatusText(p.status)}</span></div></div>`).join('');
+        document.getElementById('projectsGrid').innerHTML = projects.sort((a,b)=>b.id-a.id).map(p => `<div class="project-card"><img src="${p.image || 'https://via.placeholder.com/400x200?text=Project'}" class="w-full h-36 object-cover"><div class="p-3"><div class="flex justify-between items-start"><h4 class="font-semibold text-sm">${escapeHtml(p.name)}</h4><div class="flex gap-1"><button onclick="viewProjectDetails(${p.id})" class="text-blue-500 text-xs p-1"><i class="fas fa-eye"></i></button><button onclick="openEditProjectModal(${p.id})" class="text-green-500 text-xs p-1"><i class="fas fa-edit"></i></button><button onclick="deleteProject(${p.id})" class="text-red-500 text-xs p-1"><i class="fas fa-trash"></i></button><button onclick="openSendProjectModal(${p.id})" class="text-purple-500 text-xs p-1"><i class="fas fa-paper-plane"></i></button><div class="relative inline-block"><button onclick="toggleProjectExportDropdown(${p.id})" class="text-purple-500 text-xs p-1"><i class="fas fa-download"></i></button><div id="projectExportDropdown-${p.id}" class="dropdown-content hidden"><button onclick="exportSingleProject(${p.id}, 'excel')"><i class="fas fa-file-excel text-green-600"></i> Excel</button><button onclick="exportSingleProject(${p.id}, 'pdf')"><i class="fas fa-file-pdf text-red-600"></i> PDF</button></div></div></div></div><p class="text-xs text-gray-500 mt-1">${escapeHtml(p.client_name)}</p><p class="text-sm font-semibold text-purple-600 mt-1">${formatCurrency(p.amount)}</p><div class="mt-1"><div class="flex justify-between text-xs"><span>Progress</span><span>${p.progress||0}%</span></div><div class="w-full bg-gray-200 rounded-full h-1.5"><div class="bg-purple-600 h-1.5 rounded-full" style="width:${p.progress||0}%"></div></div></div><span class="inline-block mt-1 text-[10px] px-2 py-0.5 rounded-full ${getStatusBadgeClass(p.status)}">${getStatusText(p.status)}</span></div></div>`).join('');
     }
     
     function viewProjectDetails(id) {
@@ -1141,9 +1227,75 @@
         let trans = JSON.parse(localStorage.getItem('geotraverse_transactions') || '[]');
         let inc = trans.filter(t => t.type === 'income').reduce((s, t) => s + parseFloat(t.amount), 0);
         let exp = trans.filter(t => t.type === 'expense').reduce((s, t) => s + parseFloat(t.amount), 0);
-        let html = `<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-5"><div class="cashflow-card cashflow-income p-4"><p class="text-white/80 text-xs uppercase">Total Income</p><p class="text-2xl font-bold">${formatCurrency(inc).substring(0,14)}</p></div><div class="cashflow-card cashflow-expense p-4"><p class="text-white/80 text-xs uppercase">Expenses</p><p class="text-2xl font-bold">${formatCurrency(exp).substring(0,14)}</p></div><div class="cashflow-card p-4" style="background:linear-gradient(135deg,#3b82f6,#1e3a8a)"><p class="text-white/80 text-xs uppercase">Net Profit</p><p class="text-2xl font-bold">${formatCurrency(inc-exp).substring(0,14)}</p></div><div class="cashflow-card p-4" style="background:linear-gradient(135deg,#f59e0b,#b45309)"><p class="text-white/80 text-xs uppercase">Pending</p><p class="text-2xl font-bold">${formatCurrency(trans.filter(t=>t.type==='income'&&t.status!=='paid').reduce((s,t)=>s+(parseFloat(t.amount)-parseFloat(t.paid_amount||0)),0)).substring(0,14)}</p></div></div>
-        <div class="bg-white rounded-xl p-4"><div class="flex justify-between flex-wrap gap-2 mb-3"><h3 class="font-semibold text-base"><i class="fas fa-exchange-alt text-purple-500 mr-2"></i>All Transactions</h3><div class="flex gap-2"><button onclick="exportToExcel('transactions')" class="bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-excel mr-1"></i>Excel</button><button onclick="exportToPDF('transactions')" class="bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-pdf mr-1"></i>PDF</button></div></div><div class="responsive-table"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th class="px-3 py-2">Date</th><th class="px-3 py-2">Dept</th><th class="px-3 py-2">Type</th><th class="px-3 py-2">Source</th><th class="px-3 py-2">Amount</th><th class="px-3 py-2">Status</th></tr></thead><tbody>${trans.sort((a,b)=>new Date(b.transaction_date)-new Date(a.transaction_date)).map(t => `<tr class="border-b"><td class="px-3 py-2">${t.transaction_date}</td><td class="px-3 py-2">${t.department}</td><td class="px-3 py-2"><span class="px-2 py-0.5 rounded-full text-xs ${t.type==='income'?'bg-green-100 text-green-700':'bg-red-100 text-red-700'}">${t.type}</span></td><td class="px-3 py-2">${escapeHtml(t.source)}</td><td class="px-3 py-2 ${t.type==='income'?'text-green-600':'text-red-600'} font-semibold">${formatCurrency(t.amount)}</td><td class="px-3 py-2"><span class="px-2 py-0.5 rounded-full text-xs ${t.status==='paid'?'bg-green-100':t.status==='partial'?'bg-yellow-100':'bg-red-100'}">${t.status}</span></td></tr>`).join('')}</tbody>}></div></div>`;
+        let pending = trans.filter(t => t.type === 'income' && t.status !== 'paid').reduce((s, t) => s + (parseFloat(t.amount) - parseFloat(t.paid_amount || 0)), 0);
+        let html = `<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+            <div class="cashflow-card cashflow-income p-3"><p class="text-white/80 text-[10px] uppercase">Total Income</p><p class="text-xl font-bold">${formatCurrency(inc).substring(0,14)}</p></div>
+            <div class="cashflow-card cashflow-expense p-3"><p class="text-white/80 text-[10px] uppercase">Expenses</p><p class="text-xl font-bold">${formatCurrency(exp).substring(0,14)}</p></div>
+            <div class="cashflow-card p-3" style="background:linear-gradient(135deg,#3b82f6,#1e3a8a)"><p class="text-white/80 text-[10px] uppercase">Net Profit</p><p class="text-xl font-bold">${formatCurrency(inc-exp).substring(0,14)}</p></div>
+            <div class="cashflow-card p-3" style="background:linear-gradient(135deg,#f59e0b,#b45309)"><p class="text-white/80 text-[10px] uppercase">Pending</p><p class="text-xl font-bold">${formatCurrency(pending).substring(0,14)}</p></div>
+        </div>
+        <div class="bg-white rounded-xl p-3">
+            <div class="flex justify-between flex-wrap gap-2 mb-3">
+                <h3 class="font-semibold text-sm"><i class="fas fa-exchange-alt text-purple-500 mr-1"></i>All Transactions</h3>
+                <div class="flex gap-1"><button onclick="openAddTransactionModal()" class="bg-purple-600 text-white px-2 py-1 rounded text-[10px]"><i class="fas fa-plus mr-1"></i>Add</button><button onclick="exportToExcel('transactions')" class="bg-green-600 text-white px-2 py-1 rounded text-[10px]"><i class="fas fa-file-excel mr-1"></i>Excel All</button><button onclick="exportToPDF('transactions')" class="bg-red-600 text-white px-2 py-1 rounded text-[10px]"><i class="fas fa-file-pdf mr-1"></i>PDF All</button></div>
+            </div>
+            <div class="responsive-table"><table class="w-full text-xs"><thead class="bg-gray-50"><tr><th class="px-2 py-1">Date</th><th class="px-2 py-1">Dept</th><th class="px-2 py-1">Type</th><th class="px-2 py-1">Source</th><th class="px-2 py-1">Amount</th><th class="px-2 py-1">Paid</th><th class="px-2 py-1">Status</th><th class="px-2 py-1">Actions</th></tr></thead><tbody>${trans.sort((a,b)=>new Date(b.transaction_date)-new Date(a.transaction_date)).map(t => { let bal = t.type === 'income' ? (t.amount - (t.paid_amount || 0)) : 0; return `<tr class="border-b ${t.type==='income'?'income-row':'expense-row'}"><td class="px-2 py-1">${t.transaction_date}</td><td class="px-2 py-1"><span class="px-1 py-0.5 rounded-full text-[9px] bg-purple-100">${t.department}</span></td><td class="px-2 py-1"><span class="px-1 py-0.5 rounded-full text-[9px] ${t.type==='income'?'bg-green-100':'bg-red-100'}">${t.type}</span></td><td class="px-2 py-1">${escapeHtml(t.source)}</td><td class="px-2 py-1 ${t.type==='income'?'text-green-600':'text-red-600'}">${formatCurrency(t.amount)}</td><td class="px-2 py-1">${formatCurrency(t.paid_amount||0)}</td><td class="px-2 py-1"><span class="px-1 py-0.5 rounded-full text-[9px] ${t.status==='paid'?'bg-green-100':t.status==='partial'?'bg-yellow-100':'bg-red-100'}">${t.status}</span></td><td class="px-2 py-1"><div class="flex gap-1"><button onclick="viewTransaction(${t.id})" class="text-blue-500 text-xs"><i class="fas fa-eye"></i></button><button onclick="editTransaction(${t.id})" class="text-green-500 text-xs"><i class="fas fa-edit"></i></button><button onclick="deleteTransaction(${t.id})" class="text-red-500 text-xs"><i class="fas fa-trash"></i></button><div class="relative"><button onclick="toggleTransactionExportDropdown(${t.id})" class="text-purple-500 text-xs"><i class="fas fa-download"></i></button><div id="transactionExportDropdown-${t.id}" class="dropdown-content hidden"><button onclick="exportSingleTransaction(${t.id},'excel')"><i class="fas fa-file-excel"></i> Excel</button><button onclick="exportSingleTransaction(${t.id},'pdf')"><i class="fas fa-file-pdf"></i> PDF</button></div></div></div></td></tr>`; }).join('')}</tbody>}></div></div>`;
         document.getElementById('cashflowSection').innerHTML = html;
+    }
+    
+    function viewTransaction(id) {
+        let t = JSON.parse(localStorage.getItem('geotraverse_transactions') || '[]').find(t => t.id === id);
+        if (t) {
+            let bal = t.type === 'income' ? (t.amount - (t.paid_amount || 0)) : 0;
+            document.getElementById('viewTransactionContent').innerHTML = `<div class="space-y-2"><div class="border-b pb-1"><h4 class="font-bold">Transaction Details</h4></div><div class="grid grid-cols-2 gap-1 text-sm"><div><strong>Date:</strong></div><div>${t.transaction_date}</div><div><strong>Department:</strong></div><div>${t.department}</div><div><strong>Type:</strong></div><div class="capitalize">${t.type}</div><div><strong>Source:</strong></div><div>${escapeHtml(t.source)}</div><div><strong>Amount:</strong></div><div class="font-bold ${t.type==='income'?'text-green-600':'text-red-600'}">${formatCurrency(t.amount)}</div>${t.type === 'income' ? `<div><strong>Paid:</strong></div><div>${formatCurrency(t.paid_amount||0)}</div><div><strong>Balance:</strong></div><div class="text-orange-600">${formatCurrency(bal)}</div>` : ''}<div><strong>Status:</strong></div><div>${t.status}</div>${t.description ? `<div><strong>Description:</strong></div><div>${escapeHtml(t.description)}</div>` : ''}</div></div>`;
+            document.getElementById('viewTransactionModal').classList.remove('hidden'); document.getElementById('viewTransactionModal').classList.add('flex');
+        }
+    }
+    function closeViewTransactionModal() { document.getElementById('viewTransactionModal').classList.add('hidden'); document.getElementById('viewTransactionModal').classList.remove('flex'); }
+    
+    function editTransaction(id) {
+        let t = JSON.parse(localStorage.getItem('geotraverse_transactions') || '[]').find(t => t.id === id);
+        if (t) {
+            document.getElementById('editTransactionId').value = t.id;
+            document.getElementById('editTransType').value = t.type;
+            document.getElementById('editTransSource').value = t.source;
+            document.getElementById('editTransAmount').value = t.amount;
+            document.getElementById('editTransDate').value = t.transaction_date;
+            document.getElementById('editTransPaidAmount').value = t.paid_amount || 0;
+            document.getElementById('editTransStatus').value = t.status;
+            document.getElementById('editTransDepartment').value = t.department;
+            document.getElementById('editTransDesc').value = t.description || '';
+            document.getElementById('editTransactionModal').classList.remove('hidden'); document.getElementById('editTransactionModal').classList.add('flex');
+        }
+    }
+    function closeEditTransactionModal() { document.getElementById('editTransactionModal').classList.add('hidden'); document.getElementById('editTransactionModal').classList.remove('flex'); }
+    
+    function updateTransaction() {
+        let id = parseInt(document.getElementById('editTransactionId').value);
+        let trans = JSON.parse(localStorage.getItem('geotraverse_transactions') || '[]');
+        let idx = trans.findIndex(t => t.id === id);
+        if (idx !== -1) {
+            trans[idx] = { ...trans[idx], type: document.getElementById('editTransType').value, source: document.getElementById('editTransSource').value, amount: parseFloat(document.getElementById('editTransAmount').value), transaction_date: document.getElementById('editTransDate').value, paid_amount: parseFloat(document.getElementById('editTransPaidAmount').value) || 0, status: document.getElementById('editTransStatus').value, department: document.getElementById('editTransDepartment').value, description: document.getElementById('editTransDesc').value };
+            localStorage.setItem('geotraverse_transactions', JSON.stringify(trans));
+            addActivityLog(`Updated transaction: ${trans[idx].source}`);
+            showToast('Transaction updated');
+            closeEditTransactionModal();
+            renderCashflow();
+            renderDashboard();
+        }
+    }
+    
+    function deleteTransaction(id) {
+        if (confirm('Delete this transaction?')) {
+            let trans = JSON.parse(localStorage.getItem('geotraverse_transactions') || '[]');
+            let t = trans.find(t => t.id === id);
+            trans = trans.filter(t => t.id !== id);
+            localStorage.setItem('geotraverse_transactions', JSON.stringify(trans));
+            addActivityLog(`Deleted transaction: ${t?.source}`);
+            showToast('Transaction deleted');
+            renderCashflow();
+            renderDashboard();
+        }
     }
     
     // ==================== MESSAGES ====================
@@ -1155,16 +1307,30 @@
     
     function renderMessages() {
         let conv = getConversations();
-        let html = `<div class="flex justify-between flex-wrap gap-3 mb-4"><h2 class="text-xl font-bold"><i class="fas fa-envelope text-purple-500 mr-2"></i>Messages</h2><button onclick="openStartChatModal()" class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm">+ New Message</button></div><div class="bg-white rounded-xl p-3"><div class="space-y-2">`;
+        let html = `<div class="flex justify-between flex-wrap gap-2 mb-3"><h2 class="text-lg font-bold"><i class="fas fa-envelope text-purple-500 mr-1"></i>Messages</h2><button onclick="openStartChatModal()" class="bg-purple-600 text-white px-3 py-1.5 rounded text-xs">+ New</button></div><div class="bg-white rounded-xl p-2"><div class="space-y-1">`;
         let has = false;
-        for (let d in conv) { has = true; let last = conv[d][conv[d].length-1]; let unread = conv[d].filter(m => m.to_department === 'super_admin' && !m.is_read).length; html += `<div class="border rounded-lg p-3 flex justify-between items-center cursor-pointer hover:bg-gray-50" onclick="openChatWith('${d}')"><div><p class="font-semibold text-sm capitalize">${d.replace('_',' ')}</p><p class="text-xs text-gray-500 truncate max-w-[200px]">${escapeHtml(last.message.substring(0,50))}</p></div><div class="text-right"><span class="text-[10px] text-gray-400">${new Date(last.created_at).toLocaleTimeString()}</span>${unread>0?`<span class="ml-2 bg-red-500 text-white text-[9px] px-1.5 py-0.5 rounded-full">${unread}</span>`:''}</div></div>`; }
-        html += (has ? "" : '<p class="text-gray-400 text-center py-6 text-sm">No messages yet</p>') + "</div></div>";
+        for (let d in conv) { has = true; let last = conv[d][conv[d].length-1]; let unread = conv[d].filter(m => m.to_department === 'super_admin' && !m.is_read).length; html += `<div class="border rounded p-2 flex justify-between items-center cursor-pointer hover:bg-gray-50" onclick="openChatWith('${d}')"><div><p class="font-semibold text-sm capitalize">${d.replace('_',' ')}</p><p class="text-[10px] text-gray-500 truncate w-40">${escapeHtml(last.message.substring(0,40))}</p></div><div class="text-right"><span class="text-[9px] text-gray-400">${new Date(last.created_at).toLocaleTimeString()}</span>${unread>0?`<span class="ml-1 bg-red-500 text-white text-[8px] px-1 rounded-full">${unread}</span>`:''}</div></div>`; }
+        html += (has ? "" : '<p class="text-gray-400 text-center py-3 text-xs">No messages</p>') + "</div></div>";
         document.getElementById('messagesSection').innerHTML = html;
     }
     
     function openStartChatModal() { document.getElementById('newChatMsg').value = ''; document.getElementById('startChatModal').classList.remove('hidden'); document.getElementById('startChatModal').classList.add('flex'); }
     function closeStartChatModal() { document.getElementById('startChatModal').classList.add('hidden'); document.getElementById('startChatModal').classList.remove('flex'); }
-    function sendNewChat() { let to = document.getElementById('chatRecipientSelect').value; let msg = document.getElementById('newChatMsg').value.trim(); if (!msg) { showToast('Enter message', true); return; } let msgs = JSON.parse(localStorage.getItem('geotraverse_messages') || '[]'); msgs.push({ id: Date.now(), from_department: 'super_admin', to_department: to, message: msg, is_read: false, created_at: new Date().toISOString() }); localStorage.setItem('geotraverse_messages', JSON.stringify(msgs)); addActivityLog(`Sent message to ${to}`); showToast(`Sent to ${to}`); closeStartChatModal(); renderMessages(); updateBadges(); }
+    
+    function sendNewChat() {
+        let to = document.getElementById('chatRecipientSelect').value;
+        let msg = document.getElementById('newChatMsg').value.trim();
+        if (!msg) { showToast('Enter message', true); return; }
+        let msgs = JSON.parse(localStorage.getItem('geotraverse_messages') || '[]');
+        msgs.push({ id: Date.now(), from_department: 'super_admin', to_department: to, message: msg, is_read: false, created_at: new Date().toISOString() });
+        localStorage.setItem('geotraverse_messages', JSON.stringify(msgs));
+        addActivityLog(`Sent message to ${to}`);
+        showToast(`Message sent to ${to}`);
+        closeStartChatModal();
+        document.getElementById('newChatMsg').value = '';
+        renderMessages();
+        updateBadges();
+    }
     
     let currentChatWith = null;
     function openChatWith(dept) {
@@ -1173,27 +1339,26 @@
         let chat = msgs.filter(m => (m.from_department === 'super_admin' && m.to_department === dept) || (m.from_department === dept && m.to_department === 'super_admin'));
         chat.forEach(m => { if (m.to_department === 'super_admin' && !m.is_read) markMessageAsRead(m.id); });
         renderMessages(); updateBadges();
-        let html = `<div class="flex justify-between items-center mb-3 pb-2 border-b"><button onclick="renderMessages()" class="text-purple-600 text-sm"><i class="fas fa-arrow-left mr-1"></i>Back</button><button onclick="deleteConversation('${dept}')" class="text-red-500 text-sm"><i class="fas fa-trash-alt mr-1"></i>Delete All</button></div><div class="space-y-2 max-h-96 overflow-y-auto" id="chatMsgsList">`;
-        for (let m of chat) { html += `<div class="chat-bubble ${m.from_department === 'super_admin' ? 'chat-reply' : 'chat-message'}"><p class="text-[9px] text-gray-500 mb-0.5">${m.from_department === 'super_admin' ? 'You' : dept} · ${new Date(m.created_at).toLocaleTimeString()}</p><p class="text-sm">${escapeHtml(m.message)}</p><button onclick="deleteMessage(${m.id})" class="text-red-500 text-[9px] mt-1">Delete</button></div>`; }
-        html += `</div><div class="mt-3 flex gap-2"><textarea id="replyInput" rows="2" class="flex-1 p-2 border rounded-lg text-sm" placeholder="Type your reply..."></textarea><button onclick="sendReply()" class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm">Send</button></div>`;
-        document.getElementById('messagesSection').innerHTML = `<div class="bg-white rounded-xl p-4">${html}</div>`;
+        let html = `<div class="flex justify-between mb-2"><button onclick="renderMessages()" class="text-purple-600 text-xs"><i class="fas fa-arrow-left mr-1"></i>Back</button><button onclick="deleteConversation('${dept}')" class="text-red-500 text-xs"><i class="fas fa-trash"></i> Delete All</button></div><div class="space-y-2 max-h-80 overflow-y-auto" id="chatMsgsList">`;
+        for (let m of chat) { html += `<div class="chat-bubble ${m.from_department === 'super_admin' ? 'chat-reply' : 'chat-message'}"><p class="text-[9px] text-gray-500">${m.from_department === 'super_admin' ? 'You' : dept} · ${new Date(m.created_at).toLocaleTimeString()}</p><p class="text-xs">${escapeHtml(m.message)}</p><button onclick="deleteMessage(${m.id})" class="text-red-500 text-[8px] mt-1">Delete</button></div>`; }
+        html += `</div><div class="mt-2 flex gap-2"><textarea id="replyInput" rows="1" class="flex-1 p-1 border rounded text-xs" placeholder="Reply..."></textarea><button onclick="sendReply()" class="bg-purple-600 text-white px-2 py-1 rounded text-xs">Send</button></div>`;
+        document.getElementById('messagesSection').innerHTML = `<div class="bg-white rounded-xl p-2">${html}</div>`;
         window.sendReply = function() { let reply = document.getElementById('replyInput')?.value.trim(); if (reply) { let msgs = JSON.parse(localStorage.getItem('geotraverse_messages') || '[]'); msgs.push({ id: Date.now(), from_department: 'super_admin', to_department: currentChatWith, message: reply, is_read: false, created_at: new Date().toISOString() }); localStorage.setItem('geotraverse_messages', JSON.stringify(msgs)); openChatWith(currentChatWith); showToast('Reply sent'); } };
     }
     function closeChatModal() { renderMessages(); }
     
-    // ==================== REPORTS (with Add Report button) ====================
+    // ==================== REPORTS ====================
     function getUnreadReportsCount() { return JSON.parse(localStorage.getItem('geotraverse_reports') || '[]').filter(r => r.status === 'unread').length; }
     
     function renderReports() {
         let reports = JSON.parse(localStorage.getItem('geotraverse_reports') || '[]');
-        let html = `<div class="flex justify-between flex-wrap gap-3 mb-4"><h2 class="text-xl font-bold"><i class="fas fa-chart-bar text-purple-500 mr-2"></i>Reports</h2><div class="flex gap-2"><button onclick="openAddReportModal()" class="bg-purple-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-plus-circle mr-1"></i>Add Report</button><button onclick="exportToExcel('reports')" class="bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-excel mr-1"></i>Excel All</button><button onclick="exportToPDF('reports')" class="bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-pdf mr-1"></i>PDF All</button></div></div><div class="space-y-3" id="reportsList"></div>`;
+        let html = `<div class="flex justify-between flex-wrap gap-2 mb-3"><h2 class="text-lg font-bold"><i class="fas fa-chart-bar text-purple-500 mr-1"></i>Reports</h2><div class="flex gap-1"><button onclick="exportToExcel('reports')" class="bg-green-600 text-white px-2 py-1 rounded text-[10px]">Excel All</button><button onclick="exportToPDF('reports')" class="bg-red-600 text-white px-2 py-1 rounded text-[10px]">PDF All</button></div></div><div class="space-y-2" id="reportsList"></div>`;
         document.getElementById('reportsSection').innerHTML = html;
-        
         let reportsHtml = '';
         reports.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).forEach(r => {
-            reportsHtml += `<div class="report-card p-3"><div class="flex justify-between flex-wrap gap-3"><div class="flex-1"><h4 class="font-semibold text-base">${escapeHtml(r.title)}</h4><div class="flex flex-wrap gap-3 text-xs text-gray-500 mt-1"><span><i class="fas fa-building mr-1"></i>${r.department}</span><span><i class="fas fa-calendar mr-1"></i>${r.period}</span><span><i class="fas fa-clock mr-1"></i>${formatDate(r.created_at)}</span>${r.status === 'unread' ? '<span class="text-red-500 font-semibold">● New</span>' : ''}</div><p class="text-sm text-gray-600 mt-2">${escapeHtml(r.content.substring(0,100))}${r.content.length>100?'...':''}</p></div><div class="flex gap-1 items-start"><button onclick="viewReportDetail(${r.id})" class="text-blue-500 text-sm p-1.5" title="View"><i class="fas fa-eye"></i></button><button onclick="editReport(${r.id})" class="text-green-500 text-sm p-1.5" title="Edit"><i class="fas fa-edit"></i></button><button onclick="deleteReport(${r.id})" class="text-red-500 text-sm p-1.5" title="Delete"><i class="fas fa-trash"></i></button><button onclick="markReportRead(${r.id})" class="text-orange-500 text-sm p-1.5" title="Mark Read"><i class="fas fa-check-circle"></i></button><div class="relative inline-block"><button onclick="toggleExportDropdown(${r.id})" class="text-purple-500 text-sm p-1.5" title="Export"><i class="fas fa-download"></i></button><div id="exportDropdown-${r.id}" class="dropdown-content hidden"><button onclick="exportSingleReport(${r.id}, 'excel')"><i class="fas fa-file-excel text-green-600"></i> Excel</button><button onclick="exportSingleReport(${r.id}, 'pdf')"><i class="fas fa-file-pdf text-red-600"></i> PDF</button></div></div></div></div></div>`;
+            reportsHtml += `<div class="report-card p-2"><div class="flex justify-between flex-wrap gap-2"><div class="flex-1"><div class="flex items-center gap-2 flex-wrap"><h4 class="font-semibold text-sm">${escapeHtml(r.title)}</h4><span class="text-[9px] px-1 py-0.5 rounded-full bg-gray-100">${r.period}</span>${r.status === 'unread' ? '<span class="text-red-500 text-[9px]">● New</span>' : ''}</div><p class="text-[10px] text-gray-500">${r.department} · ${formatDate(r.created_at)}</p><p class="text-xs text-gray-600 mt-1">${escapeHtml(r.content.substring(0,80))}${r.content.length>80?'...':''}</p></div><div class="flex gap-1"><button onclick="viewReportDetail(${r.id})" class="text-blue-500 text-xs p-1"><i class="fas fa-eye"></i></button><button onclick="editReport(${r.id})" class="text-green-500 text-xs p-1"><i class="fas fa-edit"></i></button><button onclick="deleteReport(${r.id})" class="text-red-500 text-xs p-1"><i class="fas fa-trash"></i></button><button onclick="markReportRead(${r.id})" class="text-orange-500 text-xs p-1"><i class="fas fa-check"></i></button><div class="relative"><button onclick="toggleExportDropdown(${r.id})" class="text-purple-500 text-xs p-1"><i class="fas fa-download"></i></button><div id="exportDropdown-${r.id}" class="dropdown-content hidden"><button onclick="exportSingleReport(${r.id}, 'excel')"><i class="fas fa-file-excel"></i> Excel</button><button onclick="exportSingleReport(${r.id}, 'pdf')"><i class="fas fa-file-pdf"></i> PDF</button></div></div></div></div></div>`;
         });
-        reportsHtml += reports.length === 0 ? '<p class="text-gray-400 text-center py-6 text-sm">No reports yet. Click "Add Report" to create one.</p>' : '';
+        reportsHtml += reports.length === 0 ? '<p class="text-gray-400 text-center py-3 text-xs">No reports</p>' : '';
         document.getElementById('reportsList').innerHTML = reportsHtml;
         updateBadges();
     }
@@ -1201,9 +1366,8 @@
     function viewReportDetail(id) {
         let r = JSON.parse(localStorage.getItem('geotraverse_reports') || '[]').find(r => r.id === id);
         if (r) {
-            document.getElementById('viewReportContent').innerHTML = `<div class="space-y-3"><div class="border-b pb-2"><h4 class="font-bold text-lg">${escapeHtml(r.title)}</h4><div class="flex gap-3 text-sm text-gray-500 mt-1"><span><i class="fas fa-building mr-1"></i>${r.department}</span><span><i class="fas fa-calendar mr-1"></i>${r.period}</span><span><i class="fas fa-clock mr-1"></i>${formatDate(r.created_at)}</span></div></div><div class="text-sm whitespace-pre-wrap bg-gray-50 p-3 rounded-lg">${escapeHtml(r.content)}</div></div>`;
-            document.getElementById('viewReportModal').classList.remove('hidden');
-            document.getElementById('viewReportModal').classList.add('flex');
+            document.getElementById('viewReportContent').innerHTML = `<div><h4 class="font-bold">${escapeHtml(r.title)}</h4><div class="flex gap-2 text-xs text-gray-500 my-1"><span>${r.department}</span><span>•</span><span>${r.period}</span><span>•</span><span>${formatDate(r.created_at)}</span></div><div class="border-t pt-2"><p class="text-sm whitespace-pre-wrap">${escapeHtml(r.content)}</p></div></div>`;
+            document.getElementById('viewReportModal').classList.remove('hidden'); document.getElementById('viewReportModal').classList.add('flex');
             if (r.status === 'unread') markReportRead(id);
         }
     }
@@ -1216,8 +1380,7 @@
             document.getElementById('editReportTitle').value = r.title;
             document.getElementById('editReportPeriod').value = r.period;
             document.getElementById('editReportContent').value = r.content;
-            document.getElementById('editReportModal').classList.remove('hidden');
-            document.getElementById('editReportModal').classList.add('flex');
+            document.getElementById('editReportModal').classList.remove('hidden'); document.getElementById('editReportModal').classList.add('flex');
         }
     }
     function closeEditReportModal() { document.getElementById('editReportModal').classList.add('hidden'); document.getElementById('editReportModal').classList.remove('flex'); }
@@ -1241,13 +1404,7 @@
     function markReportRead(id) {
         let reports = JSON.parse(localStorage.getItem('geotraverse_reports') || '[]');
         let r = reports.find(r => r.id === id);
-        if (r && r.status !== 'read') {
-            r.status = 'read';
-            localStorage.setItem('geotraverse_reports', JSON.stringify(reports));
-            renderReports();
-            updateBadges();
-            showToast('Marked as read');
-        }
+        if (r && r.status !== 'read') { r.status = 'read'; localStorage.setItem('geotraverse_reports', JSON.stringify(reports)); renderReports(); updateBadges(); showToast('Marked as read'); }
     }
     
     function deleteReport(id) {
@@ -1268,20 +1425,15 @@
         let settings = JSON.parse(localStorage.getItem('geotraverse_settings') || '{}');
         let logs = JSON.parse(localStorage.getItem('geotraverse_activity_logs') || '[]');
         let colors = [
-            { name: 'Purple', value: '#5b21b6' },
-            { name: 'Blue', value: '#1e3a5f' },
-            { name: 'Green', value: '#065f46' },
-            { name: 'Orange', value: '#ea580c' },
-            { name: 'Red', value: '#dc2626' },
-            { name: 'Teal', value: '#0d9488' },
-            { name: 'Pink', value: '#db2777' }
+            { name: 'Purple', value: '#5b21b6' }, { name: 'Blue', value: '#1e3a5f' }, { name: 'Green', value: '#065f46' },
+            { name: 'Orange', value: '#ea580c' }, { name: 'Red', value: '#dc2626' }, { name: 'Teal', value: '#0d9488' }, { name: 'Pink', value: '#db2777' }
         ];
-        let html = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div class="setting-card p-4"><div class="flex items-center gap-3 mb-3"><i class="fas fa-key text-2xl text-purple-600"></i><h3 class="font-semibold text-base">Change Password</h3></div><button onclick="openChangePasswordModal()" class="w-full bg-purple-600 text-white py-2 rounded-lg text-sm">Change Password</button></div>
-            <div class="setting-card p-4"><div class="flex items-center gap-3 mb-3"><i class="fas fa-palette text-2xl text-purple-600"></i><h3 class="font-semibold text-base">Sidebar Color (7 Colors)</h3></div><div class="flex gap-2 flex-wrap">${colors.map(c => `<div class="color-option" style="background:${c.value}" onclick="changeSidebarColor('${c.value}',this)" title="${c.name}"></div>`).join('')}</div></div>
-            <div class="setting-card p-4"><div class="flex items-center gap-3 mb-3"><i class="fas fa-database text-2xl text-green-600"></i><h3 class="font-semibold text-base">Backup & Restore</h3></div><button onclick="openBackupRestoreModal()" class="w-full bg-green-600 text-white py-2 rounded-lg text-sm">Backup / Restore</button></div>
-            <div class="setting-card p-4"><div class="flex items-center gap-3 mb-3"><i class="fas fa-globe text-2xl text-blue-600"></i><h3 class="font-semibold text-base">General Settings</h3></div><button onclick="openGeneralSettingsModal()" class="w-full bg-blue-600 text-white py-2 rounded-lg text-sm">Configure Settings</button></div>
-            <div class="setting-card p-4"><div class="flex items-center gap-3 mb-3"><i class="fas fa-history text-2xl text-orange-600"></i><h3 class="font-semibold text-base">Activity Logs</h3></div><div class="max-h-40 overflow-y-auto text-sm space-y-1">${logs.slice(0,8).map(l => `<div class="border-b py-1 flex justify-between"><span>${escapeHtml(l.action)}</span><span class="text-gray-400 text-xs">${new Date(l.created_at).toLocaleString()}</span></div>`).join('')}</div><button onclick="clearAllLogs()" class="w-full mt-3 bg-red-600 text-white py-2 rounded-lg text-sm">Clear All Logs</button></div>
+        let html = `<div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="setting-card p-3"><div class="flex items-center gap-2 mb-2"><i class="fas fa-key text-purple-600"></i><h3 class="font-semibold text-sm">Change Password</h3></div><button onclick="openChangePasswordModal()" class="w-full bg-purple-600 text-white py-1.5 rounded text-xs">Change</button></div>
+            <div class="setting-card p-3"><div class="flex items-center gap-2 mb-2"><i class="fas fa-palette text-purple-600"></i><h3 class="font-semibold text-sm">Sidebar Color (7)</h3></div><div class="flex gap-1 flex-wrap">${colors.map(c => `<div class="color-option" style="background:${c.value}" onclick="changeSidebarColor('${c.value}',this)" title="${c.name}"></div>`).join('')}</div></div>
+            <div class="setting-card p-3"><div class="flex items-center gap-2 mb-2"><i class="fas fa-database text-green-600"></i><h3 class="font-semibold text-sm">Backup & Restore</h3></div><button onclick="openBackupRestoreModal()" class="w-full bg-green-600 text-white py-1.5 rounded text-xs">Backup / Restore</button></div>
+            <div class="setting-card p-3"><div class="flex items-center gap-2 mb-2"><i class="fas fa-globe text-blue-600"></i><h3 class="font-semibold text-sm">General Settings</h3></div><button onclick="openGeneralSettingsModal()" class="w-full bg-blue-600 text-white py-1.5 rounded text-xs">Configure</button></div>
+            <div class="setting-card p-3"><div class="flex items-center gap-2 mb-2"><i class="fas fa-history text-orange-600"></i><h3 class="font-semibold text-sm">Activity Logs</h3></div><div class="max-h-28 overflow-y-auto text-[10px] space-y-1">${logs.slice(0,6).map(l => `<div>${escapeHtml(l.action)} <span class="text-gray-400 text-[9px]">${new Date(l.created_at).toLocaleString()}</span></div>`).join('')}</div><button onclick="clearAllLogs()" class="w-full mt-2 bg-red-600 text-white py-1 rounded text-xs">Clear</button></div>
         </div>`;
         document.getElementById('settingsSection').innerHTML = html;
     }
@@ -1289,7 +1441,7 @@
     function openChangePasswordModal() { document.getElementById('changePasswordModal').classList.remove('hidden'); document.getElementById('changePasswordModal').classList.add('flex'); }
     function closeChangePasswordModal() { document.getElementById('changePasswordModal').classList.add('hidden'); document.getElementById('changePasswordModal').classList.remove('flex'); }
     function changeAdminPassword() { let curr = document.getElementById('currentPassword').value; let newP = document.getElementById('newPassword').value; let conf = document.getElementById('confirmPassword').value; if (curr !== 'admin123') { showToast('Current password incorrect', true); return; } if (!newP || newP.length < 4) { showToast('Password must be 4+ chars', true); return; } if (newP !== conf) { showToast('Passwords do not match', true); return; } let emps = JSON.parse(localStorage.getItem('geotraverse_employees') || '[]'); let admin = emps.find(e => e.email === 'admin@geotraverse.com'); if (admin) admin.password = newP; localStorage.setItem('geotraverse_employees', JSON.stringify(emps)); addActivityLog('Admin password changed'); showToast('Password changed'); closeChangePasswordModal(); }
-    function changeSidebarColor(color, el) { document.getElementById('mainSidebar').style.background = color; document.getElementById('mainSidebar').style.backgroundImage = 'none'; document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected')); el.classList.add('selected'); localStorage.setItem('sidebar_color', color); showToast('Sidebar color changed'); }
+    function changeSidebarColor(color, el) { document.getElementById('mainSidebar').style.background = color; document.getElementById('mainSidebar').style.backgroundImage = 'none'; document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected')); el.classList.add('selected'); localStorage.setItem('sidebar_color', color); showToast('Color changed'); }
     function openBackupRestoreModal() { document.getElementById('backupRestoreModal').classList.remove('hidden'); document.getElementById('backupRestoreModal').classList.add('flex'); }
     function closeBackupRestoreModal() { document.getElementById('backupRestoreModal').classList.add('hidden'); document.getElementById('backupRestoreModal').classList.remove('flex'); }
     function createBackup() { let backup = { employees: localStorage.getItem('geotraverse_employees'), projects: localStorage.getItem('geotraverse_projects'), transactions: localStorage.getItem('geotraverse_transactions'), messages: localStorage.getItem('geotraverse_messages'), reports: localStorage.getItem('geotraverse_reports'), settings: localStorage.getItem('geotraverse_settings'), activity_logs: localStorage.getItem('geotraverse_activity_logs'), timestamp: new Date().toISOString() }; let blob = new Blob([JSON.stringify(backup)], {type:'application/json'}); let a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `backup_${new Date().toISOString().slice(0,19)}.json`; a.click(); showToast('Backup created'); closeBackupRestoreModal(); }
@@ -1297,7 +1449,7 @@
     function openGeneralSettingsModal() { let s = JSON.parse(localStorage.getItem('geotraverse_settings') || '{}'); document.getElementById('modalCompanyName').value = s.company_name || ''; document.getElementById('modalCompanyAddress').value = s.company_address || ''; document.getElementById('modalCompanyEmail').value = s.company_email || ''; document.getElementById('modalCompanyPhone').value = s.company_phone || ''; document.getElementById('generalSettingsModal').classList.remove('hidden'); document.getElementById('generalSettingsModal').classList.add('flex'); }
     function closeGeneralSettingsModal() { document.getElementById('generalSettingsModal').classList.add('hidden'); document.getElementById('generalSettingsModal').classList.remove('flex'); }
     function saveGeneralSettingsModal() { let s = JSON.parse(localStorage.getItem('geotraverse_settings') || '{}'); s.company_name = document.getElementById('modalCompanyName').value; s.company_address = document.getElementById('modalCompanyAddress').value; s.company_email = document.getElementById('modalCompanyEmail').value; s.company_phone = document.getElementById('modalCompanyPhone').value; localStorage.setItem('geotraverse_settings', JSON.stringify(s)); showToast('Settings saved'); closeGeneralSettingsModal(); renderSettings(); }
-    function clearAllLogs() { if (confirm('Clear all activity logs?')) { localStorage.setItem('geotraverse_activity_logs', JSON.stringify([])); renderSettings(); showToast('Logs cleared'); } }
+    function clearAllLogs() { if (confirm('Clear all logs?')) { localStorage.setItem('geotraverse_activity_logs', JSON.stringify([])); renderSettings(); showToast('Logs cleared'); } }
     function updateBadges() { document.getElementById('unreadMessagesBadge').innerText = getUnreadMessagesCount(); document.getElementById('unreadReportsBadge').innerText = getUnreadReportsCount(); }
     
     // ==================== NAVIGATION ====================
@@ -1344,15 +1496,22 @@
     window.exportToExcel = exportToExcel; window.exportToPDF = exportToPDF;
     window.openAddProjectModal = openAddProjectModal; window.openEditProjectModal = openEditProjectModal; window.closeProjectModal = closeProjectModal; window.saveProject = saveProject; window.deleteProject = deleteProject; window.viewProjectDetails = viewProjectDetails; window.closeViewProjectModal = closeViewProjectModal;
     window.openSendProjectModal = openSendProjectModal; window.closeSendProjectModal = closeSendProjectModal; window.confirmSendProject = confirmSendProject;
-    window.exportSingleProject = exportSingleProject;
-    window.toggleProjectExportDropdown = toggleProjectExportDropdown;
-    window.viewReportDetail = viewReportDetail; window.closeViewReportModal = closeViewReportModal; window.editReport = editReport; window.closeEditReportModal = closeEditReportModal; window.updateReport = updateReport; window.markReportRead = markReportRead; window.deleteReport = deleteReport;
-    window.openAddReportModal = openAddReportModal; window.closeAddReportModal = closeAddReportModal; window.createNewReport = createNewReport;
-    window.toggleExportDropdown = toggleExportDropdown;
-    window.exportSingleReport = exportSingleReport;
-    window.openStartChatModal = openStartChatModal; window.closeStartChatModal = closeStartChatModal; window.sendNewChat = sendNewChat; window.openChatWith = openChatWith; window.deleteMessage = deleteMessage; window.closeChatModal = closeChatModal;
+    window.exportSingleProject = exportSingleProject; window.toggleProjectExportDropdown = toggleProjectExportDropdown;
+    window.openAddTransactionModal = openAddTransactionModal; window.closeAddTransactionModal = closeAddTransactionModal; window.saveNewTransaction = saveNewTransaction;
+    window.viewTransaction = viewTransaction; window.closeViewTransactionModal = closeViewTransactionModal;
+    window.editTransaction = editTransaction; window.closeEditTransactionModal = closeEditTransactionModal;
+    window.updateTransaction = updateTransaction; window.deleteTransaction = deleteTransaction;
+    window.exportSingleTransaction = exportSingleTransaction; window.toggleTransactionExportDropdown = toggleTransactionExportDropdown;
+    window.viewReportDetail = viewReportDetail; window.closeViewReportModal = closeViewReportModal;
+    window.editReport = editReport; window.closeEditReportModal = closeEditReportModal;
+    window.updateReport = updateReport; window.markReportRead = markReportRead; window.deleteReport = deleteReport;
+    window.toggleExportDropdown = toggleExportDropdown; window.exportSingleReport = exportSingleReport;
+    window.openStartChatModal = openStartChatModal; window.closeStartChatModal = closeStartChatModal;
+    window.sendNewChat = sendNewChat; window.openChatWith = openChatWith;
+    window.deleteMessage = deleteMessage; window.closeChatModal = closeChatModal;
     window.changeAdminPassword = changeAdminPassword; window.openChangePasswordModal = openChangePasswordModal; window.closeChangePasswordModal = closeChangePasswordModal;
-    window.changeSidebarColor = changeSidebarColor; window.openBackupRestoreModal = openBackupRestoreModal; window.closeBackupRestoreModal = closeBackupRestoreModal; window.createBackup = createBackup; window.restoreBackupFromFile = restoreBackupFromFile; window.clearAllLogs = clearAllLogs;
+    window.changeSidebarColor = changeSidebarColor; window.openBackupRestoreModal = openBackupRestoreModal; window.closeBackupRestoreModal = closeBackupRestoreModal;
+    window.createBackup = createBackup; window.restoreBackupFromFile = restoreBackupFromFile; window.clearAllLogs = clearAllLogs;
     window.openGeneralSettingsModal = openGeneralSettingsModal; window.closeGeneralSettingsModal = closeGeneralSettingsModal; window.saveGeneralSettingsModal = saveGeneralSettingsModal;
     window.togglePassword = togglePassword; window.removeProjectImage = removeProjectImage;
     
