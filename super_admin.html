@@ -65,9 +65,15 @@
         .report-card { background: white; border-radius: 12px; border: 1px solid #e5e7eb; transition: all 0.2s; }
         .report-card:hover { transform: translateY(-2px); box-shadow: 0 5px 12px rgba(0,0,0,0.08); }
         
-        /* Export dropdown */
         .relative { position: relative; }
-        [id^="exportDropdown-"] { z-index: 100; }
+        [id^="exportDropdown-"], [id^="projectExportDropdown-"] { z-index: 100; }
+        
+        .dropdown-content { position: absolute; right: 0; margin-top: 4px; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 100; min-width: 100px; border: 1px solid #e5e7eb; }
+        .dropdown-content button { display: flex; align-items: center; gap: 8px; padding: 8px 12px; font-size: 12px; width: 100%; text-align: left; }
+        .dropdown-content button:hover { background-color: #f3f4f6; }
+        
+        body.dark-mode .dropdown-content { background-color: #1e293b; border-color: #334155; }
+        body.dark-mode .dropdown-content button:hover { background-color: #334155; }
         
         @keyframes modalPop { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         .modal-pop { animation: modalPop 0.2s ease-out; }
@@ -91,8 +97,6 @@
         body.dark-mode .search-results-dropdown { background-color: #1e293b; }
         body.dark-mode .search-result-item { border-bottom-color: #334155; }
         body.dark-mode .search-result-item:hover { background-color: #334155; }
-        body.dark-mode .dropdown-content { background-color: #1e293b; border-color: #334155; }
-        body.dark-mode .dropdown-content button:hover { background-color: #334155; }
         
         .btn-primary { background: linear-gradient(135deg, #8b5cf6, #6d28d9); transition: all 0.2s ease; cursor: pointer; font-size: 13px; padding: 8px 16px; }
         .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 5px 12px -3px rgba(139,92,246,0.3); }
@@ -141,10 +145,6 @@
         input, select, textarea { font-size: 13px; padding: 8px 12px; }
         
         .action-buttons { display: flex; flex-wrap: wrap; gap: 6px; }
-        
-        .dropdown-content { position: absolute; right: 0; margin-top: 4px; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 100; min-width: 100px; border: 1px solid #e5e7eb; }
-        .dropdown-content button { display: flex; align-items: center; gap: 8px; padding: 8px 12px; font-size: 12px; width: 100%; text-align: left; }
-        .dropdown-content button:hover { background-color: #f3f4f6; }
     </style>
 </head>
 <body>
@@ -242,6 +242,45 @@
         <div class="p-5" id="mainContentContainer"></div>
     </main>
 </div>
+</div>
+
+<!-- Add Report Modal -->
+<div id="addReportModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl w-full max-w-md modal-pop">
+        <div class="px-5 py-3 border-b flex justify-between items-center">
+            <h3 class="text-lg font-bold"><i class="fas fa-plus-circle mr-2 text-purple-500"></i>Add New Report</h3>
+            <button onclick="closeAddReportModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+        </div>
+        <div class="p-5 space-y-3">
+            <input type="text" id="newReportTitle" placeholder="Report Title" class="w-full p-2.5 border rounded-lg text-sm">
+            <select id="newReportDepartment" class="w-full p-2.5 border rounded-lg text-sm">
+                <option value="super_admin">Super Admin</option>
+                <option value="finance">Finance</option>
+                <option value="sales_marketing">Sales & Marketing</option>
+                <option value="manager">Manager</option>
+                <option value="survey">Survey</option>
+                <option value="construction">Construction</option>
+                <option value="bricks_timber">Bricks & Timber</option>
+                <option value="aluminium">Aluminium</option>
+                <option value="town_planning">Town Planning</option>
+                <option value="hatimiliki">Hatimiliki</option>
+                <option value="architectural">Architectural</option>
+                <option value="secretary">Secretary</option>
+            </select>
+            <select id="newReportPeriod" class="w-full p-2.5 border rounded-lg text-sm">
+                <option value="daily">Daily Report</option>
+                <option value="weekly">Weekly Report</option>
+                <option value="monthly">Monthly Report</option>
+                <option value="quarterly">Quarterly Report</option>
+                <option value="annual">Annual Report</option>
+            </select>
+            <textarea id="newReportContent" rows="5" placeholder="Report Content..." class="w-full p-2.5 border rounded-lg text-sm"></textarea>
+            <div class="flex gap-3 pt-2">
+                <button onclick="createNewReport()" class="flex-1 bg-purple-600 text-white py-2 rounded-lg text-sm">Create Report</button>
+                <button onclick="closeAddReportModal()" class="flex-1 bg-gray-200 py-2 rounded-lg text-sm">Cancel</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Add Employee Modal -->
@@ -707,10 +746,9 @@
         let dd = document.getElementById('searchResultsDropdown');
         if (inp && dd && !inp.contains(e.target) && !dd.contains(e.target)) dd.classList.remove('active');
         // Close export dropdowns when clicking outside
-        if (!e.target.closest('[onclick*="toggleExportDropdown"]')) {
-            document.querySelectorAll('[id^="exportDropdown-"]').forEach(dropdown => {
-                dropdown.classList.add('hidden');
-            });
+        if (!e.target.closest('[onclick*="toggleExportDropdown"]') && !e.target.closest('[onclick*="toggleProjectExportDropdown"]')) {
+            document.querySelectorAll('[id^="exportDropdown-"]').forEach(dropdown => dropdown.classList.add('hidden'));
+            document.querySelectorAll('[id^="projectExportDropdown-"]').forEach(dropdown => dropdown.classList.add('hidden'));
         }
     });
     
@@ -812,7 +850,55 @@
         showToast(`${type} exported to PDF`);
     }
     
-    // Export single report (for individual report export)
+    // Export single project
+    function exportSingleProject(projectId, format) {
+        let projects = JSON.parse(localStorage.getItem('geotraverse_projects') || '[]');
+        let project = projects.find(p => p.id === projectId);
+        if (!project) return;
+        
+        let title = project.name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+        let filename = `${title}_${new Date().toISOString().slice(0,10)}`;
+        
+        if (format === 'excel') {
+            let wsData = [['Name', 'Client', 'Amount', 'Status', 'Progress', 'Location', 'Start Date', 'Description']];
+            wsData.push([project.name, project.client_name, project.amount, project.status, project.progress, project.location || 'N/A', project.start_date || 'N/A', project.description || 'N/A']);
+            let wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(wsData), 'Project');
+            XLSX.writeFile(wb, `${filename}.xlsx`);
+            showToast(`Project exported to Excel`);
+        } else if (format === 'pdf') {
+            let element = document.createElement('div');
+            element.innerHTML = `<div style="padding:20px; font-family:Arial;">
+                <h1 style="color:#7c3aed; border-bottom:2px solid #7c3aed; padding-bottom:10px;">${escapeHtml(project.name)}</h1>
+                <table style="width:100%; margin:15px 0; border-collapse:collapse;">
+                    <tr><td style="padding:5px 0;"><strong>Client:</strong></td><td>${escapeHtml(project.client_name)}</td></tr>
+                    <tr><td style="padding:5px 0;"><strong>Amount:</strong></td><td>${formatCurrency(project.amount)}</td></tr>
+                    <tr><td style="padding:5px 0;"><strong>Status:</strong></td><td><span style="background:${getStatusBadgeClass(project.status)}; padding:2px 8px; border-radius:20px;">${getStatusText(project.status)}</span></td></tr>
+                    <tr><td style="padding:5px 0;"><strong>Progress:</strong></td><td>${project.progress}%</td></tr>
+                    <tr><td style="padding:5px 0;"><strong>Location:</strong></td><td>${escapeHtml(project.location || 'N/A')}</td></tr>
+                    <tr><td style="padding:5px 0;"><strong>Start Date:</strong></td><td>${project.start_date || 'N/A'}</td></tr>
+                    <tr><td style="padding:5px 0;"><strong>Description:</strong></td><td>${escapeHtml(project.description || 'N/A')}</td></tr>
+                </table>
+                ${project.image ? `<div style="margin-top:15px;"><img src="${project.image}" style="max-width:100%; border-radius:8px;"></div>` : ''}
+                <p style="margin-top:20px; font-size:10px; color:#999; text-align:center;">Generated on ${new Date().toLocaleString()}</p>
+            </div>`;
+            html2pdf().set({ margin: 0.5, filename: `${filename}.pdf` }).from(element).save();
+            showToast(`Project exported to PDF`);
+        }
+        
+        let dropdown = document.getElementById(`projectExportDropdown-${projectId}`);
+        if (dropdown) dropdown.classList.add('hidden');
+    }
+    
+    function toggleProjectExportDropdown(projectId) {
+        let dropdown = document.getElementById(`projectExportDropdown-${projectId}`);
+        document.querySelectorAll('[id^="projectExportDropdown-"]').forEach(d => {
+            if (d.id !== `projectExportDropdown-${projectId}`) d.classList.add('hidden');
+        });
+        if (dropdown) dropdown.classList.toggle('hidden');
+    }
+    
+    // Export single report
     function exportSingleReport(reportId, format) {
         let reports = JSON.parse(localStorage.getItem('geotraverse_reports') || '[]');
         let report = reports.find(r => r.id === reportId);
@@ -848,19 +934,59 @@
             showToast(`Report exported to PDF`);
         }
         
-        // Close dropdown after export
         let dropdown = document.getElementById(`exportDropdown-${reportId}`);
         if (dropdown) dropdown.classList.add('hidden');
     }
     
-    // Toggle export dropdown for specific report
     function toggleExportDropdown(reportId) {
         let dropdown = document.getElementById(`exportDropdown-${reportId}`);
-        // Close all other dropdowns first
         document.querySelectorAll('[id^="exportDropdown-"]').forEach(d => {
             if (d.id !== `exportDropdown-${reportId}`) d.classList.add('hidden');
         });
         if (dropdown) dropdown.classList.toggle('hidden');
+    }
+    
+    // Add Report Functions
+    function openAddReportModal() {
+        document.getElementById('newReportTitle').value = '';
+        document.getElementById('newReportDepartment').value = 'super_admin';
+        document.getElementById('newReportPeriod').value = 'monthly';
+        document.getElementById('newReportContent').value = '';
+        document.getElementById('addReportModal').classList.remove('hidden');
+        document.getElementById('addReportModal').classList.add('flex');
+    }
+    
+    function closeAddReportModal() {
+        document.getElementById('addReportModal').classList.add('hidden');
+        document.getElementById('addReportModal').classList.remove('flex');
+    }
+    
+    function createNewReport() {
+        let title = document.getElementById('newReportTitle').value.trim();
+        let department = document.getElementById('newReportDepartment').value;
+        let period = document.getElementById('newReportPeriod').value;
+        let content = document.getElementById('newReportContent').value.trim();
+        
+        if (!title) { showToast('Please enter report title', true); return; }
+        if (!content) { showToast('Please enter report content', true); return; }
+        
+        let reports = JSON.parse(localStorage.getItem('geotraverse_reports') || '[]');
+        let newReport = {
+            id: Date.now(),
+            department: department,
+            title: title,
+            period: period,
+            content: content,
+            status: 'unread',
+            created_at: new Date().toISOString()
+        };
+        reports.unshift(newReport);
+        localStorage.setItem('geotraverse_reports', JSON.stringify(reports));
+        addActivityLog(`Created new report: ${title} (${department})`);
+        showToast('Report created successfully');
+        closeAddReportModal();
+        renderReports();
+        updateBadges();
     }
     
     function openAddEmployeeModal() { document.getElementById('addEmployeeModal').classList.remove('hidden'); document.getElementById('addEmployeeModal').classList.add('flex'); }
@@ -940,8 +1066,8 @@
     
     function renderProjects() {
         let projects = JSON.parse(localStorage.getItem('geotraverse_projects') || '[]');
-        document.getElementById('projectsSection').innerHTML = `<div class="bg-white rounded-xl p-4"><div class="flex justify-between flex-wrap gap-3 mb-4"><h3 class="font-semibold text-base"><i class="fas fa-tasks text-green-500 mr-2"></i>Projects (${projects.length})</h3><div class="flex gap-2"><button onclick="exportToExcel('projects')" class="bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-excel mr-1"></i>Excel</button><button onclick="exportToPDF('projects')" class="bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-pdf mr-1"></i>PDF</button><button onclick="openAddProjectModal()" class="bg-purple-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-plus mr-1"></i>Add</button></div></div><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="projectsGrid"></div></div>`;
-        document.getElementById('projectsGrid').innerHTML = projects.sort((a,b)=>b.id-a.id).map(p => `<div class="project-card"><img src="${p.image || 'https://via.placeholder.com/400x200?text=Project'}" class="w-full h-36 object-cover"><div class="p-3"><div class="flex justify-between items-start"><h4 class="font-semibold text-sm">${escapeHtml(p.name)}</h4><div class="flex gap-1"><button onclick="viewProjectDetails(${p.id})" class="text-blue-500 text-xs p-1"><i class="fas fa-eye"></i></button><button onclick="openEditProjectModal(${p.id})" class="text-green-500 text-xs p-1"><i class="fas fa-edit"></i></button><button onclick="deleteProject(${p.id})" class="text-red-500 text-xs p-1"><i class="fas fa-trash"></i></button><button onclick="openSendProjectModal(${p.id})" class="text-purple-500 text-xs p-1"><i class="fas fa-paper-plane"></i></button></div></div><p class="text-xs text-gray-500 mt-1">${escapeHtml(p.client_name)}</p><p class="text-sm font-semibold text-purple-600 mt-1">${formatCurrency(p.amount)}</p><div class="mt-2"><div class="flex justify-between text-xs"><span>Progress</span><span>${p.progress||0}%</span></div><div class="w-full bg-gray-200 rounded-full h-1.5"><div class="bg-purple-600 h-1.5 rounded-full" style="width:${p.progress||0}%"></div></div></div><span class="inline-block mt-2 text-[10px] px-2 py-0.5 rounded-full ${getStatusBadgeClass(p.status)}">${getStatusText(p.status)}</span></div></div>`).join('');
+        document.getElementById('projectsSection').innerHTML = `<div class="bg-white rounded-xl p-4"><div class="flex justify-between flex-wrap gap-3 mb-4"><h3 class="font-semibold text-base"><i class="fas fa-tasks text-green-500 mr-2"></i>Projects (${projects.length})</h3><div class="flex gap-2"><button onclick="exportToExcel('projects')" class="bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-excel mr-1"></i>Excel All</button><button onclick="exportToPDF('projects')" class="bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-pdf mr-1"></i>PDF All</button><button onclick="openAddProjectModal()" class="bg-purple-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-plus mr-1"></i>Add</button></div></div><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="projectsGrid"></div></div>`;
+        document.getElementById('projectsGrid').innerHTML = projects.sort((a,b)=>b.id-a.id).map(p => `<div class="project-card"><img src="${p.image || 'https://via.placeholder.com/400x200?text=Project'}" class="w-full h-36 object-cover"><div class="p-3"><div class="flex justify-between items-start"><h4 class="font-semibold text-sm">${escapeHtml(p.name)}</h4><div class="flex gap-1"><button onclick="viewProjectDetails(${p.id})" class="text-blue-500 text-xs p-1"><i class="fas fa-eye"></i></button><button onclick="openEditProjectModal(${p.id})" class="text-green-500 text-xs p-1"><i class="fas fa-edit"></i></button><button onclick="deleteProject(${p.id})" class="text-red-500 text-xs p-1"><i class="fas fa-trash"></i></button><button onclick="openSendProjectModal(${p.id})" class="text-purple-500 text-xs p-1"><i class="fas fa-paper-plane"></i></button><div class="relative inline-block"><button onclick="toggleProjectExportDropdown(${p.id})" class="text-purple-500 text-xs p-1" title="Export"><i class="fas fa-download"></i></button><div id="projectExportDropdown-${p.id}" class="dropdown-content hidden"><button onclick="exportSingleProject(${p.id}, 'excel')"><i class="fas fa-file-excel text-green-600"></i> Excel</button><button onclick="exportSingleProject(${p.id}, 'pdf')"><i class="fas fa-file-pdf text-red-600"></i> PDF</button></div></div></div></div><p class="text-xs text-gray-500 mt-1">${escapeHtml(p.client_name)}</p><p class="text-sm font-semibold text-purple-600 mt-1">${formatCurrency(p.amount)}</p><div class="mt-2"><div class="flex justify-between text-xs"><span>Progress</span><span>${p.progress||0}%</span></div><div class="w-full bg-gray-200 rounded-full h-1.5"><div class="bg-purple-600 h-1.5 rounded-full" style="width:${p.progress||0}%"></div></div></div><span class="inline-block mt-2 text-[10px] px-2 py-0.5 rounded-full ${getStatusBadgeClass(p.status)}">${getStatusText(p.status)}</span></div></div>`).join('');
     }
     
     function viewProjectDetails(id) {
@@ -1016,7 +1142,7 @@
         let inc = trans.filter(t => t.type === 'income').reduce((s, t) => s + parseFloat(t.amount), 0);
         let exp = trans.filter(t => t.type === 'expense').reduce((s, t) => s + parseFloat(t.amount), 0);
         let html = `<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-5"><div class="cashflow-card cashflow-income p-4"><p class="text-white/80 text-xs uppercase">Total Income</p><p class="text-2xl font-bold">${formatCurrency(inc).substring(0,14)}</p></div><div class="cashflow-card cashflow-expense p-4"><p class="text-white/80 text-xs uppercase">Expenses</p><p class="text-2xl font-bold">${formatCurrency(exp).substring(0,14)}</p></div><div class="cashflow-card p-4" style="background:linear-gradient(135deg,#3b82f6,#1e3a8a)"><p class="text-white/80 text-xs uppercase">Net Profit</p><p class="text-2xl font-bold">${formatCurrency(inc-exp).substring(0,14)}</p></div><div class="cashflow-card p-4" style="background:linear-gradient(135deg,#f59e0b,#b45309)"><p class="text-white/80 text-xs uppercase">Pending</p><p class="text-2xl font-bold">${formatCurrency(trans.filter(t=>t.type==='income'&&t.status!=='paid').reduce((s,t)=>s+(parseFloat(t.amount)-parseFloat(t.paid_amount||0)),0)).substring(0,14)}</p></div></div>
-        <div class="bg-white rounded-xl p-4"><div class="flex justify-between flex-wrap gap-2 mb-3"><h3 class="font-semibold text-base"><i class="fas fa-exchange-alt text-purple-500 mr-2"></i>All Transactions</h3><div class="flex gap-2"><button onclick="exportToExcel('transactions')" class="bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-excel mr-1"></i>Excel</button><button onclick="exportToPDF('transactions')" class="bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-pdf mr-1"></i>PDF</button></div></div><div class="responsive-table"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th class="px-3 py-2">Date</th><th class="px-3 py-2">Dept</th><th class="px-3 py-2">Type</th><th class="px-3 py-2">Source</th><th class="px-3 py-2">Amount</th><th class="px-3 py-2">Status</th></tr></thead><tbody>${trans.sort((a,b)=>new Date(b.transaction_date)-new Date(a.transaction_date)).map(t => `<tr class="border-b"><td class="px-3 py-2">${t.transaction_date}</td><td class="px-3 py-2">${t.department}</td><td class="px-3 py-2"><span class="px-2 py-0.5 rounded-full text-xs ${t.type==='income'?'bg-green-100 text-green-700':'bg-red-100 text-red-700'}">${t.type}</span></td><td class="px-3 py-2">${escapeHtml(t.source)}<tr><td class="px-3 py-2 ${t.type==='income'?'text-green-600':'text-red-600'} font-semibold">${formatCurrency(t.amount)}</td><td class="px-3 py-2"><span class="px-2 py-0.5 rounded-full text-xs ${t.status==='paid'?'bg-green-100':t.status==='partial'?'bg-yellow-100':'bg-red-100'}">${t.status}</span></td></tr>`).join('')}</tbody>}></div></div>`;
+        <div class="bg-white rounded-xl p-4"><div class="flex justify-between flex-wrap gap-2 mb-3"><h3 class="font-semibold text-base"><i class="fas fa-exchange-alt text-purple-500 mr-2"></i>All Transactions</h3><div class="flex gap-2"><button onclick="exportToExcel('transactions')" class="bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-excel mr-1"></i>Excel</button><button onclick="exportToPDF('transactions')" class="bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-pdf mr-1"></i>PDF</button></div></div><div class="responsive-table"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th class="px-3 py-2">Date</th><th class="px-3 py-2">Dept</th><th class="px-3 py-2">Type</th><th class="px-3 py-2">Source</th><th class="px-3 py-2">Amount</th><th class="px-3 py-2">Status</th></tr></thead><tbody>${trans.sort((a,b)=>new Date(b.transaction_date)-new Date(a.transaction_date)).map(t => `<tr class="border-b"><td class="px-3 py-2">${t.transaction_date}</td><td class="px-3 py-2">${t.department}</td><td class="px-3 py-2"><span class="px-2 py-0.5 rounded-full text-xs ${t.type==='income'?'bg-green-100 text-green-700':'bg-red-100 text-red-700'}">${t.type}</span></td><td class="px-3 py-2">${escapeHtml(t.source)}</td><td class="px-3 py-2 ${t.type==='income'?'text-green-600':'text-red-600'} font-semibold">${formatCurrency(t.amount)}</td><td class="px-3 py-2"><span class="px-2 py-0.5 rounded-full text-xs ${t.status==='paid'?'bg-green-100':t.status==='partial'?'bg-yellow-100':'bg-red-100'}">${t.status}</span></td></tr>`).join('')}</tbody>}></div></div>`;
         document.getElementById('cashflowSection').innerHTML = html;
     }
     
@@ -1055,19 +1181,19 @@
     }
     function closeChatModal() { renderMessages(); }
     
-    // ==================== REPORTS (with per-report export dropdown) ====================
+    // ==================== REPORTS (with Add Report button) ====================
     function getUnreadReportsCount() { return JSON.parse(localStorage.getItem('geotraverse_reports') || '[]').filter(r => r.status === 'unread').length; }
     
     function renderReports() {
         let reports = JSON.parse(localStorage.getItem('geotraverse_reports') || '[]');
-        let html = `<div class="flex justify-between flex-wrap gap-3 mb-4"><h2 class="text-xl font-bold"><i class="fas fa-chart-bar text-purple-500 mr-2"></i>Reports</h2><div class="flex gap-2"><button onclick="exportToExcel('reports')" class="bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-excel mr-1"></i>Excel All</button><button onclick="exportToPDF('reports')" class="bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-pdf mr-1"></i>PDF All</button></div></div><div class="space-y-3" id="reportsList"></div>`;
+        let html = `<div class="flex justify-between flex-wrap gap-3 mb-4"><h2 class="text-xl font-bold"><i class="fas fa-chart-bar text-purple-500 mr-2"></i>Reports</h2><div class="flex gap-2"><button onclick="openAddReportModal()" class="bg-purple-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-plus-circle mr-1"></i>Add Report</button><button onclick="exportToExcel('reports')" class="bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-excel mr-1"></i>Excel All</button><button onclick="exportToPDF('reports')" class="bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-pdf mr-1"></i>PDF All</button></div></div><div class="space-y-3" id="reportsList"></div>`;
         document.getElementById('reportsSection').innerHTML = html;
         
         let reportsHtml = '';
         reports.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).forEach(r => {
             reportsHtml += `<div class="report-card p-3"><div class="flex justify-between flex-wrap gap-3"><div class="flex-1"><h4 class="font-semibold text-base">${escapeHtml(r.title)}</h4><div class="flex flex-wrap gap-3 text-xs text-gray-500 mt-1"><span><i class="fas fa-building mr-1"></i>${r.department}</span><span><i class="fas fa-calendar mr-1"></i>${r.period}</span><span><i class="fas fa-clock mr-1"></i>${formatDate(r.created_at)}</span>${r.status === 'unread' ? '<span class="text-red-500 font-semibold">● New</span>' : ''}</div><p class="text-sm text-gray-600 mt-2">${escapeHtml(r.content.substring(0,100))}${r.content.length>100?'...':''}</p></div><div class="flex gap-1 items-start"><button onclick="viewReportDetail(${r.id})" class="text-blue-500 text-sm p-1.5" title="View"><i class="fas fa-eye"></i></button><button onclick="editReport(${r.id})" class="text-green-500 text-sm p-1.5" title="Edit"><i class="fas fa-edit"></i></button><button onclick="deleteReport(${r.id})" class="text-red-500 text-sm p-1.5" title="Delete"><i class="fas fa-trash"></i></button><button onclick="markReportRead(${r.id})" class="text-orange-500 text-sm p-1.5" title="Mark Read"><i class="fas fa-check-circle"></i></button><div class="relative inline-block"><button onclick="toggleExportDropdown(${r.id})" class="text-purple-500 text-sm p-1.5" title="Export"><i class="fas fa-download"></i></button><div id="exportDropdown-${r.id}" class="dropdown-content hidden"><button onclick="exportSingleReport(${r.id}, 'excel')"><i class="fas fa-file-excel text-green-600"></i> Excel</button><button onclick="exportSingleReport(${r.id}, 'pdf')"><i class="fas fa-file-pdf text-red-600"></i> PDF</button></div></div></div></div></div>`;
         });
-        reportsHtml += reports.length === 0 ? '<p class="text-gray-400 text-center py-6 text-sm">No reports received yet</p>' : '';
+        reportsHtml += reports.length === 0 ? '<p class="text-gray-400 text-center py-6 text-sm">No reports yet. Click "Add Report" to create one.</p>' : '';
         document.getElementById('reportsList').innerHTML = reportsHtml;
         updateBadges();
     }
@@ -1218,7 +1344,10 @@
     window.exportToExcel = exportToExcel; window.exportToPDF = exportToPDF;
     window.openAddProjectModal = openAddProjectModal; window.openEditProjectModal = openEditProjectModal; window.closeProjectModal = closeProjectModal; window.saveProject = saveProject; window.deleteProject = deleteProject; window.viewProjectDetails = viewProjectDetails; window.closeViewProjectModal = closeViewProjectModal;
     window.openSendProjectModal = openSendProjectModal; window.closeSendProjectModal = closeSendProjectModal; window.confirmSendProject = confirmSendProject;
+    window.exportSingleProject = exportSingleProject;
+    window.toggleProjectExportDropdown = toggleProjectExportDropdown;
     window.viewReportDetail = viewReportDetail; window.closeViewReportModal = closeViewReportModal; window.editReport = editReport; window.closeEditReportModal = closeEditReportModal; window.updateReport = updateReport; window.markReportRead = markReportRead; window.deleteReport = deleteReport;
+    window.openAddReportModal = openAddReportModal; window.closeAddReportModal = closeAddReportModal; window.createNewReport = createNewReport;
     window.toggleExportDropdown = toggleExportDropdown;
     window.exportSingleReport = exportSingleReport;
     window.openStartChatModal = openStartChatModal; window.closeStartChatModal = closeStartChatModal; window.sendNewChat = sendNewChat; window.openChatWith = openChatWith; window.deleteMessage = deleteMessage; window.closeChatModal = closeChatModal;
