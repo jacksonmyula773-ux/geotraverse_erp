@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>GeoTraverse | Construction Dashboard - ERP System</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body { background: #f0f2f5; transition: background 0.3s ease; font-size: 14px; }
+        
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #e2e8f0; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #d97706; border-radius: 10px; }
+        
+        .sidebar {
+            background: #d97706;
+            transition: all 0.3s ease;
+            height: 100vh;
+            overflow-y: auto;
+            position: fixed;
+            width: 280px;
+            z-index: 30;
+        }
+        
+        .sidebar-logo { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+        .sidebar-logo img { width: 100%; height: 100%; object-fit: contain; border-radius: 10px; }
+        .nav-item { transition: all 0.2s ease; border-left: 3px solid transparent; cursor: pointer; }
+        .nav-item.active { background: rgba(255,255,255,0.15); border-left-color: #fcd34d; }
+        .nav-item.active i { color: #fcd34d; }
+        .nav-item:hover:not(.active) { background: rgba(255,255,255,0.08); }
+        
+        .stat-card { transition: all 0.3s ease; background: white; border-radius: 20px; border: 1px solid #e5e7eb; cursor: pointer; }
+        .stat-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -12px rgba(0,0,0,0.15); border-color: #d97706; }
+        
+        .btn-primary { background: linear-gradient(135deg, #d97706, #b45309); transition: all 0.2s; }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 5px 15px rgba(217,119,6,0.3); }
+        
+        .toast-notification { position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, #d97706, #b45309); color: white; padding: 10px 16px; border-radius: 10px; z-index: 1000; animation: slideInRight 0.3s ease; font-size: 12px; }
+        .toast-notification.error { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        
+        .main-content { margin-left: 280px; }
+        @media (max-width: 768px) { .sidebar { left: -280px; transition: left 0.3s; } .sidebar.mobile-open { left: 0; } .mobile-menu-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 99; display: none; } .mobile-menu-overlay.open { display: block; } .main-content { margin-left: 0; } }
+        
+        .scroll-top { position: fixed; bottom: 20px; right: 20px; background: #d97706; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: all 0.3s; z-index: 99; color: white; }
+        .scroll-top.visible { opacity: 1; }
+        
+        .color-option { transition: all 0.2s; cursor: pointer; border: 2px solid transparent; width: 36px; height: 36px; border-radius: 50%; }
+        .color-option:hover { transform: scale(1.05); }
+        .color-option.selected { border-color: white; box-shadow: 0 0 0 2px #333; }
+        
+        .status-paid { background: #d1fae5; color: #059669; }
+        .status-partial { background: #fef3c7; color: #d97706; }
+        .status-pending { background: #fee2e2; color: #dc2626; }
+        .status-completed { background: #d1fae5; color: #059669; }
+        .status-progress { background: #dbeafe; color: #2563eb; }
+        .status-approved { background: #e9d5ff; color: #7e22ce; }
+        
+        .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        table { font-size: 13px; width: 100%; }
+        th, td { padding: 12px 10px; }
+        
+        .chat-bubble { max-width: 80%; padding: 10px 14px; border-radius: 12px; margin-bottom: 8px; }
+        .chat-sent { background-color: #fef3c7; margin-left: auto; }
+        .chat-received { background-color: #e5e7eb; }
+        
+        .chat-conversation { cursor: pointer; transition: all 0.2s; }
+        .chat-conversation:hover { background-color: #f3f4f6; }
+        .chat-conversation-unread { background-color: #fffbeb; border-left: 3px solid #d97706; }
+        
+        .search-results-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+            z-index: 50;
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+        }
+        .search-results-dropdown.active { display: block; }
+        .search-result-item { padding: 10px 14px; border-bottom: 1px solid #e5e7eb; cursor: pointer; transition: background 0.2s; font-size: 13px; }
+        .search-result-item:hover { background-color: #f3f4f6; }
+        
+        body.dark-mode { background: #0f172a; }
+        body.dark-mode .bg-white { background-color: #1e293b; }
+        body.dark-mode .bg-gray-50 { background-color: #0f172a; }
+        body.dark-mode .text-gray-600, body.dark-mode .text-gray-500 { color: #94a3b8; }
+        body.dark-mode .text-gray-700, body.dark-mode .text-gray-800 { color: #f1f5f9; }
+        body.dark-mode .border-gray-200, body.dark-mode .border-gray-100 { border-color: #334155; }
+        body.dark-mode .sidebar { background: #b45309; }
+        body.dark-mode .stat-card { background-color: #1e293b; border-color: #334155; }
+        body.dark-mode .chat-sent { background-color: #b45309; }
+        body.dark-mode .chat-received { background-color: #334155; }
+        body.dark-mode .chat-conversation:hover { background-color: #334155; }
+        body.dark-mode .chat-conversation-unread { background-color: #78350f; }
+        body.dark-mode .search-results-dropdown { background-color: #1e293b; }
+        body.dark-mode .search-result-item { border-bottom-color: #334155; }
+        body.dark-mode .search-result-item:hover { background-color: #334155; }
+        
+        .progress-bar { height: 6px; border-radius: 3px; }
+        .progress-low { background: #ef4444; }
+        .progress-medium { background: #f59e0b; }
+        .progress-high { background: #10b981; }
+        
+        .dropdown-content { position: absolute; right: 0; margin-top: 4px; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 100; min-width: 180px; border: 1px solid #e5e7eb; max-height: 400px; overflow-y: auto; }
+        .dropdown-content button { display: flex; align-items: center; gap: 8px; padding: 8px 12px; font-size: 12px; width: 100%; text-align: left; }
+        .dropdown-content button:hover { background-color: #f3f4f6; }
+        body.dark-mode .dropdown-content { background-color: #1e293b; border-color: #334155; }
+        body.dark-mode .dropdown-content button:hover { background-color: #334155; }
+        
+        .relative { position: relative; }
+        [id^="dailyExportDropdown-"], [id^="projectExportDropdown-"], [id^="budgetExportDropdown-"], [id^="sendReportDropdown-"] { z-index: 100; }
+        
+        .income-row { background-color: #f0fdf4; }
+        .expense-row { background-color: #fef2f2; }
+        .dark-mode .income-row { background-color: #064e3b20; }
+        .dark-mode .expense-row { background-color: #7f1d1d20; }
+        
+        .project-card { transition: all 0.2s; cursor: pointer; border-radius: 12px; overflow: hidden; border: 1px solid #e5e7eb; background: white; }
+        .project-card:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
+        
+        .pending-row { background-color: #fef2f2; }
+        .partial-row { background-color: #fffbeb; }
+        .dark-mode .pending-row { background-color: #7f1d1d20; }
+        .dark-mode .partial-row { background-color: #451a0320; }
+        
+        .tick-btn { cursor: pointer; transition: all 0.2s; color: #10b981; }
+        .tick-btn:hover { transform: scale(1.1); color: #059669; }
+        
+        .image-upload-area { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s; }
+        .image-upload-area:hover { border-color: #d97706; background-color: #fffbeb; }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+<div id="mobileMenuOverlay" class="mobile-menu-overlay" onclick="closeMobileSidebar()"></div>
+
+<div class="flex h-screen overflow-hidden">
+    <!-- SIDEBAR -->
+    <aside id="mainSidebar" class="sidebar shadow-xl flex flex-col z-20">
+        <div class="px-5 py-5 border-b border-white/20 flex-shrink-0">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="goToMainWebsite()">
+                <div class="sidebar-logo"><img src="https://i.postimg.cc/MT6jTVHh/weblogo.png" alt="GeoTraverse Logo" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23d97706%22/%3E%3Ctext x=%2250%22 y=%2265%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2240%22 font-weight=%22bold%22%3EG%3C/text%3E%3C/svg%3E';"></div>
+                <div><span class="text-lg font-bold text-white">GeoTraverse</span><p class="text-[9px] text-white/50">CONSTRUCTION ERP</p></div>
+            </div>
+        </div>
+        <div class="flex-1 overflow-y-auto px-3 py-4">
+            <nav class="space-y-1">
+                <div class="text-white/40 text-[10px] px-3 py-2 uppercase font-semibold">MAIN</div>
+                <a href="#" class="nav-item active flex items-center gap-3 px-3 py-2.5 rounded-xl text-white text-sm" data-section="dashboard"><i class="fas fa-tachometer-alt w-4"></i><span>Dashboard</span></a>
+                <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-white text-sm" data-section="dailywork"><i class="fas fa-hard-hat w-4"></i><span>Daily Work</span><span class="ml-auto bg-green-500 text-white text-[9px] px-1.5 py-0.5 rounded-full">CRUD</span></a>
+                <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-white text-sm" data-section="projects"><i class="fas fa-tasks w-4"></i><span>Projects</span></a>
+                <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-white text-sm" data-section="budget"><i class="fas fa-wallet w-4"></i><span>Budget</span></a>
+                <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-white text-sm" data-section="messages"><i class="fas fa-envelope w-4"></i><span>Messages</span><span class="ml-auto bg-red-500 text-white text-[9px] px-1.5 py-0.5 rounded-full" id="msgBadge">0</span></a>
+                <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-white text-sm" data-section="reports"><i class="fas fa-chart-bar w-4"></i><span>Reports</span></a>
+                <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-white text-sm" data-section="settings"><i class="fas fa-cog w-4"></i><span>Settings</span></a>
+            </nav>
+        </div>
+        <div class="flex-shrink-0 p-4 border-t border-white/20">
+            <div class="flex items-center gap-3 mb-2">
+                <div class="w-9 h-9 bg-amber-800 rounded-xl flex items-center justify-center"><i class="fas fa-hard-hat text-white text-sm"></i></div>
+                <div class="flex-1"><p class="text-sm font-semibold text-white">Construction Manager</p><p class="text-[9px] text-white/50">construction@geotraverse.com</p></div>
+            </div>
+            <button id="logoutBtn" class="w-full bg-red-600/80 hover:bg-red-600 text-white py-2 rounded-lg text-xs transition"><i class="fas fa-sign-out-alt mr-1"></i>Logout</button>
+        </div>
+    </aside>
+    
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 overflow-y-auto main-content">
+        <header class="bg-white shadow-sm px-5 py-3 sticky top-0 z-10 border-b border-gray-200">
+            <div class="flex items-center justify-between flex-wrap gap-3">
+                <div class="flex items-center gap-3">
+                    <button id="mobileMenuBtn" class="md:hidden text-gray-600 hover:text-amber-700 text-xl"><i class="fas fa-bars"></i></button>
+                    <div><h1 class="text-lg font-bold text-gray-800">Construction Dashboard</h1><p class="text-xs text-gray-400">Construction & Financial Management</p></div>
+                </div>
+                <div class="flex-1 max-w-md relative">
+                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
+                    <input type="text" id="globalSearchInput" placeholder="Search daily work, projects, budget, reports..." class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-amber-600">
+                    <div id="searchResultsDropdown" class="search-results-dropdown"></div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="darkModeToggle" class="text-gray-500 hover:text-amber-700 w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center"><i id="darkModeIcon" class="fas fa-moon text-sm"></i></button>
+                    <div class="relative">
+                        <button id="profileBtn" class="flex items-center gap-2"><div class="w-8 h-8 bg-gradient-to-r from-amber-600 to-amber-800 rounded-full flex items-center justify-center"><span class="text-white text-sm font-semibold">CM</span></div><i class="fas fa-chevron-down text-gray-400 text-xs"></i></button>
+                        <div id="profileDropdown" class="absolute top-full right-0 mt-2 w-48 bg-white rounded-xl shadow-xl z-50 hidden">
+                            <a href="#" class="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 text-sm"><i class="fas fa-user text-gray-400"></i>Profile</a>
+                            <hr class="my-1">
+                            <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-2 hover:bg-gray-50 text-sm text-red-600"><i class="fas fa-sign-out-alt"></i>Logout</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <div class="p-4" id="mainContentContainer"></div>
+    </main>
+</div>
+
+<!-- Add Daily Work Modal -->
+<div id="dailyWorkModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
+    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
+        <div class="px-5 py-3 border-b flex justify-between items-center"><h3 class="text-lg font-bold" id="dailyWorkModalTitle"><i class="fas fa-plus-circle text-amber-600 mr-2"></i>Add Daily Work</h3><button onclick="closeDailyWorkModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button></div>
+        <div class="p-5 space-y-3">
+            <input type="hidden" id="editDailyWorkId">
+            <input type="date" id="dwDate" class="w-full p-2 border rounded-xl text-sm">
+            <input type="text" id="dwProjectName" placeholder="Project Name" class="w-full p-2 border rounded-xl text-sm">
+            <input type="text" id="dwWorkDescription" placeholder="Work Description" class="w-full p-2 border rounded-xl text-sm">
+            <input type="number" id="dwIncome" placeholder="Income (TZS)" class="w-full p-2 border rounded-xl text-sm">
+            <input type="number" id="dwExpenses" placeholder="Expenses (TZS)" class="w-full p-2 border rounded-xl text-sm">
+            <input type="number" id="dwPaidAmount" placeholder="Amount Paid (TZS)" class="w-full p-2 border rounded-xl text-sm">
+            <select id="dwStatus" class="w-full p-2 border rounded-xl text-sm">
+                <option value="paid">Paid (Full)</option>
+                <option value="partial">Partial Payment</option>
+                <option value="pending">Pending</option>
+            </select>
+            <div class="bg-gray-50 p-2 rounded-lg"><p class="text-sm font-semibold">Remaining: <span id="remainingDisplay" class="text-orange-600">TZS 0</span></p><p class="text-sm font-semibold">Profit: <span id="profitDisplay" class="text-green-600">TZS 0</span></p></div>
+            <div class="flex gap-3"><button onclick="saveDailyWork()" class="flex-1 bg-amber-600 text-white py-2 rounded-xl text-sm">Save</button><button onclick="closeDailyWorkModal()" class="flex-1 bg-gray-100 py-2 rounded-xl text-sm">Cancel</button></div>
+        </div>
+    </div>
+</div>
+
+<!-- View Daily Work Modal -->
+<div id="viewDailyWorkModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
+    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
+        <div class="px-5 py-3 border-b flex justify-between items-center"><h3 class="text-lg font-bold">Daily Work Details</h3><button onclick="closeViewDailyWorkModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button></div>
+        <div class="p-5" id="viewDailyWorkContent"></div>
+        <div class="px-5 pb-5"><button onclick="closeViewDailyWorkModal()" class="w-full bg-gray-100 py-2 rounded-xl text-sm">Close</button></div>
+    </div>
+</div>
+
+<!-- Send Daily Work Modal -->
+<div id="sendDailyWorkModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
+    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
+        <div class="px-5 py-3 border-b"><h3 class="text-lg font-bold"><i class="fas fa-paper-plane text-amber-600 mr-2"></i>Send Daily Work</h3></div>
+        <div class="p-5 space-y-3">
+            <input type="hidden" id="sendDailyWorkId">
+            <p id="sendDailyWorkInfo" class="text-sm text-gray-600 bg-gray-50 p-2 rounded"></p>
+            <select id="sendDailyWorkDept" class="w-full p-2 border rounded-xl text-sm">
+                <option value="">Select Department</option>
+                <option value="Admin">Admin</option>
+                <option value="Finance">Finance</option>
+                <option value="Manager">Manager</option>
+                <option value="Secretary">Secretary</option>
+                <option value="Sales">Sales & Marketing</option>
+                <option value="Survey">Survey</option>
+                <option value="Bricks_Timber">Bricks & Timber</option>
+                <option value="Aluminium">Aluminium</option>
+                <option value="Town_Planning">Town Planning</option>
+                <option value="Hatimiliki">Hatimiliki</option>
+                <option value="Architectural">Architectural</option>
+            </select>
+            <textarea id="sendDailyWorkMessage" rows="3" placeholder="Message" class="w-full p-2 border rounded-xl text-sm"></textarea>
+            <div class="flex gap-3"><button onclick="confirmSendDailyWork()" class="flex-1 bg-amber-600 text-white py-2 rounded-xl text-sm">Send</button><button onclick="closeSendDailyWorkModal()" class="flex-1 bg-gray-100 py-2 rounded-xl text-sm">Cancel</button></div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Project Modal -->
+<div id="projectModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
+    <div class="bg-white rounded-2xl max-w-md w-full fade-in" style="max-height: 90vh; overflow-y: auto;">
+        <div class="px-5 py-3 border-b flex justify-between items-center"><h3 class="text-lg font-bold" id="projectModalTitle"><i class="fas fa-plus-circle text-amber-600 mr-2"></i>Add Project</h3><button onclick="closeProjectModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button></div>
+        <div class="p-5 space-y-3">
+            <input type="hidden" id="editProjectId">
+            <input type="text" id="projectName" placeholder="Project Name" class="w-full p-2 border rounded-xl text-sm">
+            <input type="text" id="projectClient" placeholder="Client Name" class="w-full p-2 border rounded-xl text-sm">
+            <input type="number" id="projectAmount" placeholder="Amount (TZS)" class="w-full p-2 border rounded-xl text-sm">
+            <input type="text" id="projectLocation" placeholder="Location" class="w-full p-2 border rounded-xl text-sm">
+            <textarea id="projectDesc" rows="2" placeholder="Description" class="w-full p-2 border rounded-xl text-sm"></textarea>
+            <div id="projectImageUploadArea" class="image-upload-area text-sm" onclick="document.getElementById('projectImageFile').click()">
+                <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                <p>Click to upload project image</p>
+            </div>
+            <input type="file" id="projectImageFile" accept="image/*" class="hidden">
+            <div id="projectImagePreviewContainer" class="hidden mt-2">
+                <img id="projectImagePreview" class="w-full h-24 object-cover rounded-lg border">
+                <button type="button" onclick="removeProjectImage()" class="mt-1 text-red-500 text-sm w-full">Remove</button>
+            </div>
+            <select id="projectStatus" class="w-full p-2 border rounded-xl text-sm">
+                <option value="pending">Pending</option>
+                <option value="in_progress">In Progress</option>
+                <option value="completed">Completed</option>
+                <option value="approved">Approved</option>
+            </select>
+            <input type="number" id="projectProgress" placeholder="Progress (0-100)" class="w-full p-2 border rounded-xl text-sm">
+            <input type="date" id="projectStartDate" class="w-full p-2 border rounded-xl text-sm">
+            <input type="date" id="projectEndDate" class="w-full p-2 border rounded-xl text-sm">
+            <div class="flex gap-3"><button onclick="saveProject()" class="flex-1 bg-amber-600 text-white py-2 rounded-xl text-sm">Save</button><button onclick="closeProjectModal()" class="flex-1 bg-gray-100 py-2 rounded-xl text-sm">Cancel</button></div>
+        </div>
+    </div>
+</div>
+
+<!-- View Project Modal -->
+<div id="viewProjectModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
+    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
+        <div class="px-5 py-3 border-b flex justify-between items-center"><h3 class="text-lg font-bold">Project Details</h3><button onclick="closeViewProjectModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button></div>
+        <div class="p-5" id="viewProjectContent"></div>
+        <div class="px-5 pb-5"><button onclick="closeViewProjectModal()" class="w-full bg-gray-100 py-2 rounded-xl text-sm">Close</button></div>
+    </div>
+</div>
+
+<!-- Send Project Modal -->
+<div id="sendProjectModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
+    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
+        <div class="px-5 py-3 border-b"><h3 class="text-lg font-bold"><i class="fas fa-paper-plane text-amber-600 mr-2"></i>Send Project</h3></div>
+        <div class="p-5 space-y-3">
+            <input type="hidden" id="sendProjectId">
+            <p id="sendProjectInfo" class="text-sm text-gray-600 bg-gray-50 p-2 rounded"></p>
+            <select id="sendToDept" class="w-full p-2 border rounded-xl text-sm">
+                <option value="">Select Department</option>
+                <option value="Admin">Admin</option>
+                <option value="Finance">Finance</option>
+                <option value="Manager">Manager</option>
+                <option value="Secretary">Secretary</option>
+                <option value="Sales">Sales & Marketing</option>
+                <option value="Survey">Survey</option>
+                <option value="Bricks_Timber">Bricks & Timber</option>
+                <option value="Aluminium">Aluminium</option>
+                <option value="Town_Planning">Town Planning</option>
+                <option value="Hatimiliki">Hatimiliki</option>
+                <option value="Architectural">Architectural</option>
+            </select>
+            <textarea id="sendProjectMessage" rows="3" placeholder="Message" class="w-full p-2 border rounded-xl text-sm"></textarea>
+            <div class="flex gap-3"><button onclick="confirmSendProject()" class="flex-1 bg-amber-600 text-white py-2 rounded-xl text-sm">Send</button><button onclick="closeSendProjectModal()" class="flex-1 bg-gray-100 py-2 rounded-xl text-sm">Cancel</button></div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Budget Transaction Modal -->
+<div id="budgetModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
+    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
+        <div class="px-5 py-3 border-b flex justify-between items-center"><h3 class="text-lg font-bold" id="budgetModalTitle"><i class="fas fa-plus-circle text-amber-600 mr-2"></i>Add Transaction</h3><button onclick="closeBudgetModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button></div>
+        <div class="p-5 space-y-3">
+            <input type="hidden" id="editBudgetId">
+            <select id="budgetType" class="w-full p-2 border rounded-xl text-sm">
+                <option value="income">Income</option>
+                <option value="expense">Expense</option>
+            </select>
+            <input type="text" id="budgetSource" placeholder="Source/Category" class="w-full p-2 border rounded-xl text-sm">
+            <input type="number" id="budgetAmount" placeholder="Amount (TZS)" class="w-full p-2 border rounded-xl text-sm">
+            <input type="date" id="budgetDate" class="w-full p-2 border rounded-xl text-sm">
+            <textarea id="budgetDescription" rows="2" placeholder="Description" class="w-full p-2 border rounded-xl text-sm"></textarea>
+            <div class="flex gap-3"><button onclick="saveBudget()" class="flex-1 bg-amber-600 text-white py-2 rounded-xl text-sm">Save</button><button onclick="closeBudgetModal()" class="flex-1 bg-gray-100 py-2 rounded-xl text-sm">Cancel</button></div>
+        </div>
+    </div>
+</div>
+
+<!-- View Budget Modal -->
+<div id="viewBudgetModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
+    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
+        <div class="px-5 py-3 border-b flex justify-between items-center"><h3 class="text-lg font-bold">Budget Details</h3><button onclick="closeViewBudgetModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button></div>
+        <div class="p-5" id="viewBudgetContent"></div>
+        <div class="px-5 pb-5"><button onclick="closeViewBudgetModal()" class="w-full bg-gray-100 py-2 rounded-xl text-sm">Close</button></div>
+    </div>
+</div>
+
+<!-- Chat Modal -->
+<div id="chatModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
+    <div class="bg-white rounded-2xl w-full max-w-2xl fade-in">
+        <div class="px-5 py-3 border-b flex justify-between items-center"><h3 class="text-lg font-bold" id="chatModalTitle">Chat</h3><button onclick="closeChatModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button></div>
+        <div class="h-96 overflow-y-auto p-4 bg-gray-50" id="chatMessagesArea"></div>
+        <div class="p-4 border-t"><div class="flex gap-2"><textarea id="chatInput" rows="2" placeholder="Type your message..." class="flex-1 p-2 border rounded-xl text-sm resize-none"></textarea><button onclick="sendChatMessage()" class="px-4 py-2 rounded-xl text-white bg-amber-600 text-sm">Send</button></div></div>
+    </div>
+</div>
+
+<!-- Start Chat Modal -->
+<div id="startChatModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
+    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
+        <div class="px-5 py-3 border-b"><h3 class="text-lg font-bold">Start New Chat</h3></div>
+        <div class="p-5 space-y-3">
+            <select id="chatRecipientSelect" class="w-full p-2 border rounded-xl text-sm">
+                <option value="Admin">Admin</option>
+                <option value="Finance">Finance</option>
+                <option value="Manager">Manager</option>
+                <option value="Secretary">Secretary</option>
+                <option value="Sales">Sales & Marketing</option>
+                <option value="Survey">Survey</option>
+                <option value="Bricks_Timber">Bricks & Timber</option>
+                <option value="Aluminium">Aluminium</option>
+                <option value="Town_Planning">Town Planning</option>
+                <option value="Hatimiliki">Hatimiliki</option>
+                <option value="Architectural">Architectural</option>
+            </select>
+            <textarea id="newChatMsg" rows="3" placeholder="Type your message..." class="w-full p-2 border rounded-xl text-sm"></textarea>
+            <div class="flex gap-3"><button onclick="sendNewChat()" class="flex-1 bg-amber-600 text-white py-2 rounded-xl text-sm">Send</button><button onclick="closeStartChatModal()" class="flex-1 bg-gray-100 py-2 rounded-xl text-sm">Cancel</button></div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Report Modal -->
+<div id="addReportModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
+    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
+        <div class="px-5 py-3 border-b"><h3 class="text-lg font-bold">Add Report</h3></div>
+        <div class="p-5 space-y-3">
+            <input type="text" id="newReportTitle" placeholder="Title" class="w-full p-2 border rounded-xl text-sm">
+            <select id="newReportPeriod" class="w-full p-2 border rounded-xl text-sm"><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="quarterly">Quarterly</option><option value="annual">Annual</option></select>
+            <textarea id="newReportContent" rows="4" placeholder="Content" class="w-full p-2 border rounded-xl text-sm"></textarea>
+            <div class="flex gap-3"><button onclick="addReport()" class="flex-1 bg-amber-600 text-white py-2 rounded-xl text-sm">Add</button><button onclick="closeAddReportModal()" class="flex-1 bg-gray-100 py-2 rounded-xl text-sm">Cancel</button></div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Report Modal -->
+<div id="editReportModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
+    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
+        <div class="px-5 py-3 border-b"><h3 class="text-lg font-bold">Edit Report</h3></div>
+        <div class="p-5 space-y-3">
+            <input type="hidden" id="editReportId">
+            <input type="text" id="editReportTitle" placeholder="Title" class="w-full p-2 border rounded-xl text-sm">
+            <select id="editReportPeriod" class="w-full p-2 border rounded-xl text-sm"><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="quarterly">Quarterly</option><option value="annual">Annual</option></select>
+            <textarea id="editReportContent" rows="4" placeholder="Content" class="w-full p-2 border rounded-xl text-sm"></textarea>
+            <div class="flex gap-3"><button onclick="updateReport()" class="flex-1 bg-amber-600 text-white py-2 rounded-xl text-sm">Update</button><button onclick="closeEditReportModal()" class="flex-1 bg-gray-100 py-2 rounded-xl text-sm">Cancel</button></div>
+        </div>
+    </div>
+</div>
+
+<!-- Send Report Modal -->
+<div id="sendReportModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
+    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
+        <div class="px-5 py-3 border-b"><h3 class="text-lg font-bold"><i class="fas fa-paper-plane text-amber-600 mr-2"></i>Send Report</h3></div>
+        <div class="p-5 space-y-3">
+            <input type="text" id="sendReportTitle" placeholder="Title" class="w-full p-2 border rounded-xl text-sm">
+            <textarea id="sendReportMessage" rows="4" placeholder="Content" class="w-full p-2 border rounded-xl text-sm"></textarea>
+            <div class="flex gap-3"><button onclick="sendReportToAdmin()" class="flex-1 bg-amber-600 text-white py-2 rounded-xl text-sm">Send</button><button onclick="closeSendReportModal()" class="flex-1 bg-gray-100 py-2 rounded-xl text-sm">Cancel</button></div>
+        </div>
+    </div>
+</div>
+
+<!-- Backup & Restore Modal -->
+<div id="backupRestoreModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
+    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
+        <div class="px-5 py-3 border-b flex justify-between items-center"><h3 class="text-lg font-bold">Backup & Restore</h3><button onclick="closeBackupRestoreModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button></div>
+        <div class="p-5 space-y-4">
+            <p class="text-sm text-gray-600">Backup includes all system data</p>
+            <div class="flex gap-3"><button onclick="createBackup()" class="flex-1 bg-green-600 text-white py-2 rounded-lg text-sm"><i class="fas fa-download mr-2"></i>Backup</button><button onclick="restoreBackup()" class="flex-1 bg-orange-600 text-white py-2 rounded-lg text-sm"><i class="fas fa-upload mr-2"></i>Restore</button></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ==================== CENTRALIZED STORAGE ====================
+    function getCentralMessages() {
+        let messages = localStorage.getItem('geotraverse_central_messages');
+        if (!messages) {
+            localStorage.setItem('geotraverse_central_messages', JSON.stringify([]));
+            return [];
+        }
+        return JSON.parse(messages);
+    }
+    
+    function saveCentralMessages(messages) { localStorage.setItem('geotraverse_central_messages', JSON.stringify(messages)); }
+    function addCentralMessage(from, to, message) { let messages = getCentralMessages(); messages.push({ id: Date.now(), from: from, to: to, message: message, read: false, created_at: new Date().toISOString() }); saveCentralMessages(messages); }
+    function markMessageAsRead(messageId) { let messages = getCentralMessages(); let msg = messages.find(m => m.id === messageId); if (msg && msg.to === "Construction") { msg.read = true; saveCentralMessages(messages); } }
+    function getUnreadMessagesCount() { return getCentralMessages().filter(m => m.to === "Construction" && !m.read).length; }
+    function getConversations() { let conv = {}; getCentralMessages().forEach(msg => { if (msg.from === "Construction" || msg.to === "Construction") { let other = msg.from === "Construction" ? msg.to : msg.from; if (!conv[other]) conv[other] = []; conv[other].push(msg); } }); return conv; }
+    function deleteMessageFromCentral(messageId) { let messages = getCentralMessages().filter(m => m.id !== messageId); saveCentralMessages(messages); }
+    
+    // ==================== DAILY WORK DATA ====================
+    let dailyWorks = [
+        { id: 1, date: "2024-05-01", project_name: "School Construction", work_description: "Foundation excavation", income: 5000000, expenses: 2000000, paid_amount: 5000000, status: "paid", remaining: 0, profit: 3000000 },
+        { id: 2, date: "2024-05-02", project_name: "Bridge Project", work_description: "Concrete pouring", income: 8000000, expenses: 3500000, paid_amount: 4000000, status: "partial", remaining: 4000000, profit: 4500000 },
+        { id: 3, date: "2024-05-03", project_name: "Commercial Complex", work_description: "Steel reinforcement", income: 6000000, expenses: 2500000, paid_amount: 0, status: "pending", remaining: 6000000, profit: 3500000 }
+    ];
+    
+    // ==================== PROJECTS DATA ====================
+    let projects = [
+        { id: 1, name: "School Construction", client_name: "Ministry of Education", amount: 250000000, status: "in_progress", progress: 65, location: "Kinondoni", description: "3-storey school building", image: "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=400", start_date: "2024-01-15", end_date: "2024-06-30" },
+        { id: 2, name: "Bridge Project", client_name: "TANROADS", amount: 180000000, status: "in_progress", progress: 45, location: "Kigamboni", description: "Bridge construction", image: "https://images.unsplash.com/photo-1576081149783-4b6a5e6e5b8c?w=400", start_date: "2024-02-01", end_date: "2024-08-15" },
+        { id: 3, name: "Commercial Complex", client_name: "Sarah Kijazi", amount: 350000000, status: "pending", progress: 20, location: "Pwani", description: "Office complex", image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=400", start_date: "2024-03-01", end_date: "2024-09-30" }
+    ];
+    
+    // ==================== BUDGET DATA ====================
+    let budgets = [
+        { id: 1, type: "income", source: "Construction Fees", amount: 18000000, date: "2024-05-01", description: "Construction fees" },
+        { id: 2, type: "expense", source: "Materials", amount: 8000000, date: "2024-05-02", description: "Cement and steel" },
+        { id: 3, type: "income", source: "Consultancy", amount: 5000000, date: "2024-05-03", description: "Consultancy services" },
+        { id: 4, type: "expense", source: "Labor Costs", amount: 4000000, date: "2024-05-04", description: "Worker salaries" }
+    ];
+    
+    // ==================== REPORTS DATA ====================
+    let reportsList = [
+        { id: 1, department: "Construction", title: "May Report", period: "monthly", content: "Income: TZS 19M, Expenses: TZS 12M, Profit: TZS 7M", status: "sent", created_at: new Date(Date.now() - 10*24*60*60*1000).toISOString() },
+        { id: 2, department: "Construction", title: "Weekly Summary", period: "weekly", content: "All projects on schedule", status: "draft", created_at: new Date(Date.now() - 5*24*60*60*1000).toISOString() }
+    ];
+    
+    let activityLogs = [{ action: "Construction Dashboard initialized", created_at: new Date().toISOString() }];
+    
+    let currentDailyPage = 1;
+    let currentProjectPage = 1;
+    let currentBudgetPage = 1;
+    let rowsPerPage = 5;
+    let projectRowsPerPage = 6;
+    let budgetRowsPerPage = 5;
+    let currentChatWith = null;
+    let searchTimeout = null;
+    let currentProjectImageFile = null;
+    let currentEditProjectId = null;
+    
+    // ==================== HELPER FUNCTIONS ====================
+    function showToast(msg, isError) { let t = document.createElement("div"); t.className = "toast-notification" + (isError ? " error" : ""); t.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-circle' : 'fa-check-circle'} mr-1"></i>${msg}`; document.body.appendChild(t); setTimeout(() => t.remove(), 3000); }
+    function formatCurrency(amt) { return "TZS " + parseFloat(amt).toLocaleString(); }
+    function formatDate(dateStr) { if (!dateStr) return "N/A"; return new Date(dateStr).toLocaleDateString("en-GB"); }
+    function escapeHtml(text) { if (!text) return ""; var div = document.createElement("div"); div.textContent = text; return div.innerHTML; }
+    function addLog(action) { activityLogs.unshift({ action: action, created_at: new Date().toISOString() }); if (activityLogs.length > 50) activityLogs.pop(); }
+    function logout() { if (confirm("Logout?")) { window.location.href = "department_login.html"; } }
+    function goToMainWebsite() { window.location.href = "index.html"; }
+    function closeMobileSidebar() { document.getElementById("mainSidebar").classList.remove("mobile-open"); document.getElementById("mobileMenuOverlay").classList.remove("open"); }
+    
+    function getTotalDailyIncome() { return dailyWorks.reduce((s, d) => s + d.income, 0); }
+    function getTotalDailyExpenses() { return dailyWorks.reduce((s, d) => s + d.expenses, 0); }
+    function getTotalDailyProfit() { return getTotalDailyIncome() - getTotalDailyExpenses(); }
+    function getTotalPending() { return dailyWorks.filter(d => d.status !== "paid").reduce((s, d) => s + d.remaining, 0); }
+    function getTotalBudgetIncome() { return budgets.filter(b => b.type === "income").reduce((s, b) => s + b.amount, 0); }
+    function getTotalBudgetExpenses() { return budgets.filter(b => b.type === "expense").reduce((s, b) => s + b.amount, 0); }
+    
+    function getProjectStatusClass(status) {
+        switch(status) {
+            case "pending": return "status-pending";
+            case "in_progress": return "status-progress";
+            case "completed": return "status-completed";
+            case "approved": return "status-approved";
+            default: return "status-pending";
+        }
+    }
+    
+    function getProjectStatusText(status) {
+        switch(status) {
+            case "pending": return "Pending";
+            case "in_progress": return "In Progress";
+            case "completed": return "Completed";
+            case "approved": return "Approved";
+            default: return status;
+        }
+    }
+    
+    function getProgressClass(percent) { if (percent < 50) return 'progress-low'; if (percent < 80) return 'progress-medium'; return 'progress-high'; }
+    
+    function updateDailyWorkCalculations() {
+        let income = parseFloat(document.getElementById("dwIncome").value) || 0;
+        let expenses = parseFloat(document.getElementById("dwExpenses").value) || 0;
+        let paid = parseFloat(document.getElementById("dwPaidAmount").value) || 0;
+        let status = document.getElementById("dwStatus").value;
+        if (status === "paid") paid = income;
+        let remaining = income - paid;
+        let profit = income - expenses;
+        document.getElementById("remainingDisplay").innerText = formatCurrency(remaining);
+        document.getElementById("profitDisplay").innerText = formatCurrency(profit);
+    }
+    
+    document.getElementById("dwIncome")?.addEventListener("input", updateDailyWorkCalculations);
+    document.getElementById("dwExpenses")?.addEventListener("input", updateDailyWorkCalculations);
+    document.getElementById("dwPaidAmount")?.addEventListener("input", updateDailyWorkCalculations);
+    document.getElementById("dwStatus")?.addEventListener("change", function() {
+        if (this.value === "paid") {
+            let income = parseFloat(document.getElementById("dwIncome").value) || 0;
+            document.getElementById("dwPaidAmount").value = income;
+        }
+        updateDailyWorkCalculations();
+    });
+    
+    function markPaymentComplete(dailyWorkId) {
+        let idx = dailyWorks.findIndex(d => d.id === dailyWorkId);
+        if (idx !== -1 && dailyWorks[idx].status !== "paid") {
+            dailyWorks[idx].paid_amount = dailyWorks[idx].income;
+            dailyWorks[idx].status = "paid";
+            dailyWorks[idx].remaining = 0;
+            addLog(`Payment completed: ${dailyWorks[idx].project_name}`);
+            showToast(`✅ Payment completed for ${dailyWorks[idx].project_name}`);
+            renderDailyWork();
+            renderDashboard();
+        }
+    }
+    
+    function markPartialPayment(dailyWorkId) {
+        let work = dailyWorks.find(d => d.id === dailyWorkId);
+        if (work && work.status !== "paid") {
+            let remaining = work.remaining;
+            let payment = prompt(`Record payment for ${work.project_name}\nRemaining: ${formatCurrency(remaining)}\nEnter amount:`, remaining);
+            if (payment && parseFloat(payment) > 0) {
+                let newPaid = work.paid_amount + parseFloat(payment);
+                work.paid_amount = newPaid;
+                work.remaining = work.income - newPaid;
+                if (newPaid >= work.income) {
+                    work.status = "paid";
+                    work.remaining = 0;
+                    showToast(`✅ Payment completed for ${work.project_name}`);
+                } else {
+                    work.status = "partial";
+                    showToast(`💰 Partial payment recorded. Remaining: ${formatCurrency(work.remaining)}`);
+                }
+                addLog(`Payment of ${formatCurrency(payment)} recorded for ${work.project_name}`);
+                renderDailyWork();
+                renderDashboard();
+            }
+        }
+    }
+    
+    // ==================== GLOBAL SEARCH ====================
+    function performGlobalSearch() {
+        let term = document.getElementById("globalSearchInput").value.toLowerCase().trim();
+        let dropdown = document.getElementById("searchResultsDropdown");
+        if (searchTimeout) clearTimeout(searchTimeout);
+        if (term === "") { dropdown.classList.remove("active"); dropdown.innerHTML = ""; return; }
+        searchTimeout = setTimeout(() => {
+            let dailyResults = dailyWorks.filter(d => d.project_name.toLowerCase().includes(term) || d.work_description.toLowerCase().includes(term));
+            let projectResults = projects.filter(p => p.name.toLowerCase().includes(term) || p.client_name.toLowerCase().includes(term));
+            let budgetResults = budgets.filter(b => b.source.toLowerCase().includes(term));
+            let reportResults = reportsList.filter(r => r.title.toLowerCase().includes(term));
+            let html = "";
+            if (dailyResults.length) html += '<div class="p-2 bg-gray-50"><span class="text-xs font-semibold text-amber-600">Daily Work</span></div>';
+            dailyResults.slice(0,3).forEach(d => html += `<div class="search-result-item" onclick="goToSectionAndSearch(\'dailywork\', \'${d.project_name}\')"><div class="font-medium">${d.project_name}</div><div class="text-xs text-gray-500">${formatCurrency(d.income)}</div></div>`);
+            if (projectResults.length) html += '<div class="p-2 bg-gray-50"><span class="text-xs font-semibold text-green-600">Projects</span></div>';
+            projectResults.slice(0,3).forEach(p => html += `<div class="search-result-item" onclick="goToSectionAndSearch(\'projects\', \'${p.name}\')"><div class="font-medium">${p.name}</div><div class="text-xs text-gray-500">${formatCurrency(p.amount)}</div></div>`);
+            if (budgetResults.length) html += '<div class="p-2 bg-gray-50"><span class="text-xs font-semibold text-blue-600">Budget</span></div>';
+            budgetResults.slice(0,3).forEach(b => html += `<div class="search-result-item" onclick="goToSectionAndSearch(\'budget\', \'${b.source}\')"><div class="font-medium">${b.source}</div><div class="text-xs text-gray-500">${formatCurrency(b.amount)}</div></div>`);
+            if (reportResults.length) html += '<div class="p-2 bg-gray-50"><span class="text-xs font-semibold text-purple-600">Reports</span></div>';
+            reportResults.slice(0,3).forEach(r => html += `<div class="search-result-item" onclick="goToSectionAndSearch(\'reports\', \'${r.title}\')"><div class="font-medium">${r.title}</div><div class="text-xs text-gray-500">${r.period}</div></div>`);
+            if (!html) html = '<div class="p-4 text-center text-gray-400 text-xs">No results</div>';
+            dropdown.innerHTML = html; dropdown.classList.add("active");
+        }, 300);
+    }
+    
+    function goToSectionAndSearch(section, val) { let dd = document.getElementById("searchResultsDropdown"); if (dd) dd.classList.remove("active"); document.getElementById("globalSearchInput").value = val; showSection(section); showToast(`Showing "${val}"`); }
+    document.addEventListener("click", (e) => { let inp = document.getElementById("globalSearchInput"); let dd = document.getElementById("searchResultsDropdown"); if (inp && dd && !inp.contains(e.target) && !dd.contains(e.target)) dd.classList.remove("active"); });
+    
+    // ==================== MESSAGES ====================
+    function renderMessages() {
+        let conv = getConversations(); let unread = getUnreadMessagesCount();
+        document.getElementById("msgBadge").innerText = unread;
+        let html = `<div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold"><i class="fas fa-envelope text-amber-600 mr-2"></i>Messages</h2><button onclick="openStartChatModal()" class="btn-primary text-white px-4 py-2 rounded-xl text-sm">+ New Chat</button></div><div class="bg-white rounded-xl p-3"><div class="space-y-2">`;
+        let has = false;
+        for (let d in conv) { has = true; let last = conv[d][conv[d].length-1]; let un = conv[d].filter(m => m.to === "Construction" && !m.read).length; html += `<div class="chat-conversation ${un>0?'chat-conversation-unread':''} border rounded-lg p-3 mb-2 flex justify-between items-center" onclick="openChatWith('${d}')"><div><p class="font-semibold text-sm">${d}</p><p class="text-xs text-gray-500 truncate w-48">${escapeHtml(last.message.substring(0,50))}</p></div><div class="text-right"><span class="text-[10px] text-gray-400">${new Date(last.created_at).toLocaleTimeString()}</span>${un>0?`<span class="ml-2 bg-red-500 text-white text-[9px] px-1.5 rounded-full">${un}</span>`:''}</div></div>`; }
+        html += (has?"":'<p class="text-gray-400 text-center py-6">No messages</p>')+"</div></div>";
+        document.getElementById("messagesSection").innerHTML = html;
+    }
+    function openStartChatModal() { document.getElementById("startChatModal").classList.remove("hidden"); document.getElementById("startChatModal").classList.add("flex"); }
+    function closeStartChatModal() { document.getElementById("startChatModal").classList.add("hidden"); document.getElementById("startChatModal").classList.remove("flex"); }
+    function sendNewChat() { let to = document.getElementById("chatRecipientSelect").value; let msg = document.getElementById("newChatMsg").value.trim(); if(!msg){ showToast("Enter message",true); return; } addCentralMessage("Construction", to, msg); addLog(`Sent message to ${to}`); showToast(`Sent to ${to}`); closeStartChatModal(); document.getElementById("newChatMsg").value=""; renderMessages(); document.getElementById("msgBadge").innerText=getUnreadMessagesCount(); }
+    function openChatWith(dept) { currentChatWith=dept; let msgs=getCentralMessages().filter(m=>(m.from==="Construction"&&m.to===dept)||(m.from===dept&&m.to==="Construction")); msgs.forEach(m=>{ if(m.to==="Construction"&&!m.read) markMessageAsRead(m.id); }); renderMessages(); document.getElementById("msgBadge").innerText=getUnreadMessagesCount(); let chatHtml=""; for(let m of msgs){ chatHtml+=`<div class="chat-bubble ${m.from==="Construction"?"chat-sent":"chat-received"}"><p class="text-[9px] text-gray-500">${m.from==="Construction"?"You":dept} · ${new Date(m.created_at).toLocaleTimeString()}</p><p class="text-sm">${escapeHtml(m.message)}</p><button onclick="deleteMessageFromChat(${m.id})" class="text-red-500 text-[9px] mt-1">Delete</button></div>`; } document.getElementById("chatModalTitle").innerHTML=`Chat with ${dept}`; document.getElementById("chatMessagesArea").innerHTML=chatHtml||'<div class="text-center text-gray-400 py-6">No messages</div>'; document.getElementById("chatModal").classList.remove("hidden"); document.getElementById("chatModal").classList.add("flex"); }
+    function sendChatMessage() { let msg=document.getElementById("chatInput").value.trim(); if(!msg||!currentChatWith) return; addCentralMessage("Construction", currentChatWith, msg); document.getElementById("chatInput").value=""; openChatWith(currentChatWith); }
+    function deleteMessageFromChat(id) { deleteMessageFromCentral(id); showToast("Message deleted"); openChatWith(currentChatWith); renderMessages(); document.getElementById("msgBadge").innerText=getUnreadMessagesCount(); }
+    function closeChatModal() { document.getElementById("chatModal").classList.add("hidden"); document.getElementById("chatModal").classList.remove("flex"); renderMessages(); }
+    
+    // ==================== DASHBOARD ====================
+    function renderDashboard() {
+        let totalDailyIncome = getTotalDailyIncome();
+        let totalDailyExpenses = getTotalDailyExpenses();
+        let totalDailyProfit = getTotalDailyProfit();
+        let totalPending = getTotalPending();
+        let totalProjects = projects.length;
+        let unreadMsgs = getUnreadMessagesCount();
+        
+        let html = `<div class="mb-4"><h2 class="text-xl font-bold text-gray-800">Construction Dashboard</h2><p class="text-xs text-gray-500">Construction & Financial Management</p></div>
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-5">
+                <div class="stat-card p-3 cursor-pointer" onclick="showSection('dailywork')"><div class="flex justify-between"><div><p class="text-gray-400 text-[9px] uppercase">Daily Work</p><p class="text-2xl font-bold text-amber-600">${dailyWorks.length}</p><p class="text-[9px] text-gray-400">Records</p></div><div class="w-8 h-8 bg-amber-100 rounded-xl flex items-center justify-center"><i class="fas fa-hard-hat text-amber-500 text-sm"></i></div></div></div>
+                <div class="stat-card p-3 cursor-pointer" onclick="showSection('dailywork')"><div class="flex justify-between"><div><p class="text-gray-400 text-[9px] uppercase">Total Income</p><p class="text-lg font-bold text-green-600">${formatCurrency(totalDailyIncome).substring(0,12)}</p></div><div class="w-8 h-8 bg-green-100 rounded-xl flex items-center justify-center"><i class="fas fa-arrow-down text-green-500 text-sm"></i></div></div></div>
+                <div class="stat-card p-3 cursor-pointer" onclick="showSection('dailywork')"><div class="flex justify-between"><div><p class="text-gray-400 text-[9px] uppercase">Total Expenses</p><p class="text-lg font-bold text-red-600">${formatCurrency(totalDailyExpenses).substring(0,12)}</p></div><div class="w-8 h-8 bg-red-100 rounded-xl flex items-center justify-center"><i class="fas fa-arrow-up text-red-500 text-sm"></i></div></div></div>
+                <div class="stat-card p-3 cursor-pointer" onclick="showSection('dailywork')"><div class="flex justify-between"><div><p class="text-gray-400 text-[9px] uppercase">Net Profit</p><p class="text-lg font-bold text-${totalDailyProfit>=0?'green':'red'}-600">${formatCurrency(totalDailyProfit).substring(0,12)}</p></div><div class="w-8 h-8 bg-${totalDailyProfit>=0?'green':'red'}-100 rounded-xl flex items-center justify-center"><i class="fas fa-chart-line text-${totalDailyProfit>=0?'green':'red'}-500 text-sm"></i></div></div></div>
+                <div class="stat-card p-3 cursor-pointer" onclick="showSection('dailywork')"><div class="flex justify-between"><div><p class="text-gray-400 text-[9px] uppercase">Pending</p><p class="text-lg font-bold text-orange-600">${formatCurrency(totalPending).substring(0,12)}</p></div><div class="w-8 h-8 bg-orange-100 rounded-xl flex items-center justify-center"><i class="fas fa-clock text-orange-500 text-sm"></i></div></div></div>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-5">
+                <div class="bg-white rounded-xl p-3 shadow-sm"><h3 class="text-xs font-semibold mb-2"><i class="fas fa-chart-bar text-amber-600 mr-1"></i>Daily Income Trend</h3><canvas id="incomeChart" height="140"></canvas></div>
+                <div class="bg-white rounded-xl p-3 shadow-sm"><h3 class="text-xs font-semibold mb-2"><i class="fas fa-chart-pie text-green-600 mr-1"></i>Income vs Expenses</h3><canvas id="pieChart" height="140"></canvas></div>
+            </div>
+            <div class="grid grid-cols-3 gap-3 mb-5">
+                <button onclick="showSection('dailywork')" class="bg-amber-600 text-white py-2 rounded-lg text-sm hover:bg-amber-700 transition"><i class="fas fa-plus-circle mr-2"></i>Add Daily Work</button>
+                <button onclick="showSection('projects')" class="bg-green-600 text-white py-2 rounded-lg text-sm hover:bg-green-700 transition"><i class="fas fa-plus-circle mr-2"></i>Add Project</button>
+                <button onclick="showSection('budget')" class="bg-blue-600 text-white py-2 rounded-lg text-sm hover:bg-blue-700 transition"><i class="fas fa-plus-circle mr-2"></i>Add Transaction</button>
+            </div>
+            <div class="bg-white rounded-xl p-3 shadow-sm"><div class="flex justify-between items-center mb-2"><h3 class="text-xs font-semibold"><i class="fas fa-history text-amber-600 mr-1"></i>Recent Activity</h3></div><div id="activityFeed" class="space-y-1 max-h-32 overflow-y-auto">${activityLogs.slice(0,5).map(l => `<div class="text-[10px] py-1 border-b flex justify-between"><span>${escapeHtml(l.action)}</span><span class="text-gray-400">${new Date(l.created_at).toLocaleString()}</span></div>`).join('')}</div></div>`;
+        document.getElementById("dashboardSection").innerHTML = html;
+        
+        let ctx1 = document.getElementById("incomeChart")?.getContext("2d");
+        if (ctx1) new Chart(ctx1, { type: "line", data: { labels: dailyWorks.map(d => d.date.substring(5,10)), datasets: [{ label: "Income (TZS M)", data: dailyWorks.map(d => d.income/1000000), borderColor: "#d97706", fill: true, tension: 0.3 }] }, options: { responsive: true, maintainAspectRatio: true } });
+        
+        let ctx2 = document.getElementById("pieChart")?.getContext("2d");
+        if (ctx2) new Chart(ctx2, { type: "doughnut", data: { labels: ["Income", "Expenses"], datasets: [{ data: [totalDailyIncome, totalDailyExpenses], backgroundColor: ["#10b981", "#ef4444"] }] }, options: { responsive: true, maintainAspectRatio: true } });
+        
+        document.getElementById("msgBadge").innerText = getUnreadMessagesCount();
+    }
+    
+    // ==================== DAILY WORK SECTION ====================
+    function renderDailyWork() {
+        let search = document.getElementById("globalSearchInput")?.value.toLowerCase() || "";
+        let filtered = dailyWorks.filter(d => d.project_name.toLowerCase().includes(search) || d.work_description.toLowerCase().includes(search));
+        let totalPages = Math.ceil(filtered.length / rowsPerPage);
+        let start = (currentDailyPage - 1) * rowsPerPage;
+        let paginated = filtered.slice(start, start + rowsPerPage);
+        
+        let html = `<div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold"><i class="fas fa-hard-hat text-amber-600 mr-2"></i>Daily Work Management</h2><button onclick="openDailyWorkModal()" class="btn-primary text-white px-4 py-2 rounded-xl text-sm"><i class="fas fa-plus mr-1"></i>Add Daily Work</button></div>
+            <div class="bg-white rounded-xl shadow-sm p-3">
+                <div class="table-responsive">
+                    <table class="w-full text-sm">
+                        <thead class="bg-gray-50">
+                            <tr><th class="px-3 py-2">Date</th><th class="px-3 py-2">Project Name</th><th class="px-3 py-2">Work Description</th><th class="px-3 py-2">Income</th><th class="px-3 py-2">Expenses</th><th class="px-3 py-2">Profit</th><th class="px-3 py-2">Paid</th><th class="px-3 py-2">Remaining</th><th class="px-3 py-2">Status</th><th class="px-3 py-2">Actions</th></tr></thead>
+                        <tbody>
+                            ${paginated.map(d => {
+                                let rowClass = d.status === 'pending' ? 'pending-row' : (d.status === 'partial' ? 'partial-row' : '');
+                                return `<tr class="border-b ${rowClass} hover:bg-gray-50">
+                                    <td class="px-3 py-2">${d.date}</td>
+                                    <td class="px-3 py-2 font-medium">${escapeHtml(d.project_name)}</td>
+                                    <td class="px-3 py-2 text-xs max-w-[200px] truncate" title="${escapeHtml(d.work_description)}">${escapeHtml(d.work_description.substring(0,40))}${d.work_description.length>40?'...':''}</td>
+                                    <td class="px-3 py-2 text-green-600 font-semibold">${formatCurrency(d.income)}</td>
+                                    <td class="px-3 py-2 text-red-600">${formatCurrency(d.expenses)}</td>
+                                    <td class="px-3 py-2 ${d.profit>=0?'text-green-600':'text-red-600'} font-bold">${formatCurrency(d.profit)}</td>
+                                    <td class="px-3 py-2">${formatCurrency(d.paid_amount)}</td>
+                                    <td class="px-3 py-2 ${d.remaining>0?'text-orange-600 font-semibold':'text-green-600'}">${formatCurrency(d.remaining)}</td>
+                                    <td class="px-3 py-2"><span class="px-2 py-0.5 rounded-full text-xs ${d.status==='paid'?'status-paid':d.status==='partial'?'status-partial':'status-pending'}">${d.status}</span></td>
+                                    <td class="px-3 py-2"><div class="flex gap-1 flex-wrap">
+                                        <button onclick="viewDailyWork(${d.id})" class="text-blue-500 text-xs p-1"><i class="fas fa-eye"></i></button>
+                                        <button onclick="editDailyWork(${d.id})" class="text-green-500 text-xs p-1"><i class="fas fa-edit"></i></button>
+                                        <button onclick="deleteDailyWork(${d.id})" class="text-red-500 text-xs p-1"><i class="fas fa-trash"></i></button>
+                                        ${d.status !== 'paid' ? `<button onclick="markPartialPayment(${d.id})" class="text-orange-500 text-xs p-1"><i class="fas fa-money-bill-wave"></i></button><button onclick="markPaymentComplete(${d.id})" class="text-green-500 text-xs p-1 tick-btn"><i class="fas fa-check-circle"></i></button>` : ''}
+                                        <button onclick="openSendDailyWorkModal(${d.id})" class="text-purple-500 text-xs p-1"><i class="fas fa-paper-plane"></i></button>
+                                        <div class="relative"><button onclick="toggleDailyExportDropdown(${d.id})" class="text-purple-500 text-xs p-1"><i class="fas fa-download"></i></button><div id="dailyExportDropdown-${d.id}" class="dropdown-content hidden"><button onclick="exportSingleDailyWork(${d.id}, 'excel')"><i class="fas fa-file-excel"></i> Excel</button><button onclick="exportSingleDailyWork(${d.id}, 'pdf')"><i class="fas fa-file-pdf"></i> PDF</button></div></div>
+                                    </div></td>
+                                </tr>`;
+                            }).join('')}
+                            ${paginated.length === 0 ? '<tr><td colspan="10" class="text-center py-4 text-gray-400">No daily work records found</td></tr>' : ''}
+                        </tbody>
+                    </table>
+                </div>
+                ${totalPages > 1 ? `<div class="flex justify-center gap-2 mt-3"><button onclick="changeDailyPage(${currentDailyPage - 1})" class="px-3 py-1 border rounded text-xs">Prev</button><span class="text-xs">Page ${currentDailyPage} of ${totalPages}</span><button onclick="changeDailyPage(${currentDailyPage + 1})" class="px-3 py-1 border rounded text-xs">Next</button></div>` : ''}
+            </div>
+            <div class="mt-3 flex gap-2"><button onclick="exportDailyWorkToExcel()" class="bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-excel mr-1"></i>Excel All</button><button onclick="exportDailyWorkToPDF()" class="bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-pdf mr-1"></i>PDF All</button></div>`;
+        document.getElementById("dailyworkSection").innerHTML = html;
+    }
+    
+    function changeDailyPage(page) { if (page > 0 && page <= Math.ceil(dailyWorks.length / rowsPerPage)) { currentDailyPage = page; renderDailyWork(); } }
+    
+    function openDailyWorkModal() {
+        document.getElementById("editDailyWorkId").value = "";
+        document.getElementById("dwDate").value = new Date().toISOString().split('T')[0];
+        document.getElementById("dwProjectName").value = "";
+        document.getElementById("dwWorkDescription").value = "";
+        document.getElementById("dwIncome").value = "";
+        document.getElementById("dwExpenses").value = "0";
+        document.getElementById("dwPaidAmount").value = "0";
+        document.getElementById("dwStatus").value = "pending";
+        document.getElementById("remainingDisplay").innerText = "TZS 0";
+        document.getElementById("profitDisplay").innerText = "TZS 0";
+        document.getElementById("dailyWorkModal").classList.remove("hidden");
+        document.getElementById("dailyWorkModal").classList.add("flex");
+    }
+    function closeDailyWorkModal() { document.getElementById("dailyWorkModal").classList.add("hidden"); document.getElementById("dailyWorkModal").classList.remove("flex"); }
+    
+    function saveDailyWork() {
+        let date = document.getElementById("dwDate").value;
+        let projectName = document.getElementById("dwProjectName").value.trim();
+        let workDescription = document.getElementById("dwWorkDescription").value.trim();
+        let income = parseFloat(document.getElementById("dwIncome").value) || 0;
+        let expenses = parseFloat(document.getElementById("dwExpenses").value) || 0;
+        let paidAmount = parseFloat(document.getElementById("dwPaidAmount").value) || 0;
+        let status = document.getElementById("dwStatus").value;
+        if (!projectName) { showToast("Please enter project name", true); return; }
+        if (!workDescription) { showToast("Please enter work description", true); return; }
+        if (status === "paid") paidAmount = income;
+        let remaining = income - paidAmount;
+        let profit = income - expenses;
+        let id = document.getElementById("editDailyWorkId").value;
+        if (id) {
+            let idx = dailyWorks.findIndex(d => d.id == id);
+            if (idx !== -1) { dailyWorks[idx] = { ...dailyWorks[idx], date, project_name: projectName, work_description: workDescription, income, expenses, paid_amount: paidAmount, status, remaining, profit }; addLog(`Updated daily work: ${projectName}`); showToast("Daily work updated"); }
+        } else {
+            dailyWorks.unshift({ id: Date.now(), date, project_name: projectName, work_description: workDescription, income, expenses, paid_amount: paidAmount, status, remaining, profit });
+            addLog(`Added daily work: ${projectName}`); showToast("Daily work added");
+        }
+        closeDailyWorkModal(); renderDailyWork(); renderDashboard();
+    }
+    
+    function viewDailyWork(id) { let d = dailyWorks.find(d => d.id === id); if (d) { document.getElementById("viewDailyWorkContent").innerHTML = `<div class="space-y-3"><div class="border-b pb-2"><h4 class="font-bold text-base">${escapeHtml(d.project_name)}</h4><p class="text-xs text-gray-500">Date: ${d.date}</p></div><div class="grid grid-cols-2 gap-2 text-sm"><div><strong>Work Description:</strong></div><div>${escapeHtml(d.work_description)}</div><div><strong>Income:</strong></div><div class="text-green-600">${formatCurrency(d.income)}</div><div><strong>Expenses:</strong></div><div class="text-red-600">${formatCurrency(d.expenses)}</div><div><strong>Profit:</strong></div><div class="${d.profit>=0?'text-green-600':'text-red-600'}">${formatCurrency(d.profit)}</div><div><strong>Paid:</strong></div><div>${formatCurrency(d.paid_amount)}</div><div><strong>Remaining:</strong></div><div class="text-orange-600">${formatCurrency(d.remaining)}</div><div><strong>Status:</strong></div><div><span class="px-2 py-0.5 rounded-full text-xs ${d.status==='paid'?'status-paid':d.status==='partial'?'status-partial':'status-pending'}">${d.status}</span></div></div></div>`; document.getElementById("viewDailyWorkModal").classList.remove("hidden"); document.getElementById("viewDailyWorkModal").classList.add("flex"); } }
+    function closeViewDailyWorkModal() { document.getElementById("viewDailyWorkModal").classList.add("hidden"); document.getElementById("viewDailyWorkModal").classList.remove("flex"); }
+    
+    function editDailyWork(id) { let d = dailyWorks.find(d => d.id === id); if (d) { document.getElementById("editDailyWorkId").value = d.id; document.getElementById("dwDate").value = d.date; document.getElementById("dwProjectName").value = d.project_name; document.getElementById("dwWorkDescription").value = d.work_description; document.getElementById("dwIncome").value = d.income; document.getElementById("dwExpenses").value = d.expenses; document.getElementById("dwPaidAmount").value = d.paid_amount; document.getElementById("dwStatus").value = d.status; document.getElementById("remainingDisplay").innerText = formatCurrency(d.remaining); document.getElementById("profitDisplay").innerText = formatCurrency(d.profit); document.getElementById("dailyWorkModal").classList.remove("hidden"); document.getElementById("dailyWorkModal").classList.add("flex"); } }
+    function deleteDailyWork(id) { if (confirm("Delete this daily work record?")) { dailyWorks = dailyWorks.filter(d => d.id !== id); addLog("Deleted daily work record"); showToast("Daily work deleted"); renderDailyWork(); renderDashboard(); } }
+    
+    function openSendDailyWorkModal(id) { let d = dailyWorks.find(d => d.id === id); if (d) { document.getElementById("sendDailyWorkId").value = id; document.getElementById("sendDailyWorkInfo").innerHTML = `<strong>${d.project_name}</strong><br>Income: ${formatCurrency(d.income)}<br>Status: ${d.status}<br>Remaining: ${formatCurrency(d.remaining)}`; document.getElementById("sendDailyWorkDept").value = ""; document.getElementById("sendDailyWorkMessage").value = ""; document.getElementById("sendDailyWorkModal").classList.remove("hidden"); document.getElementById("sendDailyWorkModal").classList.add("flex"); } }
+    function closeSendDailyWorkModal() { document.getElementById("sendDailyWorkModal").classList.add("hidden"); document.getElementById("sendDailyWorkModal").classList.remove("flex"); }
+    function confirmSendDailyWork() { let to = document.getElementById("sendDailyWorkDept").value; if (!to) { showToast("Select department", true); return; } let d = dailyWorks.find(d => d.id === parseInt(document.getElementById("sendDailyWorkId").value)); if (d) { let msg = `DAILY_WORK_FROM_CONSTRUCTION:\nProject: ${d.project_name}\nDate: ${d.date}\nWork: ${d.work_description}\nIncome: ${formatCurrency(d.income)}\nExpenses: ${formatCurrency(d.expenses)}\nProfit: ${formatCurrency(d.profit)}\nPaid: ${formatCurrency(d.paid_amount)}\nRemaining: ${formatCurrency(d.remaining)}\nStatus: ${d.status}`; let extra = document.getElementById("sendDailyWorkMessage").value; if (extra) msg += `\n\nMessage: ${extra}`; addCentralMessage("Construction", to, msg); addLog(`Sent daily work record to ${to}`); showToast(`Daily work sent to ${to}`); closeSendDailyWorkModal(); } }
+    
+    function exportDailyWorkToExcel() { let ws = [["Date","Project Name","Work Description","Income","Expenses","Profit","Paid","Remaining","Status"]]; dailyWorks.forEach(d => ws.push([d.date, d.project_name, d.work_description, d.income, d.expenses, d.profit, d.paid_amount, d.remaining, d.status])); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), "DailyWork"); XLSX.writeFile(wb, `dailywork_${new Date().toISOString().slice(0,10)}.xlsx`); showToast("Daily work exported to Excel"); }
+    function exportDailyWorkToPDF() { let element = document.createElement("div"); element.innerHTML = `<div style="padding:20px"><h1 style="color:#d97706">Daily Work Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr><table border="1" cellpadding="8"><tr><th>Date</th><th>Project</th><th>Income</th><th>Expenses</th><th>Profit</th><th>Status</th></tr>${dailyWorks.map(d => `<tr><td>${d.date}</td><td>${d.project_name}</td><td>${formatCurrency(d.income)}</td><td>${formatCurrency(d.expenses)}</td><td>${formatCurrency(d.profit)}</td><td>${d.status}</td></tr>`).join('')}</table></div>`; html2pdf().set({ margin: 0.5, filename: `dailywork_report.pdf` }).from(element).save(); showToast("Daily work exported to PDF"); }
+    
+    function exportSingleDailyWork(workId, format) {
+        let d = dailyWorks.find(d => d.id === workId);
+        if (!d) return;
+        let filename = `${d.project_name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${new Date().toISOString().slice(0,10)}`;
+        if (format === 'excel') {
+            let ws = [["Date","Project Name","Work Description","Income","Expenses","Profit","Paid","Remaining","Status"]];
+            ws.push([d.date, d.project_name, d.work_description, d.income, d.expenses, d.profit, d.paid_amount, d.remaining, d.status]);
+            let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), "DailyWork"); XLSX.writeFile(wb, `${filename}.xlsx`); showToast("Daily work exported to Excel");
+        } else if (format === 'pdf') {
+            let element = document.createElement("div");
+            element.innerHTML = `<div style="padding:20px"><h1 style="color:#d97706">${escapeHtml(d.project_name)}</h1><p><strong>Date:</strong> ${d.date}</p><p><strong>Work Description:</strong> ${escapeHtml(d.work_description)}</p><p><strong>Income:</strong> ${formatCurrency(d.income)}</p><p><strong>Expenses:</strong> ${formatCurrency(d.expenses)}</p><p><strong>Profit:</strong> ${formatCurrency(d.profit)}</p><p><strong>Paid:</strong> ${formatCurrency(d.paid_amount)}</p><p><strong>Remaining:</strong> ${formatCurrency(d.remaining)}</p><p><strong>Status:</strong> ${d.status}</p><p>Generated: ${new Date().toLocaleString()}</p></div>`;
+            html2pdf().set({ margin: 0.5, filename: `${filename}.pdf` }).from(element).save(); showToast("Daily work exported to PDF");
+        }
+        let dd = document.getElementById(`dailyExportDropdown-${workId}`); if (dd) dd.classList.add("hidden");
+    }
+    
+    function toggleDailyExportDropdown(workId) { let dd = document.getElementById(`dailyExportDropdown-${workId}`); document.querySelectorAll('[id^="dailyExportDropdown-"]').forEach(d => { if (d.id !== `dailyExportDropdown-${workId}`) d.classList.add("hidden"); }); if (dd) dd.classList.toggle("hidden"); }
+    
+    // ==================== PROJECTS SECTION ====================
+    function renderProjects() {
+        let search = document.getElementById("globalSearchInput")?.value.toLowerCase() || "";
+        let filtered = projects.filter(p => p.name.toLowerCase().includes(search) || p.client_name.toLowerCase().includes(search));
+        let totalPages = Math.ceil(filtered.length / projectRowsPerPage);
+        let start = (currentProjectPage - 1) * projectRowsPerPage;
+        let paginated = filtered.slice(start, start + projectRowsPerPage);
+        
+        let html = `<div class="flex justify-between items-center mb-4 flex-wrap gap-2"><h2 class="text-xl font-bold"><i class="fas fa-tasks text-amber-600 mr-2"></i>Projects Management</h2><div class="flex gap-2"><button onclick="openAddProjectModal()" class="btn-primary text-white px-4 py-2 rounded-xl text-sm"><i class="fas fa-plus mr-1"></i>Add Project</button><button onclick="exportProjectsToExcel()" class="bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-excel mr-1"></i>Excel All</button><button onclick="exportProjectsToPDF()" class="bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-pdf mr-1"></i>PDF All</button></div></div>
+            <div id="projectsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>`;
+        document.getElementById("projectsSection").innerHTML = html;
+        
+        document.getElementById("projectsGrid").innerHTML = paginated.map(p => {
+            let imgSrc = p.image || 'https://via.placeholder.com/400x200?text=Project';
+            return `<div class="project-card">
+                <img src="${imgSrc}" class="w-full h-36 object-cover" onerror="this.src='https://via.placeholder.com/400x200?text=Project'">
+                <div class="p-3">
+                    <div class="flex justify-between items-start">
+                        <h4 class="font-semibold text-sm">${escapeHtml(p.name)}</h4>
+                        <span class="px-1.5 py-0.5 text-[8px] rounded-full ${getProjectStatusClass(p.status)}">${getProjectStatusText(p.status)}</span>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">${escapeHtml(p.client_name)}</p>
+                    <p class="text-sm font-semibold text-purple-600 mt-1">${formatCurrency(p.amount)}</p>
+                    <p class="text-xs text-gray-500">${escapeHtml(p.location)}</p>
+                    <div class="mt-2">
+                        <div class="flex justify-between text-xs"><span>Progress</span><span>${p.progress}%</span></div>
+                        <div class="w-full bg-gray-200 rounded-full h-1.5"><div class="bg-blue-600 h-1.5 rounded-full" style="width:${p.progress}%"></div></div>
+                    </div>
+                    <div class="flex flex-wrap gap-1 mt-2">
+                        <button onclick="viewProject(${p.id})" class="text-xs bg-blue-500 text-white px-2 py-1 rounded"><i class="fas fa-eye"></i></button>
+                        <button onclick="editProject(${p.id})" class="text-xs bg-green-500 text-white px-2 py-1 rounded"><i class="fas fa-edit"></i></button>
+                        <button onclick="deleteProject(${p.id})" class="text-xs bg-red-500 text-white px-2 py-1 rounded"><i class="fas fa-trash"></i></button>
+                        <button onclick="openSendProjectModal(${p.id})" class="text-xs bg-purple-600 text-white px-2 py-1 rounded"><i class="fas fa-paper-plane"></i></button>
+                        <div class="relative inline-block">
+                            <button onclick="toggleProjectExportDropdown(${p.id})" class="text-xs bg-orange-500 text-white px-2 py-1 rounded"><i class="fas fa-download"></i></button>
+                            <div id="projectExportDropdown-${p.id}" class="dropdown-content hidden">
+                                <button onclick="exportSingleProject(${p.id}, 'excel')"><i class="fas fa-file-excel"></i> Excel</button>
+                                <button onclick="exportSingleProject(${p.id}, 'pdf')"><i class="fas fa-file-pdf"></i> PDF</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+        
+        if (totalPages > 1) { document.getElementById("projectsSection").innerHTML += `<div class="flex justify-center gap-2 mt-4"><button onclick="changeProjectPage(${currentProjectPage - 1})" class="px-3 py-1 border rounded text-sm">Prev</button><span class="text-sm">Page ${currentProjectPage} of ${totalPages}</span><button onclick="changeProjectPage(${currentProjectPage + 1})" class="px-3 py-1 border rounded text-sm">Next</button></div>`; }
+    }
+    
+    function changeProjectPage(page) { if (page > 0 && page <= Math.ceil(projects.length / projectRowsPerPage)) { currentProjectPage = page; renderProjects(); } }
+    
+    function openAddProjectModal() {
+        currentEditProjectId = null; currentProjectImageFile = null;
+        document.getElementById('editProjectId').value = '';
+        document.getElementById('projectName').value = '';
+        document.getElementById('projectClient').value = '';
+        document.getElementById('projectAmount').value = '';
+        document.getElementById('projectLocation').value = '';
+        document.getElementById('projectDesc').value = '';
+        document.getElementById('projectStatus').value = 'pending';
+        document.getElementById('projectProgress').value = '0';
+        document.getElementById('projectStartDate').value = new Date().toISOString().split('T')[0];
+        document.getElementById('projectEndDate').value = '';
+        document.getElementById('projectImagePreviewContainer').classList.add('hidden');
+        document.getElementById('projectImageUploadArea').classList.remove('hidden');
+        document.getElementById('projectModal').classList.remove('hidden');
+        document.getElementById('projectModal').classList.add('flex');
+    }
+    function closeProjectModal() { document.getElementById('projectModal').classList.add('hidden'); document.getElementById('projectModal').classList.remove('flex'); currentProjectImageFile = null; }
+    
+    function previewProjectImage(input) { if (input.files && input.files[0]) { currentProjectImageFile = input.files[0]; let reader = new FileReader(); reader.onload = e => { document.getElementById('projectImagePreview').src = e.target.result; document.getElementById('projectImagePreviewContainer').classList.remove('hidden'); document.getElementById('projectImageUploadArea').classList.add('hidden'); }; reader.readAsDataURL(input.files[0]); } }
+    document.getElementById('projectImageFile')?.addEventListener('change', function(e) { previewProjectImage(this); });
+    function removeProjectImage() { currentProjectImageFile = null; document.getElementById('projectImageFile').value = ''; document.getElementById('projectImagePreviewContainer').classList.add('hidden'); document.getElementById('projectImageUploadArea').classList.remove('hidden'); }
+    
+    function getImageAsBase64(file) { return new Promise((resolve) => { if (!file) resolve(''); let reader = new FileReader(); reader.onload = () => resolve(reader.result); reader.readAsDataURL(file); }); }
+    
+    async function saveProject() {
+        let name = document.getElementById('projectName').value.trim();
+        if (!name) { showToast('Project name required', true); return; }
+        let projectsData = JSON.parse(JSON.stringify(projects));
+        let img = await getImageAsBase64(currentProjectImageFile);
+        let projectData = {
+            id: currentEditProjectId || Date.now(),
+            name: name,
+            client_name: document.getElementById('projectClient').value,
+            amount: parseFloat(document.getElementById('projectAmount').value) || 0,
+            status: document.getElementById('projectStatus').value,
+            progress: parseInt(document.getElementById('projectProgress').value) || 0,
+            location: document.getElementById('projectLocation').value,
+            description: document.getElementById('projectDesc').value,
+            image: img,
+            start_date: document.getElementById('projectStartDate').value,
+            end_date: document.getElementById('projectEndDate').value
+        };
+        if (currentEditProjectId) {
+            let idx = projectsData.findIndex(p => p.id === currentEditProjectId);
+            if (idx !== -1) {
+                if (!img && projects[idx].image) projectData.image = projects[idx].image;
+                projectsData[idx] = projectData;
+                addLog(`Updated project: ${name}`);
+                showToast('Project updated');
+            }
+        } else {
+            projectsData.unshift(projectData);
+            addLog(`Added project: ${name}`);
+            showToast('Project added');
+        }
+        projects = projectsData;
+        closeProjectModal();
+        renderProjects();
+        renderDashboard();
+    }
+    
+    function viewProject(id) { let p = projects.find(p => p.id === id); if (p) { let img = p.image || 'https://via.placeholder.com/400x200?text=Project'; document.getElementById('viewProjectContent').innerHTML = `<img src="${img}" class="w-full h-32 object-cover rounded-lg mb-2"><div class="space-y-1"><p><strong>Name:</strong> ${p.name}</p><p><strong>Client:</strong> ${p.client_name}</p><p><strong>Amount:</strong> ${formatCurrency(p.amount)}</p><p><strong>Status:</strong> ${p.status}</p><p><strong>Progress:</strong> ${p.progress}%</p><p><strong>Location:</strong> ${escapeHtml(p.location)}</p><p><strong>Start:</strong> ${p.start_date}</p><p><strong>End:</strong> ${p.end_date}</p><p><strong>Description:</strong> ${escapeHtml(p.description)}</p></div>`; document.getElementById('viewProjectModal').classList.remove('hidden'); document.getElementById('viewProjectModal').classList.add('flex'); } }
+    function closeViewProjectModal() { document.getElementById('viewProjectModal').classList.add('hidden'); document.getElementById('viewProjectModal').classList.remove('flex'); }
+    
+    function editProject(id) { let p = projects.find(p => p.id === id); if (p) { currentEditProjectId = id; document.getElementById('editProjectId').value = p.id; document.getElementById('projectName').value = p.name; document.getElementById('projectClient').value = p.client_name; document.getElementById('projectAmount').value = p.amount; document.getElementById('projectLocation').value = p.location; document.getElementById('projectDesc').value = p.description || ''; document.getElementById('projectStatus').value = p.status; document.getElementById('projectProgress').value = p.progress; document.getElementById('projectStartDate').value = p.start_date; document.getElementById('projectEndDate').value = p.end_date; if (p.image && p.image !== '') { document.getElementById('projectImagePreview').src = p.image; document.getElementById('projectImagePreviewContainer').classList.remove('hidden'); document.getElementById('projectImageUploadArea').classList.add('hidden'); } else { document.getElementById('projectImagePreviewContainer').classList.add('hidden'); document.getElementById('projectImageUploadArea').classList.remove('hidden'); } document.getElementById('projectModal').classList.remove('hidden'); document.getElementById('projectModal').classList.add('flex'); } }
+    function deleteProject(id) { if (confirm('Delete this project?')) { projects = projects.filter(p => p.id !== id); addLog('Deleted project'); showToast('Project deleted'); renderProjects(); renderDashboard(); } }
+    
+    function openSendProjectModal(id) { let p = projects.find(p => p.id === id); if (p) { document.getElementById('sendProjectId').value = id; document.getElementById('sendProjectInfo').innerHTML = `<strong>${p.name}</strong><br>Client: ${p.client_name}<br>Amount: ${formatCurrency(p.amount)}`; document.getElementById('sendToDept').value = ''; document.getElementById('sendProjectMessage').value = ''; document.getElementById('sendProjectModal').classList.remove('hidden'); document.getElementById('sendProjectModal').classList.add('flex'); } }
+    function closeSendProjectModal() { document.getElementById('sendProjectModal').classList.add('hidden'); document.getElementById('sendProjectModal').classList.remove('flex'); }
+    function confirmSendProject() { let to = document.getElementById('sendToDept').value; if (!to) { showToast('Select department', true); return; } let p = projects.find(p => p.id === parseInt(document.getElementById('sendProjectId').value)); if (p) { let msg = `PROJECT_FROM_CONSTRUCTION: ${p.name}\nClient: ${p.client_name}\nAmount: ${formatCurrency(p.amount)}\nStatus: ${p.status}\nProgress: ${p.progress}%\nLocation: ${p.location}\nDescription: ${p.description}`; let extra = document.getElementById('sendProjectMessage').value; if (extra) msg += `\n\nMessage: ${extra}`; addCentralMessage("Construction", to, msg); addLog(`Sent project "${p.name}" to ${to}`); showToast(`Project sent to ${to}`); closeSendProjectModal(); } }
+    
+    function exportSingleProject(projectId, format) {
+        let p = projects.find(p => p.id === projectId);
+        if (!p) return;
+        let filename = `${p.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${new Date().toISOString().slice(0,10)}`;
+        if (format === 'excel') {
+            let ws = [["Name","Client","Amount","Status","Progress","Location","Start Date","End Date","Description"]];
+            ws.push([p.name, p.client_name, p.amount, p.status, p.progress, p.location, p.start_date, p.end_date, p.description]);
+            let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), "Project"); XLSX.writeFile(wb, `${filename}.xlsx`); showToast("Project exported to Excel");
+        } else if (format === 'pdf') {
+            let element = document.createElement("div");
+            element.innerHTML = `<div style="padding:20px"><h1 style="color:#d97706">${escapeHtml(p.name)}</h1><p><strong>Client:</strong> ${p.client_name}</p><p><strong>Amount:</strong> ${formatCurrency(p.amount)}</p><p><strong>Status:</strong> ${p.status}</p><p><strong>Progress:</strong> ${p.progress}%</p><p><strong>Location:</strong> ${escapeHtml(p.location)}</p><p><strong>Start:</strong> ${p.start_date}</p><p><strong>End:</strong> ${p.end_date}</p><p><strong>Description:</strong> ${escapeHtml(p.description)}</p>${p.image ? `<p><img src="${p.image}" style="max-width:100%; margin-top:10px;"></p>` : ''}<p>Generated: ${new Date().toLocaleString()}</p></div>`;
+            html2pdf().set({ margin: 0.5, filename: `${filename}.pdf` }).from(element).save(); showToast("Project exported to PDF");
+        }
+        let dd = document.getElementById(`projectExportDropdown-${projectId}`); if (dd) dd.classList.add("hidden");
+    }
+    
+    function toggleProjectExportDropdown(projectId) { let dd = document.getElementById(`projectExportDropdown-${projectId}`); document.querySelectorAll('[id^="projectExportDropdown-"]').forEach(d => { if (d.id !== `projectExportDropdown-${projectId}`) d.classList.add("hidden"); }); if (dd) dd.classList.toggle("hidden"); }
+    
+    function exportProjectsToExcel() { let ws = [["Name","Client","Amount","Status","Progress","Location","Start Date","End Date","Description"]]; projects.forEach(p => ws.push([p.name, p.client_name, p.amount, p.status, p.progress, p.location, p.start_date, p.end_date, p.description])); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), "Projects"); XLSX.writeFile(wb, `projects_${new Date().toISOString().slice(0,10)}.xlsx`); showToast("Projects exported to Excel"); }
+    function exportProjectsToPDF() { let element = document.createElement("div"); element.innerHTML = `<div style="padding:20px"><h1 style="color:#d97706">Projects Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr><table border="1" cellpadding="8"><tr><th>Name</th><th>Client</th><th>Amount</th><th>Status</th><th>Progress</th></tr>${projects.map(p => `<tr><td>${p.name}</td><td>${p.client_name}</td><td>${formatCurrency(p.amount)}</td><td>${p.status}</td><td>${p.progress}%</td></tr>`).join('')}</table></div>`; html2pdf().set({ margin: 0.5, filename: `projects_report.pdf` }).from(element).save(); showToast("Projects exported to PDF"); }
+    
+    // ==================== BUDGET SECTION ====================
+    function renderBudget() {
+        let search = document.getElementById("globalSearchInput")?.value.toLowerCase() || "";
+        let filtered = budgets.filter(b => b.source.toLowerCase().includes(search));
+        let totalIncome = filtered.filter(b => b.type === "income").reduce((s, b) => s + b.amount, 0);
+        let totalExpenses = filtered.filter(b => b.type === "expense").reduce((s, b) => s + b.amount, 0);
+        let totalRemaining = totalIncome - totalExpenses;
+        let totalPages = Math.ceil(filtered.length / budgetRowsPerPage);
+        let start = (currentBudgetPage - 1) * budgetRowsPerPage;
+        let paginated = filtered.slice(start, start + budgetRowsPerPage);
+        
+        let html = `<div class="mb-4"><div class="flex justify-between items-center flex-wrap gap-2"><h2 class="text-xl font-bold"><i class="fas fa-wallet text-amber-600 mr-2"></i>Budget Management</h2><button onclick="openBudgetModal()" class="btn-primary text-white px-4 py-2 rounded-xl text-sm"><i class="fas fa-plus mr-1"></i>Add Transaction</button></div>
+            <div class="grid grid-cols-3 gap-3 mt-3"><div class="bg-green-50 rounded-xl p-2 text-center"><p class="text-[9px] text-gray-500">Total Income</p><p class="text-base font-bold text-green-600">${formatCurrency(totalIncome)}</p></div><div class="bg-red-50 rounded-xl p-2 text-center"><p class="text-[9px] text-gray-500">Total Expenses</p><p class="text-base font-bold text-red-600">${formatCurrency(totalExpenses)}</p></div><div class="bg-blue-50 rounded-xl p-2 text-center"><p class="text-[9px] text-gray-500">Remaining</p><p class="text-base font-bold text-blue-600">${formatCurrency(totalRemaining)}</p></div></div>
+            <div class="mt-3 w-full bg-gray-200 rounded-full h-2"><div class="${totalIncome>0 ? (totalExpenses/totalIncome*100 > 80 ? 'progress-low' : (totalExpenses/totalIncome*100 > 60 ? 'progress-medium' : 'progress-high')) : 'progress-low'} h-2 rounded-full" style="width:${totalIncome>0?Math.min((totalExpenses/totalIncome)*100,100):0}%"></div></div>
+            <p class="text-[10px] text-gray-500 text-center mt-1">${totalIncome>0?((totalExpenses/totalIncome)*100).toFixed(1):0}% used</p></div>
+            <div class="bg-white rounded-xl shadow-sm p-3"><div class="table-responsive"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th class="px-2 py-2">Date</th><th class="px-2 py-2">Type</th><th class="px-2 py-2">Source</th><th class="px-2 py-2">Amount</th><th class="px-2 py-2">Description</th><th class="px-2 py-2">Actions</th></tr></thead><tbody>
+            ${paginated.map(b => `<tr class="border-b ${b.type === 'income' ? 'income-row' : 'expense-row'} hover:bg-gray-50"><td class="px-2 py-2">${b.date}</td><td class="px-2 py-2"><span class="px-1.5 py-0.5 rounded-full text-[9px] ${b.type==='income'?'bg-green-100 text-green-700':'bg-red-100 text-red-700'}">${b.type}</span></td><td class="px-2 py-2 font-medium">${escapeHtml(b.source)}</td>
+            <td class="px-2 py-2 ${b.type==='income'?'text-green-600':'text-red-600'} font-semibold">${formatCurrency(b.amount)}</td>
+            <td class="px-2 py-2 text-xs max-w-[150px] truncate" title="${escapeHtml(b.description)}">${escapeHtml(b.description.substring(0,40))}${b.description.length>40?'...':''}</td>
+            <td class="px-2 py-2"><div class="flex gap-1"><button onclick="viewBudgetItem(${b.id})" class="text-blue-500 text-xs p-1"><i class="fas fa-eye"></i></button><button onclick="editBudgetItem(${b.id})" class="text-green-500 text-xs p-1"><i class="fas fa-edit"></i></button><button onclick="deleteBudgetItem(${b.id})" class="text-red-500 text-xs p-1"><i class="fas fa-trash"></i></button><div class="relative"><button onclick="toggleBudgetExportDropdown(${b.id})" class="text-purple-500 text-xs p-1"><i class="fas fa-download"></i></button><div id="budgetExportDropdown-${b.id}" class="dropdown-content hidden"><button onclick="exportSingleBudget(${b.id}, 'excel')"><i class="fas fa-file-excel text-green-600"></i> Excel</button><button onclick="exportSingleBudget(${b.id}, 'pdf')"><i class="fas fa-file-pdf text-red-600"></i> PDF</button></div></div></div></td>
+            </tr>`).join('')}
+            </tbody>}></div>${totalPages > 1 ? `<div class="flex justify-center gap-2 mt-3"><button onclick="changeBudgetPage(${currentBudgetPage - 1})" class="px-2 py-1 border rounded text-xs">Prev</button><span class="text-xs">Page ${currentBudgetPage} of ${totalPages}</span><button onclick="changeBudgetPage(${currentBudgetPage + 1})" class="px-2 py-1 border rounded text-xs">Next</button></div>` : ''}</div>
+            <div class="mt-3 flex gap-2"><button onclick="exportBudgetToExcel()" class="bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-excel mr-1"></i>Excel All</button><button onclick="exportBudgetToPDF()" class="bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-pdf mr-1"></i>PDF All</button></div>`;
+        document.getElementById("budgetSection").innerHTML = html;
+    }
+    
+    function changeBudgetPage(page) { if (page > 0 && page <= Math.ceil(budgets.length / budgetRowsPerPage)) { currentBudgetPage = page; renderBudget(); } }
+    
+    function openBudgetModal() { document.getElementById("editBudgetId").value = ""; document.getElementById("budgetType").value = "income"; document.getElementById("budgetSource").value = ""; document.getElementById("budgetAmount").value = ""; document.getElementById("budgetDate").value = new Date().toISOString().split('T')[0]; document.getElementById("budgetDescription").value = ""; document.getElementById("budgetModal").classList.remove("hidden"); document.getElementById("budgetModal").classList.add("flex"); }
+    function closeBudgetModal() { document.getElementById("budgetModal").classList.add("hidden"); document.getElementById("budgetModal").classList.remove("flex"); }
+    
+    function saveBudget() {
+        let type = document.getElementById("budgetType").value;
+        let source = document.getElementById("budgetSource").value.trim();
+        let amount = parseFloat(document.getElementById("budgetAmount").value);
+        let date = document.getElementById("budgetDate").value;
+        let description = document.getElementById("budgetDescription").value.trim();
+        if (!source || !amount) { showToast("Please fill source and amount", true); return; }
+        let id = document.getElementById("editBudgetId").value;
+        if (id) { let idx = budgets.findIndex(b => b.id == id); if (idx !== -1) { budgets[idx] = { ...budgets[idx], type, source, amount, date, description }; addLog(`Updated budget: ${source}`); showToast("Budget updated"); } }
+        else { budgets.unshift({ id: Date.now(), type, source, amount, date, description }); addLog(`Added budget: ${source}`); showToast("Budget added"); }
+        closeBudgetModal(); renderBudget(); renderDashboard();
+    }
+    
+    function viewBudgetItem(id) { let b = budgets.find(b => b.id === id); if (b) { document.getElementById("viewBudgetContent").innerHTML = `<div class="space-y-2"><div class="border-b pb-1"><h4 class="font-bold">${escapeHtml(b.source)}</h4><p class="text-xs text-gray-400">${b.date}</p></div><div class="grid grid-cols-2 gap-1 text-sm"><div><strong>Type:</strong></div><div><span class="px-1.5 py-0.5 rounded-full text-[9px] ${b.type==='income'?'bg-green-100':'bg-red-100'}">${b.type}</span></div><div><strong>Amount:</strong></div><div class="${b.type==='income'?'text-green-600':'text-red-600'}">${formatCurrency(b.amount)}</div><div><strong>Description:</strong></div><div>${escapeHtml(b.description)}</div></div></div>`; document.getElementById("viewBudgetModal").classList.remove("hidden"); document.getElementById("viewBudgetModal").classList.add("flex"); } }
+    function closeViewBudgetModal() { document.getElementById("viewBudgetModal").classList.add("hidden"); document.getElementById("viewBudgetModal").classList.remove("flex"); }
+    
+    function editBudgetItem(id) { let b = budgets.find(b => b.id === id); if (b) { document.getElementById("editBudgetId").value = b.id; document.getElementById("budgetType").value = b.type; document.getElementById("budgetSource").value = b.source; document.getElementById("budgetAmount").value = b.amount; document.getElementById("budgetDate").value = b.date; document.getElementById("budgetDescription").value = b.description || ""; document.getElementById("budgetModal").classList.remove("hidden"); document.getElementById("budgetModal").classList.add("flex"); } }
+    function deleteBudgetItem(id) { if (confirm("Delete this transaction?")) { budgets = budgets.filter(b => b.id !== id); addLog("Deleted transaction"); showToast("Transaction deleted"); renderBudget(); renderDashboard(); } }
+    
+    function exportBudgetToExcel() { let ws = [["Date","Type","Source","Amount","Description"]]; budgets.forEach(b => ws.push([b.date, b.type, b.source, b.amount, b.description])); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), "Budget"); XLSX.writeFile(wb, `budget_${new Date().toISOString().slice(0,10)}.xlsx`); showToast("Budget exported to Excel"); }
+    function exportBudgetToPDF() { let element = document.createElement("div"); element.innerHTML = `<div style="padding:20px"><h1 style="color:#d97706">Budget Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr><table border="1" cellpadding="8">${budgets.map(b => `<tr><td class="px-2 py-1">${b.date}</td><td class="px-2 py-1">${b.type}</td><td class="px-2 py-1">${b.source}</td><td class="px-2 py-1">${formatCurrency(b.amount)}</td><td class="px-2 py-1">${b.description}</td></tr>`).join('')}</div>`; html2pdf().set({ margin: 0.5, filename: `budget_report.pdf` }).from(element).save(); showToast("Budget exported to PDF"); }
+    
+    function exportSingleBudget(budgetId, format) {
+        let b = budgets.find(b => b.id === budgetId);
+        if (!b) return;
+        let filename = `${b.source.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${new Date().toISOString().slice(0,10)}`;
+        if (format === 'excel') {
+            let ws = [["Date","Type","Source","Amount","Description"]];
+            ws.push([b.date, b.type, b.source, b.amount, b.description]);
+            let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), "Transaction"); XLSX.writeFile(wb, `${filename}.xlsx`); showToast("Transaction exported to Excel");
+        } else if (format === 'pdf') {
+            let element = document.createElement("div");
+            element.innerHTML = `<div style="padding:20px"><h1 style="color:#d97706">${escapeHtml(b.source)}</h1><p><strong>Date:</strong> ${b.date}</p><p><strong>Type:</strong> ${b.type}</p><p><strong>Amount:</strong> ${formatCurrency(b.amount)}</p><p><strong>Description:</strong> ${escapeHtml(b.description)}</p><p>Generated: ${new Date().toLocaleString()}</p></div>`;
+            html2pdf().set({ margin: 0.5, filename: `${filename}.pdf` }).from(element).save(); showToast("Transaction exported to PDF");
+        }
+        let dd = document.getElementById(`budgetExportDropdown-${budgetId}`); if (dd) dd.classList.add("hidden");
+    }
+    
+    function toggleBudgetExportDropdown(budgetId) { let dd = document.getElementById(`budgetExportDropdown-${budgetId}`); document.querySelectorAll('[id^="budgetExportDropdown-"]').forEach(d => { if (d.id !== `budgetExportDropdown-${budgetId}`) d.classList.add("hidden"); }); if (dd) dd.classList.toggle("hidden"); }
+    
+    // ==================== REPORTS SECTION ====================
+    function renderReports() {
+        let myReports = reportsList.filter(r => r.department === "Construction");
+        let html = `<div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold"><i class="fas fa-chart-bar text-amber-600 mr-2"></i>Reports</h2><div class="flex gap-2"><button onclick="openAddReportModal()" class="btn-primary text-white px-4 py-2 rounded-xl text-sm"><i class="fas fa-plus mr-1"></i>Add Report</button><button onclick="openSendReportModal()" class="bg-purple-600 text-white px-4 py-2 rounded-xl text-sm"><i class="fas fa-paper-plane mr-1"></i>Send to Admin</button></div></div>
+            <div class="bg-white rounded-xl p-3 shadow-sm"><div class="space-y-2">${myReports.map(r => `<div class="border rounded-lg p-2"><div class="flex justify-between items-start"><div><h4 class="font-semibold text-sm">${escapeHtml(r.title)}</h4><span class="text-[9px] px-1.5 py-0.5 rounded-full bg-${r.period==='daily'?'blue':r.period==='weekly'?'green':r.period==='monthly'?'purple':'orange'}-100">${r.period}</span><p class="text-[10px] text-gray-500 mt-1">${escapeHtml(r.content.substring(0,60))}...</p></div><div class="flex gap-1"><button onclick="viewReportDetail(${r.id})" class="text-blue-500 text-xs p-1"><i class="fas fa-eye"></i></button><button onclick="editReportDetail(${r.id})" class="text-green-500 text-xs p-1"><i class="fas fa-edit"></i></button><button onclick="deleteReportDetail(${r.id})" class="text-red-500 text-xs p-1"><i class="fas fa-trash"></i></button><button onclick="openSendReportToAdmin(${r.id})" class="text-purple-500 text-xs p-1"><i class="fas fa-paper-plane"></i></button></div></div></div>`).join('')||'<p class="text-gray-400 text-center py-4 text-sm">No reports</p>'}</div></div>`;
+        document.getElementById("reportsSection").innerHTML = html;
+    }
+    
+    function openAddReportModal() { document.getElementById("addReportModal").classList.remove("hidden"); document.getElementById("addReportModal").classList.add("flex"); document.getElementById("newReportTitle").value = ""; document.getElementById("newReportPeriod").value = "monthly"; document.getElementById("newReportContent").value = ""; }
+    function closeAddReportModal() { document.getElementById("addReportModal").classList.add("hidden"); document.getElementById("addReportModal").classList.remove("flex"); }
+    function addReport() { let title = document.getElementById("newReportTitle").value.trim(); let period = document.getElementById("newReportPeriod").value; let content = document.getElementById("newReportContent").value.trim(); if (!title || !content) { showToast("Please fill title and content", true); return; } reportsList.unshift({ id: Date.now(), department: "Construction", title, period, content, status: "draft", created_at: new Date().toISOString() }); addLog(`Added report: ${title}`); showToast("Report added"); closeAddReportModal(); renderReports(); }
+    function viewReportDetail(id) { let r = reportsList.find(r => r.id === id); if (r) alert(`📄 ${r.title}\n\nPeriod: ${r.period}\nDate: ${new Date(r.created_at).toLocaleString()}\n\nContent:\n${r.content}`); }
+    function editReportDetail(id) { let r = reportsList.find(r => r.id === id); if (r) { document.getElementById("editReportId").value = r.id; document.getElementById("editReportTitle").value = r.title; document.getElementById("editReportPeriod").value = r.period; document.getElementById("editReportContent").value = r.content; document.getElementById("editReportModal").classList.remove("hidden"); document.getElementById("editReportModal").classList.add("flex"); } }
+    function closeEditReportModal() { document.getElementById("editReportModal").classList.add("hidden"); document.getElementById("editReportModal").classList.remove("flex"); }
+    function updateReport() { let id = parseInt(document.getElementById("editReportId").value); let idx = reportsList.findIndex(r => r.id === id); if (idx !== -1) { reportsList[idx].title = document.getElementById("editReportTitle").value; reportsList[idx].period = document.getElementById("editReportPeriod").value; reportsList[idx].content = document.getElementById("editReportContent").value; addLog(`Updated report: ${reportsList[idx].title}`); showToast("Report updated"); closeEditReportModal(); renderReports(); } }
+    function deleteReportDetail(id) { if (confirm("Delete this report?")) { reportsList = reportsList.filter(r => r.id !== id); addLog("Deleted report"); showToast("Report deleted"); renderReports(); } }
+    function openSendReportModal() { document.getElementById("sendReportModal").classList.remove("hidden"); document.getElementById("sendReportModal").classList.add("flex"); document.getElementById("sendReportTitle").value = ""; document.getElementById("sendReportMessage").value = ""; }
+    function closeSendReportModal() { document.getElementById("sendReportModal").classList.add("hidden"); document.getElementById("sendReportModal").classList.remove("flex"); }
+    function sendReportToAdmin() { let title = document.getElementById("sendReportTitle").value; let content = document.getElementById("sendReportMessage").value; if (!title || !content) { showToast("Please enter title and content", true); return; } addCentralMessage("Construction", "Admin", `REPORT: ${title}\n\n${content}`); addLog(`Report sent to Admin: ${title}`); showToast("Report sent to Admin"); closeSendReportModal(); renderMessages(); document.getElementById("msgBadge").innerText = getUnreadMessagesCount(); }
+    function openSendReportToAdmin(id) { let r = reportsList.find(r => r.id === id); if (r) { document.getElementById("sendReportTitle").value = r.title; document.getElementById("sendReportMessage").value = r.content; document.getElementById("sendReportModal").classList.remove("hidden"); document.getElementById("sendReportModal").classList.add("flex"); } }
+    
+    // ==================== SETTINGS SECTION ====================
+    function renderSettings() {
+        let logsHtml = activityLogs.slice(0, 15).map(l => `<div class="text-[10px] border-b py-1"><span>${escapeHtml(l.action)}</span><span class="float-right text-gray-400">${new Date(l.created_at).toLocaleString()}</span></div>`).join('');
+        let colors = [
+            { name: 'Amber', value: '#d97706' }, { name: 'Orange', value: '#ea580c' },
+            { name: 'Blue', value: '#2563eb' }, { name: 'Purple', value: '#7c3aed' },
+            { name: 'Green', value: '#065f46' }, { name: 'Red', value: '#dc2626' },
+            { name: 'Teal', value: '#0d9488' }, { name: 'Pink', value: '#db2777' }, { name: 'Indigo', value: '#6366f1' }
+        ];
+        let html = `<h2 class="text-xl font-bold mb-4"><i class="fas fa-cog mr-2"></i>Settings</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-white rounded-xl p-4 shadow-sm"><h3 class="font-semibold text-sm mb-2"><i class="fas fa-palette mr-2 text-amber-600"></i>Dashboard Color</h3><div class="flex gap-2 flex-wrap">${colors.map(c => `<div class="color-option" style="background:${c.value}" onclick="changeColor('${c.value}', this)" title="${c.name}"></div>`).join('')}</div></div>
+                <div class="bg-white rounded-xl p-4 shadow-sm"><h3 class="font-semibold text-sm mb-2"><i class="fas fa-database mr-2 text-green-600"></i>Backup & Restore</h3><div class="flex gap-2"><button onclick="openBackupRestoreModal()" class="flex-1 bg-green-600 text-white py-2 rounded-lg text-xs"><i class="fas fa-download mr-1"></i>Backup</button><button onclick="restoreBackup()" class="flex-1 bg-orange-600 text-white py-2 rounded-lg text-xs"><i class="fas fa-upload mr-1"></i>Restore</button></div></div>
+                <div class="bg-white rounded-xl p-4 shadow-sm"><h3 class="font-semibold text-sm mb-2"><i class="fas fa-history mr-2 text-blue-600"></i>Activity Logs</h3><div class="max-h-32 overflow-y-auto text-xs border rounded-lg p-2 bg-gray-50">${logsHtml}</div><button onclick="clearLogs()" class="w-full mt-2 bg-red-600 text-white py-1.5 rounded-lg text-xs"><i class="fas fa-trash mr-1"></i>Clear Logs</button></div>
+                <div class="bg-white rounded-xl p-4 shadow-sm"><h3 class="font-semibold text-sm mb-2"><i class="fas fa-info-circle mr-2 text-purple-600"></i>System Info</h3><p class="text-xs"><strong>Version:</strong> 2.0.0</p><p class="text-xs mt-1"><strong>Daily Work:</strong> ${dailyWorks.length}</p><p class="text-xs mt-1"><strong>Projects:</strong> ${projects.length}</p><p class="text-xs mt-1"><strong>Transactions:</strong> ${budgets.length}</p></div>
+            </div>`;
+        document.getElementById("settingsSection").innerHTML = html;
+    }
+    
+    function openBackupRestoreModal() { document.getElementById("backupRestoreModal").classList.remove("hidden"); document.getElementById("backupRestoreModal").classList.add("flex"); }
+    function closeBackupRestoreModal() { document.getElementById("backupRestoreModal").classList.add("hidden"); document.getElementById("backupRestoreModal").classList.remove("flex"); }
+    
+    function changeColor(color, el) { document.querySelectorAll(".color-option").forEach(opt => opt.classList.remove("selected")); el.classList.add("selected"); document.getElementById("mainSidebar").style.background = color; localStorage.setItem("sidebar_color", color); showToast("Sidebar color changed"); }
+    function createBackup() { let backup = { dailyWorks, projects, budgets, reportsList, activityLogs, timestamp: new Date().toISOString() }; let blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" }); let url = URL.createObjectURL(blob); let a = document.createElement("a"); a.href = url; a.download = `construction_backup_${new Date().toISOString().slice(0,19)}.json`; a.click(); URL.revokeObjectURL(url); addLog("Created backup"); showToast("Backup created"); closeBackupRestoreModal(); }
+    function restoreBackup() { let inp = document.createElement("input"); inp.type = "file"; inp.accept = "application/json"; inp.onchange = (e) => { let file = e.target.files[0]; if (!file) return; let reader = new FileReader(); reader.onload = (evt) => { try { let data = JSON.parse(evt.target.result); if (data.dailyWorks) dailyWorks = data.dailyWorks; if (data.projects) projects = data.projects; if (data.budgets) budgets = data.budgets; if (data.reportsList) reportsList = data.reportsList; addLog("Restored from backup"); showToast("Backup restored! Reloading..."); setTimeout(() => location.reload(), 1500); } catch(err) { showToast("Invalid backup file", true); } }; reader.readAsText(file); }; inp.click(); }
+    function clearLogs() { if (confirm("Clear all activity logs?")) { activityLogs = [{ action: "Logs cleared", created_at: new Date().toISOString() }]; renderSettings(); showToast("Logs cleared"); } }
+    
+    // ==================== NAVIGATION ====================
+    function showSection(sectionId) {
+        let sections = ["dashboardSection","dailyworkSection","projectsSection","budgetSection","messagesSection","reportsSection","settingsSection"];
+        sections.forEach(s => { let el = document.getElementById(s); if (el) el.classList.add("hidden"); });
+        document.getElementById(`${sectionId}Section`).classList.remove("hidden");
+        document.querySelectorAll(".nav-item").forEach(nav => nav.classList.remove("active"));
+        document.querySelector(`.nav-item[data-section="${sectionId}"]`)?.classList.add("active");
+        if (sectionId === "dashboard") renderDashboard();
+        else if (sectionId === "dailywork") renderDailyWork();
+        else if (sectionId === "projects") renderProjects();
+        else if (sectionId === "budget") renderBudget();
+        else if (sectionId === "messages") renderMessages();
+        else if (sectionId === "reports") renderReports();
+        else if (sectionId === "settings") renderSettings();
+    }
+    
+    // ==================== INIT ====================
+    function init() {
+        let container = document.getElementById("mainContentContainer");
+        container.innerHTML = `<div id="dashboardSection"></div><div id="dailyworkSection" class="hidden"></div><div id="projectsSection" class="hidden"></div><div id="budgetSection" class="hidden"></div><div id="messagesSection" class="hidden"></div><div id="reportsSection" class="hidden"></div><div id="settingsSection" class="hidden"></div>`;
+        renderDashboard();
+        document.querySelectorAll(".nav-item").forEach(nav => nav.addEventListener("click", (e) => { e.preventDefault(); showSection(nav.dataset.section); }));
+        document.getElementById("mobileMenuBtn")?.addEventListener("click", () => { document.getElementById("mainSidebar").classList.add("mobile-open"); document.getElementById("mobileMenuOverlay").classList.add("open"); });
+        document.getElementById("logoutBtn")?.addEventListener("click", logout);
+        document.getElementById("profileBtn")?.addEventListener("click", () => document.getElementById("profileDropdown")?.classList.toggle("hidden"));
+        document.addEventListener("click", (e) => { if (!document.getElementById("profileBtn")?.contains(e.target)) document.getElementById("profileDropdown")?.classList.add("hidden"); });
+        let searchInput = document.getElementById("globalSearchInput"); if (searchInput) searchInput.addEventListener("input", performGlobalSearch);
+        let savedDark = localStorage.getItem("construction_dark_mode");
+        if (savedDark === "true") document.body.classList.add("dark-mode");
+        document.getElementById("darkModeToggle")?.addEventListener("click", () => { document.body.classList.toggle("dark-mode"); localStorage.setItem("construction_dark_mode", document.body.classList.contains("dark-mode")); let icon = document.getElementById("darkModeIcon"); if (document.body.classList.contains("dark-mode")) { icon.classList.remove("fa-moon"); icon.classList.add("fa-sun"); } else { icon.classList.remove("fa-sun"); icon.classList.add("fa-moon"); } showToast(document.body.classList.contains("dark-mode") ? "Dark mode enabled" : "Light mode enabled"); });
+        let savedColor = localStorage.getItem("sidebar_color"); if (savedColor) document.getElementById("mainSidebar").style.background = savedColor;
+        let scrollBtn = document.createElement("div"); scrollBtn.className = "scroll-top"; scrollBtn.innerHTML = '<i class="fas fa-arrow-up"></i>'; document.body.appendChild(scrollBtn); scrollBtn.onclick = () => window.scrollTo({ top: 0, behavior: "smooth" }); window.addEventListener("scroll", () => scrollBtn.classList.toggle("visible", window.scrollY > 300));
+        addLog("Construction Dashboard initialized");
+    }
+    
+    // Expose functions
+    window.closeMobileSidebar = closeMobileSidebar; window.goToMainWebsite = goToMainWebsite; window.showSection = showSection;
+    window.openDailyWorkModal = openDailyWorkModal; window.closeDailyWorkModal = closeDailyWorkModal; window.saveDailyWork = saveDailyWork;
+    window.viewDailyWork = viewDailyWork; window.closeViewDailyWorkModal = closeViewDailyWorkModal;
+    window.editDailyWork = editDailyWork; window.deleteDailyWork = deleteDailyWork; window.changeDailyPage = changeDailyPage;
+    window.markPartialPayment = markPartialPayment; window.markPaymentComplete = markPaymentComplete;
+    window.openSendDailyWorkModal = openSendDailyWorkModal; window.closeSendDailyWorkModal = closeSendDailyWorkModal; window.confirmSendDailyWork = confirmSendDailyWork;
+    window.exportDailyWorkToExcel = exportDailyWorkToExcel; window.exportDailyWorkToPDF = exportDailyWorkToPDF;
+    window.exportSingleDailyWork = exportSingleDailyWork; window.toggleDailyExportDropdown = toggleDailyExportDropdown;
+    window.openAddProjectModal = openAddProjectModal; window.closeProjectModal = closeProjectModal; window.saveProject = saveProject;
+    window.viewProject = viewProject; window.closeViewProjectModal = closeViewProjectModal;
+    window.editProject = editProject; window.deleteProject = deleteProject; window.changeProjectPage = changeProjectPage;
+    window.openSendProjectModal = openSendProjectModal; window.closeSendProjectModal = closeSendProjectModal; window.confirmSendProject = confirmSendProject;
+    window.exportSingleProject = exportSingleProject; window.toggleProjectExportDropdown = toggleProjectExportDropdown;
+    window.exportProjectsToExcel = exportProjectsToExcel; window.exportProjectsToPDF = exportProjectsToPDF;
+    window.openBudgetModal = openBudgetModal; window.closeBudgetModal = closeBudgetModal; window.saveBudget = saveBudget;
+    window.viewBudgetItem = viewBudgetItem; window.closeViewBudgetModal = closeViewBudgetModal;
+    window.editBudgetItem = editBudgetItem; window.deleteBudgetItem = deleteBudgetItem; window.changeBudgetPage = changeBudgetPage;
+    window.exportBudgetToExcel = exportBudgetToExcel; window.exportBudgetToPDF = exportBudgetToPDF;
+    window.exportSingleBudget = exportSingleBudget; window.toggleBudgetExportDropdown = toggleBudgetExportDropdown;
+    window.openStartChatModal = openStartChatModal; window.closeStartChatModal = closeStartChatModal; window.sendNewChat = sendNewChat;
+    window.openChatWith = openChatWith; window.sendChatMessage = sendChatMessage; window.deleteMessageFromChat = deleteMessageFromChat; window.closeChatModal = closeChatModal;
+    window.openAddReportModal = openAddReportModal; window.closeAddReportModal = closeAddReportModal; window.addReport = addReport;
+    window.viewReportDetail = viewReportDetail; window.editReportDetail = editReportDetail; window.closeEditReportModal = closeEditReportModal; window.updateReport = updateReport;
+    window.deleteReportDetail = deleteReportDetail; window.openSendReportModal = openSendReportModal; window.closeSendReportModal = closeSendReportModal;
+    window.sendReportToAdmin = sendReportToAdmin; window.openSendReportToAdmin = openSendReportToAdmin;
+    window.openBackupRestoreModal = openBackupRestoreModal; window.closeBackupRestoreModal = closeBackupRestoreModal;
+    window.changeColor = changeColor; window.createBackup = createBackup; window.restoreBackup = restoreBackup; window.clearLogs = clearLogs;
+    window.logout = logout;
+    
+    init();
+</script>
+</body>
+</html>

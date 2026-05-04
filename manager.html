@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>GeoTraverse | Manager Dashboard - ERP System</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body { background: #f0f2f5; transition: background 0.3s ease; font-size: 14px; }
+        
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #e2e8f0; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #2563eb; border-radius: 10px; }
+        
+        .sidebar {
+            background: #1e40af;
+            transition: all 0.3s ease;
+            height: 100vh;
+            overflow-y: auto;
+            position: fixed;
+            width: 280px;
+            z-index: 30;
+        }
+        
+        .sidebar-logo { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+        .sidebar-logo img { width: 100%; height: 100%; object-fit: contain; border-radius: 10px; }
+        .nav-item { transition: all 0.2s ease; border-left: 3px solid transparent; cursor: pointer; }
+        .nav-item.active { background: rgba(255,255,255,0.15); border-left-color: #60a5fa; }
+        .nav-item.active i { color: #60a5fa; }
+        .nav-item:hover:not(.active) { background: rgba(255,255,255,0.08); }
+        
+        .stat-card { transition: all 0.3s ease; background: white; border-radius: 20px; border: 1px solid #e5e7eb; cursor: pointer; }
+        .stat-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -12px rgba(0,0,0,0.15); border-color: #2563eb; }
+        
+        .btn-primary { background: linear-gradient(135deg, #2563eb, #1e40af); transition: all 0.2s; }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 5px 15px rgba(37,99,235,0.3); }
+        
+        .toast-notification { position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, #2563eb, #1e40af); color: white; padding: 10px 16px; border-radius: 10px; z-index: 1000; animation: slideInRight 0.3s ease; font-size: 12px; }
+        .toast-notification.error { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        
+        .main-content { margin-left: 280px; }
+        @media (max-width: 768px) { .sidebar { left: -280px; transition: left 0.3s; } .sidebar.mobile-open { left: 0; } .mobile-menu-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 99; display: none; } .mobile-menu-overlay.open { display: block; } .main-content { margin-left: 0; } }
+        
+        .scroll-top { position: fixed; bottom: 20px; right: 20px; background: #2563eb; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: all 0.3s; z-index: 99; color: white; }
+        .scroll-top.visible { opacity: 1; }
+        
+        .color-option { transition: all 0.2s; cursor: pointer; border: 2px solid transparent; width: 36px; height: 36px; border-radius: 50%; }
+        .color-option:hover { transform: scale(1.05); }
+        .color-option.selected { border-color: white; box-shadow: 0 0 0 2px #333; }
+        
+        .status-paid { background: #d1fae5; color: #059669; }
+        .status-partial { background: #fef3c7; color: #d97706; }
+        .status-pending { background: #fee2e2; color: #dc2626; }
+        .status-completed { background: #d1fae5; color: #059669; }
+        .status-progress { background: #dbeafe; color: #2563eb; }
+        .status-approved { background: #e9d5ff; color: #7e22ce; }
+        
+        .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        table { font-size: 13px; width: 100%; }
+        th, td { padding: 12px 10px; }
+        
+        .action-buttons { display: flex; flex-wrap: wrap; gap: 5px; }
+        
+        .chat-bubble { max-width: 80%; padding: 10px 14px; border-radius: 12px; margin-bottom: 8px; }
+        .chat-sent { background-color: #dbeafe; margin-left: auto; }
+        .chat-received { background-color: #e5e7eb; }
+        
+        .chat-conversation { cursor: pointer; transition: all 0.2s; }
+        .chat-conversation:hover { background-color: #f3f4f6; }
+        .chat-conversation-unread { background-color: #eff6ff; border-left: 3px solid #2563eb; }
+        
+        .search-results-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+            z-index: 50;
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+        }
+        .search-results-dropdown.active { display: block; }
+        .search-result-item { padding: 10px 14px; border-bottom: 1px solid #e5e7eb; cursor: pointer; transition: background 0.2s; font-size: 13px; }
+        .search-result-item:hover { background-color: #f3f4f6; }
+        
+        body.dark-mode { background: #0f172a; }
+        body.dark-mode .bg-white { background-color: #1e293b; }
+        body.dark-mode .bg-gray-50 { background-color: #0f172a; }
+        body.dark-mode .text-gray-600, body.dark-mode .text-gray-500 { color: #94a3b8; }
+        body.dark-mode .text-gray-700, body.dark-mode .text-gray-800 { color: #f1f5f9; }
+        body.dark-mode .border-gray-200, body.dark-mode .border-gray-100 { border-color: #334155; }
+        body.dark-mode .sidebar { background: #1e3a8a; }
+        body.dark-mode .stat-card { background-color: #1e293b; border-color: #334155; }
+        body.dark-mode .chat-sent { background-color: #1e3a8a; }
+        body.dark-mode .chat-received { background-color: #334155; }
+        body.dark-mode .chat-conversation:hover { background-color: #334155; }
+        body.dark-mode .chat-conversation-unread { background-color: #1e3a5f; }
+        body.dark-mode .search-results-dropdown { background-color: #1e293b; }
+        body.dark-mode .search-result-item { border-bottom-color: #334155; }
+        body.dark-mode .search-result-item:hover { background-color: #334155; }
+        
+        .progress-bar { height: 6px; border-radius: 3px; }
+        .progress-low { background: #ef4444; }
+        .progress-medium { background: #f59e0b; }
+        .progress-high { background: #10b981; }
+        
+        .dropdown-content { position: absolute; right: 0; margin-top: 4px; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 100; min-width: 160px; border: 1px solid #e5e7eb; max-height: 300px; overflow-y: auto; }
+        .dropdown-content button { display: flex; align-items: center; gap: 8px; padding: 8px 12px; font-size: 12px; width: 100%; text-align: left; }
+        .dropdown-content button:hover { background-color: #f3f4f6; }
+        body.dark-mode .dropdown-content { background-color: #1e293b; border-color: #334155; }
+        body.dark-mode .dropdown-content button:hover { background-color: #334155; }
+        
+        .relative { position: relative; }
+        [id^="clientExportDropdown-"], [id^="budgetExportDropdown-"], [id^="projectExportDropdown-"], [id^="sendReportDropdown-"] { z-index: 100; }
+        
+        .tick-btn { cursor: pointer; transition: all 0.2s; color: #10b981; }
+        .tick-btn:hover { transform: scale(1.1); color: #059669; }
+        
+        .pending-row { background-color: #fef2f2; }
+        .partial-row { background-color: #fffbeb; }
+        .dark-mode .pending-row { background-color: #7f1d1d20; }
+        .dark-mode .partial-row { background-color: #451a0320; }
+        
+        .image-upload-area { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s; }
+        .image-upload-area:hover { border-color: #2563eb; background-color: #eff6ff; }
+        
+        .project-card { transition: all 0.2s; cursor: pointer; border-radius: 12px; overflow: hidden; border: 1px solid #e5e7eb; background: white; }
+        .project-card:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
+        
+        .remaining-badge { background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+        .remaining-warning { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .remaining-danger { background: linear-gradient(135deg, #ef4444, #dc2626); }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+<div id="mobileMenuOverlay" class="mobile-menu-overlay" onclick="closeMobileSidebar()"></div>
+
+<div class="flex h-screen overflow-hidden">
+    <!-- SIDEBAR -->
+    <aside id="mainSidebar" class="sidebar shadow-xl flex flex-col z-20">
+        <div class="px-5 py-5 border-b border-white/20 flex-shrink-0">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="goToMainWebsite()">
+                <div class="sidebar-logo"><img src="https://i.postimg.cc/MT6jTVHh/weblogo.png" alt="GeoTraverse Logo" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%231e40af%22/%3E%3Ctext x=%2250%22 y=%2265%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2240%22 font-weight=%22bold%22%3EG%3C/text%3E%3C/svg%3E';"></div>
+                <div><span class="text-lg font-bold text-white">GeoTraverse</span><p class="text-[9px] text-white/50">MANAGER ERP</p></div>
+            </div>
+        </div>
+        <div class="flex-1 overflow-y-auto px-3 py-4">
+            <nav class="space-y-1">
+                <div class="text-white/40 text-[10px] px-3 py-2 uppercase font-semibold">MAIN</div>
+                <a href="#" class="nav-item active flex items-center gap-3 px-3 py-2.5 rounded-xl text-white text-sm" data-section="dashboard"><i class="fas fa-tachometer-alt w-4"></i><span>Dashboard</span></a>
+                <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-white text-sm" data-section="clients"><i class="fas fa-users w-4"></i><span>Clients</span></a>
+                <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-white text-sm" data-section="incomplete"><i class="fas fa-clock w-4"></i><span>Incomplete</span><span class="ml-auto bg-red-500 text-white text-[9px] px-1.5 py-0.5 rounded-full" id="incompleteBadge">0</span></a>
+                <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-white text-sm" data-section="projects"><i class="fas fa-tasks w-4"></i><span>Projects</span></a>
+                <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-white text-sm" data-section="budget"><i class="fas fa-wallet w-4"></i><span>Budget</span></a>
+                <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-white text-sm" data-section="messages"><i class="fas fa-envelope w-4"></i><span>Messages</span><span class="ml-auto bg-red-500 text-white text-[9px] px-1.5 py-0.5 rounded-full" id="msgBadge">0</span></a>
+                <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-white text-sm" data-section="reports"><i class="fas fa-chart-bar w-4"></i><span>Reports</span></a>
+                <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-white text-sm" data-section="settings"><i class="fas fa-cog w-4"></i><span>Settings</span></a>
+            </nav>
+        </div>
+        <div class="flex-shrink-0 p-4 border-t border-white/20">
+            <div class="flex items-center gap-3 mb-2">
+                <div class="w-9 h-9 bg-blue-700 rounded-xl flex items-center justify-center"><i class="fas fa-user-tie text-white text-sm"></i></div>
+                <div class="flex-1"><p class="text-sm font-semibold text-white">General Manager</p><p class="text-[9px] text-white/50">manager@geotraverse.com</p></div>
+            </div>
+            <button id="logoutBtn" class="w-full bg-red-600/80 hover:bg-red-600 text-white py-2 rounded-lg text-xs transition"><i class="fas fa-sign-out-alt mr-1"></i>Logout</button>
+        </div>
+    </aside>
+    
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 overflow-y-auto main-content">
+        <header class="bg-white shadow-sm px-5 py-3 sticky top-0 z-10 border-b border-gray-200">
+            <div class="flex items-center justify-between flex-wrap gap-3">
+                <div class="flex items-center gap-3">
+                    <button id="mobileMenuBtn" class="md:hidden text-gray-600 hover:text-blue-700 text-xl"><i class="fas fa-bars"></i></button>
+                    <div><h1 class="text-lg font-bold text-gray-800">Manager Dashboard</h1><p class="text-xs text-gray-400">Client, Project & Budget Management</p></div>
+                </div>
+                <div class="flex-1 max-w-md relative">
+                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
+                    <input type="text" id="globalSearchInput" placeholder="Search clients, projects, budget, reports..." class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-blue-600">
+                    <div id="searchResultsDropdown" class="search-results-dropdown"></div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="darkModeToggle" class="text-gray-500 hover:text-blue-700 w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center"><i id="darkModeIcon" class="fas fa-moon text-sm"></i></button>
+                    <div class="relative">
+                        <button id="profileBtn" class="flex items-center gap-2"><div class="w-8 h-8 bg-gradient-to-r from-blue-600 to-blue-800 rounded-full flex items-center justify-center"><span class="text-white text-sm font-semibold">GM</span></div><i class="fas fa-chevron-down text-gray-400 text-xs"></i></button>
+                        <div id="profileDropdown" class="absolute top-full right-0 mt-2 w-48 bg-white rounded-xl shadow-xl z-50 hidden">
+                            <a href="#" class="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 text-sm"><i class="fas fa-user text-gray-400"></i>Profile</a>
+                            <hr class="my-1">
+                            <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-2 hover:bg-gray-50 text-sm text-red-600"><i class="fas fa-sign-out-alt"></i>Logout</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <div class="p-4" id="mainContentContainer"></div>
+    </main>
+</div>
+
+<!-- Add Client Modal -->
+<div id="clientModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
+    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
+        <div class="px-5 py-3 border-b flex justify-between items-center"><h3 class="text-lg font-bold" id="clientModalTitle"><i class="fas fa-user-plus text-blue-600 mr-2"></i>Add Client</h3><button onclick="closeClientModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button></div>
+        <div class="p-5 space-y-3">
+            <input type="hidden" id="editClientId">
+            <input type="text" id="clientName" placeholder="Client Name" class="w-full p-2 border rounded-xl text-sm">
+            <input type="text" id="clientPhone" placeholder="Phone Number" class="w-full p-2 border rounded-xl text-sm">
+            <input type="text" id="clientLocation" placeholder="Location" class="w-full p-2 border rounded-xl text-sm">
+            <input type="date" id="clientStartDate" placeholder="Project Start Date" class="w-full p-2 border rounded-xl text-sm">
+            <input type="date" id="clientEndDate" placeholder="Project End Date" class="w-full p-2 border rounded-xl text-sm">
+            <input type="number" id="clientTotalAmount" placeholder="Total Amount (TZS)" class="w-full p-2 border rounded-xl text-sm">
+            <input type="number" id="clientPaidAmount" placeholder="Paid Amount (TZS)" class="w-full p-2 border rounded-xl text-sm" value="0">
+            <select id="clientPaymentStatus" class="w-full p-2 border rounded-xl text-sm">
+                <option value="paid">Paid (Full)</option>
+                <option value="partial">Partial Payment</option>
+                <option value="pending">Pending</option>
+            </select>
+            <textarea id="clientDescription" rows="2" placeholder="Project Description" class="w-full p-2 border rounded-xl text-sm"></textarea>
+            <div class="flex gap-3"><button onclick="saveClient()" class="flex-1 bg-blue-600 text-white py-2 rounded-xl text-sm">Save</button><button onclick="closeClientModal()" class="flex-1 bg-gray-100 py-2 rounded-xl text-sm">Cancel</button></div>
+        </div>
+    </div>
+</div>
+
+<!-- View Client Modal -->
+<div id="viewClientModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
+    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
+        <div class="px-5 py-3 border-b flex justify-between items-center"><h3 class="text-lg font-bold">Client Details</h3><button onclick="closeViewClientModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button></div>
+        <div class="p-5" id="viewClientContent"></div>
+        <div class="px-5 pb-5"><button onclick="closeViewClientModal()" class="w-full bg-gray-100 py-2 rounded-xl text-sm">Close</button></div>
+    </div>
+</div>
+
+<!-- Add Project Modal -->
+<div id="projectModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
+    <div class="bg-white rounded-2xl max-w-md w-full fade-in" style="max-height: 90vh; overflow-y: auto;">
+        <div class="px-5 py-3 border-b flex justify-between items-center"><h3 class="text-lg font-bold" id="projectModalTitle"><i class="fas fa-plus-circle text-blue-600 mr-2"></i>Add Project</h3><button onclick="closeProjectModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button></div>
+        <div class="p-5 space-y-3">
+            <input type="hidden" id="editProjectId">
+            <input type="text" id="projectName" placeholder="Project Name" class="w-full p-2 border rounded-xl text-sm">
+            <input type="text" id="projectClient" placeholder="Client Name" class="w-full p-2 border rounded-xl text-sm">
+            <input type="number" id="projectAmount" placeholder="Amount (TZS)" class="w-full p-2 border rounded-xl text-sm">
+            <input type="text" id="projectLocation" placeholder="Location" class="w-full p-2 border rounded-xl text-sm">
+            <textarea id="projectDesc" rows="2" placeholder="Description" class="w-full p-2 border rounded-xl text-sm"></textarea>
+            <div id="projectImageUploadArea" class="image-upload-area text-sm" onclick="document.getElementById('projectImageFile').click()">
+                <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                <p>Click to upload project image</p>
+            </div>
+            <input type="file" id="projectImageFile" accept="image/*" class="hidden">
+            <div id="projectImagePreviewContainer" class="hidden mt-2">
+                <img id="projectImagePreview" class="w-full h-24 object-cover rounded-lg border">
+                <button type="button" onclick="removeProjectImage()" class="mt-1 text-red-500 text-sm w-full">Remove</button>
+            </div>
+            <select id="projectStatus" class="w-full p-2 border rounded-xl text-sm">
+                <option value="pending">Pending</option>
+                <option value="in_progress">In Progress</option>
+                <option value="completed">Completed</option>
+                <option value="approved">Approved</option>
+            </select>
+            <input type="number" id="projectProgress" placeholder="Progress (0-100)" class="w-full p-2 border rounded-xl text-sm" min="0" max="100">
+            <input type="date" id="projectStartDate" class="w-full p-2 border rounded-xl text-sm">
+            <input type="date" id="projectEndDate" class="w-full p-2 border rounded-xl text-sm">
+            <div class="flex gap-3"><button onclick="saveProject()" class="flex-1 bg-blue-600 text-white py-2 rounded-xl text-sm">Save</button><button onclick="closeProjectModal()" class="flex-1 bg-gray-100 py-2 rounded-xl text-sm">Cancel</button></div>
+        </div>
+    </div>
+</div>
+
+<!-- View Project Modal -->
+<div id="viewProjectModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
+    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
+        <div class="px-5 py-3 border-b flex justify-between items-center"><h3 class="text-lg font-bold">Project Details</h3><button onclick="closeViewProjectModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button></div>
+        <div class="p-5" id="viewProjectContent"></div>
+        <div class="px-5 pb-5"><button onclick="closeViewProjectModal()" class="w-full bg-gray-100 py-2 rounded-xl text-sm">Close</button></div>
+    </div>
+</div>
+
+<!-- Send Project Modal -->
+<div id="sendProjectModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
+    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
+        <div class="px-5 py-3 border-b"><h3 class="text-lg font-bold"><i class="fas fa-paper-plane text-blue-600 mr-2"></i>Send Project</h3></div>
+        <div class="p-5 space-y-3">
+            <input type="hidden" id="sendProjectId">
+            <p id="sendProjectInfo" class="text-sm text-gray-600 bg-gray-50 p-2 rounded"></p>
+            <select id="sendToDept" class="w-full p-2 border rounded-xl text-sm">
+                <option value="">Select Department</option>
+                <option value="Admin">Admin</option>
+                <option value="Finance">Finance Department</option>
+                <option value="Sales">Sales & Marketing Department</option>
+                <option value="Secretary">Secretary Department</option>
+            </select>
+            <textarea id="sendProjectMessage" rows="3" placeholder="Additional message (optional)" class="w-full p-2 border rounded-xl text-sm"></textarea>
+            <div class="flex gap-3"><button onclick="confirmSendProject()" class="flex-1 bg-blue-600 text-white py-2 rounded-xl text-sm">Send</button><button onclick="closeSendProjectModal()" class="flex-1 bg-gray-100 py-2 rounded-xl text-sm">Cancel</button></div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Budget Modal -->
+<div id="budgetModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
+    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
+        <div class="px-5 py-3 border-b flex justify-between items-center"><h3 class="text-lg font-bold" id="budgetModalTitle"><i class="fas fa-plus-circle text-blue-600 mr-2"></i>Add Budget</h3><button onclick="closeBudgetModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button></div>
+        <div class="p-5 space-y-3">
+            <input type="hidden" id="editBudgetId">
+            <input type="text" id="budgetProjectName" placeholder="Project Name" class="w-full p-2 border rounded-xl text-sm">
+            <textarea id="budgetDescription" rows="2" placeholder="Budget Description" class="w-full p-2 border rounded-xl text-sm"></textarea>
+            <input type="number" id="budgetIncome" placeholder="Income Amount (TZS)" class="w-full p-2 border rounded-xl text-sm">
+            <input type="number" id="budgetExpenses" placeholder="Expenses Amount (TZS)" class="w-full p-2 border rounded-xl text-sm" value="0">
+            <div class="bg-gray-50 p-3 rounded-xl"><p class="text-sm font-semibold">Remaining Amount: <span id="budgetRemainingDisplay" class="text-green-600">TZS 0</span></p></div>
+            <div class="flex gap-3"><button onclick="saveBudget()" class="flex-1 bg-blue-600 text-white py-2 rounded-xl text-sm">Save</button><button onclick="closeBudgetModal()" class="flex-1 bg-gray-100 py-2 rounded-xl text-sm">Cancel</button></div>
+        </div>
+    </div>
+</div>
+
+<!-- View Budget Modal -->
+<div id="viewBudgetModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
+    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
+        <div class="px-5 py-3 border-b flex justify-between items-center"><h3 class="text-lg font-bold">Budget Details</h3><button onclick="closeViewBudgetModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button></div>
+        <div class="p-5" id="viewBudgetContent"></div>
+        <div class="px-5 pb-5"><button onclick="closeViewBudgetModal()" class="w-full bg-gray-100 py-2 rounded-xl text-sm">Close</button></div>
+    </div>
+</div>
+
+<!-- Edit Budget Modal -->
+<div id="editBudgetItemModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
+    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
+        <div class="px-5 py-3 border-b flex justify-between items-center"><h3 class="text-lg font-bold">Edit Budget</h3><button onclick="closeEditBudgetItemModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button></div>
+        <div class="p-5 space-y-3">
+            <input type="hidden" id="editBudgetItemId">
+            <input type="text" id="editBudgetProjectName" placeholder="Project Name" class="w-full p-2 border rounded-xl text-sm">
+            <textarea id="editBudgetDesc" rows="2" placeholder="Description" class="w-full p-2 border rounded-xl text-sm"></textarea>
+            <input type="number" id="editBudgetIncome" placeholder="Income Amount (TZS)" class="w-full p-2 border rounded-xl text-sm">
+            <input type="number" id="editBudgetExpenses" placeholder="Expenses Amount (TZS)" class="w-full p-2 border rounded-xl text-sm">
+            <div class="flex gap-3"><button onclick="updateBudgetItem()" class="flex-1 bg-blue-600 text-white py-2 rounded-xl text-sm">Update</button><button onclick="closeEditBudgetItemModal()" class="flex-1 bg-gray-100 py-2 rounded-xl text-sm">Cancel</button></div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Report Modal -->
+<div id="addReportModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
+    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
+        <div class="px-5 py-3 border-b"><h3 class="text-lg font-bold">Add New Report</h3></div>
+        <div class="p-5 space-y-3">
+            <input type="text" id="newReportTitle" placeholder="Report Title" class="w-full p-2 border rounded-xl text-sm">
+            <select id="newReportPeriod" class="w-full p-2 border rounded-xl text-sm"><option value="daily">Daily Report</option><option value="weekly">Weekly Report</option><option value="monthly">Monthly Report</option><option value="quarterly">Quarterly Report</option><option value="annual">Annual Report</option></select>
+            <textarea id="newReportContent" rows="4" placeholder="Report Content..." class="w-full p-2 border rounded-xl text-sm"></textarea>
+            <div class="flex gap-3"><button onclick="addReport()" class="flex-1 bg-blue-600 text-white py-2 rounded-xl text-sm">Add</button><button onclick="closeAddReportModal()" class="flex-1 bg-gray-100 py-2 rounded-xl text-sm">Cancel</button></div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Report Modal -->
+<div id="editReportModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
+    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
+        <div class="px-5 py-3 border-b"><h3 class="text-lg font-bold">Edit Report</h3></div>
+        <div class="p-5 space-y-3">
+            <input type="hidden" id="editReportId">
+            <input type="text" id="editReportTitle" placeholder="Report Title" class="w-full p-2 border rounded-xl text-sm">
+            <select id="editReportPeriod" class="w-full p-2 border rounded-xl text-sm"><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="quarterly">Quarterly</option><option value="annual">Annual</option></select>
+            <textarea id="editReportContent" rows="4" placeholder="Report Content..." class="w-full p-2 border rounded-xl text-sm"></textarea>
+            <div class="flex gap-3"><button onclick="updateReport()" class="flex-1 bg-blue-600 text-white py-2 rounded-xl text-sm">Update</button><button onclick="closeEditReportModal()" class="flex-1 bg-gray-100 py-2 rounded-xl text-sm">Cancel</button></div>
+        </div>
+    </div>
+</div>
+
+<!-- Chat Modal -->
+<div id="chatModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
+    <div class="bg-white rounded-2xl w-full max-w-2xl fade-in">
+        <div class="px-5 py-3 border-b flex justify-between items-center"><h3 class="text-lg font-bold" id="chatModalTitle">Chat</h3><button onclick="closeChatModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button></div>
+        <div class="h-96 overflow-y-auto p-4 bg-gray-50" id="chatMessagesArea"></div>
+        <div class="p-4 border-t"><div class="flex gap-2"><textarea id="chatInput" rows="2" placeholder="Type your message..." class="flex-1 p-2 border rounded-xl text-sm resize-none"></textarea><button onclick="sendChatMessage()" class="px-4 py-2 rounded-xl text-white bg-blue-600 text-sm">Send</button></div></div>
+    </div>
+</div>
+
+<!-- Start Chat Modal -->
+<div id="startChatModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
+    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
+        <div class="px-5 py-3 border-b"><h3 class="text-lg font-bold">Start New Chat</h3></div>
+        <div class="p-5 space-y-3">
+            <select id="chatRecipientSelect" class="w-full p-2 border rounded-xl text-sm">
+                <option value="Admin">Admin</option>
+                <option value="Finance">Finance Department</option>
+                <option value="Sales">Sales Department</option>
+                <option value="Secretary">Secretary Department</option>
+            </select>
+            <textarea id="newChatMsg" rows="3" placeholder="Type your message..." class="w-full p-2 border rounded-xl text-sm"></textarea>
+            <div class="flex gap-3"><button onclick="sendNewChat()" class="flex-1 bg-blue-600 text-white py-2 rounded-xl text-sm">Send</button><button onclick="closeStartChatModal()" class="flex-1 bg-gray-100 py-2 rounded-xl text-sm">Cancel</button></div>
+        </div>
+    </div>
+</div>
+
+<!-- Backup & Restore Modal -->
+<div id="backupRestoreModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
+    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
+        <div class="px-5 py-3 border-b flex justify-between items-center"><h3 class="text-lg font-bold">Backup & Restore</h3><button onclick="closeBackupRestoreModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button></div>
+        <div class="p-5 space-y-4">
+            <p class="text-sm text-gray-600">Backup includes all system data</p>
+            <div class="flex gap-3"><button onclick="createBackup()" class="flex-1 bg-green-600 text-white py-2 rounded-lg text-sm"><i class="fas fa-download mr-2"></i>Backup</button><button onclick="restoreBackup()" class="flex-1 bg-orange-600 text-white py-2 rounded-lg text-sm"><i class="fas fa-upload mr-2"></i>Restore</button></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ==================== CENTRALIZED STORAGE KEYS ====================
+    function getCentralMessages() {
+        let messages = localStorage.getItem('geotraverse_central_messages');
+        if (!messages) {
+            localStorage.setItem('geotraverse_central_messages', JSON.stringify([]));
+            return [];
+        }
+        return JSON.parse(messages);
+    }
+    
+    function saveCentralMessages(messages) { localStorage.setItem('geotraverse_central_messages', JSON.stringify(messages)); }
+    function addCentralMessage(from, to, message) { let messages = getCentralMessages(); messages.push({ id: Date.now(), from: from, to: to, message: message, read: false, created_at: new Date().toISOString() }); saveCentralMessages(messages); }
+    function markMessageAsRead(messageId) { let messages = getCentralMessages(); let msg = messages.find(m => m.id === messageId); if (msg && msg.to === "Manager") { msg.read = true; saveCentralMessages(messages); } }
+    function getUnreadMessagesCountForManager() { return getCentralMessages().filter(m => m.to === "Manager" && !m.read).length; }
+    function getConversationsForManager() { let conv = {}; getCentralMessages().forEach(msg => { if (msg.from === "Manager" || msg.to === "Manager") { let other = msg.from === "Manager" ? msg.to : msg.from; if (!conv[other]) conv[other] = []; conv[other].push(msg); } }); return conv; }
+    function deleteMessageFromCentral(messageId) { let messages = getCentralMessages().filter(m => m.id !== messageId); saveCentralMessages(messages); }
+    
+    // ==================== CLIENT DATA ====================
+    let clients = [
+        { id: 1, name: "John Mwita", phone: "+255 712 345 678", location: "Kigamboni", start_date: "2024-01-10", end_date: "2024-03-20", total_amount: 180000000, paid_amount: 180000000, status: "paid", description: "Modern villa construction" },
+        { id: 2, name: "Sarah Kijazi", phone: "+255 713 456 789", location: "Pwani", start_date: "2024-02-01", end_date: "2024-06-30", total_amount: 350000000, paid_amount: 200000000, status: "partial", description: "Commercial complex" },
+        { id: 3, name: "James Ndege", phone: "+255 714 567 890", location: "Mbezi", start_date: "2024-02-15", end_date: "2024-08-15", total_amount: 520000000, paid_amount: 0, status: "pending", description: "Residential estate" }
+    ];
+    
+    // ==================== PROJECTS DATA (Card Style like Admin) ====================
+    let projects = [
+        { id: 1, name: "Modern Villa - Kigamboni", client_name: "John Mwita", amount: 180000000, status: "completed", progress: 100, location: "Kigamboni", description: "Luxury modern villa with swimming pool", image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400", start_date: "2024-01-10", end_date: "2024-03-20" },
+        { id: 2, name: "Commercial Complex - Pwani", client_name: "Sarah Kijazi", amount: 350000000, status: "in_progress", progress: 65, location: "Pwani", description: "Commercial office complex with 10 floors", image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=400", start_date: "2024-02-01", end_date: "2024-06-30" },
+        { id: 3, name: "Residential Estate - Mbezi", client_name: "James Ndege", amount: 520000000, status: "in_progress", progress: 45, location: "Mbezi Beach", description: "20 unit residential apartments", image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400", start_date: "2024-02-15", end_date: "2024-08-15" }
+    ];
+    
+    // ==================== BUDGET DATA ====================
+    let budgets = [
+        { id: 1, project_name: "Modern Villa - Kigamboni", description: "Luxury villa construction", income: 180000000, expenses: 145000000, remaining: 35000000, created_at: "2024-01-10" },
+        { id: 2, project_name: "Commercial Complex - Pwani", description: "Office complex development", income: 350000000, expenses: 280000000, remaining: 70000000, created_at: "2024-02-01" },
+        { id: 3, project_name: "Residential Estate - Mbezi", description: "20 unit apartments", income: 520000000, expenses: 410000000, remaining: 110000000, created_at: "2024-02-15" }
+    ];
+    
+    // ==================== REPORTS DATA ====================
+    let reportsList = [
+        { id: 1, department: "Manager", title: "March Client Report", period: "monthly", content: "Total clients: 3, Total budget: TZS 1.05B", status: "sent", sent_to: "Admin", sent_at: new Date(Date.now() - 2*24*60*60*1000).toISOString(), created_at: new Date(Date.now() - 10*24*60*60*1000).toISOString() },
+        { id: 2, department: "Manager", title: "Q1 Performance Summary", period: "quarterly", content: "All projects on track. Budget utilization: 78%", status: "draft", created_at: new Date(Date.now() - 5*24*60*60*1000).toISOString() }
+    ];
+    
+    let activityLogs = [{ action: "Manager Dashboard initialized", created_at: new Date().toISOString() }];
+    
+    let currentPage = 1;
+    let rowsPerPage = 5;
+    let currentBudgetPage = 1;
+    let currentProjectPage = 1;
+    let budgetRowsPerPage = 3;
+    let projectRowsPerPage = 6;
+    let currentChatWith = null;
+    let searchTimeout = null;
+    let currentProjectImageFile = null;
+    let currentEditProjectId = null;
+    
+    // ==================== HELPER FUNCTIONS ====================
+    function showToast(msg, isError) { let t = document.createElement("div"); t.className = "toast-notification" + (isError ? " error" : ""); t.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-circle' : 'fa-check-circle'} mr-1"></i>${msg}`; document.body.appendChild(t); setTimeout(() => t.remove(), 3000); }
+    function formatCurrency(amt) { return "TZS " + parseFloat(amt).toLocaleString(); }
+    function formatDate(dateStr) { if (!dateStr) return "N/A"; return new Date(dateStr).toLocaleDateString("en-GB"); }
+    function escapeHtml(text) { if (!text) return ""; var div = document.createElement("div"); div.textContent = text; return div.innerHTML; }
+    function addLog(action) { activityLogs.unshift({ action: action, created_at: new Date().toISOString() }); if (activityLogs.length > 50) activityLogs.pop(); }
+    function logout() { if (confirm("Logout?")) { window.location.href = "department_login.html"; } }
+    function goToMainWebsite() { window.location.href = "index.html"; }
+    function closeMobileSidebar() { document.getElementById("mainSidebar").classList.remove("mobile-open"); document.getElementById("mobileMenuOverlay").classList.remove("open"); }
+    
+    function getStatusClass(status) {
+        switch(status) {
+            case "paid": return "status-paid";
+            case "partial": return "status-partial";
+            case "pending": return "status-pending";
+            default: return "status-pending";
+        }
+    }
+    
+    function getStatusText(status) {
+        switch(status) {
+            case "paid": return "Paid";
+            case "partial": return "Partial";
+            case "pending": return "Pending";
+            default: return status;
+        }
+    }
+    
+    function getProjectStatusClass(status) {
+        switch(status) {
+            case "pending": return "status-pending";
+            case "in_progress": return "status-progress";
+            case "completed": return "status-completed";
+            case "approved": return "status-approved";
+            default: return "status-pending";
+        }
+    }
+    
+    function getProjectStatusText(status) {
+        switch(status) {
+            case "pending": return "Pending";
+            case "in_progress": return "In Progress";
+            case "completed": return "Completed";
+            case "approved": return "Approved";
+            default: return status;
+        }
+    }
+    
+    function getProgressClass(percent) { if (percent < 50) return 'progress-low'; if (percent < 80) return 'progress-medium'; return 'progress-high'; }
+    
+    function getRemainingClass(remaining, income) {
+        let percent = (remaining / income) * 100;
+        if (percent <= 10) return 'remaining-danger';
+        if (percent <= 30) return 'remaining-warning';
+        return 'remaining-badge';
+    }
+    
+    function getIncompleteCount() { return clients.filter(c => c.status !== "paid").length; }
+    
+    function markPaymentComplete(clientId) {
+        let idx = clients.findIndex(c => c.id === clientId);
+        if (idx !== -1 && clients[idx].status !== "paid") {
+            clients[idx].paid_amount = clients[idx].total_amount;
+            clients[idx].status = "paid";
+            addLog(`Payment completed for client: ${clients[idx].name}`);
+            showToast(`✅ Payment completed for ${clients[idx].name}`);
+            renderClients();
+            renderIncomplete();
+            renderDashboard();
+            updateBadges();
+        }
+    }
+    
+    function markPartialPayment(clientId) {
+        let client = clients.find(c => c.id === clientId);
+        if (client && client.status !== "paid") {
+            let remaining = client.total_amount - client.paid_amount;
+            let payment = prompt(`Record payment for ${client.name}\nRemaining: ${formatCurrency(remaining)}\nEnter amount to pay:`, remaining);
+            if (payment && parseFloat(payment) > 0) {
+                let newPaid = client.paid_amount + parseFloat(payment);
+                client.paid_amount = newPaid;
+                if (newPaid >= client.total_amount) {
+                    client.status = "paid";
+                    showToast(`✅ Payment completed for ${client.name}`);
+                } else {
+                    client.status = "partial";
+                    showToast(`💰 Partial payment recorded for ${client.name}. Remaining: ${formatCurrency(client.total_amount - newPaid)}`);
+                }
+                addLog(`Payment of ${formatCurrency(payment)} recorded for ${client.name}`);
+                renderClients();
+                renderIncomplete();
+                renderDashboard();
+                updateBadges();
+            }
+        }
+    }
+    
+    // ==================== GLOBAL SEARCH ====================
+    function performGlobalSearch() {
+        let term = document.getElementById("globalSearchInput").value.toLowerCase().trim();
+        let dropdown = document.getElementById("searchResultsDropdown");
+        if (searchTimeout) clearTimeout(searchTimeout);
+        if (term === "") { dropdown.classList.remove("active"); dropdown.innerHTML = ""; return; }
+        searchTimeout = setTimeout(() => {
+            let clientResults = clients.filter(c => c.name.toLowerCase().includes(term) || c.location.toLowerCase().includes(term));
+            let projectResults = projects.filter(p => p.name.toLowerCase().includes(term) || p.client_name.toLowerCase().includes(term));
+            let budgetResults = budgets.filter(b => b.project_name.toLowerCase().includes(term));
+            let reportResults = reportsList.filter(r => r.title.toLowerCase().includes(term));
+            let html = "";
+            if (clientResults.length) html += '<div class="p-2 bg-gray-50"><span class="text-xs font-semibold text-blue-600">Clients</span></div>';
+            clientResults.slice(0,3).forEach(c => html += `<div class="search-result-item" onclick="goToSectionAndSearch(\'clients\', \'${c.name}\')"><div class="font-medium">${c.name}</div><div class="text-xs text-gray-500">${formatCurrency(c.total_amount)}</div></div>`);
+            if (projectResults.length) html += '<div class="p-2 bg-gray-50"><span class="text-xs font-semibold text-green-600">Projects</span></div>';
+            projectResults.slice(0,3).forEach(p => html += `<div class="search-result-item" onclick="goToSectionAndSearch(\'projects\', \'${p.name}\')"><div class="font-medium">${p.name}</div><div class="text-xs text-gray-500">${formatCurrency(p.amount)}</div></div>`);
+            if (budgetResults.length) html += '<div class="p-2 bg-gray-50"><span class="text-xs font-semibold text-orange-600">Budget</span></div>';
+            budgetResults.slice(0,3).forEach(b => html += `<div class="search-result-item" onclick="goToSectionAndSearch(\'budget\', \'${b.project_name}\')"><div class="font-medium">${b.project_name}</div><div class="text-xs text-gray-500">Remaining: ${formatCurrency(b.remaining)}</div></div>`);
+            if (reportResults.length) html += '<div class="p-2 bg-gray-50"><span class="text-xs font-semibold text-purple-600">Reports</span></div>';
+            reportResults.slice(0,3).forEach(r => html += `<div class="search-result-item" onclick="goToSectionAndSearch(\'reports\', \'${r.title}\')"><div class="font-medium">${r.title}</div><div class="text-xs text-gray-500">${r.period}</div></div>`);
+            if (!html) html = '<div class="p-4 text-center text-gray-400 text-xs">No results</div>';
+            dropdown.innerHTML = html; dropdown.classList.add("active");
+        }, 300);
+    }
+    
+    function goToSectionAndSearch(section, val) { let dd = document.getElementById("searchResultsDropdown"); if (dd) dd.classList.remove("active"); document.getElementById("globalSearchInput").value = val; showSection(section); showToast(`Showing "${val}"`); }
+    document.addEventListener("click", (e) => { let inp = document.getElementById("globalSearchInput"); let dd = document.getElementById("searchResultsDropdown"); if (inp && dd && !inp.contains(e.target) && !dd.contains(e.target)) dd.classList.remove("active"); });
+    
+    // ==================== MESSAGES ====================
+    function renderMessages() {
+        let conv = getConversationsForManager(); let unread = getUnreadMessagesCountForManager();
+        document.getElementById("msgBadge").innerText = unread;
+        let html = `<div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold"><i class="fas fa-envelope text-blue-600 mr-2"></i>Messages</h2><button onclick="openStartChatModal()" class="btn-primary text-white px-4 py-2 rounded-xl text-sm">+ New Chat</button></div><div class="bg-white rounded-xl p-3"><div class="space-y-2">`;
+        let has = false;
+        for (let d in conv) { has = true; let last = conv[d][conv[d].length-1]; let un = conv[d].filter(m => m.to === "Manager" && !m.read).length; html += `<div class="chat-conversation ${un>0?'chat-conversation-unread':''} border rounded-lg p-3 mb-2 flex justify-between items-center" onclick="openChatWith('${d}')"><div><p class="font-semibold text-sm">${d}</p><p class="text-xs text-gray-500 truncate w-48">${escapeHtml(last.message.substring(0,50))}</p></div><div class="text-right"><span class="text-[10px] text-gray-400">${new Date(last.created_at).toLocaleTimeString()}</span>${un>0?`<span class="ml-2 bg-red-500 text-white text-[9px] px-1.5 rounded-full">${un}</span>`:''}</div></div>`; }
+        html += (has?"":'<p class="text-gray-400 text-center py-6">No messages</p>')+"</div></div>";
+        document.getElementById("messagesSection").innerHTML = html;
+    }
+    function openStartChatModal() { document.getElementById("startChatModal").classList.remove("hidden"); document.getElementById("startChatModal").classList.add("flex"); }
+    function closeStartChatModal() { document.getElementById("startChatModal").classList.add("hidden"); document.getElementById("startChatModal").classList.remove("flex"); }
+    function sendNewChat() { let to = document.getElementById("chatRecipientSelect").value; let msg = document.getElementById("newChatMsg").value.trim(); if(!msg){ showToast("Enter message",true); return; } addCentralMessage("Manager", to, msg); addLog(`Sent message to ${to}`); showToast(`Sent to ${to}`); closeStartChatModal(); document.getElementById("newChatMsg").value=""; renderMessages(); document.getElementById("msgBadge").innerText=getUnreadMessagesCountForManager(); }
+    function openChatWith(dept) { currentChatWith=dept; let msgs=getCentralMessages().filter(m=>(m.from==="Manager"&&m.to===dept)||(m.from===dept&&m.to==="Manager")); msgs.forEach(m=>{ if(m.to==="Manager"&&!m.read) markMessageAsRead(m.id); }); renderMessages(); document.getElementById("msgBadge").innerText=getUnreadMessagesCountForManager(); let chatHtml=""; for(let m of msgs){ chatHtml+=`<div class="chat-bubble ${m.from==="Manager"?"chat-sent":"chat-received"}"><p class="text-[9px] text-gray-500">${m.from==="Manager"?"You":dept} · ${new Date(m.created_at).toLocaleTimeString()}</p><p class="text-sm">${escapeHtml(m.message)}</p><button onclick="deleteMessageFromChat(${m.id})" class="text-red-500 text-[9px] mt-1">Delete</button></div>`; } document.getElementById("chatModalTitle").innerHTML=`Chat with ${dept}`; document.getElementById("chatMessagesArea").innerHTML=chatHtml||'<div class="text-center text-gray-400 py-6">No messages</div>'; document.getElementById("chatModal").classList.remove("hidden"); document.getElementById("chatModal").classList.add("flex"); }
+    function sendChatMessage() { let msg=document.getElementById("chatInput").value.trim(); if(!msg||!currentChatWith) return; addCentralMessage("Manager", currentChatWith, msg); document.getElementById("chatInput").value=""; openChatWith(currentChatWith); }
+    function deleteMessageFromChat(id) { deleteMessageFromCentral(id); showToast("Message deleted"); openChatWith(currentChatWith); renderMessages(); document.getElementById("msgBadge").innerText=getUnreadMessagesCountForManager(); }
+    function closeChatModal() { document.getElementById("chatModal").classList.add("hidden"); document.getElementById("chatModal").classList.remove("flex"); renderMessages(); }
+    
+    // ==================== DASHBOARD ====================
+    function renderDashboard() {
+        let totalClients = clients.length;
+        let totalProjects = projects.length;
+        let totalBudget = budgets.reduce((s, b) => s + b.income, 0);
+        let totalExpenses = budgets.reduce((s, b) => s + b.expenses, 0);
+        let totalRemaining = totalBudget - totalExpenses;
+        let pendingPayments = clients.filter(c => c.status !== "paid").reduce((s, c) => s + (c.total_amount - c.paid_amount), 0);
+        let incompleteCount = getIncompleteCount();
+        let unreadMsgs = getUnreadMessagesCountForManager();
+        
+        let html = `<div class="mb-4"><h2 class="text-xl font-bold text-gray-800">Manager Dashboard</h2><p class="text-xs text-gray-500">Client, Project & Budget Management Overview</p></div>
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-5">
+                <div class="stat-card p-3 cursor-pointer" onclick="showSection('clients')"><div class="flex justify-between"><div><p class="text-gray-400 text-[9px] uppercase">Total Clients</p><p class="text-2xl font-bold text-blue-600">${totalClients}</p><p class="text-[9px] text-gray-400">Active projects</p></div><div class="w-8 h-8 bg-blue-100 rounded-xl flex items-center justify-center"><i class="fas fa-users text-blue-500 text-sm"></i></div></div></div>
+                <div class="stat-card p-3 cursor-pointer" onclick="showSection('projects')"><div class="flex justify-between"><div><p class="text-gray-400 text-[9px] uppercase">Projects</p><p class="text-2xl font-bold text-green-600">${totalProjects}</p><p class="text-[9px] text-gray-400">In progress: ${projects.filter(p => p.status === 'in_progress').length}</p></div><div class="w-8 h-8 bg-green-100 rounded-xl flex items-center justify-center"><i class="fas fa-tasks text-green-500 text-sm"></i></div></div></div>
+                <div class="stat-card p-3 cursor-pointer" onclick="showSection('budget')"><div class="flex justify-between"><div><p class="text-gray-400 text-[9px] uppercase">Total Budget</p><p class="text-lg font-bold text-purple-600">${formatCurrency(totalBudget).substring(0,12)}</p></div><div class="w-8 h-8 bg-purple-100 rounded-xl flex items-center justify-center"><i class="fas fa-wallet text-purple-500 text-sm"></i></div></div></div>
+                <div class="stat-card p-3 cursor-pointer" onclick="showSection('incomplete')"><div class="flex justify-between"><div><p class="text-gray-400 text-[9px] uppercase">Pending Payments</p><p class="text-lg font-bold text-orange-600">${formatCurrency(pendingPayments).substring(0,12)}</p><p class="text-[9px] text-gray-400">${incompleteCount} clients</p></div><div class="w-8 h-8 bg-orange-100 rounded-xl flex items-center justify-center"><i class="fas fa-clock text-orange-500 text-sm"></i></div></div></div>
+                <div class="stat-card p-3 cursor-pointer" onclick="showSection('messages')"><div class="flex justify-between"><div><p class="text-gray-400 text-[9px] uppercase">Unread</p><p class="text-2xl font-bold text-red-600">${unreadMsgs}</p></div><div class="w-8 h-8 bg-red-100 rounded-xl flex items-center justify-center"><i class="fas fa-envelope text-red-500 text-sm"></i></div></div></div>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-5">
+                <div class="bg-white rounded-xl p-3 shadow-sm"><h3 class="text-xs font-semibold mb-2"><i class="fas fa-chart-pie text-blue-600 mr-1"></i>Budget Distribution</h3><canvas id="budgetChart" height="140"></canvas></div>
+                <div class="bg-white rounded-xl p-3 shadow-sm"><h3 class="text-xs font-semibold mb-2"><i class="fas fa-chart-line text-green-600 mr-1"></i>Income vs Expenses</h3><canvas id="incomeExpenseChart" height="140"></canvas></div>
+            </div>
+            <div class="grid grid-cols-2 gap-3 mb-5">
+                <button onclick="showSection('clients')" class="bg-blue-600 text-white py-2 rounded-lg text-sm hover:bg-blue-700 transition"><i class="fas fa-user-plus mr-2"></i>Add Client</button>
+                <button onclick="openAddProjectModal()" class="bg-green-600 text-white py-2 rounded-lg text-sm hover:bg-green-700 transition"><i class="fas fa-plus-circle mr-2"></i>Add Project</button>
+            </div>
+            <div class="bg-white rounded-xl p-3 shadow-sm"><div class="flex justify-between items-center mb-2"><h3 class="text-xs font-semibold"><i class="fas fa-history text-blue-600 mr-1"></i>Recent Activity</h3></div><div id="activityFeed" class="space-y-1 max-h-32 overflow-y-auto">${activityLogs.slice(0,5).map(l => `<div class="text-[10px] py-1 border-b flex justify-between"><span>${escapeHtml(l.action)}</span><span class="text-gray-400">${new Date(l.created_at).toLocaleString()}</span></div>`).join('')}</div></div>`;
+        document.getElementById("dashboardSection").innerHTML = html;
+        
+        let ctx1 = document.getElementById("budgetChart")?.getContext("2d");
+        if (ctx1) new Chart(ctx1, { type: "doughnut", data: { labels: budgets.map(b => b.project_name.substring(0,15)), datasets: [{ data: budgets.map(b => b.income), backgroundColor: ["#3b82f6","#10b981","#f59e0b","#8b5cf6","#ef4444"] }] }, options: { responsive: true, maintainAspectRatio: true } });
+        
+        let ctx2 = document.getElementById("incomeExpenseChart")?.getContext("2d");
+        if (ctx2) new Chart(ctx2, { type: "bar", data: { labels: budgets.map(b => b.project_name.substring(0,10)), datasets: [{ label: "Income", data: budgets.map(b => b.income/1000000), backgroundColor: "#10b981" }, { label: "Expenses", data: budgets.map(b => b.expenses/1000000), backgroundColor: "#ef4444" }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top' } } } });
+        
+        document.getElementById("msgBadge").innerText = getUnreadMessagesCountForManager();
+        document.getElementById("incompleteBadge").innerText = getIncompleteCount();
+    }
+    
+    function updateBadges() {
+        document.getElementById("incompleteBadge").innerText = getIncompleteCount();
+        document.getElementById("msgBadge").innerText = getUnreadMessagesCountForManager();
+    }
+    
+    // ==================== CLIENTS SECTION ====================
+    function renderClients() {
+        let search = document.getElementById("globalSearchInput")?.value.toLowerCase() || "";
+        let filtered = clients.filter(c => c.name.toLowerCase().includes(search) || c.location.toLowerCase().includes(search));
+        let totalPages = Math.ceil(filtered.length / rowsPerPage);
+        let start = (currentPage - 1) * rowsPerPage;
+        let paginated = filtered.slice(start, start + rowsPerPage);
+        
+        let html = `<div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold"><i class="fas fa-users text-blue-600 mr-2"></i>Clients Management</h2><button onclick="openClientModal()" class="btn-primary text-white px-4 py-2 rounded-xl text-sm"><i class="fas fa-plus mr-1"></i>Add Client</button></div>
+            <div class="bg-white rounded-xl shadow-sm p-3"><div class="table-responsive"><table class="w-full text-xs"><thead class="bg-gray-50"><tr><th class="px-2 py-2">Client Name</th><th class="px-2 py-2">Phone</th><th class="px-2 py-2">Location</th><th class="px-2 py-2">Start Date</th><th class="px-2 py-2">End Date</th><th class="px-2 py-2">Total Amount</th><th class="px-2 py-2">Paid</th><th class="px-2 py-2">Remaining</th><th class="px-2 py-2">Status</th><th class="px-2 py-2">Description</th><th class="px-2 py-2">Actions</th></tr></thead><tbody>
+            ${paginated.map(c => { let remaining = c.total_amount - c.paid_amount; let rowClass = c.status === 'pending' ? 'pending-row' : (c.status === 'partial' ? 'partial-row' : ''); return `<tr class="border-b ${rowClass} hover:bg-gray-50"><td class="px-2 py-2 font-medium">${escapeHtml(c.name)}</td><td class="px-2 py-2">${c.phone}</td><td class="px-2 py-2">${escapeHtml(c.location)}</td><td class="px-2 py-2">${c.start_date}</td><td class="px-2 py-2">${c.end_date}</td><td class="px-2 py-2 text-green-600 font-semibold">${formatCurrency(c.total_amount)}</td><td class="px-2 py-2 text-blue-600">${formatCurrency(c.paid_amount)}</td><td class="px-2 py-2 ${remaining>0?'text-orange-600 font-semibold':'text-green-600'}">${formatCurrency(remaining)}</td><td class="px-2 py-2"><span class="px-1.5 py-0.5 text-[8px] rounded-full ${getStatusClass(c.status)}">${getStatusText(c.status)}</span></td><td class="px-2 py-2 max-w-[150px] truncate" title="${escapeHtml(c.description)}">${escapeHtml(c.description.substring(0,30))}${c.description.length>30?'...':''}</td><td class="px-2 py-2"><div class="flex gap-1"><button onclick="viewClient(${c.id})" class="text-blue-500 text-xs p-1"><i class="fas fa-eye"></i></button><button onclick="editClient(${c.id})" class="text-green-500 text-xs p-1"><i class="fas fa-edit"></i></button><button onclick="deleteClient(${c.id})" class="text-red-500 text-xs p-1"><i class="fas fa-trash"></i></button>${c.status !== 'paid' ? `<button onclick="markPartialPayment(${c.id})" class="text-orange-500 text-xs p-1" title="Record Payment"><i class="fas fa-money-bill-wave"></i></button><button onclick="markPaymentComplete(${c.id})" class="text-green-500 text-xs p-1 tick-btn" title="Mark as Complete"><i class="fas fa-check-circle"></i></button>` : ''}<div class="relative"><button onclick="toggleClientExportDropdown(${c.id})" class="text-purple-500 text-xs p-1"><i class="fas fa-download"></i></button><div id="clientExportDropdown-${c.id}" class="dropdown-content hidden"><button onclick="exportSingleClient(${c.id}, 'excel')"><i class="fas fa-file-excel text-green-600"></i> Excel</button><button onclick="exportSingleClient(${c.id}, 'pdf')"><i class="fas fa-file-pdf text-red-600"></i> PDF</button></div></div></div></td></tr>`; }).join('')}
+            </tbody>}></div>${totalPages > 1 ? `<div class="flex justify-center gap-2 mt-3"><button onclick="changePage(${currentPage - 1})" class="px-2 py-1 border rounded text-xs">Prev</button><span class="text-xs">Page ${currentPage} of ${totalPages}</span><button onclick="changePage(${currentPage + 1})" class="px-2 py-1 border rounded text-xs">Next</button></div>` : ''}</div>
+            <div class="mt-3 flex gap-2"><button onclick="exportClientsToExcel()" class="bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-excel mr-1"></i>Excel All</button><button onclick="exportClientsToPDF()" class="bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-pdf mr-1"></i>PDF All</button></div>`;
+        document.getElementById("clientsSection").innerHTML = html;
+    }
+    
+    // ==================== INCOMPLETE SECTION ====================
+    function renderIncomplete() {
+        let incomplete = clients.filter(c => c.status !== "paid");
+        let html = `<div class="mb-4"><h2 class="text-xl font-bold"><i class="fas fa-clock text-orange-500 mr-2"></i>Incomplete Payments</h2><p class="text-xs text-gray-500">Clients with pending or partial payments</p></div>
+            <div class="bg-white rounded-xl shadow-sm p-3"><div class="table-responsive"><table class="w-full text-xs"><thead class="bg-gray-50"><tr><th class="px-2 py-2">Client Name</th><th class="px-2 py-2">Phone</th><th class="px-2 py-2">Total Amount</th><th class="px-2 py-2">Paid</th><th class="px-2 py-2">Remaining</th><th class="px-2 py-2">Status</th><th class="px-2 py-2">Actions</th></tr></thead><tbody>
+            ${incomplete.map(c => { let remaining = c.total_amount - c.paid_amount; return `<tr class="border-b ${c.status === 'pending' ? 'pending-row' : 'partial-row'}"><td class="px-2 py-2 font-medium">${escapeHtml(c.name)}</td><td class="px-2 py-2">${c.phone}</td><td class="px-2 py-2 text-green-600">${formatCurrency(c.total_amount)}</td><td class="px-2 py-2 text-blue-600">${formatCurrency(c.paid_amount)}</td><td class="px-2 py-2 text-orange-600 font-semibold">${formatCurrency(remaining)}</td><td class="px-2 py-2"><span class="px-1.5 py-0.5 text-[8px] rounded-full ${getStatusClass(c.status)}">${getStatusText(c.status)}</span></td><td class="px-2 py-2"><div class="flex gap-1"><button onclick="markPartialPayment(${c.id})" class="text-orange-500 text-xs p-1" title="Record Payment"><i class="fas fa-money-bill-wave"></i></button><button onclick="markPaymentComplete(${c.id})" class="text-green-500 text-xs p-1 tick-btn" title="Mark as Complete"><i class="fas fa-check-circle"></i></button><button onclick="viewClient(${c.id})" class="text-blue-500 text-xs p-1" title="View"><i class="fas fa-eye"></i></button></div></td></table>`; }).join('')}
+            </tbody>}></div>${incomplete.length === 0 ? '<p class="text-gray-400 text-center py-4 text-sm">No incomplete payments</p>' : ''}</div>`;
+        document.getElementById("incompleteSection").innerHTML = html;
+    }
+    
+    // ==================== PROJECTS SECTION (Card Style like Admin) ====================
+    function renderProjects() {
+        let search = document.getElementById("globalSearchInput")?.value.toLowerCase() || "";
+        let filtered = projects.filter(p => p.name.toLowerCase().includes(search) || p.client_name.toLowerCase().includes(search));
+        let totalPages = Math.ceil(filtered.length / projectRowsPerPage);
+        let start = (currentProjectPage - 1) * projectRowsPerPage;
+        let paginated = filtered.slice(start, start + projectRowsPerPage);
+        
+        let html = `<div class="flex justify-between items-center mb-4 flex-wrap gap-2"><h2 class="text-xl font-bold"><i class="fas fa-tasks text-blue-600 mr-2"></i>Projects Management</h2><div class="flex gap-2"><button onclick="openAddProjectModal()" class="btn-primary text-white px-4 py-2 rounded-xl text-sm"><i class="fas fa-plus mr-1"></i>Add Project</button><button onclick="exportProjectsToExcel()" class="bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-excel mr-1"></i>Excel All</button><button onclick="exportProjectsToPDF()" class="bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-pdf mr-1"></i>PDF All</button></div></div>
+            <div id="projectsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>`;
+        document.getElementById("projectsSection").innerHTML = html;
+        
+        document.getElementById("projectsGrid").innerHTML = paginated.map(p => {
+            let imgSrc = p.image && p.image !== '' ? p.image : 'https://via.placeholder.com/400x200?text=No+Image';
+            return `<div class="project-card">
+                <img src="${imgSrc}" class="w-full h-40 object-cover" onerror="this.src='https://via.placeholder.com/400x200?text=No+Image'">
+                <div class="p-3">
+                    <div class="flex justify-between items-start">
+                        <h4 class="font-bold text-sm">${escapeHtml(p.name)}</h4>
+                        <span class="px-1.5 py-0.5 text-[8px] rounded-full ${getProjectStatusClass(p.status)}">${getProjectStatusText(p.status)}</span>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">Client: ${escapeHtml(p.client_name)}</p>
+                    <p class="text-sm font-semibold text-purple-600 mt-1">${formatCurrency(p.amount)}</p>
+                    <p class="text-xs text-gray-500">Location: ${escapeHtml(p.location)}</p>
+                    <div class="mt-2">
+                        <div class="flex justify-between text-xs"><span>Progress</span><span>${p.progress}%</span></div>
+                        <div class="w-full bg-gray-200 rounded-full h-1.5"><div class="bg-blue-600 h-1.5 rounded-full" style="width:${p.progress}%"></div></div>
+                    </div>
+                    <div class="flex flex-wrap gap-1 mt-2">
+                        <button onclick="viewProject(${p.id})" class="text-xs bg-blue-500 text-white px-2 py-1 rounded"><i class="fas fa-eye"></i> View</button>
+                        <button onclick="editProject(${p.id})" class="text-xs bg-green-500 text-white px-2 py-1 rounded"><i class="fas fa-edit"></i> Edit</button>
+                        <button onclick="deleteProject(${p.id})" class="text-xs bg-red-500 text-white px-2 py-1 rounded"><i class="fas fa-trash"></i> Del</button>
+                        <button onclick="openSendProjectModal(${p.id})" class="text-xs bg-purple-600 text-white px-2 py-1 rounded"><i class="fas fa-paper-plane"></i> Send</button>
+                        <div class="relative inline-block">
+                            <button onclick="toggleProjectExportDropdown(${p.id})" class="text-xs bg-orange-500 text-white px-2 py-1 rounded"><i class="fas fa-download"></i> Export</button>
+                            <div id="projectExportDropdown-${p.id}" class="dropdown-content hidden">
+                                <button onclick="exportSingleProject(${p.id}, 'excel')"><i class="fas fa-file-excel text-green-600"></i> Excel</button>
+                                <button onclick="exportSingleProject(${p.id}, 'pdf')"><i class="fas fa-file-pdf text-red-600"></i> PDF</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+        
+        if (totalPages > 1) {
+            document.getElementById("projectsSection").innerHTML += `<div class="flex justify-center gap-2 mt-4"><button onclick="changeProjectPage(${currentProjectPage - 1})" class="px-3 py-1 border rounded text-sm">Prev</button><span class="text-sm">Page ${currentProjectPage} of ${totalPages}</span><button onclick="changeProjectPage(${currentProjectPage + 1})" class="px-3 py-1 border rounded text-sm">Next</button></div>`;
+        }
+    }
+    
+    function changeProjectPage(page) { if (page > 0 && page <= Math.ceil(projects.length / projectRowsPerPage)) { currentProjectPage = page; renderProjects(); } }
+    
+    function openAddProjectModal() {
+        currentEditProjectId = null; currentProjectImageFile = null;
+        document.getElementById('editProjectId').value = '';
+        document.getElementById('projectName').value = '';
+        document.getElementById('projectClient').value = '';
+        document.getElementById('projectAmount').value = '';
+        document.getElementById('projectLocation').value = '';
+        document.getElementById('projectDesc').value = '';
+        document.getElementById('projectStatus').value = 'pending';
+        document.getElementById('projectProgress').value = '0';
+        document.getElementById('projectStartDate').value = new Date().toISOString().split('T')[0];
+        document.getElementById('projectEndDate').value = '';
+        document.getElementById('projectImagePreviewContainer').classList.add('hidden');
+        document.getElementById('projectImageUploadArea').classList.remove('hidden');
+        document.getElementById('projectModalTitle').innerHTML = '<i class="fas fa-plus-circle text-blue-600 mr-2"></i>Add Project';
+        document.getElementById('projectModal').classList.remove('hidden'); document.getElementById('projectModal').classList.add('flex');
+    }
+    function closeProjectModal() { document.getElementById('projectModal').classList.add('hidden'); document.getElementById('projectModal').classList.remove('flex'); currentProjectImageFile = null; }
+    
+    function previewProjectImage(input) { if (input.files && input.files[0]) { currentProjectImageFile = input.files[0]; let reader = new FileReader(); reader.onload = e => { document.getElementById('projectImagePreview').src = e.target.result; document.getElementById('projectImagePreviewContainer').classList.remove('hidden'); document.getElementById('projectImageUploadArea').classList.add('hidden'); }; reader.readAsDataURL(input.files[0]); } }
+    document.getElementById('projectImageFile')?.addEventListener('change', function(e) { previewProjectImage(this); });
+    function removeProjectImage() { currentProjectImageFile = null; document.getElementById('projectImageFile').value = ''; document.getElementById('projectImagePreviewContainer').classList.add('hidden'); document.getElementById('projectImageUploadArea').classList.remove('hidden'); }
+    
+    function getImageAsBase64(file) { return new Promise((resolve) => { if (!file) resolve(''); let reader = new FileReader(); reader.onload = () => resolve(reader.result); reader.readAsDataURL(file); }); }
+    
+    async function saveProject() {
+        let name = document.getElementById('projectName').value.trim();
+        if (!name) { showToast('Project name required', true); return; }
+        let img = await getImageAsBase64(currentProjectImageFile);
+        let projectData = {
+            id: currentEditProjectId ? currentEditProjectId : Date.now(),
+            name: name,
+            client_name: document.getElementById('projectClient').value,
+            amount: parseFloat(document.getElementById('projectAmount').value) || 0,
+            status: document.getElementById('projectStatus').value,
+            progress: parseInt(document.getElementById('projectProgress').value) || 0,
+            location: document.getElementById('projectLocation').value,
+            description: document.getElementById('projectDesc').value,
+            image: img,
+            start_date: document.getElementById('projectStartDate').value,
+            end_date: document.getElementById('projectEndDate').value
+        };
+        if (currentEditProjectId) {
+            let idx = projects.findIndex(p => p.id === currentEditProjectId);
+            if (idx !== -1) {
+                if (!img && projects[idx].image) projectData.image = projects[idx].image;
+                projects[idx] = projectData;
+                addLog(`Updated project: ${name}`);
+                showToast('Project updated');
+            }
+        } else {
+            projects.unshift(projectData);
+            addLog(`Added project: ${name}`);
+            showToast('Project added');
+        }
+        closeProjectModal();
+        renderProjects();
+        renderDashboard();
+    }
+    
+    function viewProject(id) { let p = projects.find(p => p.id === id); if (p) { let img = p.image || 'https://via.placeholder.com/400x200?text=Project'; document.getElementById('viewProjectContent').innerHTML = `<img src="${img}" class="w-full h-40 object-cover rounded-lg mb-3"><div class="space-y-2"><p><strong>Name:</strong> ${p.name}</p><p><strong>Client:</strong> ${p.client_name}</p><p><strong>Amount:</strong> ${formatCurrency(p.amount)}</p><p><strong>Status:</strong> ${p.status}</p><p><strong>Progress:</strong> ${p.progress}%</p><p><strong>Location:</strong> ${escapeHtml(p.location)}</p><p><strong>Start Date:</strong> ${p.start_date}</p><p><strong>End Date:</strong> ${p.end_date}</p><p><strong>Description:</strong> ${escapeHtml(p.description)}</p></div>`; document.getElementById('viewProjectModal').classList.remove('hidden'); document.getElementById('viewProjectModal').classList.add('flex'); } }
+    function closeViewProjectModal() { document.getElementById('viewProjectModal').classList.add('hidden'); document.getElementById('viewProjectModal').classList.remove('flex'); }
+    
+    function editProject(id) { let p = projects.find(p => p.id === id); if (p) { currentEditProjectId = id; document.getElementById('editProjectId').value = p.id; document.getElementById('projectName').value = p.name; document.getElementById('projectClient').value = p.client_name; document.getElementById('projectAmount').value = p.amount; document.getElementById('projectLocation').value = p.location; document.getElementById('projectDesc').value = p.description || ''; document.getElementById('projectStatus').value = p.status; document.getElementById('projectProgress').value = p.progress; document.getElementById('projectStartDate').value = p.start_date; document.getElementById('projectEndDate').value = p.end_date; if (p.image && p.image !== '') { document.getElementById('projectImagePreview').src = p.image; document.getElementById('projectImagePreviewContainer').classList.remove('hidden'); document.getElementById('projectImageUploadArea').classList.add('hidden'); } else { document.getElementById('projectImagePreviewContainer').classList.add('hidden'); document.getElementById('projectImageUploadArea').classList.remove('hidden'); } document.getElementById('projectModalTitle').innerHTML = '<i class="fas fa-edit text-blue-600 mr-2"></i>Edit Project'; document.getElementById('projectModal').classList.remove('hidden'); document.getElementById('projectModal').classList.add('flex'); } }
+    function deleteProject(id) { if (confirm('Delete this project?')) { projects = projects.filter(p => p.id !== id); addLog('Deleted project'); showToast('Project deleted'); renderProjects(); renderDashboard(); } }
+    
+    let sendProjectId = null;
+    function openSendProjectModal(id) { let p = projects.find(p => p.id === id); if (p) { sendProjectId = id; document.getElementById('sendProjectInfo').innerHTML = `<strong>${p.name}</strong><br>Client: ${p.client_name}<br>Amount: ${formatCurrency(p.amount)}`; document.getElementById('sendToDept').value = ''; document.getElementById('sendProjectMessage').value = ''; document.getElementById('sendProjectModal').classList.remove('hidden'); document.getElementById('sendProjectModal').classList.add('flex'); } }
+    function closeSendProjectModal() { document.getElementById('sendProjectModal').classList.add('hidden'); document.getElementById('sendProjectModal').classList.remove('flex'); }
+    function confirmSendProject() { let to = document.getElementById('sendToDept').value; if (!to) { showToast('Select department', true); return; } let p = projects.find(p => p.id === sendProjectId); if (p) { let msg = `PROJECT_FROM_MANAGER: ${p.name}\nClient: ${p.client_name}\nAmount: ${formatCurrency(p.amount)}\nStatus: ${p.status}\nProgress: ${p.progress}%\nLocation: ${p.location}\nDescription: ${p.description}`; let extra = document.getElementById('sendProjectMessage').value; if (extra) msg += `\n\nMessage: ${extra}`; addCentralMessage("Manager", to, msg); addLog(`Sent project "${p.name}" to ${to}`); showToast(`Project sent to ${to}`); closeSendProjectModal(); } }
+    
+    function exportSingleProject(projectId, format) {
+        let p = projects.find(p => p.id === projectId);
+        if (!p) return;
+        let filename = `${p.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${new Date().toISOString().slice(0,10)}`;
+        if (format === 'excel') {
+            let ws = [["Name","Client","Amount","Status","Progress","Location","Start Date","End Date","Description"]];
+            ws.push([p.name, p.client_name, p.amount, p.status, p.progress, p.location, p.start_date, p.end_date, p.description]);
+            let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), "Project"); XLSX.writeFile(wb, `${filename}.xlsx`); showToast("Project exported to Excel");
+        } else if (format === 'pdf') {
+            let element = document.createElement("div");
+            element.innerHTML = `<div style="padding:20px"><h1 style="color:#1e40af">${escapeHtml(p.name)}</h1><p><strong>Client:</strong> ${p.client_name}</p><p><strong>Amount:</strong> ${formatCurrency(p.amount)}</p><p><strong>Status:</strong> ${p.status}</p><p><strong>Progress:</strong> ${p.progress}%</p><p><strong>Location:</strong> ${escapeHtml(p.location)}</p><p><strong>Start Date:</strong> ${p.start_date}</p><p><strong>End Date:</strong> ${p.end_date}</p><p><strong>Description:</strong> ${escapeHtml(p.description)}</p>${p.image ? `<p><img src="${p.image}" style="max-width:100%; margin-top:10px;"></p>` : ''}<p>Generated: ${new Date().toLocaleString()}</p></div>`;
+            html2pdf().set({ margin: 0.5, filename: `${filename}.pdf` }).from(element).save(); showToast("Project exported to PDF");
+        }
+        let dd = document.getElementById(`projectExportDropdown-${projectId}`); if (dd) dd.classList.add("hidden");
+    }
+    
+    function toggleProjectExportDropdown(projectId) { let dd = document.getElementById(`projectExportDropdown-${projectId}`); document.querySelectorAll('[id^="projectExportDropdown-"]').forEach(d => { if (d.id !== `projectExportDropdown-${projectId}`) d.classList.add("hidden"); }); if (dd) dd.classList.toggle("hidden"); }
+    
+    function exportProjectsToExcel() { let ws = [["Name","Client","Amount","Status","Progress","Location","Start Date","End Date","Description"]]; projects.forEach(p => ws.push([p.name, p.client_name, p.amount, p.status, p.progress, p.location, p.start_date, p.end_date, p.description])); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), "Projects"); XLSX.writeFile(wb, `projects_${new Date().toISOString().slice(0,10)}.xlsx`); showToast("Projects exported to Excel"); }
+    function exportProjectsToPDF() { let element = document.createElement("div"); element.innerHTML = `<div style="padding:20px"><h1 style="color:#1e40af">Projects Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr>${projects.map(p => `<div><strong>${p.name}</strong><br>Client: ${p.client_name}<br>Amount: ${formatCurrency(p.amount)}<br>Status: ${p.status}<br>Progress: ${p.progress}%</div><hr>`).join("")}</div>`; html2pdf().set({ margin: 0.5, filename: `projects_report.pdf` }).from(element).save(); showToast("Projects exported to PDF"); }
+    
+    // ==================== CLIENT FUNCTIONS ====================
+    function openClientModal() { document.getElementById("editClientId").value = ""; document.getElementById("clientName").value = ""; document.getElementById("clientPhone").value = ""; document.getElementById("clientLocation").value = ""; document.getElementById("clientStartDate").value = new Date().toISOString().split("T")[0]; document.getElementById("clientEndDate").value = ""; document.getElementById("clientTotalAmount").value = ""; document.getElementById("clientPaidAmount").value = "0"; document.getElementById("clientPaymentStatus").value = "pending"; document.getElementById("clientDescription").value = ""; document.getElementById("clientModalTitle").innerHTML = '<i class="fas fa-user-plus text-blue-600 mr-2"></i>Add Client'; document.getElementById("clientModal").classList.remove("hidden"); document.getElementById("clientModal").classList.add("flex"); }
+    function closeClientModal() { document.getElementById("clientModal").classList.add("hidden"); document.getElementById("clientModal").classList.remove("flex"); }
+    
+    function saveClient() {
+        let name = document.getElementById("clientName").value.trim();
+        if (!name) { showToast("Please enter client name", true); return; }
+        let id = document.getElementById("editClientId").value;
+        let total = parseFloat(document.getElementById("clientTotalAmount").value) || 0;
+        let paid = parseFloat(document.getElementById("clientPaidAmount").value) || 0;
+        let status = document.getElementById("clientPaymentStatus").value;
+        if (status === "paid") paid = total;
+        let client = { id: id ? parseInt(id) : Date.now(), name: name, phone: document.getElementById("clientPhone").value, location: document.getElementById("clientLocation").value, start_date: document.getElementById("clientStartDate").value, end_date: document.getElementById("clientEndDate").value, total_amount: total, paid_amount: paid, status: status, description: document.getElementById("clientDescription").value };
+        if (id) { let idx = clients.findIndex(c => c.id == id); if (idx !== -1) clients[idx] = client; addLog(`Updated client: ${name}`); showToast("Client updated"); }
+        else { clients.unshift(client); addLog(`Added client: ${name}`); showToast("Client added"); }
+        closeClientModal(); renderClients(); renderIncomplete(); renderDashboard(); updateBadges();
+    }
+    
+    function viewClient(id) { let c = clients.find(c => c.id === id); if (c) { let remaining = c.total_amount - c.paid_amount; document.getElementById("viewClientContent").innerHTML = `<div class="space-y-3"><div class="border-b pb-2"><h4 class="font-bold text-base">${escapeHtml(c.name)}</h4></div><div class="grid grid-cols-2 gap-2 text-sm"><div><strong>Phone:</strong></div><div>${c.phone}</div><div><strong>Location:</strong></div><div>${escapeHtml(c.location)}</div><div><strong>Start Date:</strong></div><div>${c.start_date}</div><div><strong>End Date:</strong></div><div>${c.end_date}</div><div><strong>Total Amount:</strong></div><div class="text-green-600 font-semibold">${formatCurrency(c.total_amount)}</div><div><strong>Paid Amount:</strong></div><div class="text-blue-600">${formatCurrency(c.paid_amount)}</div><div><strong>Remaining:</strong></div><div class="${remaining>0?'text-orange-600':'text-green-600'}">${formatCurrency(remaining)}</div><div><strong>Status:</strong></div><div><span class="px-2 py-0.5 rounded-full text-xs ${getStatusClass(c.status)}">${getStatusText(c.status)}</span></div><div><strong>Description:</strong></div><div class="col-span-1">${escapeHtml(c.description)}</div></div></div>`; document.getElementById("viewClientModal").classList.remove("hidden"); document.getElementById("viewClientModal").classList.add("flex"); } }
+    function closeViewClientModal() { document.getElementById("viewClientModal").classList.add("hidden"); document.getElementById("viewClientModal").classList.remove("flex"); }
+    
+    function editClient(id) { let c = clients.find(c => c.id === id); if (c) { document.getElementById("editClientId").value = c.id; document.getElementById("clientName").value = c.name; document.getElementById("clientPhone").value = c.phone; document.getElementById("clientLocation").value = c.location; document.getElementById("clientStartDate").value = c.start_date; document.getElementById("clientEndDate").value = c.end_date; document.getElementById("clientTotalAmount").value = c.total_amount; document.getElementById("clientPaidAmount").value = c.paid_amount; document.getElementById("clientPaymentStatus").value = c.status; document.getElementById("clientDescription").value = c.description || ""; document.getElementById("clientModalTitle").innerHTML = '<i class="fas fa-edit text-blue-600 mr-2"></i>Edit Client'; document.getElementById("clientModal").classList.remove("hidden"); document.getElementById("clientModal").classList.add("flex"); } }
+    function deleteClient(id) { if (confirm("Delete this client?")) { clients = clients.filter(c => c.id !== id); addLog("Deleted client"); showToast("Client deleted"); renderClients(); renderIncomplete(); renderDashboard(); updateBadges(); } }
+    function changePage(page) { if (page > 0 && page <= Math.ceil(clients.length / rowsPerPage)) { currentPage = page; renderClients(); } }
+    
+    function exportClientsToExcel() { let ws = [["Name","Phone","Location","Start Date","End Date","Total Amount","Paid","Remaining","Status","Description"]]; clients.forEach(c => { let remaining = c.total_amount - c.paid_amount; ws.push([c.name, c.phone, c.location, c.start_date, c.end_date, c.total_amount, c.paid_amount, remaining, c.status, c.description]); }); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), "Clients"); XLSX.writeFile(wb, `clients_${new Date().toISOString().slice(0,10)}.xlsx`); showToast("Clients exported to Excel"); }
+    function exportClientsToPDF() { let element = document.createElement("div"); element.innerHTML = `<div style="padding:20px"><h1 style="color:#1e40af">Clients Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr><table border="1" cellpadding="8">${clients.map(c => `<tr><td class="px-2 py-1"><strong>${c.name}</strong><br>${c.location}<br>Amount: ${formatCurrency(c.total_amount)}<br>Status: ${c.status}</td></td>`).join('')}></div>`; html2pdf().set({ margin: 0.5, filename: `clients_report.pdf` }).from(element).save(); showToast("Clients exported to PDF"); }
+    
+    function exportSingleClient(clientId, format) {
+        let c = clients.find(c => c.id === clientId);
+        if (!c) return;
+        let filename = `${c.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${new Date().toISOString().slice(0,10)}`;
+        let remaining = c.total_amount - c.paid_amount;
+        if (format === 'excel') {
+            let ws = [["Name","Phone","Location","Start Date","End Date","Total Amount","Paid","Remaining","Status","Description"]];
+            ws.push([c.name, c.phone, c.location, c.start_date, c.end_date, c.total_amount, c.paid_amount, remaining, c.status, c.description]);
+            let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), "Client"); XLSX.writeFile(wb, `${filename}.xlsx`); showToast("Client exported to Excel");
+        } else if (format === 'pdf') {
+            let element = document.createElement("div");
+            element.innerHTML = `<div style="padding:20px"><h1 style="color:#1e40af">${escapeHtml(c.name)}</h1><p><strong>Phone:</strong> ${c.phone}</p><p><strong>Location:</strong> ${escapeHtml(c.location)}</p><p><strong>Start Date:</strong> ${c.start_date}</p><p><strong>End Date:</strong> ${c.end_date}</p><p><strong>Total Amount:</strong> ${formatCurrency(c.total_amount)}</p><p><strong>Paid:</strong> ${formatCurrency(c.paid_amount)}</p><p><strong>Remaining:</strong> ${formatCurrency(remaining)}</p><p><strong>Status:</strong> ${c.status}</p><p><strong>Description:</strong> ${escapeHtml(c.description)}</p><p>Generated: ${new Date().toLocaleString()}</p></div>`;
+            html2pdf().set({ margin: 0.5, filename: `${filename}.pdf` }).from(element).save(); showToast("Client exported to PDF");
+        }
+        let dd = document.getElementById(`clientExportDropdown-${clientId}`); if (dd) dd.classList.add("hidden");
+    }
+    
+    function toggleClientExportDropdown(clientId) { let dd = document.getElementById(`clientExportDropdown-${clientId}`); document.querySelectorAll('[id^="clientExportDropdown-"]').forEach(d => { if (d.id !== `clientExportDropdown-${clientId}`) d.classList.add("hidden"); }); if (dd) dd.classList.toggle("hidden"); }
+    
+    // ==================== BUDGET SECTION (Improved Remaining) ====================
+    function renderBudget() {
+        let search = document.getElementById("globalSearchInput")?.value.toLowerCase() || "";
+        let filtered = budgets.filter(b => b.project_name.toLowerCase().includes(search));
+        let totalIncome = filtered.reduce((s, b) => s + b.income, 0);
+        let totalExpenses = filtered.reduce((s, b) => s + b.expenses, 0);
+        let totalRemaining = totalIncome - totalExpenses;
+        let totalPages = Math.ceil(filtered.length / budgetRowsPerPage);
+        let start = (currentBudgetPage - 1) * budgetRowsPerPage;
+        let paginated = filtered.slice(start, start + budgetRowsPerPage);
+        
+        let remainingPercent = totalIncome > 0 ? (totalRemaining / totalIncome * 100).toFixed(1) : 0;
+        let remainingClass = getRemainingClass(totalRemaining, totalIncome);
+        
+        let html = `<div class="mb-4"><div class="flex justify-between items-center flex-wrap gap-2"><h2 class="text-xl font-bold"><i class="fas fa-wallet text-blue-600 mr-2"></i>Budget Management</h2><button onclick="openBudgetModal()" class="btn-primary text-white px-4 py-2 rounded-xl text-sm"><i class="fas fa-plus mr-1"></i>Add Budget</button></div>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mt-3">
+                <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-xl p-3 text-white"><p class="text-[10px] uppercase opacity-80">Total Income</p><p class="text-xl font-bold">${formatCurrency(totalIncome)}</p></div>
+                <div class="bg-gradient-to-r from-red-500 to-red-600 rounded-xl p-3 text-white"><p class="text-[10px] uppercase opacity-80">Total Expenses</p><p class="text-xl font-bold">${formatCurrency(totalExpenses)}</p></div>
+                <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-3 text-white"><p class="text-[10px] uppercase opacity-80">Remaining Budget</p><p class="text-xl font-bold">${formatCurrency(totalRemaining)}</p></div>
+                <div class="bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl p-3 text-white"><p class="text-[10px] uppercase opacity-80">Usage Rate</p><p class="text-xl font-bold">${totalIncome > 0 ? ((totalExpenses/totalIncome)*100).toFixed(1) : 0}%</p></div>
+            </div>
+            <div class="mt-3 w-full bg-gray-200 rounded-full h-2"><div class="${getProgressClass(totalExpenses/totalIncome*100)} h-2 rounded-full" style="width:${totalIncome>0?Math.min((totalExpenses/totalIncome)*100,100):0}%"></div></div>
+            <div class="mt-2 flex justify-between items-center"><span class="text-[10px] text-gray-500">Budget Used: ${formatCurrency(totalExpenses)}</span><span class="text-[10px] text-gray-500">Remaining: ${formatCurrency(totalRemaining)} (${remainingPercent}%)</span></div>
+            <div class="mt-3 inline-block ${remainingClass} px-3 py-1 rounded-full text-xs font-semibold"><i class="fas fa-chart-line mr-1"></i> Remaining Budget: ${formatCurrency(totalRemaining)}</div></div>
+            <div class="bg-white rounded-xl shadow-sm p-3 mt-3"><div class="table-responsive"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th class="px-3 py-2">Project Name</th><th class="px-3 py-2">Description</th><th class="px-3 py-2">Income</th><th class="px-3 py-2">Expenses</th><th class="px-3 py-2">Remaining</th><th class="px-3 py-2">Usage</th><th class="px-3 py-2">Actions</th></tr></thead><tbody>
+            ${paginated.map(b => { let percent = (b.expenses / b.income * 100).toFixed(1); let remClass = b.remaining <= b.income * 0.1 ? 'text-red-600 font-bold' : (b.remaining <= b.income * 0.3 ? 'text-orange-600' : 'text-green-600'); return `<tr class="border-b hover:bg-gray-50"><td class="px-3 py-2 font-medium">${escapeHtml(b.project_name)}</td><td class="px-3 py-2 text-xs text-gray-500 max-w-[200px] truncate" title="${escapeHtml(b.description)}">${escapeHtml(b.description.substring(0,40))}${b.description.length>40?'...':''}</td><td class="px-3 py-2 text-green-600 font-semibold">${formatCurrency(b.income)}</td><td class="px-3 py-2 text-red-600">${formatCurrency(b.expenses)}</td><td class="px-3 py-2 ${remClass} font-semibold">${formatCurrency(b.remaining)}</td>
+            <td class="px-3 py-2"><div class="w-20"><div class="w-full bg-gray-200 rounded-full h-1.5"><div class="${getProgressClass(percent)} h-1.5 rounded-full" style="width:${Math.min(percent,100)}%"></div></div><span class="text-[9px]">${percent}%</span></div></td><td class="px-3 py-2"><div class="flex gap-1"><button onclick="viewBudgetItem(${b.id})" class="text-blue-500 text-sm p-1"><i class="fas fa-eye"></i></button><button onclick="editBudgetItem(${b.id})" class="text-green-500 text-sm p-1"><i class="fas fa-edit"></i></button><button onclick="deleteBudgetItem(${b.id})" class="text-red-500 text-sm p-1"><i class="fas fa-trash"></i></button><div class="relative"><button onclick="toggleBudgetExportDropdown(${b.id})" class="text-purple-500 text-sm p-1"><i class="fas fa-download"></i></button><div id="budgetExportDropdown-${b.id}" class="dropdown-content hidden"><button onclick="exportSingleBudget(${b.id}, 'excel')"><i class="fas fa-file-excel text-green-600"></i> Excel</button><button onclick="exportSingleBudget(${b.id}, 'pdf')"><i class="fas fa-file-pdf text-red-600"></i> PDF</button></div></div></div></td></tr>`; }).join('')}
+            </tbody>}></div>${totalPages > 1 ? `<div class="flex justify-center gap-2 mt-3"><button onclick="changeBudgetPage(${currentBudgetPage - 1})" class="px-2 py-1 border rounded text-xs">Prev</button><span class="text-xs">Page ${currentBudgetPage} of ${totalPages}</span><button onclick="changeBudgetPage(${currentBudgetPage + 1})" class="px-2 py-1 border rounded text-xs">Next</button></div>` : ''}</div>
+            <div class="mt-3 flex gap-2"><button onclick="exportBudgetToExcel()" class="bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-excel mr-1"></i>Excel All</button><button onclick="exportBudgetToPDF()" class="bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-pdf mr-1"></i>PDF All</button></div>`;
+        document.getElementById("budgetSection").innerHTML = html;
+    }
+    
+    function openBudgetModal() { document.getElementById("editBudgetId").value = ""; document.getElementById("budgetProjectName").value = ""; document.getElementById("budgetDescription").value = ""; document.getElementById("budgetIncome").value = ""; document.getElementById("budgetExpenses").value = "0"; document.getElementById("budgetRemainingDisplay").innerText = "TZS 0"; document.getElementById("budgetModalTitle").innerHTML = '<i class="fas fa-plus-circle text-blue-600 mr-2"></i>Add Budget'; document.getElementById("budgetModal").classList.remove("hidden"); document.getElementById("budgetModal").classList.add("flex"); }
+    function closeBudgetModal() { document.getElementById("budgetModal").classList.add("hidden"); document.getElementById("budgetModal").classList.remove("flex"); }
+    
+    document.getElementById("budgetIncome")?.addEventListener("input", function() { let income = parseFloat(this.value) || 0; let expenses = parseFloat(document.getElementById("budgetExpenses").value) || 0; let remaining = income - expenses; document.getElementById("budgetRemainingDisplay").innerText = formatCurrency(remaining); });
+    document.getElementById("budgetExpenses")?.addEventListener("input", function() { let income = parseFloat(document.getElementById("budgetIncome").value) || 0; let expenses = parseFloat(this.value) || 0; let remaining = income - expenses; document.getElementById("budgetRemainingDisplay").innerText = formatCurrency(remaining); });
+    
+    function saveBudget() {
+        let projectName = document.getElementById("budgetProjectName").value.trim();
+        if (!projectName) { showToast("Enter project name", true); return; }
+        let income = parseFloat(document.getElementById("budgetIncome").value) || 0;
+        let expenses = parseFloat(document.getElementById("budgetExpenses").value) || 0;
+        let remaining = income - expenses;
+        let id = document.getElementById("editBudgetId").value;
+        let budget = { id: id ? parseInt(id) : Date.now(), project_name: projectName, description: document.getElementById("budgetDescription").value, income: income, expenses: expenses, remaining: remaining, created_at: new Date().toISOString().split("T")[0] };
+        if (id) { let idx = budgets.findIndex(b => b.id == id); if (idx !== -1) budgets[idx] = budget; addLog(`Updated budget: ${projectName}`); showToast("Budget updated"); }
+        else { budgets.unshift(budget); addLog(`Added budget: ${projectName}`); showToast("Budget added"); }
+        closeBudgetModal(); renderBudget(); renderDashboard();
+    }
+    
+    function viewBudgetItem(id) { let b = budgets.find(b => b.id === id); if (b) { let percent = (b.expenses / b.income * 100).toFixed(1); let remClass = b.remaining <= b.income * 0.1 ? 'text-red-600' : (b.remaining <= b.income * 0.3 ? 'text-orange-600' : 'text-green-600'); document.getElementById("viewBudgetContent").innerHTML = `<div class="space-y-3"><div class="border-b pb-2"><h4 class="font-bold text-base">${escapeHtml(b.project_name)}</h4><p class="text-xs text-gray-500">Created: ${b.created_at}</p></div><div class="grid grid-cols-2 gap-2 text-sm"><div><strong>Description:</strong></div><div>${escapeHtml(b.description)}</div><div><strong>Income:</strong></div><div class="text-green-600 font-semibold">${formatCurrency(b.income)}</div><div><strong>Expenses:</strong></div><div class="text-red-600">${formatCurrency(b.expenses)}</div><div><strong>Remaining:</strong></div><div class="${remClass} font-semibold text-lg">${formatCurrency(b.remaining)}</div><div><strong>Usage:</strong></div><div><div class="w-full bg-gray-200 rounded-full h-1.5 mt-1"><div class="${getProgressClass(percent)} h-1.5 rounded-full" style="width:${Math.min(percent,100)}%"></div></div><span class="text-[10px]">${percent}% used</span></div></div></div>`; document.getElementById("viewBudgetModal").classList.remove("hidden"); document.getElementById("viewBudgetModal").classList.add("flex"); } }
+    function closeViewBudgetModal() { document.getElementById("viewBudgetModal").classList.add("hidden"); document.getElementById("viewBudgetModal").classList.remove("flex"); }
+    
+    function editBudgetItem(id) { let b = budgets.find(b => b.id === id); if (b) { document.getElementById("editBudgetItemId").value = b.id; document.getElementById("editBudgetProjectName").value = b.project_name; document.getElementById("editBudgetDesc").value = b.description; document.getElementById("editBudgetIncome").value = b.income; document.getElementById("editBudgetExpenses").value = b.expenses; document.getElementById("editBudgetItemModal").classList.remove("hidden"); document.getElementById("editBudgetItemModal").classList.add("flex"); } }
+    function closeEditBudgetItemModal() { document.getElementById("editBudgetItemModal").classList.add("hidden"); document.getElementById("editBudgetItemModal").classList.remove("flex"); }
+    function updateBudgetItem() { let id = parseInt(document.getElementById("editBudgetItemId").value); let idx = budgets.findIndex(b => b.id === id); if (idx !== -1) { let income = parseFloat(document.getElementById("editBudgetIncome").value) || 0; let expenses = parseFloat(document.getElementById("editBudgetExpenses").value) || 0; budgets[idx].project_name = document.getElementById("editBudgetProjectName").value; budgets[idx].description = document.getElementById("editBudgetDesc").value; budgets[idx].income = income; budgets[idx].expenses = expenses; budgets[idx].remaining = income - expenses; addLog(`Updated budget: ${budgets[idx].project_name}`); showToast("Budget updated"); closeEditBudgetItemModal(); renderBudget(); renderDashboard(); } }
+    function deleteBudgetItem(id) { if (confirm("Delete this budget item?")) { budgets = budgets.filter(b => b.id !== id); addLog("Deleted budget item"); showToast("Budget deleted"); renderBudget(); renderDashboard(); } }
+    function changeBudgetPage(page) { if (page > 0 && page <= Math.ceil(budgets.length / budgetRowsPerPage)) { currentBudgetPage = page; renderBudget(); } }
+    
+    function exportBudgetToExcel() { let ws = [["Project Name","Description","Income","Expenses","Remaining","Usage %","Created Date"]]; budgets.forEach(b => { let percent = (b.expenses / b.income * 100).toFixed(1); ws.push([b.project_name, b.description, b.income, b.expenses, b.remaining, percent, b.created_at]); }); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), "Budget"); XLSX.writeFile(wb, `budget_${new Date().toISOString().slice(0,10)}.xlsx`); showToast("Budget exported to Excel"); }
+    function exportBudgetToPDF() { let element = document.createElement("div"); element.innerHTML = `<div style="padding:20px"><h1 style="color:#1e40af">Budget Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr><table border="1" cellpadding="8">${budgets.map(b => `<tr><td><strong>${b.project_name}</strong><br>Income: ${formatCurrency(b.income)}<br>Expenses: ${formatCurrency(b.expenses)}<br>Remaining: ${formatCurrency(b.remaining)}<br>Usage: ${((b.expenses/b.income)*100).toFixed(1)}%</td></tr>`).join('')}</div>`; html2pdf().set({ margin: 0.5, filename: `budget_report.pdf` }).from(element).save(); showToast("Budget exported to PDF"); }
+    
+    function exportSingleBudget(budgetId, format) {
+        let b = budgets.find(b => b.id === budgetId);
+        if (!b) return;
+        let filename = `${b.project_name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${new Date().toISOString().slice(0,10)}`;
+        let percent = (b.expenses / b.income * 100).toFixed(1);
+        if (format === 'excel') {
+            let ws = [["Project Name","Description","Income","Expenses","Remaining","Usage %","Created Date"]];
+            ws.push([b.project_name, b.description, b.income, b.expenses, b.remaining, percent, b.created_at]);
+            let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), "Budget"); XLSX.writeFile(wb, `${filename}.xlsx`); showToast("Budget exported to Excel");
+        } else if (format === 'pdf') {
+            let element = document.createElement("div");
+            element.innerHTML = `<div style="padding:20px"><h1 style="color:#1e40af">${escapeHtml(b.project_name)}</h1><p><strong>Description:</strong> ${escapeHtml(b.description)}</p><p><strong>Income:</strong> ${formatCurrency(b.income)}</p><p><strong>Expenses:</strong> ${formatCurrency(b.expenses)}</p><p><strong>Remaining:</strong> ${formatCurrency(b.remaining)}</p><p><strong>Usage:</strong> ${percent}%</p><p><strong>Created:</strong> ${b.created_at}</p><p>Generated: ${new Date().toLocaleString()}</p></div>`;
+            html2pdf().set({ margin: 0.5, filename: `${filename}.pdf` }).from(element).save(); showToast("Budget exported to PDF");
+        }
+        let dd = document.getElementById(`budgetExportDropdown-${budgetId}`); if (dd) dd.classList.add("hidden");
+    }
+    
+    function toggleBudgetExportDropdown(budgetId) { let dd = document.getElementById(`budgetExportDropdown-${budgetId}`); document.querySelectorAll('[id^="budgetExportDropdown-"]').forEach(d => { if (d.id !== `budgetExportDropdown-${budgetId}`) d.classList.add("hidden"); }); if (dd) dd.classList.toggle("hidden"); }
+    
+    // ==================== REPORTS SECTION ====================
+    function renderReports() {
+        let managerReports = reportsList.filter(r => r.department === "Manager");
+        
+        let html = `<div class="flex justify-between items-center mb-4 flex-wrap gap-2"><h2 class="text-xl font-bold"><i class="fas fa-chart-bar text-blue-600 mr-2"></i>Reports</h2><button onclick="openAddReportModal()" class="btn-primary text-white px-4 py-2 rounded-xl text-sm"><i class="fas fa-plus mr-1"></i>Add Report</button></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+                <div class="bg-white rounded-xl p-3 shadow-sm"><h3 class="text-xs font-semibold mb-2">Generate Quick Report</h3><div class="grid grid-cols-2 gap-2 mb-3"><button onclick="generateQuickReport('daily')" class="bg-blue-500 text-white py-1 rounded text-xs">Daily</button><button onclick="generateQuickReport('weekly')" class="bg-blue-500 text-white py-1 rounded text-xs">Weekly</button><button onclick="generateQuickReport('monthly')" class="bg-blue-500 text-white py-1 rounded text-xs">Monthly</button><button onclick="generateQuickReport('annual')" class="bg-blue-500 text-white py-1 rounded text-xs">Annual</button></div><div class="flex gap-2"><button onclick="exportAllReportsToExcel()" class="flex-1 bg-green-600 text-white py-1.5 rounded text-xs"><i class="fas fa-file-excel mr-1"></i>Excel All</button><button onclick="exportAllReportsToPDF()" class="flex-1 bg-red-600 text-white py-1.5 rounded text-xs"><i class="fas fa-file-pdf mr-1"></i>PDF All</button></div></div>
+                <div class="bg-white rounded-xl p-3 shadow-sm"><h3 class="text-xs font-semibold mb-2">Reports Summary</h3><div class="grid grid-cols-2 gap-2 text-sm"><div><p class="text-gray-400 text-[9px]">Total Reports</p><p class="font-bold text-2xl">${managerReports.length}</p></div><div><p class="text-gray-400 text-[9px]">Sent</p><p class="font-bold text-green-600">${managerReports.filter(r => r.status === 'sent').length}</p></div><div><p class="text-gray-400 text-[9px]">Drafts</p><p class="font-bold text-orange-600">${managerReports.filter(r => r.status === 'draft').length}</p></div><div><p class="text-gray-400 text-[9px]">To Dept</p><p class="font-bold text-purple-600">${managerReports.filter(r => r.sent_to && r.sent_to !== 'Admin').length}</p></div></div></div>
+            </div>
+            <div class="bg-white rounded-xl p-3 shadow-sm"><h3 class="text-xs font-semibold mb-2">My Reports</h3><div class="space-y-2" id="reportsList"></div></div>`;
+        document.getElementById("reportsSection").innerHTML = html;
+        
+        let reportsHtml = '';
+        managerReports.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).forEach(r => {
+            let sentInfo = r.sent_to ? `<span class="text-[9px] ml-2 text-purple-600"><i class="fas fa-paper-plane"></i> Sent to: ${r.sent_to}</span>` : '';
+            reportsHtml += `<div class="border rounded-lg p-3 hover:shadow-md transition">
+                <div class="flex justify-between flex-wrap gap-3">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <h4 class="font-semibold text-base">${escapeHtml(r.title)}</h4>
+                            <span class="text-[9px] px-1.5 py-0.5 rounded-full bg-${r.period === 'daily' ? 'blue' : r.period === 'weekly' ? 'green' : r.period === 'monthly' ? 'purple' : 'orange'}-100">${r.period}</span>
+                            <span class="text-[9px] px-1.5 py-0.5 rounded-full ${r.status === 'sent' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}">${r.status === 'sent' ? '✓ Sent' : '📝 Draft'}</span>
+                            ${sentInfo}
+                        </div>
+                        <p class="text-[10px] text-gray-500 mt-1">Created: ${formatDate(r.created_at)}</p>
+                        <p class="text-sm text-gray-600 mt-2">${escapeHtml(r.content.substring(0,100))}${r.content.length>100?'...':''}</p>
+                    </div>
+                    <div class="flex gap-1 items-start">
+                        <button onclick="viewReportDetail(${r.id})" class="text-blue-500 text-sm p-1.5 hover:bg-blue-50 rounded" title="View"><i class="fas fa-eye"></i></button>
+                        <button onclick="editReportDetail(${r.id})" class="text-green-500 text-sm p-1.5 hover:bg-green-50 rounded" title="Edit"><i class="fas fa-edit"></i></button>
+                        <button onclick="deleteReportDetail(${r.id})" class="text-red-500 text-sm p-1.5 hover:bg-red-50 rounded" title="Delete"><i class="fas fa-trash"></i></button>
+                        <button onclick="exportSingleReport(${r.id}, 'excel')" class="text-emerald-500 text-sm p-1.5 hover:bg-emerald-50 rounded" title="Export Excel"><i class="fas fa-file-excel"></i></button>
+                        <button onclick="exportSingleReport(${r.id}, 'pdf')" class="text-rose-500 text-sm p-1.5 hover:bg-rose-50 rounded" title="Export PDF"><i class="fas fa-file-pdf"></i></button>
+                        <div class="relative">
+                            <button onclick="toggleSendReportDropdown(${r.id})" class="text-purple-500 text-sm p-1.5 hover:bg-purple-50 rounded" title="Send to Department"><i class="fas fa-paper-plane"></i></button>
+                            <div id="sendReportDropdown-${r.id}" class="dropdown-content hidden" style="min-width: 180px; right: 0; left: auto;">
+                                <div class="p-2 border-b bg-gray-50 text-xs font-semibold">Select Department</div>
+                                <button onclick="sendReportToDepartment(${r.id}, 'Admin')" class="hover:bg-gray-100"><i class="fas fa-user-cog text-purple-600"></i> Admin</button>
+                                <button onclick="sendReportToDepartment(${r.id}, 'Finance')" class="hover:bg-gray-100"><i class="fas fa-coins text-green-600"></i> Finance</button>
+                                <button onclick="sendReportToDepartment(${r.id}, 'Sales')" class="hover:bg-gray-100"><i class="fas fa-chart-line text-orange-600"></i> Sales</button>
+                                <button onclick="sendReportToDepartment(${r.id}, 'Secretary')" class="hover:bg-gray-100"><i class="fas fa-calendar-check text-cyan-600"></i> Secretary</button>
+                                <button onclick="sendReportToDepartment(${r.id}, 'Manager')" class="hover:bg-gray-100"><i class="fas fa-user-tie text-blue-600"></i> Manager</button>
+                                <button onclick="sendReportToDepartment(${r.id}, 'Survey')" class="hover:bg-gray-100"><i class="fas fa-drafting-compass text-teal-600"></i> Survey</button>
+                                <button onclick="sendReportToDepartment(${r.id}, 'Construction')" class="hover:bg-gray-100"><i class="fas fa-hard-hat text-amber-600"></i> Construction</button>
+                                <button onclick="sendReportToDepartment(${r.id}, 'Bricks_Timber')" class="hover:bg-gray-100"><i class="fas fa-cubes text-brown-600"></i> Bricks & Timber</button>
+                                <button onclick="sendReportToDepartment(${r.id}, 'Aluminium')" class="hover:bg-gray-100"><i class="fas fa-industry text-gray-600"></i> Aluminium</button>
+                                <button onclick="sendReportToDepartment(${r.id}, 'Town_Planning')" class="hover:bg-gray-100"><i class="fas fa-city text-indigo-600"></i> Town Planning</button>
+                                <button onclick="sendReportToDepartment(${r.id}, 'Hatimiliki')" class="hover:bg-gray-100"><i class="fas fa-file-contract text-emerald-600"></i> Hatimiliki</button>
+                                <button onclick="sendReportToDepartment(${r.id}, 'Architectural')" class="hover:bg-gray-100"><i class="fas fa-draw-polygon text-rose-600"></i> Architectural</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        });
+        reportsHtml += managerReports.length === 0 ? '<p class="text-gray-400 text-center py-6 text-sm">No reports yet. Click "Add Report" to create one.</p>' : '';
+        document.getElementById('reportsList').innerHTML = reportsHtml;
+    }
+    
+    function toggleSendReportDropdown(reportId) {
+        let dropdown = document.getElementById(`sendReportDropdown-${reportId}`);
+        document.querySelectorAll('[id^="sendReportDropdown-"]').forEach(d => { if (d.id !== `sendReportDropdown-${reportId}`) d.classList.add("hidden"); });
+        if (dropdown) dropdown.classList.toggle("hidden");
+    }
+    
+    function sendReportToDepartment(reportId, department) {
+        let report = reportsList.find(r => r.id === reportId);
+        if (!report) return;
+        let message = `REPORT FROM MANAGER:\nTitle: ${report.title}\nPeriod: ${report.period}\nDate: ${new Date(report.created_at).toLocaleString()}\n\nContent:\n${report.content}`;
+        addCentralMessage("Manager", department, message);
+        let idx = reportsList.findIndex(r => r.id === reportId);
+        if (idx !== -1) { reportsList[idx].status = "sent"; reportsList[idx].sent_to = department; reportsList[idx].sent_at = new Date().toISOString(); }
+        addLog(`Report "${report.title}" sent to ${department}`);
+        showToast(`✅ Report sent to ${department} department`);
+        let dropdown = document.getElementById(`sendReportDropdown-${reportId}`); if (dropdown) dropdown.classList.add("hidden");
+        renderReports();
+    }
+    
+    function generateQuickReport(period) {
+        let content = generateReportContent(period);
+        let title = `${period.charAt(0).toUpperCase() + period.slice(1)} Report - ${new Date().toLocaleDateString()}`;
+        reportsList.unshift({ id: Date.now(), department: "Manager", title: title, period: period, content: content, status: "draft", created_at: new Date().toISOString() });
+        addLog(`Generated ${period} report: ${title}`);
+        showToast(`${period} report saved`);
+        renderReports();
+    }
+    
+    function generateReportContent(period) {
+        let totalClients = clients.length;
+        let totalProjects = projects.length;
+        let totalIncome = budgets.reduce((s, b) => s + b.income, 0);
+        let totalExpenses = budgets.reduce((s, b) => s + b.expenses, 0);
+        let pendingPayments = clients.filter(c => c.status !== "paid").reduce((s, c) => s + (c.total_amount - c.paid_amount), 0);
+        let periodText = { daily: "Daily", weekly: "Weekly", monthly: "Monthly", annual: "Annual" }[period] || "Periodic";
+        return `${periodText} Report - ${new Date().toLocaleString()}\n\n📊 SUMMARY:\n• Total Clients: ${totalClients}\n• Active Projects: ${totalProjects}\n• Total Budget: ${formatCurrency(totalIncome)}\n• Total Expenses: ${formatCurrency(totalExpenses)}\n• Remaining Budget: ${formatCurrency(totalIncome - totalExpenses)}\n• Pending Payments: ${formatCurrency(pendingPayments)}\n\n📈 This report was auto-generated by Manager Dashboard.`;
+    }
+    
+    function openAddReportModal() {
+        document.getElementById("newReportTitle").value = "";
+        document.getElementById("newReportPeriod").value = "monthly";
+        document.getElementById("newReportContent").value = generateReportContent("monthly");
+        document.getElementById("addReportModal").classList.remove("hidden");
+        document.getElementById("addReportModal").classList.add("flex");
+    }
+    function closeAddReportModal() { document.getElementById("addReportModal").classList.add("hidden"); document.getElementById("addReportModal").classList.remove("flex"); }
+    
+    function addReport() {
+        let title = document.getElementById("newReportTitle").value.trim();
+        let period = document.getElementById("newReportPeriod").value;
+        let content = document.getElementById("newReportContent").value.trim();
+        if (!title || !content) { showToast("Please fill title and content", true); return; }
+        reportsList.unshift({ id: Date.now(), department: "Manager", title: title, period: period, content: content, status: "draft", created_at: new Date().toISOString() });
+        addLog(`Added report: ${title}`);
+        showToast("Report added");
+        closeAddReportModal();
+        renderReports();
+    }
+    
+    function viewReportDetail(id) {
+        let r = reportsList.find(r => r.id === id);
+        if (r) {
+            let sentInfo = r.sent_to ? `\n📤 Sent to: ${r.sent_to} on ${new Date(r.sent_at).toLocaleString()}` : '';
+            alert(`📄 ${r.title}\n\nPeriod: ${r.period}\nDepartment: ${r.department}\nDate: ${formatDate(r.created_at)}${sentInfo}\n\nContent:\n${r.content}`);
+        }
+    }
+    
+    function editReportDetail(id) {
+        let r = reportsList.find(r => r.id === id);
+        if (r) {
+            let newTitle = prompt("Edit report title:", r.title);
+            if (newTitle !== null && newTitle.trim()) r.title = newTitle;
+            let newContent = prompt("Edit report content:", r.content);
+            if (newContent !== null && newContent.trim()) r.content = newContent;
+            let newPeriod = prompt("Edit period (daily/weekly/monthly/annual/quarterly):", r.period);
+            if (newPeriod !== null && ["daily","weekly","monthly","annual","quarterly"].includes(newPeriod)) r.period = newPeriod;
+            addLog(`Edited report: ${r.title}`);
+            showToast("Report updated");
+            renderReports();
+        }
+    }
+    
+    function deleteReportDetail(id) {
+        if (confirm("Delete this report?")) {
+            let r = reportsList.find(r => r.id === id);
+            reportsList = reportsList.filter(r => r.id !== id);
+            addLog(`Deleted report: ${r?.title}`);
+            showToast("Report deleted");
+            renderReports();
+        }
+    }
+    
+    function exportSingleReport(reportId, format) {
+        let report = reportsList.find(r => r.id === reportId);
+        if (!report) return;
+        let filename = `${report.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${new Date().toISOString().slice(0,10)}`;
+        if (format === 'excel') {
+            let wsData = [['Department', 'Title', 'Period', 'Content', 'Date', 'Status', 'Sent To']];
+            wsData.push([report.department, report.title, report.period, report.content, report.created_at, report.status, report.sent_to || '-']);
+            let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(wsData), 'Report'); XLSX.writeFile(wb, `${filename}.xlsx`); showToast('Report exported to Excel');
+        } else if (format === 'pdf') {
+            let element = document.createElement("div");
+            let sentInfo = report.sent_to ? `<p><strong>Sent To:</strong> ${report.sent_to}</p><p><strong>Sent Date:</strong> ${new Date(report.sent_at).toLocaleString()}</p>` : '';
+            element.innerHTML = `<div style="padding:20px; font-family:Arial;"><h1 style="color:#1e40af; border-bottom:2px solid #1e40af;">${escapeHtml(report.title)}</h1>
+                <table style="width:100%; margin:15px 0;"><tr><td style="padding:5px 0;"><strong>Department:</strong></td><td>${escapeHtml(report.department)}</td></tr>
+                <tr><td style="padding:5px 0;"><strong>Period:</strong></td><td>${escapeHtml(report.period)}</td></tr>
+                <tr><td style="padding:5px 0;"><strong>Date:</strong></td><td>${formatDate(report.created_at)}</td></tr>
+                <tr><td style="padding:5px 0;"><strong>Status:</strong></td><td>${report.status === 'sent' ? 'Sent' : 'Draft'}</td></tr>${sentInfo}</table>
+                <div style="margin-top:15px; border-top:1px solid #ccc; padding-top:15px;"><h3>Report Content:</h3><div style="background:#f9fafb; padding:15px; border-radius:8px; white-space:pre-wrap;">${escapeHtml(report.content)}</div></div>
+                <p style="margin-top:20px; font-size:10px; color:#999;">Generated on ${new Date().toLocaleString()}</p></div>`;
+            html2pdf().set({ margin: 0.5, filename: `${filename}.pdf` }).from(element).save(); showToast('Report exported to PDF');
+        }
+    }
+    
+    function exportAllReportsToExcel() {
+        let managerReports = reportsList.filter(r => r.department === "Manager");
+        let wsData = [['Department', 'Title', 'Period', 'Content', 'Date', 'Status', 'Sent To', 'Sent Date']];
+        managerReports.forEach(r => wsData.push([r.department, r.title, r.period, r.content, r.created_at, r.status, r.sent_to || '-', r.sent_at || '-']));
+        let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(wsData), 'Reports'); XLSX.writeFile(wb, `reports_${new Date().toISOString().slice(0,10)}.xlsx`); showToast('All reports exported to Excel');
+    }
+    
+    function exportAllReportsToPDF() {
+        let managerReports = reportsList.filter(r => r.department === "Manager");
+        let element = document.createElement("div");
+        let reportsHtml = managerReports.map(r => {
+            let sentInfo = r.sent_to ? `<p><strong>Sent To:</strong> ${r.sent_to} on ${new Date(r.sent_at).toLocaleString()}</p>` : '';
+            return `<div style="margin-bottom:25px; border-bottom:1px solid #ccc; padding-bottom:15px;"><h3 style="color:#1e40af;">${escapeHtml(r.title)}</h3>
+                <p><strong>Period:</strong> ${r.period}</p><p><strong>Date:</strong> ${new Date(r.created_at).toLocaleString()}</p>
+                <p><strong>Status:</strong> ${r.status}</p>${sentInfo}
+                <div style="background:#f9fafb; padding:10px; margin-top:10px; border-radius:5px;">${escapeHtml(r.content)}</div></div>`;
+        }).join('');
+        element.innerHTML = `<div style="padding:20px"><h1 style="color:#1e40af;">Manager Reports</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/>${reportsHtml}</div>`;
+        html2pdf().set({ margin: 0.5, filename: `all_reports.pdf` }).from(element).save(); showToast('All reports exported to PDF');
+    }
+    
+    // ==================== SETTINGS SECTION ====================
+    function renderSettings() {
+        let logsHtml = activityLogs.slice(0, 15).map(l => `<div class="text-[10px] border-b py-1"><span>${escapeHtml(l.action)}</span><span class="float-right text-gray-400">${new Date(l.created_at).toLocaleString()}</span></div>`).join('');
+        let colors = [
+            { name: 'Blue Dark', value: '#1e40af' }, { name: 'Blue Light', value: '#2563eb' },
+            { name: 'Purple', value: '#7c3aed' }, { name: 'Green', value: '#065f46' },
+            { name: 'Orange', value: '#ea580c' }, { name: 'Red', value: '#dc2626' },
+            { name: 'Teal', value: '#0d9488' }, { name: 'Pink', value: '#db2777' }, { name: 'Cyan', value: '#06b6d4' }, { name: 'Indigo', value: '#6366f1' }
+        ];
+        let html = `<h2 class="text-xl font-bold mb-4"><i class="fas fa-cog mr-2"></i>Settings</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-white rounded-xl p-4 shadow-sm"><h3 class="font-semibold text-sm mb-2"><i class="fas fa-palette mr-2 text-blue-600"></i>Dashboard Color (10 Colors)</h3><div class="flex gap-2 flex-wrap">${colors.map(c => `<div class="color-option" style="background:${c.value}" onclick="changeColor('${c.value}', this)" title="${c.name}"></div>`).join('')}</div></div>
+                <div class="bg-white rounded-xl p-4 shadow-sm"><h3 class="font-semibold text-sm mb-2"><i class="fas fa-database mr-2 text-green-600"></i>Backup & Restore</h3><div class="flex gap-2"><button onclick="openBackupRestoreModal()" class="flex-1 bg-green-600 text-white py-2 rounded-lg text-xs"><i class="fas fa-download mr-1"></i>Backup</button><button onclick="restoreBackup()" class="flex-1 bg-orange-600 text-white py-2 rounded-lg text-xs"><i class="fas fa-upload mr-1"></i>Restore</button></div></div>
+                <div class="bg-white rounded-xl p-4 shadow-sm"><h3 class="font-semibold text-sm mb-2"><i class="fas fa-history mr-2 text-blue-600"></i>Activity Logs</h3><div class="max-h-32 overflow-y-auto text-xs border rounded-lg p-2 bg-gray-50">${logsHtml}</div><button onclick="clearLogs()" class="w-full mt-2 bg-red-600 text-white py-1.5 rounded-lg text-xs"><i class="fas fa-trash mr-1"></i>Clear Logs</button></div>
+                <div class="bg-white rounded-xl p-4 shadow-sm"><h3 class="font-semibold text-sm mb-2"><i class="fas fa-info-circle mr-2 text-purple-600"></i>System Info</h3><p class="text-xs"><strong>Version:</strong> 2.0.0</p><p class="text-xs mt-1"><strong>Clients:</strong> ${clients.length}</p><p class="text-xs mt-1"><strong>Projects:</strong> ${projects.length}</p><p class="text-xs mt-1"><strong>Budget Items:</strong> ${budgets.length}</p><p class="text-xs mt-1"><strong>Reports:</strong> ${reportsList.filter(r => r.department === "Manager").length}</p></div>
+            </div>`;
+        document.getElementById("settingsSection").innerHTML = html;
+    }
+    
+    function openBackupRestoreModal() { document.getElementById("backupRestoreModal").classList.remove("hidden"); document.getElementById("backupRestoreModal").classList.add("flex"); }
+    function closeBackupRestoreModal() { document.getElementById("backupRestoreModal").classList.add("hidden"); document.getElementById("backupRestoreModal").classList.remove("flex"); }
+    
+    function changeColor(color, el) { document.querySelectorAll(".color-option").forEach(opt => opt.classList.remove("selected")); el.classList.add("selected"); document.getElementById("mainSidebar").style.background = color; localStorage.setItem("sidebar_color", color); showToast("Sidebar color changed"); }
+    function createBackup() { let backup = { clients, projects, budgets, reportsList, activityLogs, timestamp: new Date().toISOString() }; let blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" }); let url = URL.createObjectURL(blob); let a = document.createElement("a"); a.href = url; a.download = `manager_backup_${new Date().toISOString().slice(0,19)}.json`; a.click(); URL.revokeObjectURL(url); addLog("Created backup"); showToast("Backup created"); closeBackupRestoreModal(); }
+    function restoreBackup() { let inp = document.createElement("input"); inp.type = "file"; inp.accept = "application/json"; inp.onchange = (e) => { let file = e.target.files[0]; if (!file) return; let reader = new FileReader(); reader.onload = (evt) => { try { let data = JSON.parse(evt.target.result); if (data.clients) clients = data.clients; if (data.projects) projects = data.projects; if (data.budgets) budgets = data.budgets; if (data.reportsList) reportsList = data.reportsList; addLog("Restored from backup"); showToast("Backup restored! Reloading..."); setTimeout(() => location.reload(), 1500); } catch(err) { showToast("Invalid backup file", true); } }; reader.readAsText(file); }; inp.click(); }
+    function clearLogs() { if (confirm("Clear all activity logs?")) { activityLogs = [{ action: "Logs cleared", created_at: new Date().toISOString() }]; renderSettings(); showToast("Logs cleared"); } }
+    
+    // ==================== NAVIGATION ====================
+    function showSection(sectionId) {
+        let sections = ["dashboardSection","clientsSection","incompleteSection","projectsSection","budgetSection","messagesSection","reportsSection","settingsSection"];
+        sections.forEach(s => { let el = document.getElementById(s); if (el) el.classList.add("hidden"); });
+        document.getElementById(`${sectionId}Section`).classList.remove("hidden");
+        document.querySelectorAll(".nav-item").forEach(nav => nav.classList.remove("active"));
+        document.querySelector(`.nav-item[data-section="${sectionId}"]`)?.classList.add("active");
+        if (sectionId === "dashboard") renderDashboard();
+        else if (sectionId === "clients") renderClients();
+        else if (sectionId === "incomplete") renderIncomplete();
+        else if (sectionId === "projects") renderProjects();
+        else if (sectionId === "budget") renderBudget();
+        else if (sectionId === "messages") renderMessages();
+        else if (sectionId === "reports") renderReports();
+        else if (sectionId === "settings") renderSettings();
+    }
+    
+    // ==================== INIT ====================
+    function init() {
+        let container = document.getElementById("mainContentContainer");
+        container.innerHTML = `<div id="dashboardSection"></div><div id="clientsSection" class="hidden"></div><div id="incompleteSection" class="hidden"></div><div id="projectsSection" class="hidden"></div><div id="budgetSection" class="hidden"></div><div id="messagesSection" class="hidden"></div><div id="reportsSection" class="hidden"></div><div id="settingsSection" class="hidden"></div>`;
+        renderDashboard();
+        document.querySelectorAll(".nav-item").forEach(nav => nav.addEventListener("click", (e) => { e.preventDefault(); showSection(nav.dataset.section); }));
+        document.getElementById("mobileMenuBtn")?.addEventListener("click", () => { document.getElementById("mainSidebar").classList.add("mobile-open"); document.getElementById("mobileMenuOverlay").classList.add("open"); });
+        document.getElementById("logoutBtn")?.addEventListener("click", logout);
+        document.getElementById("profileBtn")?.addEventListener("click", () => document.getElementById("profileDropdown")?.classList.toggle("hidden"));
+        document.addEventListener("click", (e) => { if (!document.getElementById("profileBtn")?.contains(e.target)) document.getElementById("profileDropdown")?.classList.add("hidden"); });
+        let searchInput = document.getElementById("globalSearchInput"); if (searchInput) searchInput.addEventListener("input", performGlobalSearch);
+        let savedDark = localStorage.getItem("manager_dark_mode");
+        if (savedDark === "true") document.body.classList.add("dark-mode");
+        document.getElementById("darkModeToggle")?.addEventListener("click", () => { document.body.classList.toggle("dark-mode"); localStorage.setItem("manager_dark_mode", document.body.classList.contains("dark-mode")); let icon = document.getElementById("darkModeIcon"); if (document.body.classList.contains("dark-mode")) { icon.classList.remove("fa-moon"); icon.classList.add("fa-sun"); } else { icon.classList.remove("fa-sun"); icon.classList.add("fa-moon"); } showToast(document.body.classList.contains("dark-mode") ? "Dark mode enabled" : "Light mode enabled"); });
+        let savedColor = localStorage.getItem("sidebar_color"); if (savedColor) document.getElementById("mainSidebar").style.background = savedColor;
+        let scrollBtn = document.createElement("div"); scrollBtn.className = "scroll-top"; scrollBtn.innerHTML = '<i class="fas fa-arrow-up"></i>'; document.body.appendChild(scrollBtn); scrollBtn.onclick = () => window.scrollTo({ top: 0, behavior: "smooth" }); window.addEventListener("scroll", () => scrollBtn.classList.toggle("visible", window.scrollY > 300));
+        addLog("Manager Dashboard initialized");
+    }
+    
+    window.closeMobileSidebar = closeMobileSidebar; window.goToMainWebsite = goToMainWebsite; window.showSection = showSection;
+    window.openClientModal = openClientModal; window.closeClientModal = closeClientModal; window.saveClient = saveClient;
+    window.viewClient = viewClient; window.closeViewClientModal = closeViewClientModal;
+    window.editClient = editClient; window.deleteClient = deleteClient; window.changePage = changePage;
+    window.markPartialPayment = markPartialPayment; window.markPaymentComplete = markPaymentComplete;
+    window.exportClientsToExcel = exportClientsToExcel; window.exportClientsToPDF = exportClientsToPDF;
+    window.exportSingleClient = exportSingleClient; window.toggleClientExportDropdown = toggleClientExportDropdown;
+    window.openAddProjectModal = openAddProjectModal; window.closeProjectModal = closeProjectModal; window.saveProject = saveProject;
+    window.viewProject = viewProject; window.closeViewProjectModal = closeViewProjectModal;
+    window.editProject = editProject; window.deleteProject = deleteProject; window.changeProjectPage = changeProjectPage;
+    window.openSendProjectModal = openSendProjectModal; window.closeSendProjectModal = closeSendProjectModal; window.confirmSendProject = confirmSendProject;
+    window.exportSingleProject = exportSingleProject; window.toggleProjectExportDropdown = toggleProjectExportDropdown;
+    window.exportProjectsToExcel = exportProjectsToExcel; window.exportProjectsToPDF = exportProjectsToPDF;
+    window.openBudgetModal = openBudgetModal; window.closeBudgetModal = closeBudgetModal; window.saveBudget = saveBudget;
+    window.viewBudgetItem = viewBudgetItem; window.closeViewBudgetModal = closeViewBudgetModal;
+    window.editBudgetItem = editBudgetItem; window.closeEditBudgetItemModal = closeEditBudgetItemModal; window.updateBudgetItem = updateBudgetItem;
+    window.deleteBudgetItem = deleteBudgetItem; window.changeBudgetPage = changeBudgetPage;
+    window.exportBudgetToExcel = exportBudgetToExcel; window.exportBudgetToPDF = exportBudgetToPDF;
+    window.exportSingleBudget = exportSingleBudget; window.toggleBudgetExportDropdown = toggleBudgetExportDropdown;
+    window.openStartChatModal = openStartChatModal; window.closeStartChatModal = closeStartChatModal; window.sendNewChat = sendNewChat;
+    window.openChatWith = openChatWith; window.sendChatMessage = sendChatMessage; window.deleteMessageFromChat = deleteMessageFromChat; window.closeChatModal = closeChatModal;
+    window.openAddReportModal = openAddReportModal; window.closeAddReportModal = closeAddReportModal; window.addReport = addReport;
+    window.viewReportDetail = viewReportDetail; window.editReportDetail = editReportDetail; window.deleteReportDetail = deleteReportDetail;
+    window.exportSingleReport = exportSingleReport; window.exportAllReportsToExcel = exportAllReportsToExcel; window.exportAllReportsToPDF = exportAllReportsToPDF;
+    window.generateQuickReport = generateQuickReport; window.toggleSendReportDropdown = toggleSendReportDropdown; window.sendReportToDepartment = sendReportToDepartment;
+    window.openBackupRestoreModal = openBackupRestoreModal; window.closeBackupRestoreModal = closeBackupRestoreModal;
+    window.changeColor = changeColor; window.createBackup = createBackup; window.restoreBackup = restoreBackup; window.clearLogs = clearLogs;
+    window.logout = logout;
+    
+    init();
+</script>
+</body>
+</html>
