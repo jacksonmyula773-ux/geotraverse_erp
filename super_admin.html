@@ -1487,6 +1487,32 @@
         let scrollBtn = document.createElement('div'); scrollBtn.className = 'scroll-top'; scrollBtn.innerHTML = '<i class="fas fa-arrow-up"></i>'; document.body.appendChild(scrollBtn); scrollBtn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' }); window.addEventListener('scroll', () => scrollBtn.classList.toggle('visible', window.scrollY > 200));
         addActivityLog('Super Admin Dashboard initialized');
     }
+
+    // ==================== LOGOUT FUNCTION ====================
+// ==================== LOGOUT FUNCTION (Works for ALL Dashboards) ====================
+function logout() {
+    if (confirm('Are you sure you want to logout?')) {
+        // Clear all session data from localStorage
+        localStorage.removeItem('geotraverse_logged_in');
+        localStorage.removeItem('geotraverse_user_type');
+        localStorage.removeItem('geotraverse_user_email');
+        localStorage.removeItem('geotraverse_department');
+        
+        // Optional: Clear sessionStorage if used
+        sessionStorage.clear();
+        
+        // Redirect to login page
+        window.location.href = 'login_system.html';
+    }
+}
+
+// Make sure logout button works when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.onclick = logout;
+    }
+});
     
     // Expose functions
     window.closeMobileSidebar = () => { document.getElementById('mainSidebar').classList.remove('mobile-open'); document.getElementById('mobileMenuOverlay').classList.remove('open'); };

@@ -1210,6 +1210,31 @@
         addLog("Manager Dashboard initialized");
     }
     
+    // ==================== LOGOUT FUNCTION (Works for ALL Dashboards) ====================
+function logout() {
+    if (confirm('Are you sure you want to logout?')) {
+        // Clear all session data from localStorage
+        localStorage.removeItem('geotraverse_logged_in');
+        localStorage.removeItem('geotraverse_user_type');
+        localStorage.removeItem('geotraverse_user_email');
+        localStorage.removeItem('geotraverse_department');
+        
+        // Optional: Clear sessionStorage if used
+        sessionStorage.clear();
+        
+        // Redirect to login page
+        window.location.href = 'login_system.html';
+    }
+}
+
+// Make sure logout button works when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.onclick = logout;
+    }
+});
+
     window.closeMobileSidebar = closeMobileSidebar; window.goToMainWebsite = goToMainWebsite; window.showSection = showSection;
     window.openClientModal = openClientModal; window.closeClientModal = closeClientModal; window.saveClient = saveClient;
     window.viewClient = viewClient; window.closeViewClientModal = closeViewClientModal;
