@@ -1,0 +1,36 @@
+# backend/.htaccess
+RewriteEngine On
+RewriteBase /geotraverse/backend/
+
+# Handle CORS
+Header set Access-Control-Allow-Origin "*"
+Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+Header set Access-Control-Allow-Headers "Content-Type, Authorization"
+
+# Handle preflight requests
+RewriteCond %{REQUEST_METHOD} OPTIONS
+RewriteRule ^(.*)$ $1 [R=200,L]
+
+# Route API calls
+RewriteRule ^api/login$ api/login.php [L]
+RewriteRule ^api/logout$ api/logout.php [L]
+RewriteRule ^api/get_employees$ api/get_employees.php [L]
+RewriteRule ^api/add_employee$ api/add_employee.php [L]
+RewriteRule ^api/update_employee$ api/update_employee.php [L]
+RewriteRule ^api/delete_employee$ api/delete_employee.php [L]
+RewriteRule ^api/reset_password$ api/reset_password.php [L]
+RewriteRule ^api/get_projects$ api/get_projects.php [L]
+RewriteRule ^api/add_project$ api/add_project.php [L]
+RewriteRule ^api/update_project$ api/update_project.php [L]
+RewriteRule ^api/delete_project$ api/delete_project.php [L]
+RewriteRule ^api/send_project$ api/send_project.php [L]
+RewriteRule ^api/get_messages$ api/get_messages.php [L]
+RewriteRule ^api/send_message$ api/send_message.php [L]
+RewriteRule ^api/mark_message_read$ api/mark_message_read.php [L]
+RewriteRule ^api/delete_conversation$ api/delete_conversation.php [L]
+RewriteRule ^api/get_reports$ api/get_reports.php [L]
+RewriteRule ^api/add_report$ api/add_report.php [L]
+RewriteRule ^api/update_report$ api/update_report.php [L]
+RewriteRule ^api/delete_report$ api/delete_report.php [L]
+RewriteRule ^api/backup_data$ api/backup_data.php [L]
+RewriteRule ^api/restore_data$ api/restore_data.php [L]

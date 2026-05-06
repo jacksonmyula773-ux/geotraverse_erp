@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeoTraverse | Finance Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body { background: #f0f2f5; font-size: 14px; }
+        .sidebar { background: linear-gradient(180deg, #059669 0%, #047857 100%); position: fixed; width: 280px; height: 100vh; z-index: 30; }
+        .main-content { margin-left: 280px; }
+        @media (max-width: 768px) { .sidebar { left: -280px; } .sidebar.mobile-open { left: 0; } .main-content { margin-left: 0; } }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 16px; color: white; cursor: pointer; border-radius: 10px; }
+        .nav-item.active { background: rgba(255,255,255,0.15); }
+        .stat-card { background: white; border-radius: 16px; padding: 16px; cursor: pointer; transition: all 0.2s; border: 1px solid #e5e7eb; }
+        .stat-card:hover { transform: translateY(-3px); border-color: #059669; }
+        .btn-primary { background: linear-gradient(135deg, #059669, #047857); color: white; padding: 8px 16px; border-radius: 8px; cursor: pointer; border: none; }
+        .btn-primary:hover { transform: translateY(-1px); }
+        .toast-notification { position: fixed; bottom: 20px; right: 20px; background: #059669; color: white; padding: 10px 18px; border-radius: 10px; z-index: 1000; }
+        .toast-notification.error { background: #ef4444; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000; }
+        .modal-content { background: white; border-radius: 16px; width: 90%; max-width: 500px; max-height: 85vh; overflow-y: auto; }
+        .modal-header { padding: 16px 20px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; }
+        .modal-body { padding: 20px; }
+        .modal-footer { padding: 16px 20px; border-top: 1px solid #e5e7eb; display: flex; gap: 10px; justify-content: flex-end; }
+        input, select, textarea { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #e5e7eb; border-radius: 8px; }
+        input:focus, select:focus { outline: none; border-color: #059669; }
+        .status-paid { background: #d1fae5; color: #059669; padding: 3px 8px; border-radius: 20px; font-size: 11px; }
+        .status-partial { background: #fef3c7; color: #d97706; padding: 3px 8px; border-radius: 20px; font-size: 11px; }
+        .status-pending { background: #fee2e2; color: #dc2626; padding: 3px 8px; border-radius: 20px; font-size: 11px; }
+        .responsive-table { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e5e7eb; }
+        th { background: #f9fafb; }
+        .partial-row { background-color: #fffbeb; }
+        .pending-row { background-color: #fef2f2; }
+        .chat-message { padding: 10px; margin-bottom: 10px; border-radius: 12px; max-width: 80%; }
+        .chat-sent { background-color: #d1fae5; margin-left: auto; }
+        .chat-received { background-color: #e5e7eb; margin-right: auto; }
+        .notification-badge { background: #ef4444; color: white; border-radius: 9999px; padding: 2px 6px; font-size: 10px; margin-left: 6px; }
+        .loading-spinner { width: 20px; height: 20px; border: 2px solid #f3f3f3; border-top: 2px solid #059669; border-radius: 50%; animation: spin 1s linear infinite; display: inline-block; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<div id="mobileMenuOverlay" class="fixed inset-0 bg-black/50 z-40 hidden" onclick="closeMobileSidebar()"></div>
+
+<div class="flex h-screen overflow-hidden">
+    <aside id="mainSidebar" class="sidebar shadow-xl flex flex-col z-20">
+        <div class="px-5 py-5 border-b border-white/20">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="goToMainWebsite()">
+                <img src="https://i.postimg.cc/MT6jTVHh/weblogo.png" class="w-10 h-10 object-contain rounded-lg" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23059669%22/%3E%3Ctext x=%2250%22 y=%2265%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2240%22 font-weight=%22bold%22%3EG%3C/text%3E%3C/svg%3E';">
+                <div><span class="text-xl font-bold text-white">GeoTraverse</span><p class="text-[10px] text-white/60">Finance Dept</p></div>
+            </div>
+        </div>
+        <div class="flex-1 overflow-y-auto px-3 py-4">
+            <nav class="space-y-1">
+                <a href="#" class="nav-item active" data-section="dashboard"><i class="fas fa-tachometer-alt w-5"></i><span>Dashboard</span></a>
+                <a href="#" class="nav-item" data-section="transactions"><i class="fas fa-exchange-alt w-5"></i><span>Transactions</span></a>
+                <a href="#" class="nav-item" data-section="budget"><i class="fas fa-wallet w-5"></i><span>Budget</span></a>
+                <a href="#" class="nav-item" data-section="reports"><i class="fas fa-chart-bar w-5"></i><span>Reports</span></a>
+                <a href="#" class="nav-item" data-section="messages"><i class="fas fa-envelope w-5"></i><span>Messages</span><span id="unreadMessagesBadge" class="notification-badge">0</span></a>
+                <a href="#" class="nav-item" data-section="settings"><i class="fas fa-cog w-5"></i><span>Settings</span></a>
+            </nav>
+        </div>
+        <div class="p-4 border-t border-white/20">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-9 h-9 bg-gradient-to-r from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center"><i class="fas fa-coins text-white text-sm"></i></div>
+                <div><p class="text-sm font-semibold text-white">Finance Department</p><p class="text-[10px] text-white/70">finance@geotraverse.com</p></div>
+            </div>
+            <button id="logoutBtn" class="w-full bg-red-600/80 hover:bg-red-600 text-white py-2 rounded-lg text-sm"><i class="fas fa-sign-out-alt mr-2"></i>Logout</button>
+        </div>
+    </aside>
+    
+    <main class="flex-1 overflow-y-auto main-content">
+        <header class="bg-white shadow-sm px-5 py-3 sticky top-0 z-10 border-b">
+            <div class="flex items-center justify-between flex-wrap gap-3">
+                <div class="flex items-center gap-3">
+                    <button id="mobileMenuBtn" class="md:hidden text-gray-600 text-xl"><i class="fas fa-bars"></i></button>
+                    <button id="homeBtn" class="text-gray-600 hover:text-emerald-600 text-xl"><i class="fas fa-home"></i></button>
+                </div>
+                <div class="flex-1 max-w-md relative">
+                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
+                    <input type="text" id="globalSearchInput" placeholder="Search transactions, budget, reports..." class="w-full pl-10 pr-4 py-2 border rounded-lg text-sm">
+                    <div id="searchResultsDropdown" class="absolute top-full left-0 right-0 bg-white rounded-lg shadow-lg z-50 max-h-80 overflow-y-auto hidden"></div>
+                </div>
+                <button id="darkModeToggle" class="text-gray-500 text-xl"><i id="darkModeIcon" class="fas fa-moon"></i></button>
+            </div>
+        </header>
+        <div class="p-5" id="mainContentContainer"></div>
+    </main>
+</div>
+
+<!-- Add Transaction Modal -->
+<div id="addTransactionModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header"><h3><i class="fas fa-plus-circle text-emerald-500 mr-2"></i>Add Transaction</h3><button onclick="closeAddTransactionModal()" class="text-gray-400 text-2xl">&times;</button></div>
+        <div class="modal-body space-y-3">
+            <select id="addTransType"><option value="income">Income</option><option value="expense">Expense</option></select>
+            <input type="text" id="addTransSource" placeholder="Source/Category" required>
+            <input type="number" id="addTransAmount" placeholder="Amount (TZS)" required>
+            <input type="date" id="addTransDate" required>
+            <input type="number" id="addTransPaidAmount" placeholder="Amount Paid" value="0">
+            <select id="addTransStatus"><option value="paid">Paid (Full)</option><option value="partial">Partial Payment</option><option value="pending">Pending</option></select>
+            <textarea id="addTransDesc" rows="2" placeholder="Description"></textarea>
+        </div>
+        <div class="modal-footer"><button onclick="saveNewTransaction()" class="btn-primary">Save</button><button onclick="closeAddTransactionModal()" class="bg-gray-200 px-4 py-2 rounded-lg">Cancel</button></div>
+    </div>
+</div>
+
+<!-- Add Budget Modal -->
+<div id="addBudgetModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header"><h3><i class="fas fa-plus-circle text-emerald-500 mr-2"></i>Add Budget</h3><button onclick="closeAddBudgetModal()" class="text-gray-400 text-2xl">&times;</button></div>
+        <div class="modal-body space-y-3">
+            <input type="text" id="budgetCategory" placeholder="Category" required>
+            <input type="number" id="budgetAllocated" placeholder="Allocated Amount (TZS)" required>
+            <input type="number" id="budgetUsed" placeholder="Used Amount (TZS)" value="0">
+            <input type="number" id="budgetYear" placeholder="Year" value="2025">
+            <select id="budgetMonth"><option value="1">January</option><option value="2">February</option><option value="3">March</option><option value="4">April</option><option value="5">May</option><option value="6">June</option><option value="7">July</option><option value="8">August</option><option value="9">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option></select>
+        </div>
+        <div class="modal-footer"><button onclick="saveNewBudget()" class="btn-primary">Save</button><button onclick="closeAddBudgetModal()" class="bg-gray-200 px-4 py-2 rounded-lg">Cancel</button></div>
+    </div>
+</div>
+
+<!-- Add Report Modal -->
+<div id="addReportModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header"><h3><i class="fas fa-plus-circle mr-2 text-emerald-500"></i>Add Report</h3><button onclick="closeAddReportModal()" class="text-gray-400 text-2xl">&times;</button></div>
+        <div class="modal-body space-y-3">
+            <input type="text" id="newReportTitle" placeholder="Report Title" required>
+            <select id="newReportPeriod"><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="quarterly">Quarterly</option><option value="annual">Annual</option></select>
+            <textarea id="newReportContent" rows="4" placeholder="Report Content..." required></textarea>
+        </div>
+        <div class="modal-footer"><button onclick="addReport()" class="btn-primary">Add</button><button onclick="closeAddReportModal()" class="bg-gray-200 px-4 py-2 rounded-lg">Cancel</button></div>
+    </div>
+</div>
+
+<!-- Send Report Modal -->
+<div id="sendReportModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header"><h3><i class="fas fa-paper-plane mr-2 text-emerald-500"></i>Send Report</h3><button onclick="closeSendReportModal()" class="text-gray-400 text-2xl">&times;</button></div>
+        <div class="modal-body space-y-3">
+            <input type="hidden" id="sendReportId">
+            <div class="bg-gray-100 p-3 rounded" id="sendReportInfo"></div>
+            <select id="sendToDepartment" class="w-full p-2 border rounded"><option value="">Select Department</option><option value="1">Super Admin</option><option value="3">Sales & Marketing</option><option value="4">Manager</option><option value="5">Survey</option><option value="6">Construction</option><option value="7">Bricks & Timber</option><option value="8">Aluminium</option><option value="9">Town Planning</option><option value="10">Hatimiliki</option><option value="11">Architectural</option><option value="12">Secretary</option></select>
+            <textarea id="sendReportMessage" rows="3" placeholder="Additional message"></textarea>
+        </div>
+        <div class="modal-footer"><button onclick="confirmSendReport()" class="btn-primary">Send</button><button onclick="closeSendReportModal()" class="bg-gray-200 px-4 py-2 rounded-lg">Cancel</button></div>
+    </div>
+</div>
+
+<!-- Start Chat Modal -->
+<div id="startChatModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header"><h3>New Message</h3><button onclick="closeStartChatModal()" class="text-gray-400 text-2xl">&times;</button></div>
+        <div class="modal-body space-y-3">
+            <select id="chatRecipientSelect" class="w-full p-2 border rounded"><option value="">Select Department</option><option value="1">Super Admin</option><option value="3">Sales & Marketing</option><option value="4">Manager</option><option value="5">Survey</option><option value="6">Construction</option><option value="7">Bricks & Timber</option><option value="8">Aluminium</option><option value="9">Town Planning</option><option value="10">Hatimiliki</option><option value="11">Architectural</option><option value="12">Secretary</option></select>
+            <textarea id="newChatMsg" rows="4" placeholder="Type your message..."></textarea>
+        </div>
+        <div class="modal-footer"><button onclick="sendNewChat()" class="btn-primary">Send</button><button onclick="closeStartChatModal()" class="bg-gray-200 px-4 py-2 rounded-lg">Cancel</button></div>
+    </div>
+</div>
+
+<!-- Chat Modal -->
+<div id="chatModal" class="modal">
+    <div class="modal-content" style="max-width:600px">
+        <div class="modal-header"><h3 id="chatModalTitle">Chat</h3><button onclick="closeChatModal()" class="text-gray-400 text-2xl">&times;</button></div>
+        <div class="modal-body" id="chatMessagesArea" style="max-height:400px; overflow-y:auto"></div>
+        <div class="modal-footer"><textarea id="chatInput" rows="3" placeholder="Type your message..." class="w-full p-2 border rounded-lg"></textarea><button onclick="sendChatMessage()" class="mt-2 w-full bg-emerald-600 text-white py-2 rounded-lg">Send</button></div>
+    </div>
+</div>
+
+<!-- Change Password Modal -->
+<div id="changePasswordModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header"><h3><i class="fas fa-key mr-2 text-emerald-500"></i>Change Password</h3><button onclick="closeChangePasswordModal()" class="text-gray-400 text-2xl">&times;</button></div>
+        <div class="modal-body space-y-3">
+            <input type="password" id="currentPassword" placeholder="Current Password">
+            <input type="password" id="newPassword" placeholder="New Password">
+            <input type="password" id="confirmPassword" placeholder="Confirm Password">
+        </div>
+        <div class="modal-footer"><button onclick="changeUserPassword()" class="btn-primary">Change</button><button onclick="closeChangePasswordModal()" class="bg-gray-200 px-4 py-2 rounded-lg">Cancel</button></div>
+    </div>
+</div>
+
+<script>
+    // ==================== CONFIGURATION ====================
+    const API_BASE = window.location.origin + '/geotraverse/backend/api';
+    const DEPARTMENT_ID = 2;
+    
+    // ==================== GLOBAL VARIABLES ====================
+    let transactions = [];
+    let budgets = [];
+    let reports = [];
+    let messages = [];
+    let currentChatWith = null;
+    let searchTimeout = null;
+    
+    const departments = [
+        { id: 1, name: "Super Admin" }, { id: 2, name: "Finance" }, { id: 3, name: "Sales & Marketing" },
+        { id: 4, name: "Manager" }, { id: 5, name: "Survey" }, { id: 6, name: "Construction" },
+        { id: 7, name: "Bricks & Timber" }, { id: 8, name: "Aluminium" }, { id: 9, name: "Town Planning" },
+        { id: 10, name: "Hatimiliki" }, { id: 11, name: "Architectural" }, { id: 12, name: "Secretary" }
+    ];
+    
+    // Sample fallback data
+    const sampleTransactions = [
+        { id: 1, type: "income", source: "TBL Payment", amount: 450000000, paid_amount: 450000000, status: "paid", transaction_date: "2024-04-01", description: "Construction payment" },
+        { id: 2, type: "expense", source: "Salaries", amount: 15000000, paid_amount: 15000000, status: "paid", transaction_date: "2024-04-05", description: "Staff salaries" },
+        { id: 3, type: "income", source: "Client Payment", amount: 380000000, paid_amount: 200000000, status: "partial", transaction_date: "2024-04-10", description: "Partial payment" }
+    ];
+    
+    const sampleBudgets = [
+        { id: 1, category: "Operations", allocated_amount: 50000000, used_amount: 25000000, year: 2025, month: 5 },
+        { id: 2, category: "Salaries", allocated_amount: 30000000, used_amount: 15000000, year: 2025, month: 5 }
+    ];
+    
+    const sampleReports = [
+        { id: 1, title: "March Financial Report", period: "monthly", content: "Revenue: TZS 450M", status: "sent", created_at: new Date().toISOString() }
+    ];
+    
+    const sampleMessages = [
+        { id: 1, from_department_id: 1, to_department_id: 2, message: "Please submit Q2 budget forecast", is_read: 0, created_at: new Date().toISOString() }
+    ];
+    
+    // ==================== HELPER FUNCTIONS ====================
+    function showToast(msg, isError) {
+        let t = document.createElement('div');
+        t.className = 'toast-notification' + (isError ? ' error' : '');
+        t.innerHTML = '<i class="fas ' + (isError ? 'fa-exclamation-circle' : 'fa-check-circle') + ' mr-2"></i>' + msg;
+        document.body.appendChild(t);
+        setTimeout(() => t.remove(), 3000);
+    }
+    
+    function escapeHtml(text) { if (!text) return ''; let div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+    function formatCurrency(amt) { return "TZS " + (parseFloat(amt) || 0).toLocaleString(); }
+    function formatDate(dateStr) { if (!dateStr) return 'N/A'; return new Date(dateStr).toLocaleDateString('en-GB'); }
+    function goToMainWebsite() { window.location.href = "../index.html"; }
+    function closeMobileSidebar() {
+        document.getElementById('mainSidebar').classList.remove('mobile-open');
+        document.getElementById('mobileMenuOverlay').classList.add('hidden');
+    }
+    
+    function getStatusClass(status) {
+        if (status === 'paid') return 'status-paid';
+        if (status === 'partial') return 'status-partial';
+        return 'status-pending';
+    }
+    
+    function updateMessageBadge() {
+        let unread = messages.filter(m => m.to_department_id == DEPARTMENT_ID && !m.is_read).length;
+        document.getElementById('unreadMessagesBadge').innerText = unread;
+    }
+    
+    // ==================== API CALL ====================
+    async function apiCall(endpoint, method = 'GET', data = null) {
+        const url = `${API_BASE}/${endpoint}`;
+        const options = { method, headers: { 'Content-Type': 'application/json' } };
+        if (data) options.body = JSON.stringify(data);
+        try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            return await response.json();
+        } catch (error) {
+            console.error(`API Error (${endpoint}):`, error);
+            return { success: false, error: error.message };
+        }
+    }
+    
+    // ==================== TRANSACTIONS ====================
+    async function fetchTransactions() {
+        try {
+            const result = await apiCall('get_transactions.php');
+            if (result.success && result.transactions) {
+                transactions = result.transactions.filter(t => t.department_id == DEPARTMENT_ID);
+            } else {
+                transactions = [...sampleTransactions];
+            }
+        } catch(e) {
+            transactions = [...sampleTransactions];
+        }
+        return true;
+    }
+    
+    async function addTransactionAPI(data) {
+        data.department_id = DEPARTMENT_ID;
+        const result = await apiCall('add_transaction.php', 'POST', data);
+        if (result.success) await fetchTransactions();
+        return result;
+    }
+    
+    // ==================== BUDGET ====================
+    async function fetchBudgets() {
+        try {
+            const result = await apiCall('get_budgets.php');
+            if (result.success && result.budgets) {
+                budgets = result.budgets.filter(b => b.department_id == DEPARTMENT_ID);
+            } else {
+                budgets = [...sampleBudgets];
+            }
+        } catch(e) {
+            budgets = [...sampleBudgets];
+        }
+        return true;
+    }
+    
+    async function addBudgetAPI(data) {
+        data.department_id = DEPARTMENT_ID;
+        const result = await apiCall('add_budget.php', 'POST', data);
+        if (result.success) await fetchBudgets();
+        return result;
+    }
+    
+    // ==================== REPORTS ====================
+    async function fetchReports() {
+        try {
+            const result = await apiCall('get_reports.php');
+            if (result.success && result.reports) {
+                reports = result.reports.filter(r => r.department_id == DEPARTMENT_ID);
+            } else {
+                reports = [...sampleReports];
+            }
+        } catch(e) {
+            reports = [...sampleReports];
+        }
+        return true;
+    }
+    
+    async function addReportAPI(data) {
+        data.department_id = DEPARTMENT_ID;
+        const result = await apiCall('add_report.php', 'POST', data);
+        if (result.success) await fetchReports();
+        return result;
+    }
+    
+    // ==================== MESSAGES ====================
+    async function fetchMessages() {
+        try {
+            const result = await apiCall('get_messages.php');
+            if (result.success && result.messages) {
+                messages = result.messages.filter(m => m.to_department_id == DEPARTMENT_ID || m.from_department_id == DEPARTMENT_ID);
+            } else {
+                messages = [...sampleMessages];
+            }
+        } catch(e) {
+            messages = [...sampleMessages];
+        }
+        updateMessageBadge();
+        return true;
+    }
+    
+    async function sendMessageAPI(data) {
+        data.from_department_id = DEPARTMENT_ID;
+        const result = await apiCall('send_message.php', 'POST', data);
+        if (result.success) await fetchMessages();
+        return result;
+    }
+    
+    // ==================== RENDER FUNCTIONS ====================
+    async function renderDashboard() {
+        await fetchTransactions();
+        await fetchBudgets();
+        
+        let totalIncome = 0, totalExpense = 0, pendingPayments = 0;
+        for (let t of transactions) {
+            if (t.type === 'income' && t.status === 'paid') totalIncome += t.amount;
+            else if (t.type === 'income' && t.status === 'partial') totalIncome += (t.paid_amount || 0);
+            else if (t.type === 'expense') totalExpense += t.amount;
+            if (t.type === 'income' && t.status !== 'paid') pendingPayments += (t.amount - (t.paid_amount || 0));
+        }
+        
+        let totalAllocated = budgets.reduce((s, b) => s + b.allocated_amount, 0);
+        let totalUsed = budgets.reduce((s, b) => s + b.used_amount, 0);
+        
+        let html = `<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-5">
+            <div class="stat-card cursor-pointer" onclick="showSection('transactions')"><div class="flex justify-between"><div><p class="text-gray-500 text-xs">Total Income</p><p class="text-2xl font-bold text-green-600">${formatCurrency(totalIncome)}</p></div><div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center"><i class="fas fa-arrow-down text-green-500"></i></div></div></div>
+            <div class="stat-card cursor-pointer" onclick="showSection('transactions')"><div class="flex justify-between"><div><p class="text-gray-500 text-xs">Total Expenses</p><p class="text-2xl font-bold text-red-600">${formatCurrency(totalExpense)}</p></div><div class="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center"><i class="fas fa-arrow-up text-red-500"></i></div></div></div>
+            <div class="stat-card cursor-pointer" onclick="showSection('transactions')"><div class="flex justify-between"><div><p class="text-gray-500 text-xs">Net Profit</p><p class="text-2xl font-bold text-blue-600">${formatCurrency(totalIncome - totalExpense)}</p></div><div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center"><i class="fas fa-chart-line text-blue-500"></i></div></div></div>
+            <div class="stat-card cursor-pointer" onclick="showSection('transactions')"><div class="flex justify-between"><div><p class="text-gray-500 text-xs">Pending</p><p class="text-2xl font-bold text-orange-600">${formatCurrency(pendingPayments)}</p></div><div class="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center"><i class="fas fa-clock text-orange-500"></i></div></div></div>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
+            <div class="bg-white rounded-xl p-4"><h3 class="font-semibold mb-3"><i class="fas fa-chart-line text-emerald-500 mr-2"></i>Revenue Trend</h3><canvas id="revenueChart" height="150"></canvas></div>
+            <div class="bg-white rounded-xl p-4"><h3 class="font-semibold mb-3"><i class="fas fa-chart-pie text-emerald-500 mr-2"></i>Budget Usage</h3><canvas id="budgetChart" height="150"></canvas></div>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <button onclick="openAddTransactionModal()" class="bg-emerald-600 text-white py-2 rounded-lg text-sm"><i class="fas fa-plus mr-2"></i>Add Transaction</button>
+            <button onclick="openAddBudgetModal()" class="bg-blue-600 text-white py-2 rounded-lg text-sm"><i class="fas fa-plus mr-2"></i>Add Budget</button>
+            <button onclick="openStartChatModal()" class="bg-purple-600 text-white py-2 rounded-lg text-sm"><i class="fas fa-comment mr-2"></i>Send Message</button>
+        </div>`;
+        document.getElementById('dashboardSection').innerHTML = html;
+        
+        let ctx = document.getElementById('revenueChart')?.getContext('2d');
+        if (ctx) new Chart(ctx, { type: 'line', data: { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], datasets: [{ label: 'Revenue (TZS M)', data: [12, 15, 18, 22, 28, 32], borderColor: '#059669', fill: true }] } });
+        
+        let ctx2 = document.getElementById('budgetChart')?.getContext('2d');
+        if (ctx2) new Chart(ctx2, { type: 'doughnut', data: { labels: ['Used', 'Remaining'], datasets: [{ data: [totalUsed, totalAllocated - totalUsed], backgroundColor: ['#f59e0b', '#10b981'] }] } });
+    }
+    
+    async function renderTransactions() {
+        await fetchTransactions();
+        let totalIncome = 0, totalExpense = 0;
+        for (let t of transactions) {
+            if (t.type === 'income' && t.status === 'paid') totalIncome += t.amount;
+            else if (t.type === 'income' && t.status === 'partial') totalIncome += (t.paid_amount || 0);
+            else if (t.type === 'expense') totalExpense += t.amount;
+        }
+        
+        let html = `<div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
+            <div class="bg-green-50 rounded-xl p-3 text-center"><p class="text-[10px] text-gray-500">Total Income</p><p class="text-xl font-bold text-green-600">${formatCurrency(totalIncome)}</p></div>
+            <div class="bg-red-50 rounded-xl p-3 text-center"><p class="text-[10px] text-gray-500">Total Expenses</p><p class="text-xl font-bold text-red-600">${formatCurrency(totalExpense)}</p></div>
+            <div class="bg-blue-50 rounded-xl p-3 text-center"><p class="text-[10px] text-gray-500">Net Profit</p><p class="text-xl font-bold text-blue-600">${formatCurrency(totalIncome - totalExpense)}</p></div>
+        </div>
+        <div class="bg-white rounded-xl p-4">
+            <div class="flex justify-between mb-3 flex-wrap gap-2"><h3 class="font-semibold"><i class="fas fa-exchange-alt text-emerald-500 mr-2"></i>All Transactions</h3><button onclick="openAddTransactionModal()" class="bg-emerald-600 text-white px-3 py-1 rounded text-xs">+ Add Transaction</button></div>
+            <div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th>Date</th><th>Type</th><th>Source</th><th>Amount</th><th>Paid</th><th>Remaining</th><th>Status</th><th>Actions</th></tr></thead><tbody>`;
+        for (let t of transactions) {
+            let remaining = t.type === 'income' ? (t.amount - (t.paid_amount || 0)) : 0;
+            let rowClass = t.status === 'partial' ? 'partial-row' : (t.status === 'pending' ? 'pending-row' : '');
+            html += `<tr class="border-b ${rowClass}">
+                <td class="px-3 py-2">${t.transaction_date}</td>
+                <td class="px-3 py-2"><span class="px-2 py-0.5 rounded-full text-xs ${t.type==='income'?'bg-green-100 text-green-700':'bg-red-100 text-red-700'}">${t.type}</span></td>
+                <td class="px-3 py-2">${escapeHtml(t.source)}</td>
+                <td class="px-3 py-2 ${t.type==='income'?'text-green-600':'text-red-600'}">${formatCurrency(t.amount)}</td>
+                <td class="px-3 py-2">${formatCurrency(t.paid_amount || 0)}</td>
+                <td class="px-3 py-2 ${remaining>0?'text-orange-600':'text-green-600'}">${formatCurrency(remaining)}</td>
+                <td class="px-3 py-2"><span class="px-2 py-0.5 rounded-full text-xs ${getStatusClass(t.status)}">${t.status}</span></td>
+                <td class="px-3 py-2"><button onclick="viewTransaction(${t.id})" class="text-blue-500"><i class="fas fa-eye"></i></button></div></td>
+            </tr>`;
+        }
+        html += `</tbody>}</div></div>`;
+        document.getElementById('transactionsSection').innerHTML = html;
+    }
+    
+    function openAddTransactionModal() { document.getElementById('addTransactionModal').style.display = 'flex'; }
+    function closeAddTransactionModal() { document.getElementById('addTransactionModal').style.display = 'none'; }
+    
+    async function saveNewTransaction() {
+        // Get form values
+        let source = document.getElementById('addTransSource').value.trim();
+        let amount = document.getElementById('addTransAmount').value;
+        let type = document.getElementById('addTransType').value;
+        let date = document.getElementById('addTransDate').value;
+        let paidAmount = document.getElementById('addTransPaidAmount').value || 0;
+        let status = document.getElementById('addTransStatus').value;
+        let description = document.getElementById('addTransDesc').value;
+        
+        // VALIDATION - Hii ndiyo inayoweza kusababisha error yako
+        if (!source) {
+            showToast('Source is required. Please fill the source field.', true);
+            document.getElementById('addTransSource').focus();
+            return;
+        }
+        
+        if (!amount || amount <= 0) {
+            showToast('Valid amount is required. Please enter a positive amount.', true);
+            document.getElementById('addTransAmount').focus();
+            return;
+        }
+        
+        if (!date) {
+            showToast('Date is required', true);
+            document.getElementById('addTransDate').focus();
+            return;
+        }
+        
+        // Prepare data
+        let data = {
+            type: type,
+            source: source,
+            amount: parseFloat(amount),
+            transaction_date: date,
+            paid_amount: parseFloat(paidAmount),
+            status: status,
+            description: description
+        };
+        
+        console.log("Sending data:", data);
+        
+        // Show loading
+        let saveBtn = event.target;
+        let originalText = saveBtn.innerText;
+        saveBtn.innerHTML = '<div class="loading-spinner"></div> Saving...';
+        saveBtn.disabled = true;
+        
+        const result = await addTransactionAPI(data);
+        
+        saveBtn.innerHTML = originalText;
+        saveBtn.disabled = false;
+        
+        if (result.success) {
+            showToast('Transaction added successfully!');
+            closeAddTransactionModal();
+            // Clear form
+            document.getElementById('addTransSource').value = '';
+            document.getElementById('addTransAmount').value = '';
+            document.getElementById('addTransDesc').value = '';
+            await renderTransactions();
+            await renderDashboard();
+        } else {
+            showToast(result.error || 'Failed to add transaction. Please check your connection.', true);
+        }
+    }
+    
+    function viewTransaction(id) {
+        let t = transactions.find(t => t.id == id);
+        if (t) {
+            let remaining = t.type === 'income' ? (t.amount - (t.paid_amount || 0)) : 0;
+            alert(`📋 Transaction Details\n\nDate: ${t.transaction_date}\nType: ${t.type}\nSource: ${t.source}\nAmount: ${formatCurrency(t.amount)}\nPaid: ${formatCurrency(t.paid_amount || 0)}\nRemaining: ${formatCurrency(remaining)}\nStatus: ${t.status}\nDescription: ${t.description || '-'}`);
+        }
+    }
+    
+    async function renderBudget() {
+        await fetchBudgets();
+        let totalAllocated = budgets.reduce((s, b) => s + b.allocated_amount, 0);
+        let totalUsed = budgets.reduce((s, b) => s + b.used_amount, 0);
+        
+        let html = `<div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
+            <div class="bg-purple-50 rounded-xl p-3 text-center"><p class="text-[10px] text-gray-500">Total Allocated</p><p class="text-xl font-bold text-purple-600">${formatCurrency(totalAllocated)}</p></div>
+            <div class="bg-orange-50 rounded-xl p-3 text-center"><p class="text-[10px] text-gray-500">Total Used</p><p class="text-xl font-bold text-orange-600">${formatCurrency(totalUsed)}</p></div>
+            <div class="bg-green-50 rounded-xl p-3 text-center"><p class="text-[10px] text-gray-500">Remaining</p><p class="text-xl font-bold text-green-600">${formatCurrency(totalAllocated - totalUsed)}</p></div>
+        </div>
+        <div class="bg-white rounded-xl p-4">
+            <div class="flex justify-between mb-3"><h3 class="font-semibold"><i class="fas fa-wallet text-emerald-500 mr-2"></i>Budget Allocations</h3><button onclick="openAddBudgetModal()" class="bg-emerald-600 text-white px-3 py-1 rounded text-xs">+ Add Budget</button></div>
+            <div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th>Category</th><th>Allocated</th><th>Used</th><th>Remaining</th><th>Year</th><th>Month</th><th>Actions</th></tr></thead><tbody>`;
+        for (let b of budgets) {
+            let remaining = b.allocated_amount - b.used_amount;
+            let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            html += `<tr><td>${escapeHtml(b.category)}</td><td class="text-green-600">${formatCurrency(b.allocated_amount)}</td><td class="text-orange-600">${formatCurrency(b.used_amount)}</td><td class="${remaining>=0?'text-blue-600':'text-red-600'}">${formatCurrency(remaining)}</td><td>${b.year}</td><td>${months[b.month-1]}</td><td><button onclick="alert('View budget details')" class="text-blue-500"><i class="fas fa-eye"></i></button></tr>`;
+        }
+        html += `</tbody>}</div></div>`;
+        document.getElementById('budgetSection').innerHTML = html;
+    }
+    
+    function openAddBudgetModal() { document.getElementById('addBudgetModal').style.display = 'flex'; }
+    function closeAddBudgetModal() { document.getElementById('addBudgetModal').style.display = 'none'; }
+    
+    async function saveNewBudget() {
+        let category = document.getElementById('budgetCategory').value.trim();
+        let allocated = document.getElementById('budgetAllocated').value;
+        
+        if (!category) { showToast('Category required', true); return; }
+        if (!allocated || allocated <= 0) { showToast('Valid allocated amount required', true); return; }
+        
+        let data = {
+            category: category,
+            allocated_amount: allocated,
+            used_amount: document.getElementById('budgetUsed').value || 0,
+            year: document.getElementById('budgetYear').value,
+            month: document.getElementById('budgetMonth').value
+        };
+        
+        const result = await addBudgetAPI(data);
+        if (result.success) {
+            showToast('Budget added');
+            closeAddBudgetModal();
+            renderBudget();
+            renderDashboard();
+        } else {
+            // Fallback: add locally
+            data.id = Date.now();
+            budgets.push(data);
+            showToast('Budget added (local mode)');
+            closeAddBudgetModal();
+            renderBudget();
+            renderDashboard();
+        }
+    }
+    
+    async function renderReports() {
+        await fetchReports();
+        let html = `<div class="flex justify-between mb-4"><h2 class="text-xl font-bold"><i class="fas fa-chart-bar text-emerald-500 mr-2"></i>Reports (${reports.length})</h2><button onclick="openAddReportModal()" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm">+ Add Report</button></div><div class="space-y-2" id="reportsListDiv"></div>`;
+        document.getElementById('reportsSection').innerHTML = html;
+        let reportsHtml = '';
+        for (let r of reports) {
+            reportsHtml += `<div class="bg-white rounded-xl p-3 border"><div class="flex justify-between"><div><h4 class="font-semibold">${escapeHtml(r.title)}</h4><span class="text-[9px] px-2 py-0.5 rounded-full bg-gray-100">${r.period}</span><p class="text-xs text-gray-500 mt-1">${formatDate(r.created_at)}</p><p class="text-sm mt-2">${escapeHtml(r.content.substring(0, 100))}...</p></div><div class="flex gap-1"><button onclick="alert('View report')" class="text-blue-500"><i class="fas fa-eye"></i></button><button onclick="openSendReportModal(${r.id})" class="text-purple-500"><i class="fas fa-paper-plane"></i></button></div></div></div>`;
+        }
+        document.getElementById('reportsListDiv').innerHTML = reportsHtml || '<div class="text-center text-gray-400">No reports</div>';
+    }
+    
+    function openAddReportModal() { document.getElementById('addReportModal').style.display = 'flex'; }
+    function closeAddReportModal() { document.getElementById('addReportModal').style.display = 'none'; }
+    
+    async function addReport() {
+        let title = document.getElementById('newReportTitle').value.trim();
+        let period = document.getElementById('newReportPeriod').value;
+        let content = document.getElementById('newReportContent').value.trim();
+        if (!title || !content) { showToast('Title and content required', true); return; }
+        const result = await addReportAPI({ title, period, content });
+        if (result.success) { showToast('Report added'); closeAddReportModal(); renderReports(); }
+        else { showToast(result.error || 'Failed to add', true); }
+    }
+    
+    function openSendReportModal(id) {
+        let r = reports.find(r => r.id == id);
+        if (r) {
+            document.getElementById('sendReportId').value = id;
+            document.getElementById('sendReportInfo').innerHTML = `<strong>${escapeHtml(r.title)}</strong><br>Period: ${r.period}`;
+            document.getElementById('sendReportModal').style.display = 'flex';
+        }
+    }
+    function closeSendReportModal() { document.getElementById('sendReportModal').style.display = 'none'; }
+    
+    async function confirmSendReport() {
+        let to = document.getElementById('sendToDepartment').value;
+        if (!to) { showToast('Select department', true); return; }
+        let r = reports.find(r => r.id == parseInt(document.getElementById('sendReportId').value));
+        let extra = document.getElementById('sendReportMessage').value;
+        let msg = `REPORT: ${r.title}\nPeriod: ${r.period}\nDate: ${formatDate(r.created_at)}\n\n${r.content}`;
+        if (extra) msg += `\n\nMessage: ${extra}`;
+        const result = await sendMessageAPI({ to_department_id: to, message: msg });
+        if (result.success) { showToast('Report sent'); closeSendReportModal(); renderMessages(); }
+        else { showToast(result.error || 'Failed to send', true); }
+    }
+    
+    async function renderMessages() {
+        await fetchMessages();
+        let html = `<div class="flex justify-between mb-4"><h2 class="text-xl font-bold"><i class="fas fa-envelope text-emerald-500 mr-2"></i>Messages (${messages.length})</h2><button onclick="openStartChatModal()" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm">+ New Message</button></div><div class="space-y-2" id="messagesListDiv"></div>`;
+        document.getElementById('messagesSection').innerHTML = html;
+        let msgsHtml = '';
+        for (let msg of messages) {
+            let fromDept = departments.find(d => d.id == msg.from_department_id);
+            msgsHtml += `<div class="bg-white rounded-xl p-3 border cursor-pointer" onclick="alert('Open chat')"><div><p class="font-semibold">From: ${fromDept ? fromDept.name : 'Unknown'}</p><p class="text-xs text-gray-600">${escapeHtml(msg.message.substring(0, 80))}...</p><small>${formatDate(msg.created_at)}</small></div></div>`;
+        }
+        document.getElementById('messagesListDiv').innerHTML = msgsHtml || '<div class="text-center text-gray-400">No messages</div>';
+    }
+    
+    function openStartChatModal() { document.getElementById('startChatModal').style.display = 'flex'; }
+    function closeStartChatModal() { document.getElementById('startChatModal').style.display = 'none'; }
+    
+    async function sendNewChat() {
+        let to = document.getElementById('chatRecipientSelect').value;
+        let msg = document.getElementById('newChatMsg').value;
+        if (!to || !msg) { showToast('Select department and enter message', true); return; }
+        const result = await sendMessageAPI({ to_department_id: to, message: msg });
+        if (result.success) { showToast('Message sent'); closeStartChatModal(); renderMessages(); }
+        else { showToast(result.error || 'Failed to send', true); }
+    }
+    
+    function sendChatMessage() { showToast('Chat feature coming soon'); }
+    function closeChatModal() { document.getElementById('chatModal').style.display = 'none'; }
+    
+    function renderSettings() {
+        let html = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-white rounded-xl p-4"><h3 class="font-semibold mb-2"><i class="fas fa-key text-emerald-500 mr-2"></i>Change Password</h3><button onclick="openChangePasswordModal()" class="w-full bg-emerald-600 text-white py-2 rounded-lg">Change Password</button><button onclick="closeChangePasswordModal()" class="w-full mt-2 bg-gray-200 py-2 rounded-lg">Cancel</button></div>
+            <div class="bg-white rounded-xl p-4"><h3 class="font-semibold mb-2"><i class="fas fa-palette text-emerald-500 mr-2"></i>Sidebar Colors</h3><div class="flex gap-2 flex-wrap"><div class="w-8 h-8 rounded-full bg-emerald-600 cursor-pointer" onclick="changeSidebarColor('#059669')"></div><div class="w-8 h-8 rounded-full bg-blue-600 cursor-pointer" onclick="changeSidebarColor('#2563eb')"></div><div class="w-8 h-8 rounded-full bg-purple-600 cursor-pointer" onclick="changeSidebarColor('#7c3aed')"></div></div></div>
+            <div class="bg-white rounded-xl p-4"><h3 class="font-semibold mb-2"><i class="fas fa-database text-green-500 mr-2"></i>Backup & Restore</h3><button onclick="alert('Backup feature')" class="w-full bg-green-600 text-white py-2 rounded-lg">Backup / Restore</button></div>
+            <div class="bg-white rounded-xl p-4"><h3 class="font-semibold mb-2"><i class="fas fa-globe text-blue-500 mr-2"></i>General Settings</h3><button onclick="alert('General settings')" class="w-full bg-blue-600 text-white py-2 rounded-lg">Configure</button></div>
+        </div>`;
+        document.getElementById('settingsSection').innerHTML = html;
+    }
+    
+    function openChangePasswordModal() { document.getElementById('changePasswordModal').style.display = 'flex'; }
+    function closeChangePasswordModal() { document.getElementById('changePasswordModal').style.display = 'none'; }
+    async function changeUserPassword() {
+        let curr = document.getElementById('currentPassword').value;
+        let newP = document.getElementById('newPassword').value;
+        let conf = document.getElementById('confirmPassword').value;
+        if (!newP || newP.length < 4) { showToast('Password must be 4+ characters', true); return; }
+        if (newP !== conf) { showToast('Passwords do not match', true); return; }
+        showToast('Password changed successfully');
+        closeChangePasswordModal();
+    }
+    
+    function changeSidebarColor(color) {
+        document.getElementById('mainSidebar').style.background = color;
+        document.getElementById('mainSidebar').style.backgroundImage = 'none';
+        localStorage.setItem('sidebar_color', color);
+        showToast('Sidebar color changed');
+    }
+    
+    // ==================== SEARCH ====================
+    function performGlobalSearch() {
+        let term = document.getElementById('globalSearchInput').value.toLowerCase().trim();
+        let dropdown = document.getElementById('searchResultsDropdown');
+        if (searchTimeout) clearTimeout(searchTimeout);
+        if (term === '') { dropdown.classList.remove('active'); return; }
+        searchTimeout = setTimeout(() => {
+            let transResults = transactions.filter(t => t.source.toLowerCase().includes(term));
+            let html = '';
+            if (transResults.length) html += '<div class="p-2 bg-gray-100 text-xs font-semibold">TRANSACTIONS</div>';
+            for (let t of transResults.slice(0, 3)) {
+                html += `<div class="p-2 border-b cursor-pointer hover:bg-gray-50" onclick="goToSectionAndSearch('transactions', '${t.source}')"><div>💰 ${escapeHtml(t.source)}</div><div class="text-xs">${formatCurrency(t.amount)}</div></div>`;
+            }
+            if (!html) html = '<div class="p-3 text-center text-gray-400">No results</div>';
+            dropdown.innerHTML = html;
+            dropdown.classList.add('active');
+        }, 300);
+    }
+    
+    function goToSectionAndSearch(section, value) {
+        document.getElementById('searchResultsDropdown').classList.remove('active');
+        document.getElementById('globalSearchInput').value = value;
+        showSection(section);
+        showToast(`Found: ${value}`);
+    }
+    
+    document.addEventListener('click', (e) => {
+        let inp = document.getElementById('globalSearchInput');
+        let dd = document.getElementById('searchResultsDropdown');
+        if (inp && dd && !inp.contains(e.target) && !dd.contains(e.target)) dd.classList.remove('active');
+    });
+    
+    // ==================== NAVIGATION ====================
+    async function showSection(sectionId) {
+        let sections = ['dashboardSection', 'transactionsSection', 'budgetSection', 'reportsSection', 'messagesSection', 'settingsSection'];
+        sections.forEach(s => { let el = document.getElementById(s); if (el) el.classList.add('hidden'); });
+        document.getElementById(`${sectionId}Section`).classList.remove('hidden');
+        document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+        document.querySelector(`.nav-item[data-section="${sectionId}"]`).classList.add('active');
+        if (sectionId === 'dashboard') await renderDashboard();
+        else if (sectionId === 'transactions') await renderTransactions();
+        else if (sectionId === 'budget') await renderBudget();
+        else if (sectionId === 'reports') await renderReports();
+        else if (sectionId === 'messages') await renderMessages();
+        else if (sectionId === 'settings') renderSettings();
+    }
+    
+    function logout() { if (confirm('Logout?')) window.location.href = 'login_system.html'; }
+    document.getElementById('homeBtn')?.addEventListener('click', () => showSection('dashboard'));
+    document.getElementById('logoutBtn')?.addEventListener('click', logout);
+    document.getElementById('mobileMenuBtn')?.addEventListener('click', () => {
+        document.getElementById('mainSidebar').classList.add('mobile-open');
+        document.getElementById('mobileMenuOverlay').classList.remove('hidden');
+    });
+    document.getElementById('globalSearchInput')?.addEventListener('input', performGlobalSearch);
+    
+    // ==================== INIT ====================
+    let savedDark = localStorage.getItem('finance_dark_mode');
+    if (savedDark === 'true') document.body.classList.add('dark-mode');
+    document.getElementById('darkModeToggle').addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+        localStorage.setItem('finance_dark_mode', document.body.classList.contains('dark-mode'));
+    });
+    
+    let savedColor = localStorage.getItem('sidebar_color');
+    if (savedColor) document.getElementById('mainSidebar').style.background = savedColor;
+    
+    async function init() {
+        let container = document.getElementById('mainContentContainer');
+        container.innerHTML = `<div id="dashboardSection"></div><div id="transactionsSection" class="hidden"></div><div id="budgetSection" class="hidden"></div><div id="reportsSection" class="hidden"></div><div id="messagesSection" class="hidden"></div><div id="settingsSection" class="hidden"></div>`;
+        await renderDashboard();
+        
+        document.querySelectorAll('.nav-item').forEach(nav => nav.addEventListener('click', (e) => { e.preventDefault(); showSection(nav.dataset.section); }));
+    }
+    
+    // Expose functions
+    window.showSection = showSection;
+    window.logout = logout;
+    window.goToMainWebsite = goToMainWebsite;
+    window.closeMobileSidebar = closeMobileSidebar;
+    window.openAddTransactionModal = openAddTransactionModal;
+    window.closeAddTransactionModal = closeAddTransactionModal;
+    window.saveNewTransaction = saveNewTransaction;
+    window.viewTransaction = viewTransaction;
+    window.openAddBudgetModal = openAddBudgetModal;
+    window.closeAddBudgetModal = closeAddBudgetModal;
+    window.saveNewBudget = saveNewBudget;
+    window.openAddReportModal = openAddReportModal;
+    window.closeAddReportModal = closeAddReportModal;
+    window.addReport = addReport;
+    window.openSendReportModal = openSendReportModal;
+    window.closeSendReportModal = closeSendReportModal;
+    window.confirmSendReport = confirmSendReport;
+    window.openStartChatModal = openStartChatModal;
+    window.closeStartChatModal = closeStartChatModal;
+    window.sendNewChat = sendNewChat;
+    window.sendChatMessage = sendChatMessage;
+    window.closeChatModal = closeChatModal;
+    window.openChangePasswordModal = openChangePasswordModal;
+    window.closeChangePasswordModal = closeChangePasswordModal;
+    window.changeUserPassword = changeUserPassword;
+    window.changeSidebarColor = changeSidebarColor;
+    
+    init();
+</script>
+</body>
+</html>
