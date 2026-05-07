@@ -35,7 +35,6 @@ if (!$db) {
 $user_dept = $_SESSION['department_id'];
 $user_role = $_SESSION['role'];
 
-// Determine department_id
 if ($user_dept == 1 || $user_role == 'Super Administrator') {
     $dept_id = isset($data->department_id) ? $data->department_id : null;
 } else {

@@ -36,12 +36,24 @@ $stmt->execute([$user_dept, $user_dept]);
 
 $messages = [];
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+    // Set default values if columns don't exist
+    if (!isset($row['is_read'])) $row['is_read'] = 0;
+    if (!isset($row['is_delivered'])) $row['is_delivered'] = 1;
     $messages[] = $row;
+}
+
+$unreadCount = 0;
+if ($user_dept == 1) {
+    $unreadQuery = "SELECT COUNT(*) as count FROM messages WHERE to_department_id = 1 AND is_read = 0";
+    $unreadStmt = $db->prepare($unreadQuery);
+    $unreadStmt->execute();
+    $unreadCount = $unreadStmt->fetch(PDO::FETCH_ASSOC)['count'];
 }
 
 echo json_encode([
     'success' => true,
     'count' => count($messages),
+    'unread_count' => $unreadCount,
     'data' => $messages
 ]);
 ?>

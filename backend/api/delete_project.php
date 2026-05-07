@@ -28,14 +28,6 @@ if (!$db) {
 }
 
 $id = (int)$data->id;
-$user_dept = $_SESSION['department_id'];
-$user_role = $_SESSION['role'];
-
-// Check permission (only admin can delete)
-if ($user_dept != 1 && $user_role != 'Super Administrator') {
-    echo json_encode(['success' => false, 'message' => 'Only admin can delete projects']);
-    exit();
-}
 
 $stmt = $db->prepare("DELETE FROM projects WHERE id = ?");
 

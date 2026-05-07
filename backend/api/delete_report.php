@@ -28,20 +28,6 @@ if (!$db) {
 }
 
 $id = (int)$data->id;
-$user_dept = $_SESSION['department_id'];
-
-// Check ownership
-if ($user_dept != 1) {
-    $checkQuery = "SELECT department_id FROM reports WHERE id = ?";
-    $checkStmt = $db->prepare($checkQuery);
-    $checkStmt->execute([$id]);
-    $report = $checkStmt->fetch(PDO::FETCH_ASSOC);
-    
-    if (!$report || $report['department_id'] != $user_dept) {
-        echo json_encode(['success' => false, 'message' => 'Access denied']);
-        exit();
-    }
-}
 
 $stmt = $db->prepare("DELETE FROM reports WHERE id = ?");
 

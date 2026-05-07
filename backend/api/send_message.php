@@ -25,12 +25,12 @@ if (!$data) {
 }
 
 if (empty($data->to_department_id)) {
-    echo json_encode(['success' => false, 'message' => 'Recipient department is required']);
+    echo json_encode(['success' => false, 'message' => 'Recipient department required']);
     exit();
 }
 
 if (empty($data->message)) {
-    echo json_encode(['success' => false, 'message' => 'Message content is required']);
+    echo json_encode(['success' => false, 'message' => 'Message content required']);
     exit();
 }
 
@@ -52,7 +52,11 @@ $query = "INSERT INTO messages (from_department_id, to_department_id, message, i
 $stmt = $db->prepare($query);
 
 if ($stmt->execute([$from_dept, $to_dept, $message])) {
-    echo json_encode(['success' => true, 'message' => 'Message sent successfully', 'message_id' => $db->lastInsertId()]);
+    echo json_encode([
+        'success' => true, 
+        'message' => 'Message sent successfully',
+        'data' => ['id' => $db->lastInsertId()]
+    ]);
 } else {
     echo json_encode(['success' => false, 'message' => 'Failed to send message']);
 }

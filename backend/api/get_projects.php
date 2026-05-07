@@ -23,34 +23,63 @@ if (!$db) {
 $user_dept = $_SESSION['department_id'];
 $user_role = $_SESSION['role'];
 
-// Build query based on user role
+// Check if column exists first
+$checkColumn = $db->query("SHOW COLUMNS FROM projects LIKE 'is_viewed_by_admin'");
+$hasViewedColumn = $checkColumn->rowCount() > 0;
+
 if ($user_dept == 1 || $user_role == 'Super Administrator') {
-    // Super admin sees all projects
-    $query = "SELECT p.*, d.name as department_name 
-              FROM projects p 
-              LEFT JOIN departments d ON p.department_id = d.id 
-              ORDER BY p.id DESC";
+    if ($hasViewedColumn) {
+        $query = "SELECT p.*, d.name as department_name 
+                  FROM projects p 
+                  LEFT JOIN departments d ON p.department_id = d.id 
+                  ORDER BY p.id DESC";
+    } else {
+        $query = "SELECT p.*, d.name as department_name, 0 as is_viewed_by_admin
+                  FROM projects p 
+                  LEFT JOIN departments d ON p.department_id = d.id 
+                  ORDER BY p.id DESC";
+    }
     $stmt = $db->prepare($query);
     $stmt->execute();
 } else {
-    // Other departments see only their projects
-    $query = "SELECT p.*, d.name as department_name 
-              FROM projects p 
-              LEFT JOIN departments d ON p.department_id = d.id 
-              WHERE p.department_id = ? 
-              ORDER BY p.id DESC";
+    if ($hasViewedColumn) {
+        $query = "SELECT p.*, d.name as department_name 
+                  FROM projects p 
+                  LEFT JOIN departments d ON p.department_id = d.id 
+                  WHERE p.department_id = ? 
+                  ORDER BY p.id DESC";
+    } else {
+        $query = "SELECT p.*, d.name as department_name, 0 as is_viewed_by_admin
+                  FROM projects p 
+                  LEFT JOIN departments d ON p.department_id = d.id 
+                  WHERE p.department_id = ? 
+                  ORDER BY p.id DESC";
+    }
     $stmt = $db->prepare($query);
     $stmt->execute([$user_dept]);
 }
 
 $projects = [];
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+    if (!isset($row['is_viewed_by_admin'])) {
+        $row['is_viewed_by_admin'] = 0;
+    }
     $projects[] = $row;
+}
+
+// Count unviewed projects (only if column exists)
+$unviewedCount = 0;
+if ($hasViewedColumn && ($user_dept == 1 || $user_role == 'Super Administrator')) {
+    $unviewedQuery = "SELECT COUNT(*) as count FROM projects WHERE is_viewed_by_admin = 0 AND department_id != 1";
+    $unviewedStmt = $db->prepare($unviewedQuery);
+    $unviewedStmt->execute();
+    $unviewedCount = $unviewedStmt->fetch(PDO::FETCH_ASSOC)['count'];
 }
 
 echo json_encode([
     'success' => true,
     'count' => count($projects),
+    'unviewed_count' => $unviewedCount,
     'data' => $projects
 ]);
 ?>

@@ -12,7 +12,8 @@ if (!isset($_SESSION['user_id'])) {
 
 require_once '../config/database.php';
 
-$data = json_decode(file_get_contents('php://input'));
+$rawInput = file_get_contents('php://input');
+$data = json_decode($rawInput);
 
 if (!$data || empty($data->department_id)) {
     echo json_encode(['success' => false, 'message' => 'Department ID required']);
@@ -30,7 +31,6 @@ if (!$db) {
 $other_dept = (int)$data->department_id;
 $user_dept = $_SESSION['department_id'];
 
-// Delete all messages between user and the other department
 $query = "DELETE FROM messages WHERE (from_department_id = ? AND to_department_id = ?) OR (from_department_id = ? AND to_department_id = ?)";
 $stmt = $db->prepare($query);
 

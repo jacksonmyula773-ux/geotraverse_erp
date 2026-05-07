@@ -31,7 +31,6 @@ $id = (int)$data->id;
 $user_dept = $_SESSION['department_id'];
 $user_role = $_SESSION['role'];
 
-// Check if project exists and get its department
 $checkQuery = "SELECT department_id FROM projects WHERE id = ?";
 $checkStmt = $db->prepare($checkQuery);
 $checkStmt->execute([$id]);
@@ -42,52 +41,23 @@ if (!$project) {
     exit();
 }
 
-// Check permission
 if ($user_dept != 1 && $user_role != 'Super Administrator' && $project['department_id'] != $user_dept) {
     echo json_encode(['success' => false, 'message' => 'Access denied']);
     exit();
 }
 
-// Build update query
 $updates = [];
 $params = [];
 
-if (isset($data->name)) {
-    $updates[] = "name = ?";
-    $params[] = $data->name;
-}
-if (isset($data->client_name)) {
-    $updates[] = "client_name = ?";
-    $params[] = $data->client_name;
-}
-if (isset($data->amount)) {
-    $updates[] = "amount = ?";
-    $params[] = $data->amount;
-}
-if (isset($data->location)) {
-    $updates[] = "location = ?";
-    $params[] = $data->location;
-}
-if (isset($data->description)) {
-    $updates[] = "description = ?";
-    $params[] = $data->description;
-}
-if (isset($data->status)) {
-    $updates[] = "status = ?";
-    $params[] = $data->status;
-}
-if (isset($data->progress)) {
-    $updates[] = "progress = ?";
-    $params[] = $data->progress;
-}
-if (isset($data->start_date)) {
-    $updates[] = "start_date = ?";
-    $params[] = $data->start_date;
-}
-if (isset($data->end_date)) {
-    $updates[] = "end_date = ?";
-    $params[] = $data->end_date;
-}
+if (isset($data->name)) { $updates[] = "name = ?"; $params[] = $data->name; }
+if (isset($data->client_name)) { $updates[] = "client_name = ?"; $params[] = $data->client_name; }
+if (isset($data->amount)) { $updates[] = "amount = ?"; $params[] = $data->amount; }
+if (isset($data->location)) { $updates[] = "location = ?"; $params[] = $data->location; }
+if (isset($data->description)) { $updates[] = "description = ?"; $params[] = $data->description; }
+if (isset($data->status)) { $updates[] = "status = ?"; $params[] = $data->status; }
+if (isset($data->progress)) { $updates[] = "progress = ?"; $params[] = $data->progress; }
+if (isset($data->start_date)) { $updates[] = "start_date = ?"; $params[] = $data->start_date; }
+if (isset($data->end_date)) { $updates[] = "end_date = ?"; $params[] = $data->end_date; }
 
 if (empty($updates)) {
     echo json_encode(['success' => false, 'message' => 'No fields to update']);

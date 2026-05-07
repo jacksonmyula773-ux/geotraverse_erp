@@ -15,7 +15,6 @@ class Database {
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->conn->exec("set names utf8");
         } catch(PDOException $e) {
-            // Silent fail - will be caught by caller
             return null;
         }
         return $this->conn;

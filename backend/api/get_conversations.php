@@ -10,14 +10,14 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+require_once '../config/database.php';
+
 $other_dept = isset($_GET['department_id']) ? (int)$_GET['department_id'] : 0;
 
 if ($other_dept <= 0) {
     echo json_encode(['success' => false, 'message' => 'Department ID required']);
     exit();
 }
-
-require_once '../config/database.php';
 
 $database = new Database();
 $db = $database->getConnection();

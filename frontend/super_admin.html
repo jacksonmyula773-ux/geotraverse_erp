@@ -34,15 +34,18 @@
         .search-input { padding: 6px 10px 6px 32px !important; font-size: 13px !important; }
         .search-icon { font-size: 12px !important; left: 10px !important; }
         
-        .password-wrapper { position: relative; width: 100%; }
-        .password-wrapper input { padding-right: 40px !important; }
-        .toggle-password { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #9ca3af; font-size: 16px; }
-        .toggle-password:hover { color: #0f74ba; }
+        .modal { 
+            display: none; 
+            position: fixed; 
+            inset: 0; 
+            background: rgba(0,0,0,0.5); 
+            align-items: center; 
+            justify-content: center; 
+            z-index: 1000; 
+        }
+        .modal-content { background: white; border-radius: 20px; width: 90%; max-width: 600px; max-height: 85vh; overflow-y: auto; padding: 25px; }
         
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000; }
-        .modal-content { background: white; border-radius: 20px; width: 90%; max-width: 550px; max-height: 85vh; overflow-y: auto; padding: 25px; }
-        
-        .toast { position: fixed; bottom: 20px; right: 20px; background: #10b981; color: white; padding: 12px 24px; border-radius: 12px; z-index: 1000; animation: slideInRight 0.3s ease; z-index: 2000; }
+        .toast { position: fixed; bottom: 20px; right: 20px; background: #10b981; color: white; padding: 12px 24px; border-radius: 12px; z-index: 1000; animation: slideInRight 0.3s ease; }
         .toast.error { background: #ef4444; }
         @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         
@@ -54,24 +57,28 @@
         .status-progress { background: #dbeafe; color: #2563eb; }
         .status-completed { background: #d1fae5; color: #059669; }
         
-        .project-card { background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 16px; margin-bottom: 16px; transition: all 0.2s; }
+        .project-card { background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 16px; margin-bottom: 16px; transition: all 0.2s; position: relative; }
         .project-card:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
+        .project-new-badge { position: absolute; top: -8px; right: -8px; background: #ef4444; color: white; border-radius: 50%; width: 22px; height: 22px; font-size: 11px; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; }
         
-        .dept-card { background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 16px; cursor: pointer; transition: all 0.2s; }
+        .dept-card { background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 16px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 12px; }
         .dept-card:hover { transform: translateX(5px); border-color: #0f74ba; background: #f0f9ff; }
+        .dept-icon { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        .dept-info { flex: 1; }
+        .dept-info h4 { font-size: 14px; font-weight: 600; margin: 0; }
+        .dept-info p { font-size: 11px; color: #6b7280; margin: 2px 0 0 0; }
         
-        .message-item { background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 14px; margin-bottom: 12px; cursor: pointer; transition: all 0.2s; }
-        .message-item:hover { background: #f9fafb; transform: translateX(3px); }
+        .message-item { background: white; border-radius: 12px; border: 1px solid #e5e7eb; margin-bottom: 12px; transition: all 0.2s; overflow: hidden; }
+        .message-item:hover { transform: translateX(3px); }
         .message-unread { background: #eff6ff; border-left: 3px solid #3b82f6; }
+        .message-header { padding: 14px 16px 8px 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .message-preview { padding: 0 16px 8px 16px; font-size: 13px; color: #6b7280; cursor: pointer; }
+        .message-time { font-size: 10px; color: #9ca3af; padding: 0 16px 12px 16px; cursor: pointer; }
+        .message-actions { padding: 8px 16px 12px 16px; border-top: 1px solid #e5e7eb; display: flex; gap: 8px; background: #f9fafb; }
         .notification-badge { background: #ef4444; color: white; border-radius: 9999px; padding: 2px 8px; font-size: 10px; margin-left: 8px; }
         
-        /* CHAT STYLES - SEND BOX FIXED CHINI */
         .chat-container { display: flex; flex-direction: column; height: 500px; }
         .chat-messages { flex: 1; overflow-y: auto; padding: 16px; background: #f9fafb; border-radius: 12px; }
-        .chat-input-area { display: flex; gap: 10px; padding: 12px; background: white; border-radius: 12px; border: 1px solid #e5e7eb; margin-top: 12px; flex-shrink: 0; }
-        .chat-input-area textarea { flex: 1; margin: 0; resize: none; padding: 10px !important; font-size: 14px; }
-        .chat-input-area button { padding: 10px 20px; white-space: nowrap; }
-        
         .chat-message { margin-bottom: 16px; display: flex; position: relative; }
         .chat-sent { justify-content: flex-end; }
         .chat-received { justify-content: flex-start; }
@@ -79,41 +86,23 @@
         .chat-sent .chat-bubble { background: #0f74ba; color: white; border-bottom-right-radius: 4px; }
         .chat-received .chat-bubble { background: white; color: #333; border: 1px solid #e5e7eb; border-bottom-left-radius: 4px; }
         .chat-time { font-size: 10px; opacity: 0.7; margin-top: 4px; display: block; }
+        .chat-status { font-size: 9px; margin-top: 2px; display: flex; align-items: center; gap: 4px; }
+        .chat-status .delivered { color: #10b981; }
+        .chat-status .read { color: #3b82f6; }
         .chat-delete-btn { position: absolute; top: 50%; transform: translateY(-50%); right: -30px; background: white; border: 1px solid #e5e7eb; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: opacity 0.2s; color: #ef4444; font-size: 10px; }
         .chat-message:hover .chat-delete-btn { opacity: 1; }
         .chat-sent .chat-delete-btn { right: -30px; }
         .chat-received .chat-delete-btn { left: -30px; right: auto; }
+        .chat-input-area { display: flex; gap: 10px; padding: 12px; background: white; border-radius: 12px; border: 1px solid #e5e7eb; margin-top: 12px; flex-shrink: 0; }
+        .chat-input-area textarea { flex: 1; margin: 0; resize: none; padding: 10px !important; font-size: 14px; }
+        .chat-input-area button { padding: 10px 20px; white-space: nowrap; }
         .delete-conversation-btn { background: #ef4444; color: white; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; margin-bottom: 16px; font-size: 13px; width: 100%; }
         .delete-conversation-btn:hover { background: #dc2626; }
         
-        .empty-chat-message { 
-            text-align: center; 
-            color: #9ca3af; 
-            font-size: 13px; 
-            padding: 30px 20px !important; 
-            background: #f9fafb; 
-            border-radius: 12px;
-            margin: 20px;
-        }
+        .empty-chat-message { text-align: center; color: #9ca3af; font-size: 13px; padding: 30px 20px !important; background: #f9fafb; border-radius: 12px; margin: 20px; }
         
-        .color-settings-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(42px, auto));
-            gap: 10px;
-            justify-content: flex-start;
-            margin-top: 10px;
-        }
-        .color-option { 
-            width: 42px; 
-            height: 42px; 
-            border-radius: 50%; 
-            cursor: pointer; 
-            border: 3px solid transparent; 
-            transition: all 0.2s; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-        }
+        .color-settings-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(42px, auto)); gap: 10px; justify-content: flex-start; margin-top: 10px; }
+        .color-option { width: 42px; height: 42px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: all 0.2s; }
         .color-option:hover { transform: scale(1.1); }
         .color-option.selected { border-color: white; box-shadow: 0 0 0 2px #333; }
         
@@ -136,6 +125,7 @@
         .action-btn.delete { background: #ef4444; color: white; }
         .action-btn.excel { background: #10b981; color: white; }
         .action-btn.pdf { background: #ef4444; color: white; }
+        .action-btn.send { background: #8b5cf6; color: white; }
         
         body.dark-mode { background: #0f172a; }
         body.dark-mode .bg-white, body.dark-mode .stat-card, body.dark-mode .project-card, 
@@ -146,13 +136,15 @@
         body.dark-mode .chat-input-area { background: #1e293b; border-color: #334155; }
         body.dark-mode .chat-delete-btn { background: #1e293b; border-color: #334155; color: #f87171; }
         body.dark-mode .empty-chat-message { background: #1e293b; color: #64748b; }
+        body.dark-mode .message-actions { background: #0f172a; border-color: #334155; }
         body.dark-mode th { background: #1e293b; border-color: #334155; }
         
         .scroll-top { position: fixed; bottom: 20px; right: 20px; background: #0f74ba; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: all 0.3s; z-index: 99; color: white; }
         .scroll-top.visible { opacity: 1; }
         
         .project-image { width: 100%; height: 160px; object-fit: cover; border-radius: 8px; margin-bottom: 12px; cursor: pointer; }
-        .report-sample { background: #f8fafc; border-left: 4px solid #0f74ba; padding: 12px; margin-bottom: 10px; border-radius: 8px; }
+        .report-sample { background: #f8fafc; border-left: 4px solid #0f74ba; padding: 12px; margin-bottom: 10px; border-radius: 8px; position: relative; }
+        .report-new-badge { position: absolute; top: -8px; right: -8px; background: #ef4444; color: white; border-radius: 50%; width: 22px; height: 22px; font-size: 11px; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; }
         body.dark-mode .report-sample { background: #0f172a; }
         
         .role-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; }
@@ -170,8 +162,8 @@
         body.dark-mode .search-result-item { border-bottom-color: #334155; }
         body.dark-mode .search-result-item:hover { background-color: #334155; }
         
-        .dept-link { cursor: pointer; transition: all 0.2s; }
-        .dept-link:hover { text-decoration: underline; color: #0f74ba; }
+        .grid-departments { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 15px; }
+        @media (min-width: 1200px) { .grid-departments { grid-template-columns: repeat(3, 1fr); } }
     </style>
 </head>
 <body>
@@ -182,6 +174,7 @@
     <aside id="mainSidebar" class="sidebar text-white">
         <div class="p-5 border-b border-white/20">
             <div class="flex items-center gap-3">
+                <i class="fas fa-globe-africa text-2xl"></i>
                 <div><span class="text-xl font-bold">GeoTraverse</span><p class="text-[10px] text-white/60">Super Admin</p></div>
             </div>
         </div>
@@ -189,11 +182,11 @@
             <div class="nav-item active" data-section="dashboard"><i class="fas fa-tachometer-alt w-5"></i><span>Dashboard</span></div>
             <div class="nav-item" data-section="employees"><i class="fas fa-users w-5"></i><span>Employees</span></div>
             <div class="nav-item" data-section="departments"><i class="fas fa-building w-5"></i><span>Departments</span></div>
-            <div class="nav-item" data-section="projects"><i class="fas fa-tasks w-5"></i><span>Projects</span></div>
+            <div class="nav-item" data-section="projects"><i class="fas fa-tasks w-5"></i><span>Projects</span><span id="projectBadge" class="notification-badge" style="display:none;">0</span></div>
             <div class="nav-item" data-section="dailywork"><i class="fas fa-calendar-day w-5"></i><span>Daily Work</span></div>
             <div class="nav-item" data-section="cashflow"><i class="fas fa-exchange-alt w-5"></i><span>Cashflow</span></div>
             <div class="nav-item" data-section="messages"><i class="fas fa-envelope w-5"></i><span>Messages</span><span id="msgBadge" class="notification-badge">0</span></div>
-            <div class="nav-item" data-section="reports"><i class="fas fa-chart-line w-5"></i><span>Reports</span></div>
+            <div class="nav-item" data-section="reports"><i class="fas fa-chart-line w-5"></i><span>Reports</span><span id="reportBadge" class="notification-badge" style="display:none;">0</span></div>
             <div class="nav-item" data-section="settings"><i class="fas fa-cog w-5"></i><span>Settings</span></div>
         </nav>
         <div class="p-4 border-t border-white/20">
@@ -206,7 +199,7 @@
             <button id="mobileMenuBtn" class="md:hidden text-gray-600 text-xl"><i class="fas fa-bars"></i></button>
             <div class="relative search-container max-w-[280px] w-full">
                 <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 search-icon text-xs"></i>
-                <input type="text" id="searchInput" placeholder="Search..." class="w-full pl-8 pr-3 py-1.5 border rounded-lg text-sm search-input">
+                <input type="text" id="searchInput" placeholder="Search employees, projects, messages..." class="w-full pl-8 pr-3 py-1.5 border rounded-lg text-sm search-input">
                 <div id="searchResultsDropdown" class="search-results-dropdown"></div>
             </div>
             <button id="darkModeBtn" class="text-gray-500"><i id="darkIcon" class="fas fa-moon text-xl"></i></button>
@@ -224,8 +217,6 @@
 
 <div id="viewProjModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Project Details</h3><div id="viewProjContent"></div><button onclick="closeModal('viewProjModal')" class="w-full bg-gray-200 py-2 rounded mt-3">Close</button></div></div>
 
-<div id="sendProjModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Send Project</h3><input type="hidden" id="sendProjId"><p id="sendProjName" class="text-sm bg-gray-100 p-2 rounded mb-3"></p><select id="sendProjDept" class="mb-3"></select><textarea id="sendProjMsg" rows="3" placeholder="Additional message (optional)"></textarea><div class="flex gap-3 pt-2"><button onclick="confirmSendProject()" class="flex-1 btn-primary">Send</button><button onclick="closeModal('sendProjModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
-
 <div id="dailyworkModal" class="modal"><div class="modal-content"><h3 id="dailyworkModalTitle" class="text-xl font-bold mb-4">Add Daily Work</h3><input type="hidden" id="dailyworkId"><input type="date" id="dailyworkDate"><input type="text" id="dailyworkProject" placeholder="Project Name"><textarea id="dailyworkDesc" rows="2" placeholder="Work Description"></textarea><input type="text" id="dailyworkIncome" placeholder="Income (TZS)"><input type="text" id="dailyworkExpenses" placeholder="Expenses (TZS)"><input type="text" id="dailyworkPaid" placeholder="Paid Amount"><select id="dailyworkStatus"><option value="pending">Pending</option><option value="paid">Paid</option></select><select id="dailyworkDept"></select><div class="flex gap-3 pt-4"><button onclick="saveDailyWork()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('dailyworkModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
 
 <div id="viewDailyworkModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Daily Work Details</h3><div id="viewDailyworkContent"></div><button onclick="closeModal('viewDailyworkModal')" class="w-full bg-gray-200 py-2 rounded mt-3">Close</button></div></div>
@@ -238,11 +229,9 @@
 
 <div id="viewReportModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Report Details</h3><div id="viewReportContent"></div><button onclick="closeModal('viewReportModal')" class="w-full bg-gray-200 py-2 rounded mt-3">Close</button></div></div>
 
-<div id="sendReportModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Send Report</h3><input type="hidden" id="sendReportId"><p id="sendReportTitle" class="text-sm bg-gray-100 p-2 rounded mb-3"></p><select id="sendReportDept" class="mb-3"></select><textarea id="sendReportMsg" rows="3" placeholder="Additional message (optional)"></textarea><div class="flex gap-3 pt-2"><button onclick="confirmSendReport()" class="flex-1 btn-primary">Send</button><button onclick="closeModal('sendReportModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
-
 <div id="msgModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Send Message</h3><select id="msgTo"></select><textarea id="msgContent" rows="4" placeholder="Type your message..."></textarea><div class="flex gap-3 pt-4"><button onclick="sendMessage()" class="flex-1 btn-primary">Send</button><button onclick="closeModal('msgModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
 
-<div id="chatModal" class="modal"><div class="modal-content" style="max-width:650px;"><div class="flex justify-between items-center mb-4"><h3 id="chatModalTitle" class="text-xl font-bold">Chat</h3><button onclick="closeModal('chatModal')" class="text-gray-400 text-2xl hover:text-gray-600">&times;</button></div><button id="deleteConversationBtn" class="delete-conversation-btn"><i class="fas fa-trash-alt mr-2"></i>Delete Entire Conversation</button><div class="chat-container"><div id="chatMessagesArea" class="chat-messages"></div><div class="chat-input-area"><textarea id="replyMsg" rows="2" placeholder="Type your message..."></textarea><button onclick="sendReply()" class="btn-primary">Send</button></div></div></div></div>
+<div id="chatModal" class="modal"><div class="modal-content" style="max-width:700px;"><div class="flex justify-between items-center mb-4"><h3 id="chatModalTitle" class="text-xl font-bold">Chat</h3><button onclick="closeModal('chatModal')" class="text-gray-400 text-2xl hover:text-gray-600">&times;</button></div><button id="deleteConversationBtn" class="delete-conversation-btn"><i class="fas fa-trash-alt mr-2"></i>Delete Entire Conversation</button><div class="chat-container"><div id="chatMessagesArea" class="chat-messages"></div><div class="chat-input-area"><textarea id="replyMsg" rows="2" placeholder="Type your message..."></textarea><button onclick="sendReply()" class="btn-primary">Send</button></div></div></div></div>
 
 <div id="pwdModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Change Password</h3><div class="password-wrapper"><input type="password" id="oldPwd" placeholder="Current Password"><i class="fas fa-eye toggle-password" onclick="togglePassword('oldPwd')"></i></div><div class="password-wrapper mt-2"><input type="password" id="newPwd" placeholder="New Password"><i class="fas fa-eye toggle-password" onclick="togglePassword('newPwd')"></i></div><div class="password-wrapper mt-2"><input type="password" id="confirmPwd" placeholder="Confirm Password"><i class="fas fa-eye toggle-password" onclick="togglePassword('confirmPwd')"></i></div><div class="flex gap-3 pt-4"><button onclick="changePassword()" class="flex-1 btn-primary">Change</button><button onclick="closeModal('pwdModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
 
@@ -254,6 +243,18 @@
     // ==================== CONFIGURATION ====================
     const API_BASE = '../backend/api/';
     let searchTimeout = null;
+    let currentChatDept = null;
+    let currentChatDeptName = null;
+    let statusChart = null;
+    let currentProjectImageFile = null;
+    let projectsData = [];
+    let employeesData = [];
+    let dailyworkData = [];
+    let transactionsData = [];
+    let reportsData = [];
+    let messagesData = [];
+    let unviewedProjectsCount = 0;
+    let unviewedReportsCount = 0;
     
     const departmentNames = {
         1: "Super Admin", 2: "Finance", 3: "Sales & Marketing", 4: "Manager",
@@ -261,18 +262,26 @@
         9: "Architectural", 10: "Survey", 11: "Construction", 12: "Hatimiliki"
     };
     
+    const departmentIcons = {
+        2: "fa-coins", 3: "fa-chart-line", 4: "fa-user-tie", 5: "fa-calendar-check",
+        6: "fa-cubes", 7: "fa-industry", 8: "fa-city", 9: "fa-draw-polygon",
+        10: "fa-drafting-compass", 11: "fa-hard-hat", 12: "fa-file-contract"
+    };
+    
+    const departmentColors = {
+        2: "bg-emerald-100 text-emerald-600", 3: "bg-orange-100 text-orange-600",
+        4: "bg-blue-100 text-blue-600", 5: "bg-cyan-100 text-cyan-600",
+        6: "bg-amber-100 text-amber-600", 7: "bg-gray-100 text-gray-600",
+        8: "bg-indigo-100 text-indigo-600", 9: "bg-pink-100 text-pink-600",
+        10: "bg-teal-100 text-teal-600", 11: "bg-yellow-100 text-yellow-600",
+        12: "bg-green-100 text-green-600"
+    };
+    
     const departmentFiles = {
-        2: "finance.html",
-        3: "sales_marketing.html",
-        4: "manager.html",
-        5: "secretary.html",
-        6: "bricks_timber.html",
-        7: "aluminium.html",
-        8: "town_planning.html",
-        9: "architectural.html",
-        10: "survey.html",
-        11: "construction.html",
-        12: "hatimiliki.html"
+        2: "finance.html", 3: "sales_marketing.html", 4: "manager.html",
+        5: "secretary.html", 6: "bricks_timber.html", 7: "aluminium.html",
+        8: "town_planning.html", 9: "architectural.html", 10: "survey.html",
+        11: "construction.html", 12: "hatimiliki.html"
     };
     
     const rolesList = [
@@ -292,17 +301,6 @@
     ];
     
     const colorOptions = ["#0f74ba", "#1e3a5f", "#7c3aed", "#059669", "#dc2626", "#d97706", "#0d9488", "#db2777", "#4f46e5", "#10b981", "#06b6d4", "#e11d48"];
-    
-    let currentChatDept = null;
-    let currentChatDeptName = null;
-    let statusChart = null;
-    let currentProjectImageFile = null;
-    let projectsData = [];
-    let employeesData = [];
-    let dailyworkData = [];
-    let transactionsData = [];
-    let reportsData = [];
-    let messagesData = [];
     
     // ==================== HELPER FUNCTIONS ====================
     function showToast(msg, isError) { 
@@ -353,13 +351,53 @@
         return roleItem ? roleItem.class : 'role-staff';
     }
     
+    // Update badges
+    function updateProjectBadge() {
+        const badge = document.getElementById('projectBadge');
+        if (unviewedProjectsCount > 0) {
+            badge.style.display = 'inline-block';
+            badge.innerText = unviewedProjectsCount;
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+    
+    function updateReportBadge() {
+        const badge = document.getElementById('reportBadge');
+        if (unviewedReportsCount > 0) {
+            badge.style.display = 'inline-block';
+            badge.innerText = unviewedReportsCount;
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+    
+    // Mark project as viewed
+    async function markProjectAsViewed(projectId) {
+        const res = await apiCall('mark_project_viewed.php', 'POST', { project_id: projectId });
+        if (res.success) {
+            await loadProjects();
+        }
+    }
+    
+    // Mark report as viewed
+    async function markReportAsViewed(reportId) {
+        const res = await apiCall('mark_report_viewed.php', 'POST', { report_id: reportId });
+        if (res.success) {
+            await loadReports();
+        }
+    }
+    
+    // Mark message as read
+    async function markMessageAsRead(messageId) {
+        await apiCall('mark_message_read.php', 'POST', { message_id: messageId });
+    }
+    
     // Go to department dashboard
-    function goToDepartmentDashboard(deptId, deptName) {
+    function goToDepartmentDashboard(deptId) {
         const file = departmentFiles[deptId];
         if (file) {
-            if (confirm(`Go to ${deptName} dashboard?`)) {
-                window.open(file, '_blank');
-            }
+            window.open(file, '_blank');
         } else {
             showToast('Department dashboard not available', true);
         }
@@ -408,7 +446,7 @@
     async function loadDepartmentsForDropdowns() {
         const res = await apiCall('get_departments.php');
         if (res.success && res.data) {
-            const deptSelects = ['empDept', 'projDept', 'dailyworkDept', 'transDept', 'msgTo', 'sendProjDept', 'sendReportDept'];
+            const deptSelects = ['empDept', 'projDept', 'dailyworkDept', 'transDept', 'msgTo'];
             deptSelects.forEach(selectId => {
                 const select = document.getElementById(selectId);
                 if (select) {
@@ -436,32 +474,42 @@
     async function loadDashboard() {
         document.getElementById('mainContainer').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div><span class="ml-3">Loading dashboard...</span></div>';
         
-        const [employees, projects, dailywork, transactions, messages] = await Promise.all([
-            apiCall('get_employees.php'), apiCall('get_projects.php'), apiCall('get_dailywork.php'),
-            apiCall('get_transactions.php'), apiCall('get_messages.php')
-        ]);
+        // Fetch all data
+        const statsRes = await apiCall('get_dashboard_stats.php');
+        const employeesRes = await apiCall('get_employees.php');
+        const projectsRes = await apiCall('get_projects.php');
+        const dailyworkRes = await apiCall('get_dailywork.php');
+        const transactionsRes = await apiCall('get_transactions.php');
+        const messagesRes = await apiCall('get_messages.php');
         
-        const empList = employees.success ? (employees.data || []) : [];
-        employeesData = empList;
-        const projList = projects.success ? (projects.data || []) : [];
-        projectsData = projList;
-        dailyworkData = dailywork.success ? (dailywork.data || []) : [];
-        const transList = transactions.success ? (transactions.data || []) : [];
-        transactionsData = transList;
-        const msgList = messages.success ? (messages.data || []) : [];
-        messagesData = msgList;
+        // Update global data
+        employeesData = employeesRes.success ? (employeesRes.data || []) : [];
+        projectsData = projectsRes.success ? (projectsRes.data || []) : [];
+        unviewedProjectsCount = projectsRes.unviewed_count || 0;
+        dailyworkData = dailyworkRes.success ? (dailyworkRes.data || []) : [];
+        transactionsData = transactionsRes.success ? (transactionsRes.data || []) : [];
+        messagesData = messagesRes.success ? (messagesRes.data || []) : [];
         
-        const unreadCount = msgList.filter(m => m.to_department_id === 1 && !m.is_read).length;
+        const unreadCount = messagesRes.unread_count || messagesData.filter(m => m.to_department_id === 1 && !m.is_read).length;
         document.getElementById('msgBadge').innerText = unreadCount;
+        updateProjectBadge();
         
-        let totalIncome = 0, totalExpense = 0;
-        transList.forEach(t => {
-            if (t.type === 'income') totalIncome += parseFloat(t.amount);
-            else totalExpense += parseFloat(t.amount);
-        });
+        // Get stats from API or calculate
+        let totalEmployees = statsRes.success ? statsRes.data.total_employees : employeesData.length;
+        let totalProjects = statsRes.success ? statsRes.data.total_projects : projectsData.length;
+        let totalIncome = statsRes.success ? statsRes.data.total_income : 0;
+        let totalExpense = statsRes.success ? statsRes.data.total_expenses : 0;
+        let netProfit = statsRes.success ? statsRes.data.net_profit : 0;
+        
+        // Calculate from transactions if API failed
+        if (!statsRes.success && transactionsData.length > 0) {
+            totalIncome = transactionsData.filter(t => t.type === 'income').reduce((s, t) => s + parseFloat(t.amount), 0);
+            totalExpense = transactionsData.filter(t => t.type === 'expense').reduce((s, t) => s + parseFloat(t.amount), 0);
+            netProfit = totalIncome - totalExpense;
+        }
         
         let pending = 0, inProgress = 0, completed = 0;
-        projList.forEach(p => {
+        projectsData.forEach(p => {
             if (p.status === 'pending') pending++;
             else if (p.status === 'in_progress') inProgress++;
             else if (p.status === 'completed') completed++;
@@ -470,15 +518,15 @@
         const html = `
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-5">
                 <div class="stat-card cursor-pointer" onclick="loadSection('employees')">
-                    <div><p class="text-gray-500 text-xs">Employees</p><p class="text-2xl font-bold">${empList.length}</p></div>
+                    <div><p class="text-gray-500 text-xs">Employees</p><p class="text-2xl font-bold">${totalEmployees}</p></div>
                     <i class="fas fa-users text-blue-500 text-2xl"></i>
                 </div>
                 <div class="stat-card cursor-pointer" onclick="loadSection('projects')">
-                    <div><p class="text-gray-500 text-xs">Projects</p><p class="text-2xl font-bold">${projList.length}</p></div>
+                    <div><p class="text-gray-500 text-xs">Projects</p><p class="text-2xl font-bold">${totalProjects}</p>${unviewedProjectsCount > 0 ? `<span class="text-xs text-red-500 ml-2">+${unviewedProjectsCount} new</span>` : ''}</div>
                     <i class="fas fa-tasks text-green-500 text-2xl"></i>
                 </div>
                 <div class="stat-card cursor-pointer" onclick="loadSection('cashflow')">
-                    <div><p class="text-gray-500 text-xs">Net Profit</p><p class="text-2xl font-bold ${totalIncome - totalExpense >= 0 ? 'text-green-600' : 'text-red-600'}">${formatMoney(totalIncome - totalExpense)}</p></div>
+                    <div><p class="text-gray-500 text-xs">Net Profit</p><p class="text-2xl font-bold ${netProfit >= 0 ? 'text-green-600' : 'text-red-600'}">${formatMoney(netProfit)}</p></div>
                     <i class="fas fa-chart-line text-blue-500 text-2xl"></i>
                 </div>
                 <div class="stat-card cursor-pointer" onclick="loadSection('messages')">
@@ -513,7 +561,7 @@
             statusChart = new Chart(ctx, {
                 type: 'doughnut',
                 data: { labels: ['Pending', 'In Progress', 'Completed'], datasets: [{ data: [pending, inProgress, completed], backgroundColor: ['#f59e0b', '#3b82f6', '#10b981'] }] },
-                options: { responsive: true }
+                options: { responsive: true, maintainAspectRatio: true }
             });
         }
     }
@@ -529,11 +577,11 @@
         
         for (let e of employeesData) {
             html += `<tr class="border-b employee-row"><td class="p-3">${e.id}</td><td class="p-3 font-medium">${escapeHtml(e.name)}</td><td class="p-3">${escapeHtml(e.email)}</td><td class="p-3"><span class="status-badge status-progress">${departmentNames[e.department_id] || e.department_id}</span></td><td class="p-3"><span class="role-badge ${getRoleBadgeClass(e.role)}">${e.role || 'Staff'}</span></td><td class="p-3 text-green-600">${formatMoney(e.salary)}</td>
-            <td class="p-3"><div class="action-buttons"><button onclick="viewEmployee(${e.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="openEditEmployeeModal(${e.id})" class="action-btn edit"><i class="fas fa-edit"></i></button><button onclick="deleteEmployee(${e.id})" class="action-btn delete"><i class="fas fa-trash"></i></button></div></td>
+            <td class="p-3"><div class="action-buttons"><button onclick="viewEmployee(${e.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="openEditEmployeeModal(${e.id})" class="action-btn edit"><i class="fas fa-edit"></i></button><button onclick="deleteEmployee(${e.id})" class="action-btn delete"><i class="fas fa-trash"></i></button></div></tr>
             </tr>`;
         }
         if (employeesData.length === 0) html += `<tr><td colspan="7" class="text-center py-8 text-gray-400">No employees found</td></tr>`;
-        html += `</tbody></table></div></div>`;
+        html += `</tbody>}</div></div>`;
         document.getElementById('mainContainer').innerHTML = html;
     }
     
@@ -593,14 +641,8 @@
         };
         
         let password = document.getElementById('empPassword').value;
-        if (password) {
-            data.password = password;
-        }
-        
-        if (!data.name || !data.email) { 
-            showToast('Name and email required', true); 
-            return; 
-        }
+        if (password) data.password = password;
+        if (!data.name || !data.email) { showToast('Name and email required', true); return; }
         
         let res;
         if (id) {
@@ -644,78 +686,69 @@
     
     async function exportEmployeesToPDF() {
         let element = document.createElement('div');
-        element.innerHTML = `<div style="padding:20px"><h1>Employees Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><thead><tr><th>Name</th><th>Email</th><th>Department</th><th>Role</th><th>Salary</th></tr></thead><tbody>${employeesData.map(e => `<tr><td class="px-2 py-1">${e.name}</td><td class="px-2 py-1">${e.email}</td><td class="px-2 py-1">${departmentNames[e.department_id]}</td><td class="px-2 py-1">${e.role || 'Staff'}</td><td class="px-2 py-1">${formatMoney(e.salary)}</td></tr>`).join('')}</tbody></table></div>`;
+        element.innerHTML = `<div style="padding:20px"><h1>Employees Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><thead><tr><th>Name</th><th>Email</th><th>Department</th><th>Role</th><th>Salary</th></tr></thead><tbody>${employeesData.map(e => `<tr><td class="px-2 py-1">${e.name}</td><td class="px-2 py-1">${e.email}</td><td class="px-2 py-1">${departmentNames[e.department_id]}</td><td class="px-2 py-1">${e.role || 'Staff'}</td><td class="px-2 py-1">${formatMoney(e.salary)}</td></tr>`).join('')}</tbody>}</div>`;
         html2pdf().set({ margin: 0.5, filename: `employees_report.pdf` }).from(element).save();
         showToast('Exported to PDF');
     }
     
-    // ==================== DEPARTMENTS (with clickable links) ====================
+    // ==================== DEPARTMENTS ====================
     async function loadDepartments() {
         document.getElementById('mainContainer').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div><span class="ml-3">Loading departments...</span></div>';
         const res = await apiCall('get_departments.php');
         const depts = res.success ? (res.data || []) : [];
         
-        const icons = {1:"fa-user-cog",2:"fa-coins",3:"fa-chart-line",4:"fa-user-tie",5:"fa-calendar-check",6:"fa-cubes",7:"fa-industry",8:"fa-city",9:"fa-draw-polygon",10:"fa-drafting-compass",11:"fa-hard-hat",12:"fa-file-contract"};
-        
         let html = `<h2 class="text-xl font-bold mb-4"><i class="fas fa-building text-blue-500 mr-2"></i>Departments (${depts.length})</h2>
-        <p class="text-sm text-gray-500 mb-4">Click on any department to open its dashboard</p>
+        <p class="text-sm text-gray-500 mb-4">Click on any department card to open its dashboard</p>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">`;
         
         for (let d of depts) {
             const canNavigate = d.id !== 1 && departmentFiles[d.id];
-            const cursorClass = canNavigate ? 'cursor-pointer hover:shadow-md' : 'cursor-default';
-            const onClickAction = canNavigate ? `goToDepartmentDashboard(${d.id}, '${escapeHtml(d.name)}')` : '';
+            const iconClass = departmentColors[d.id] || 'bg-gray-100 text-gray-600';
+            const icon = departmentIcons[d.id] || 'fa-building';
             
-            html += `<div class="dept-card ${cursorClass}" onclick="${onClickAction}">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                        <i class="fas ${icons[d.id] || 'fa-building'} text-blue-600"></i>
-                    </div>
-                    <div class="flex-1">
-                        <h3 class="font-semibold">${escapeHtml(d.name)}</h3>
-                        <p class="text-sm text-gray-500">${d.email}</p>
-                    </div>
-                    ${canNavigate ? '<i class="fas fa-external-link-alt text-gray-400 text-sm"></i>' : ''}
+            html += `<div class="dept-card" onclick="goToDepartmentDashboard(${d.id})">
+                <div class="dept-icon ${iconClass}">
+                    <i class="fas ${icon} text-xl"></i>
                 </div>
+                <div class="dept-info">
+                    <h4>${escapeHtml(d.name)}</h4>
+                    <p>${d.email}</p>
+                </div>
+                ${canNavigate ? '<i class="fas fa-external-link-alt text-gray-400 text-sm"></i>' : ''}
             </div>`;
         }
         html += `</div>`;
         document.getElementById('mainContainer').innerHTML = html;
     }
     
-    // Go to department dashboard
-    function goToDepartmentDashboard(deptId, deptName) {
-        const file = departmentFiles[deptId];
-        if (file) {
-            if (confirm(`Open ${deptName} dashboard in new tab?`)) {
-                window.open(file, '_blank');
-            }
-        } else {
-            showToast('Department dashboard not available', true);
-        }
-    }
-    
-    // ==================== PROJECTS (Simplified) ====================
+    // ==================== PROJECTS ====================
     async function loadProjects() {
         document.getElementById('mainContainer').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div><span class="ml-3">Loading projects...</span></div>';
         const res = await apiCall('get_projects.php');
         projectsData = res.success ? (res.data || []) : [];
+        unviewedProjectsCount = res.unviewed_count || 0;
+        updateProjectBadge();
         
         let html = `<div class="flex justify-between flex-wrap gap-3 mb-4"><h2 class="text-xl font-bold"><i class="fas fa-tasks text-green-500 mr-2"></i>Projects (${projectsData.length})</h2><div class="flex gap-2"><button onclick="exportProjectsToExcel()" class="btn-success"><i class="fas fa-file-excel mr-1"></i> Excel</button><button onclick="exportProjectsToPDF()" class="btn-danger"><i class="fas fa-file-pdf mr-1"></i> PDF</button><button onclick="openAddProjectModal()" class="btn-primary"><i class="fas fa-plus mr-1"></i> Add Project</button></div></div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="projectsGrid"></div>`;
         document.getElementById('mainContainer').innerHTML = html;
         
-        document.getElementById('projectsGrid').innerHTML = projectsData.map(p => `
-            <div class="project-card">
-                ${p.image ? `<img src="/geotraverse/frontend/${p.image}" class="project-image" onclick="viewFullImage('${p.image}')">` : '<div class="project-image bg-gray-100 flex items-center justify-center text-gray-400"><i class="fas fa-image text-3xl"></i></div>'}
-                <div class="flex justify-between items-start"><h4 class="font-semibold">${escapeHtml(p.name)}</h4><span class="status-badge ${p.status === 'pending' ? 'status-pending' : p.status === 'in_progress' ? 'status-progress' : 'status-completed'}">${p.status}</span></div>
-                <p class="text-sm text-gray-500 mt-1">${escapeHtml(p.client_name || 'N/A')}</p>
-                <p class="text-lg font-bold text-blue-600 mt-2">${formatMoney(p.amount)}</p>
-                <div class="mt-2"><div class="flex justify-between text-xs"><span>Progress</span><span>${p.progress || 0}%</span></div><div class="w-full bg-gray-200 rounded-full h-1.5 mt-1"><div class="bg-blue-600 h-1.5 rounded-full" style="width:${p.progress || 0}%"></div></div></div>
-                <div class="action-buttons mt-3"><button onclick="viewProject(${p.id})" class="action-btn view"><i class="fas fa-eye"></i> View</button><button onclick="openEditProjectModal(${p.id})" class="action-btn edit"><i class="fas fa-edit"></i> Edit</button><button onclick="deleteProject(${p.id})" class="action-btn delete"><i class="fas fa-trash"></i> Delete</button><button onclick="exportSingleProject(${p.id})" class="action-btn excel"><i class="fas fa-file-excel"></i> Excel</button><button onclick="exportSingleProjectPDF(${p.id})" class="action-btn pdf"><i class="fas fa-file-pdf"></i> PDF</button><button onclick="openSendProjectModal(${p.id})" class="action-btn send"><i class="fas fa-paper-plane"></i> Send</button></div>
-            </div>
-        `).join('');
-        if (projectsData.length === 0) document.getElementById('projectsGrid').innerHTML = '<div class="col-span-3 text-center py-8 text-gray-400">No projects found</div>';
+        if (projectsData.length === 0) {
+            document.getElementById('projectsGrid').innerHTML = '<div class="col-span-3 text-center py-8 text-gray-400">No projects found. Click "Add Project" to create one.</div>';
+        } else {
+            document.getElementById('projectsGrid').innerHTML = projectsData.map(p => {
+                const isUnviewed = p.is_viewed_by_admin == 0 && p.department_id != 1;
+                return `<div class="project-card relative">
+                    ${isUnviewed ? '<div class="project-new-badge" onclick="event.stopPropagation(); markProjectAsViewed(' + p.id + ')">!</div>' : ''}
+                    ${p.image ? `<img src="/geotraverse/frontend/${p.image}" class="project-image" onclick="viewFullImage('${p.image}')">` : '<div class="project-image bg-gray-100 flex items-center justify-center text-gray-400"><i class="fas fa-image text-3xl"></i></div>'}
+                    <div class="flex justify-between items-start"><h4 class="font-semibold">${escapeHtml(p.name)}</h4><span class="status-badge ${p.status === 'pending' ? 'status-pending' : p.status === 'in_progress' ? 'status-progress' : 'status-completed'}">${p.status}</span></div>
+                    <p class="text-sm text-gray-500 mt-1">${escapeHtml(p.client_name || 'N/A')}</p>
+                    <p class="text-lg font-bold text-blue-600 mt-2">${formatMoney(p.amount)}</p>
+                    <div class="mt-2"><div class="flex justify-between text-xs"><span>Progress</span><span>${p.progress || 0}%</span></div><div class="w-full bg-gray-200 rounded-full h-1.5 mt-1"><div class="bg-blue-600 h-1.5 rounded-full" style="width:${p.progress || 0}%"></div></div></div>
+                    <div class="action-buttons mt-3"><button onclick="viewProject(${p.id})" class="action-btn view"><i class="fas fa-eye"></i> View</button><button onclick="openEditProjectModal(${p.id})" class="action-btn edit"><i class="fas fa-edit"></i> Edit</button><button onclick="deleteProject(${p.id})" class="action-btn delete"><i class="fas fa-trash"></i> Delete</button><button onclick="exportSingleProject(${p.id})" class="action-btn excel"><i class="fas fa-file-excel"></i> Excel</button><button onclick="exportSingleProjectPDF(${p.id})" class="action-btn pdf"><i class="fas fa-file-pdf"></i> PDF</button></div>
+                </div>`;
+            }).join('');
+        }
     }
     
     function viewFullImage(imagePath) {
@@ -725,6 +758,7 @@
     async function viewProject(id) {
         const p = projectsData.find(p => p.id === id);
         if (p) {
+            if (p.is_viewed_by_admin == 0 && p.department_id != 1) await markProjectAsViewed(id);
             document.getElementById('viewProjContent').innerHTML = `
                 ${p.image ? `<img src="/geotraverse/frontend/${p.image}" class="w-full h-40 object-cover rounded-lg mb-3 cursor-pointer" onclick="viewFullImage('${p.image}')">` : ''}
                 <p><strong>Name:</strong> ${escapeHtml(p.name)}</p>
@@ -734,7 +768,8 @@
                 <p><strong>Status:</strong> ${p.status}</p>
                 <p><strong>Progress:</strong> ${p.progress}%</p>
                 <p><strong>Description:</strong> ${escapeHtml(p.description || 'N/A')}</p>
-                <p><strong>Created:</strong> ${formatDate(p.created_at)}</p>`;
+                <p><strong>Created:</strong> ${formatDate(p.created_at)}</p>
+                <p><strong>Department:</strong> ${departmentNames[p.department_id] || 'N/A'}</p>`;
             openModal('viewProjModal');
         }
     }
@@ -826,26 +861,6 @@
         }
     }
     
-    function openSendProjectModal(id) {
-        const p = projectsData.find(p => p.id === id);
-        if (p) {
-            document.getElementById('sendProjId').value = id;
-            document.getElementById('sendProjName').innerHTML = `<strong>${escapeHtml(p.name)}</strong> - ${formatMoney(p.amount)}`;
-            document.getElementById('sendProjMsg').value = '';
-            openModal('sendProjModal');
-        }
-    }
-    
-    async function confirmSendProject() {
-        const id = document.getElementById('sendProjId').value;
-        const toDept = document.getElementById('sendProjDept').value;
-        const msg = document.getElementById('sendProjMsg').value;
-        if (!toDept) { showToast('Select department', true); return; }
-        const res = await apiCall('send_project.php', 'POST', { project_id: id, to_department_id: toDept, message: msg });
-        if (res.success) { showToast('Project sent'); closeModal('sendProjModal'); }
-        else showToast(res.message || 'Failed', true);
-    }
-    
     async function exportProjectsToExcel() {
         let ws = [['ID', 'Name', 'Client', 'Amount', 'Location', 'Status', 'Progress', 'Created']];
         projectsData.forEach(p => ws.push([p.id, p.name, p.client_name || '-', p.amount, p.location || '-', p.status, p.progress, p.created_at]));
@@ -857,7 +872,7 @@
     
     async function exportProjectsToPDF() {
         let element = document.createElement('div');
-        element.innerHTML = `<div style="padding:20px"><h1>Projects Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><thead><tr><th>Name</th><th>Client</th><th>Amount</th><th>Status</th><th>Progress</th></tr></thead><tbody>${projectsData.map(p => `<tr><td class="px-2 py-1">${p.name}</td><td class="px-2 py-1">${p.client_name || '-'}</td><td class="px-2 py-1">${formatMoney(p.amount)}</td><td class="px-2 py-1">${p.status}</td><td class="px-2 py-1">${p.progress}%</td></tr>`).join('')}</tbody></table></div>`;
+        element.innerHTML = `<div style="padding:20px"><h1>Projects Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><thead><tr><th>Name</th><th>Client</th><th>Amount</th><th>Status</th><th>Progress</th></tr></thead><tbody>${projectsData.map(p => `<tr><td class="px-2 py-1">${p.name}</td><td class="px-2 py-1">${p.client_name || '-'}</td><td class="px-2 py-1">${formatMoney(p.amount)}</td><td class="px-2 py-1">${p.status}</td><td class="px-2 py-1">${p.progress}%</td></tr>`).join('')}</tbody>}</div>`;
         html2pdf().set({ margin: 0.5, filename: `projects_report.pdf` }).from(element).save();
         showToast('Exported to PDF');
     }
@@ -878,7 +893,7 @@
         const p = projectsData.find(p => p.id === id);
         if (p) {
             let element = document.createElement('div');
-            element.innerHTML = `<div style="padding:20px"><h1 style="color:#0f74ba">${escapeHtml(p.name)}</h1><p><strong>Client:</strong> ${p.client_name || 'N/A'}</p><p><strong>Amount:</strong> ${formatMoney(p.amount)}</p><p><strong>Status:</strong> ${p.status}</p><p><strong>Progress:</strong> ${p.progress}%</p><p><strong>Location:</strong> ${p.location || 'N/A'}</p><p><strong>Description:</strong> ${p.description || 'N/A'}</p><p>Generated: ${new Date().toLocaleString()}</p></div>`;
+            element.innerHTML = `<div style="padding:20px"><h1 style="color:#0f74ba">${escapeHtml(p.name)}</h1><p><strong>Client:</strong> ${p.client_name || 'N/A'}</p><p><strong>Amount:</strong> ${formatMoney(p.amount)}</p><p><strong>Status:</strong> ${p.status}</p><p><strong>Progress:</strong> ${p.progress}%</p><p><strong>Location:</strong> ${p.location || 'N/A'}</p><p><strong>Department:</strong> ${departmentNames[p.department_id] || 'N/A'}</p><p><strong>Description:</strong> ${p.description || 'N/A'}</p><p>Generated: ${new Date().toLocaleString()}</p></div>`;
             html2pdf().set({ margin: 0.5, filename: `project_${p.id}.pdf` }).from(element).save();
             showToast('Exported to PDF');
         }
@@ -918,7 +933,7 @@
     
     async function exportDailyWorkToPDF() {
         let element = document.createElement('div');
-        element.innerHTML = `<div style="padding:20px"><h1>Daily Work Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><thead><tr><th>Date</th><th>Project</th><th>Income</th><th>Expenses</th><th>Profit</th><th>Status</th></tr></thead><tbody>${dailyworkData.map(w => `<tr><td class="px-2 py-1">${w.date}</td><td class="px-2 py-1">${w.project_name}</td><td class="px-2 py-1">${formatMoney(w.income)}</td><td class="px-2 py-1">${formatMoney(w.expenses)}</td><td class="px-2 py-1">${formatMoney(w.income - w.expenses)}</td><td class="px-2 py-1">${w.status}</td></tr>`).join('')}</tbody>}</div>`;
+        element.innerHTML = `<div style="padding:20px"><h1>Daily Work Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><thead><tr><th>Date</th><th>Project</th><th>Income</th><th>Expenses</th><th>Profit</th><th>Status</th></tr></thead><tbody>${dailyworkData.map(w => `<td><td class="px-2 py-1">${w.date}</td><td class="px-2 py-1">${w.project_name}</td><td class="px-2 py-1">${formatMoney(w.income)}</td><td class="px-2 py-1">${formatMoney(w.expenses)}</td><td class="px-2 py-1">${formatMoney(w.income - w.expenses)}</td><td class="px-2 py-1">${w.status}</td></tr>`).join('')}</tbody>}</div>`;
         html2pdf().set({ margin: 0.5, filename: `dailywork_report.pdf` }).from(element).save();
         showToast('Exported to PDF');
     }
@@ -1029,8 +1044,8 @@
             <td class="p-2">${escapeHtml(t.source)}</td>
             <td class="p-2 ${t.type === 'income' ? 'text-green-600' : 'text-red-600'}">${formatMoney(t.amount)}</td>
             <td class="p-2"><span class="status-badge ${t.status === 'paid' ? 'status-completed' : 'status-pending'}">${t.status}</span></td>
-            <td class="p-2"><div class="action-buttons"><button onclick="viewTransaction(${t.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="openEditTransactionModal(${t.id})" class="action-btn edit"><i class="fas fa-edit"></i></button><button onclick="deleteTransaction(${t.id})" class="action-btn delete"><i class="fas fa-trash"></i></button></div></td>
-            </tr>`;
+            <td class="p-2"><div class="action-buttons"><button onclick="viewTransaction(${t.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="deleteTransaction(${t.id})" class="action-btn delete"><i class="fas fa-trash"></i></button></div></td>
+            <tr>`;
         }
         if (transactionsData.length === 0) html += `<tr><td colspan="7" class="text-center py-8 text-gray-400">No transactions found</td></tr>`;
         html += `</tbody>}</div></div>`;
@@ -1048,7 +1063,7 @@
     
     async function exportCashflowToPDF() {
         let element = document.createElement('div');
-        element.innerHTML = `<div style="padding:20px"><h1>Cashflow Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><thead><tr><th>Date</th><th>Type</th><th>Source</th><th>Amount</th></tr></thead><tbody>${transactionsData.map(t => `<tr><td class="px-2 py-1">${t.transaction_date}</td><td class="px-2 py-1">${t.type}</td><td class="px-2 py-1">${t.source}</td><td class="px-2 py-1">${formatMoney(t.amount)}</td></tr>`).join('')}</tbody>}</div>`;
+        element.innerHTML = `<div style="padding:20px"><h1>Cashflow Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><thead><tr><th>Date</th><th>Type</th><th>Source</th><th>Amount</th><tr></thead><tbody>${transactionsData.map(t => `<tr><td class="px-2 py-1">${t.transaction_date}</td><td class="px-2 py-1">${t.type}</td><td class="px-2 py-1">${t.source}</td><td class="px-2 py-1">${formatMoney(t.amount)}</td></tr>`).join('')}</tbody>}</div>`;
         html2pdf().set({ margin: 0.5, filename: `cashflow_report.pdf` }).from(element).save();
         showToast('Exported to PDF');
     }
@@ -1056,16 +1071,7 @@
     async function viewTransaction(id) {
         const t = transactionsData.find(t => t.id === id);
         if (t) {
-            document.getElementById('viewTransContent').innerHTML = `
-                <p><strong>Date:</strong> ${t.transaction_date || t.created_at}</p>
-                <p><strong>Type:</strong> ${t.type}</p>
-                <p><strong>Department:</strong> ${departmentNames[t.department_id]}</p>
-                <p><strong>Source:</strong> ${escapeHtml(t.source)}</p>
-                <p><strong>Amount:</strong> ${formatMoney(t.amount)}</p>
-                <p><strong>Paid Amount:</strong> ${formatMoney(t.paid_amount)}</p>
-                <p><strong>Status:</strong> ${t.status}</p>
-                <p><strong>Description:</strong> ${escapeHtml(t.description || 'N/A')}</p>`;
-            openModal('viewTransModal');
+            alert(`Transaction Details:\nDate: ${t.transaction_date}\nType: ${t.type}\nSource: ${t.source}\nAmount: ${formatMoney(t.amount)}\nStatus: ${t.status}\nDescription: ${t.description || 'N/A'}`);
         }
     }
     
@@ -1082,53 +1088,34 @@
         openModal('transModal');
     }
     
-    async function openEditTransactionModal(id) {
-        const t = transactionsData.find(t => t.id === id);
-        if (t) {
-            document.getElementById('transModalTitle').innerText = 'Edit Transaction';
-            document.getElementById('transId').value = t.id;
-            document.getElementById('transType').value = t.type;
-            document.getElementById('transDept').value = t.department_id;
-            document.getElementById('transSource').value = t.source;
-            document.getElementById('transAmount').value = t.amount;
-            document.getElementById('transDate').value = t.transaction_date;
-            document.getElementById('transStatus').value = t.status;
-            document.getElementById('transDesc').value = t.description || '';
-            openModal('transModal');
-        }
-    }
-    
     async function saveTransaction() {
-        let id = document.getElementById('transId').value;
         let data = {
             type: document.getElementById('transType').value,
             department_id: parseInt(document.getElementById('transDept').value) || 1,
             source: document.getElementById('transSource').value,
             amount: parseFloat(document.getElementById('transAmount').value) || 0,
-            transaction_date: document.getElementById('transDate').value || new Date().toISOString().slice(0,10),
-            paid_amount: parseFloat(document.getElementById('transAmount').value) || 0,
+            transaction_date: document.getElementById('transDate').value,
             status: document.getElementById('transStatus').value,
             description: document.getElementById('transDesc').value
         };
         if (!data.source || data.amount <= 0) { showToast('Source and amount required', true); return; }
         
-        let res;
-        if (id) res = await apiCall('update_transaction.php', 'PUT', { ...data, id: parseInt(id) });
-        else res = await apiCall('add_transaction.php', 'POST', data);
-        
-        if (res.success) {
-            showToast(id ? 'Transaction updated' : 'Transaction added');
+        const res = await apiCall('add_transaction.php', 'POST', data);
+        if (res && res.success) {
+            showToast('Transaction added');
             closeModal('transModal');
             loadCashflow();
             loadDashboard();
-        } else showToast(res.message || 'Failed', true);
+        } else {
+            showToast((res && res.message) || 'Failed', true);
+        }
     }
     
     async function deleteTransaction(id) {
         if (confirm('Delete this transaction?')) {
             const res = await apiCall('delete_transaction.php', 'DELETE', { id });
-            if (res.success) { showToast('Transaction deleted'); loadCashflow(); loadDashboard(); }
-            else showToast(res.message || 'Failed', true);
+            if (res && res.success) { showToast('Transaction deleted'); loadCashflow(); loadDashboard(); }
+            else showToast((res && res.message) || 'Failed', true);
         }
     }
     
@@ -1137,17 +1124,40 @@
         document.getElementById('mainContainer').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div><span class="ml-3">Loading reports...</span></div>';
         const res = await apiCall('get_reports.php');
         reportsData = res.success ? (res.data || []) : [];
+        unviewedReportsCount = res.unviewed_count || 0;
+        updateReportBadge();
         
         let html = `<div class="flex justify-between flex-wrap gap-3 mb-4"><h2 class="text-xl font-bold"><i class="fas fa-chart-line text-purple-500 mr-2"></i>Reports (${reportsData.length})</h2><div class="flex gap-2"><button onclick="exportAllReportsToExcel()" class="btn-success"><i class="fas fa-file-excel mr-1"></i> Excel All</button><button onclick="exportAllReportsToPDF()" class="btn-danger"><i class="fas fa-file-pdf mr-1"></i> PDF All</button><button onclick="openAddReportModal()" class="btn-primary"><i class="fas fa-plus mr-1"></i> Add Report</button></div></div>
         <div class="space-y-2" id="reportsList"></div>`;
         document.getElementById('mainContainer').innerHTML = html;
         
-        let reportsHtml = '';
-        for (let r of reportsData) {
-            reportsHtml += `<div class="report-sample"><div class="flex justify-between items-start flex-wrap gap-2"><div class="flex-1 cursor-pointer" onclick="viewReport(${r.id})"><h4 class="font-semibold">${escapeHtml(r.title)}</h4><p class="text-xs text-gray-500">Period: ${r.period} · Created: ${formatDate(r.created_at)} · By: ${departmentNames[r.department_id] || r.department_id}</p><p class="text-sm text-gray-600 mt-1">${escapeHtml(r.content?.substring(0, 100))}...</p></div><div class="action-buttons"><button onclick="viewReport(${r.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="openEditReportModal(${r.id})" class="action-btn edit"><i class="fas fa-edit"></i></button><button onclick="deleteReport(${r.id})" class="action-btn delete"><i class="fas fa-trash"></i></button><button onclick="exportSingleReport(${r.id})" class="action-btn excel"><i class="fas fa-file-excel"></i></button><button onclick="exportSingleReportPDF(${r.id})" class="action-btn pdf"><i class="fas fa-file-pdf"></i></button><button onclick="openSendReportModal(${r.id})" class="action-btn send"><i class="fas fa-paper-plane"></i></button></div></div></div>`;
+        if (reportsData.length === 0) {
+            document.getElementById('reportsList').innerHTML = '<div class="bg-white rounded-xl p-8 text-center text-gray-400">No reports found. Click "Add Report" to create one.</div>';
+        } else {
+            let reportsHtml = '';
+            for (let r of reportsData) {
+                const isUnviewed = r.is_viewed_by_admin == 0 && r.department_id != 1;
+                reportsHtml += `<div class="report-sample relative">
+                    ${isUnviewed ? '<div class="report-new-badge" onclick="event.stopPropagation(); markReportAsViewed(' + r.id + ')">!</div>' : ''}
+                    <div class="flex justify-between items-start flex-wrap gap-2">
+                        <div class="flex-1 cursor-pointer" onclick="viewReport(${r.id})">
+                            <h4 class="font-semibold">${escapeHtml(r.title)}</h4>
+                            <p class="text-xs text-gray-500">Period: ${r.period} · Created: ${formatDate(r.created_at)} · By: ${departmentNames[r.department_id] || r.department_id}</p>
+                            <p class="text-sm text-gray-600 mt-1">${escapeHtml(r.content?.substring(0, 100))}...</p>
+                        </div>
+                        <div class="action-buttons">
+                            <button onclick="viewReport(${r.id})" class="action-btn view"><i class="fas fa-eye"></i></button>
+                            <button onclick="openEditReportModal(${r.id})" class="action-btn edit"><i class="fas fa-edit"></i></button>
+                            <button onclick="deleteReport(${r.id})" class="action-btn delete"><i class="fas fa-trash"></i></button>
+                            <button onclick="exportSingleReport(${r.id})" class="action-btn excel"><i class="fas fa-file-excel"></i></button>
+                            <button onclick="exportSingleReportPDF(${r.id})" class="action-btn pdf"><i class="fas fa-file-pdf"></i></button>
+                            <button onclick="openSendReportModal(${r.id})" class="action-btn send"><i class="fas fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                </div>`;
+            }
+            document.getElementById('reportsList').innerHTML = reportsHtml;
         }
-        if (reportsData.length === 0) reportsHtml = '<div class="bg-white rounded-xl p-8 text-center text-gray-400">No reports found. Click "Add Report" to create one.</div>';
-        document.getElementById('reportsList').innerHTML = reportsHtml;
     }
     
     async function exportAllReportsToExcel() {
@@ -1169,8 +1179,8 @@
     function exportSingleReport(id) {
         const r = reportsData.find(r => r.id === id);
         if (r) {
-            let ws = [['Title', 'Period', 'Content', 'Created']];
-            ws.push([r.title, r.period, r.content, r.created_at]);
+            let ws = [['Title', 'Period', 'Content', 'Created', 'Department']];
+            ws.push([r.title, r.period, r.content, r.created_at, departmentNames[r.department_id] || '-']);
             let wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), 'Report');
             XLSX.writeFile(wb, `report_${r.id}_${r.title.replace(/[^a-z0-9]/gi, '_')}.xlsx`);
@@ -1182,7 +1192,7 @@
         const r = reportsData.find(r => r.id === id);
         if (r) {
             let element = document.createElement('div');
-            element.innerHTML = `<div style="padding:20px"><h1 style="color:#0f74ba">${escapeHtml(r.title)}</h1><p><strong>Period:</strong> ${r.period}</p><p><strong>Date:</strong> ${formatDate(r.created_at)}</p><hr/><div style="margin-top:15px">${escapeHtml(r.content)}</div><p>Generated: ${new Date().toLocaleString()}</p></div>`;
+            element.innerHTML = `<div style="padding:20px"><h1 style="color:#0f74ba">${escapeHtml(r.title)}</h1><p><strong>Period:</strong> ${r.period}</p><p><strong>Date:</strong> ${formatDate(r.created_at)}</p><p><strong>Department:</strong> ${departmentNames[r.department_id] || 'N/A'}</p><hr/><div style="margin-top:15px">${escapeHtml(r.content)}</div><p>Generated: ${new Date().toLocaleString()}</p></div>`;
             html2pdf().set({ margin: 0.5, filename: `report_${r.id}.pdf` }).from(element).save();
             showToast('Exported to PDF');
         }
@@ -1191,13 +1201,8 @@
     async function viewReport(id) {
         const r = reportsData.find(r => r.id === id);
         if (r) {
-            document.getElementById('viewReportContent').innerHTML = `
-                <p><strong>Title:</strong> ${escapeHtml(r.title)}</p>
-                <p><strong>Period:</strong> ${r.period}</p>
-                <p><strong>Department:</strong> ${departmentNames[r.department_id]}</p>
-                <p><strong>Created:</strong> ${formatDate(r.created_at)}</p>
-                <hr class="my-3"><div class="whitespace-pre-wrap">${escapeHtml(r.content)}</div>`;
-            openModal('viewReportModal');
+            if (r.is_viewed_by_admin == 0 && r.department_id != 1) await markReportAsViewed(id);
+            alert(`📄 ${r.title}\n\nPeriod: ${r.period}\nDepartment: ${departmentNames[r.department_id]}\nDate: ${formatDate(r.created_at)}\n\nContent:\n${r.content}`);
         }
     }
     
@@ -1240,13 +1245,14 @@
             showToast(id ? 'Report updated' : 'Report added');
             closeModal('reportModal');
             loadReports();
+            loadDashboard();
         } else showToast(res.message || 'Failed', true);
     }
     
     async function deleteReport(id) {
         if (confirm('Delete this report?')) {
             const res = await apiCall('delete_report.php', 'DELETE', { id });
-            if (res.success) { showToast('Report deleted'); loadReports(); }
+            if (res.success) { showToast('Report deleted'); loadReports(); loadDashboard(); }
             else showToast(res.message || 'Failed', true);
         }
     }
@@ -1277,8 +1283,8 @@
         const res = await apiCall('get_messages.php');
         const messages = res.success ? (res.data || []) : [];
         messagesData = messages;
-        const unread = messages.filter(m => m.to_department_id === 1 && !m.is_read).length;
-        document.getElementById('msgBadge').innerText = unread;
+        const unreadCount = res.unread_count || messages.filter(m => m.to_department_id === 1 && !m.is_read).length;
+        document.getElementById('msgBadge').innerText = unreadCount;
         
         let conv = {};
         messages.forEach(m => {
@@ -1301,21 +1307,28 @@
         let msgsHtml = '';
         for (let d in conv) {
             let last = conv[d][conv[d].length - 1];
-            let un = conv[d].filter(m => m.to_department_id === 1 && !m.is_read).length;
+            let unread = conv[d].filter(m => m.to_department_id === 1 && !m.is_read).length;
             let deptName = departmentNames[d] || 'Department ' + d;
-            msgsHtml += `<div class="message-item ${un > 0 ? 'message-unread' : ''} flex justify-between items-center" onclick="openChat(${d}, '${deptName}')">
-                <div class="flex-1">
-                    <div class="flex items-center gap-2 flex-wrap">
-                        <p class="font-semibold">${deptName}</p>
-                        ${un > 0 ? `<span class="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full">${un} new</span>` : ''}
+            msgsHtml += `
+                <div class="message-item ${unread > 0 ? 'message-unread' : ''}">
+                    <div class="message-header" onclick="openChat(${d}, '${deptName}')">
+                        <div>
+                            <span class="font-semibold">${deptName}</span>
+                            ${unread > 0 ? `<span class="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full ml-2">${unread} new</span>` : ''}
+                        </div>
                         <span class="text-[10px] text-gray-400">${new Date(last.created_at).toLocaleString()}</span>
                     </div>
-                    <p class="text-sm text-gray-600 mt-1">${escapeHtml(last.message.substring(0, 100))}${last.message.length > 100 ? '...' : ''}</p>
-                </div>
-                <button onclick="event.stopPropagation(); deleteConversationById(${d}, '${deptName}')" class="text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-50 transition" title="Delete conversation">
-                    <i class="fas fa-trash-alt"></i>
-                </button>
-            </div>`;
+                    <div class="message-preview" onclick="openChat(${d}, '${deptName}')">
+                        ${escapeHtml(last.message.substring(0, 100))}${last.message.length > 100 ? '...' : ''}
+                    </div>
+                    <div class="message-time" onclick="openChat(${d}, '${deptName}')">
+                        <i class="far fa-clock"></i> ${new Date(last.created_at).toLocaleDateString()}
+                    </div>
+                    <div class="message-actions">
+                        <button onclick="event.stopPropagation(); deleteConversationById(${d}, '${deptName}')" class="text-red-500 text-xs hover:text-red-700"><i class="fas fa-trash-alt mr-1"></i> Delete Chat</button>
+                        <button onclick="event.stopPropagation(); openChat(${d}, '${deptName}')" class="text-blue-500 text-xs hover:text-blue-700"><i class="fas fa-reply mr-1"></i> Reply</button>
+                    </div>
+                </div>`;
         }
         if (Object.keys(conv).length === 0) msgsHtml = '<div class="bg-white rounded-xl p-8 text-center text-gray-400">No messages. Click "New Message" to start a conversation.</div>';
         document.getElementById('messagesList').innerHTML = msgsHtml;
@@ -1338,7 +1351,8 @@
         let element = document.createElement('div');
         element.innerHTML = `<div style="padding:20px"><h1>Messages Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/>${messagesData.map(m => {
             let fromName = departmentNames[m.from_department_id] || 'Unknown';
-            return `<div style="margin-bottom:15px"><strong>From:</strong> ${fromName}<br><strong>Message:</strong> ${escapeHtml(m.message)}<br><small>${new Date(m.created_at).toLocaleString()}</small></div><hr>`;
+            let toName = departmentNames[m.to_department_id] || 'Unknown';
+            return `<div style="margin-bottom:15px"><strong>From:</strong> ${fromName}<br><strong>To:</strong> ${toName}<br><strong>Message:</strong> ${escapeHtml(m.message)}<br><small>${new Date(m.created_at).toLocaleString()}</small><br><strong>Status:</strong> ${m.is_read ? 'Read ✓' : 'Unread'}</div><hr>`;
         }).join('')}</div>`;
         html2pdf().set({ margin: 0.5, filename: `messages_report.pdf` }).from(element).save();
         showToast('Exported to PDF');
@@ -1418,7 +1432,7 @@
         // Mark messages as read
         for (let m of messages) {
             if (m.to_department_id === 1 && !m.is_read) {
-                await apiCall('mark_message_read.php', 'POST', { message_id: m.id });
+                await markMessageAsRead(m.id);
             }
         }
         
@@ -1431,10 +1445,20 @@
         } else {
             for (let m of messages) {
                 let isSent = m.from_department_id === 1;
+                let statusHtml = '';
+                if (isSent) {
+                    statusHtml = `<div class="chat-status">
+                        <span class="${m.is_read ? 'read' : 'delivered'}">
+                            ${m.is_read ? '<i class="fas fa-check-double"></i> Read' : '<i class="fas fa-check"></i> Delivered'}
+                        </span>
+                    </div>`;
+                }
+                
                 chatHtml += `<div class="chat-message ${isSent ? 'chat-sent' : 'chat-received'}">
                     <div class="chat-bubble">
                         <div>${escapeHtml(m.message)}</div>
-                        <span class="chat-time">${new Date(m.created_at).toLocaleString()}</span>
+                        <div class="chat-time">${new Date(m.created_at).toLocaleString()}</div>
+                        ${statusHtml}
                     </div>
                     <button onclick="deleteMessage(${m.id})" class="chat-delete-btn" title="Delete message">
                         <i class="fas fa-trash-alt"></i>
@@ -1746,8 +1770,6 @@
     window.exportProjectsToPDF = exportProjectsToPDF;
     window.exportSingleProject = exportSingleProject;
     window.exportSingleProjectPDF = exportSingleProjectPDF;
-    window.openSendProjectModal = openSendProjectModal;
-    window.confirmSendProject = confirmSendProject;
     window.viewDailyWork = viewDailyWork;
     window.openAddDailyWorkModal = openAddDailyWorkModal;
     window.openEditDailyWorkModal = openEditDailyWorkModal;
@@ -1757,7 +1779,6 @@
     window.exportDailyWorkToPDF = exportDailyWorkToPDF;
     window.viewTransaction = viewTransaction;
     window.openAddTransactionModal = openAddTransactionModal;
-    window.openEditTransactionModal = openEditTransactionModal;
     window.saveTransaction = saveTransaction;
     window.deleteTransaction = deleteTransaction;
     window.exportCashflowToExcel = exportCashflowToExcel;
@@ -1790,7 +1811,6 @@
     window.closeMobileSidebar = closeMobileSidebar;
     window.goToSectionAndSearch = goToSectionAndSearch;
     window.performGlobalSearch = performGlobalSearch;
-    window.goToDepartmentDashboard = goToDepartmentDashboard;
     
     init();
 </script>

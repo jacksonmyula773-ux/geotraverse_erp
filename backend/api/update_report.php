@@ -30,7 +30,6 @@ if (!$db) {
 $id = (int)$data->id;
 $user_dept = $_SESSION['department_id'];
 
-// Check ownership
 $checkQuery = "SELECT department_id FROM reports WHERE id = ?";
 $checkStmt = $db->prepare($checkQuery);
 $checkStmt->execute([$id]);
@@ -49,22 +48,10 @@ if ($report['department_id'] != $user_dept && $_SESSION['department_id'] != 1) {
 $updates = [];
 $params = [];
 
-if (isset($data->title)) {
-    $updates[] = "title = ?";
-    $params[] = $data->title;
-}
-if (isset($data->period)) {
-    $updates[] = "period = ?";
-    $params[] = $data->period;
-}
-if (isset($data->content)) {
-    $updates[] = "content = ?";
-    $params[] = $data->content;
-}
-if (isset($data->status)) {
-    $updates[] = "status = ?";
-    $params[] = $data->status;
-}
+if (isset($data->title)) { $updates[] = "title = ?"; $params[] = $data->title; }
+if (isset($data->period)) { $updates[] = "period = ?"; $params[] = $data->period; }
+if (isset($data->content)) { $updates[] = "content = ?"; $params[] = $data->content; }
+if (isset($data->status)) { $updates[] = "status = ?"; $params[] = $data->status; }
 
 if (empty($updates)) {
     echo json_encode(['success' => false, 'message' => 'No fields to update']);

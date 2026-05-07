@@ -12,7 +12,8 @@ if (!isset($_SESSION['user_id'])) {
 
 require_once '../config/database.php';
 
-$data = json_decode(file_get_contents('php://input'));
+$rawInput = file_get_contents('php://input');
+$data = json_decode($rawInput);
 
 if (!$data || empty($data->message_id)) {
     echo json_encode(['success' => false, 'message' => 'Message ID required']);
@@ -30,8 +31,11 @@ if (!$db) {
 $message_id = (int)$data->message_id;
 $user_dept = $_SESSION['department_id'];
 
-// Only mark as read if user is the recipient
-$query = "UPDATE messages SET is_read = 1 WHERE id = ? AND to_department_id = ?";
+$query = "UPDATE messages SET is_read = 1";
+if ($user_dept == 1) {
+    $query .= ", is_viewed_by_admin = 1, viewed_at = NOW()";
+}
+$query .= " WHERE id = ? AND to_department_id = ?";
 $stmt = $db->prepare($query);
 
 if ($stmt->execute([$message_id, $user_dept])) {

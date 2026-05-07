@@ -19,8 +19,13 @@ if (!$data) {
     exit();
 }
 
-if (empty($data->title) || empty($data->content)) {
-    echo json_encode(['success' => false, 'message' => 'Title and content required']);
+if (empty($data->title)) {
+    echo json_encode(['success' => false, 'message' => 'Title required']);
+    exit();
+}
+
+if (empty($data->content)) {
+    echo json_encode(['success' => false, 'message' => 'Content required']);
     exit();
 }
 

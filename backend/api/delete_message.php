@@ -12,7 +12,8 @@ if (!isset($_SESSION['user_id'])) {
 
 require_once '../config/database.php';
 
-$data = json_decode(file_get_contents('php://input'));
+$rawInput = file_get_contents('php://input');
+$data = json_decode($rawInput);
 
 if (!$data || empty($data->message_id)) {
     echo json_encode(['success' => false, 'message' => 'Message ID required']);
@@ -30,7 +31,6 @@ if (!$db) {
 $message_id = (int)$data->message_id;
 $user_dept = $_SESSION['department_id'];
 
-// Check if user is sender or receiver (both can delete their own messages)
 $checkQuery = "SELECT id FROM messages WHERE id = ? AND (from_department_id = ? OR to_department_id = ?)";
 $checkStmt = $db->prepare($checkQuery);
 $checkStmt->execute([$message_id, $user_dept, $user_dept]);
