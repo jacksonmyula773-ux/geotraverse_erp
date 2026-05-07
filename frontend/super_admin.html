@@ -30,6 +30,10 @@
         input, select, textarea { width: 100%; padding: 10px 14px !important; margin: 8px 0; border: 1px solid #e5e7eb; border-radius: 10px; font-size: 14px; background: white; }
         input:focus, select:focus, textarea:focus { outline: none; border-color: #0f74ba; box-shadow: 0 0 0 2px rgba(15,116,186,0.1); }
         
+        .search-container { max-width: 280px !important; }
+        .search-input { padding: 6px 10px 6px 32px !important; font-size: 13px !important; }
+        .search-icon { font-size: 12px !important; left: 10px !important; }
+        
         .password-wrapper { position: relative; width: 100%; }
         .password-wrapper input { padding-right: 40px !important; }
         .toggle-password { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #9ca3af; font-size: 16px; }
@@ -52,19 +56,64 @@
         
         .project-card { background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 16px; margin-bottom: 16px; transition: all 0.2s; }
         .project-card:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
+        
         .dept-card { background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 16px; cursor: pointer; transition: all 0.2s; }
         .dept-card:hover { transform: translateX(5px); border-color: #0f74ba; background: #f0f9ff; }
-        .message-item { background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 16px; margin-bottom: 12px; cursor: pointer; }
+        
+        .message-item { background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 14px; margin-bottom: 12px; cursor: pointer; transition: all 0.2s; }
+        .message-item:hover { background: #f9fafb; transform: translateX(3px); }
         .message-unread { background: #eff6ff; border-left: 3px solid #3b82f6; }
         .notification-badge { background: #ef4444; color: white; border-radius: 9999px; padding: 2px 8px; font-size: 10px; margin-left: 8px; }
         
-        .chat-message { margin-bottom: 16px; }
-        .chat-sent { text-align: right; }
-        .chat-sent .bubble { background: #0f74ba; color: white; display: inline-block; padding: 10px 16px; border-radius: 20px; max-width: 70%; }
-        .chat-received { text-align: left; }
-        .chat-received .bubble { background: #e5e7eb; color: #333; display: inline-block; padding: 10px 16px; border-radius: 20px; max-width: 70%; }
+        /* CHAT STYLES - SEND BOX FIXED CHINI */
+        .chat-container { display: flex; flex-direction: column; height: 500px; }
+        .chat-messages { flex: 1; overflow-y: auto; padding: 16px; background: #f9fafb; border-radius: 12px; }
+        .chat-input-area { display: flex; gap: 10px; padding: 12px; background: white; border-radius: 12px; border: 1px solid #e5e7eb; margin-top: 12px; flex-shrink: 0; }
+        .chat-input-area textarea { flex: 1; margin: 0; resize: none; padding: 10px !important; font-size: 14px; }
+        .chat-input-area button { padding: 10px 20px; white-space: nowrap; }
         
-        .color-option { width: 38px; height: 38px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: all 0.2s; margin: 5px; display: inline-flex; align-items: center; justify-content: center; }
+        .chat-message { margin-bottom: 16px; display: flex; position: relative; }
+        .chat-sent { justify-content: flex-end; }
+        .chat-received { justify-content: flex-start; }
+        .chat-bubble { max-width: 70%; padding: 10px 16px; border-radius: 20px; position: relative; }
+        .chat-sent .chat-bubble { background: #0f74ba; color: white; border-bottom-right-radius: 4px; }
+        .chat-received .chat-bubble { background: white; color: #333; border: 1px solid #e5e7eb; border-bottom-left-radius: 4px; }
+        .chat-time { font-size: 10px; opacity: 0.7; margin-top: 4px; display: block; }
+        .chat-delete-btn { position: absolute; top: 50%; transform: translateY(-50%); right: -30px; background: white; border: 1px solid #e5e7eb; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: opacity 0.2s; color: #ef4444; font-size: 10px; }
+        .chat-message:hover .chat-delete-btn { opacity: 1; }
+        .chat-sent .chat-delete-btn { right: -30px; }
+        .chat-received .chat-delete-btn { left: -30px; right: auto; }
+        .delete-conversation-btn { background: #ef4444; color: white; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; margin-bottom: 16px; font-size: 13px; width: 100%; }
+        .delete-conversation-btn:hover { background: #dc2626; }
+        
+        .empty-chat-message { 
+            text-align: center; 
+            color: #9ca3af; 
+            font-size: 13px; 
+            padding: 30px 20px !important; 
+            background: #f9fafb; 
+            border-radius: 12px;
+            margin: 20px;
+        }
+        
+        .color-settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(42px, auto));
+            gap: 10px;
+            justify-content: flex-start;
+            margin-top: 10px;
+        }
+        .color-option { 
+            width: 42px; 
+            height: 42px; 
+            border-radius: 50%; 
+            cursor: pointer; 
+            border: 3px solid transparent; 
+            transition: all 0.2s; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+        }
         .color-option:hover { transform: scale(1.1); }
         .color-option.selected { border-color: white; box-shadow: 0 0 0 2px #333; }
         
@@ -79,10 +128,6 @@
         .btn-success:hover { background: #059669; }
         .btn-danger { background: #ef4444; color: white; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; }
         .btn-danger:hover { background: #dc2626; }
-        .btn-warning { background: #f59e0b; color: white; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; }
-        .btn-warning:hover { background: #d97706; }
-        .btn-info { background: #3b82f6; color: white; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; }
-        .btn-info:hover { background: #2563eb; }
         
         .action-buttons { display: flex; gap: 5px; flex-wrap: wrap; }
         .action-btn { padding: 5px 10px; font-size: 11px; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
@@ -91,21 +136,42 @@
         .action-btn.delete { background: #ef4444; color: white; }
         .action-btn.excel { background: #10b981; color: white; }
         .action-btn.pdf { background: #ef4444; color: white; }
-        .action-btn.send { background: #8b5cf6; color: white; }
         
         body.dark-mode { background: #0f172a; }
         body.dark-mode .bg-white, body.dark-mode .stat-card, body.dark-mode .project-card, 
-        body.dark-mode .dept-card, body.dark-mode .message-item, body.dark-mode .modal-content { background: #1e293b; border-color: #334155; }
+        body.dark-mode .dept-card, body.dark-mode .message-item, body.dark-mode .modal-content { background: #1e293b; border-color: #334155; color: #f1f5f9; }
         body.dark-mode input, body.dark-mode select, body.dark-mode textarea { background: #0f172a; border-color: #334155; color: #f1f5f9; }
-        body.dark-mode .chat-received .bubble { background: #334155; color: #f1f5f9; }
+        body.dark-mode .chat-received .chat-bubble { background: #1e293b; border-color: #334155; color: #f1f5f9; }
+        body.dark-mode .chat-messages { background: #0f172a; }
+        body.dark-mode .chat-input-area { background: #1e293b; border-color: #334155; }
+        body.dark-mode .chat-delete-btn { background: #1e293b; border-color: #334155; color: #f87171; }
+        body.dark-mode .empty-chat-message { background: #1e293b; color: #64748b; }
         body.dark-mode th { background: #1e293b; border-color: #334155; }
         
-        .scroll-top { position: fixed; bottom: 20px; right: 20px; background: #0f74ba; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: all 0.3s; z-index: 99; color: white; }
+        .scroll-top { position: fixed; bottom: 20px; right: 20px; background: #0f74ba; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: all 0.3s; z-index: 99; color: white; }
         .scroll-top.visible { opacity: 1; }
         
         .project-image { width: 100%; height: 160px; object-fit: cover; border-radius: 8px; margin-bottom: 12px; cursor: pointer; }
         .report-sample { background: #f8fafc; border-left: 4px solid #0f74ba; padding: 12px; margin-bottom: 10px; border-radius: 8px; }
         body.dark-mode .report-sample { background: #0f172a; }
+        
+        .role-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; }
+        .role-super-admin { background: #8b5cf6; color: white; }
+        .role-admin { background: #3b82f6; color: white; }
+        .role-manager { background: #f59e0b; color: white; }
+        .role-finance { background: #10b981; color: white; }
+        .role-staff { background: #6b7280; color: white; }
+        
+        .search-results-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: white; border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); z-index: 50; max-height: 350px; overflow-y: auto; display: none; }
+        .search-results-dropdown.active { display: block; }
+        .search-result-item { padding: 10px 16px; border-bottom: 1px solid #e5e7eb; cursor: pointer; transition: background 0.2s; font-size: 13px; }
+        .search-result-item:hover { background-color: #f3f4f6; }
+        body.dark-mode .search-results-dropdown { background: #1e293b; }
+        body.dark-mode .search-result-item { border-bottom-color: #334155; }
+        body.dark-mode .search-result-item:hover { background-color: #334155; }
+        
+        .dept-link { cursor: pointer; transition: all 0.2s; }
+        .dept-link:hover { text-decoration: underline; color: #0f74ba; }
     </style>
 </head>
 <body>
@@ -126,22 +192,22 @@
             <div class="nav-item" data-section="projects"><i class="fas fa-tasks w-5"></i><span>Projects</span></div>
             <div class="nav-item" data-section="dailywork"><i class="fas fa-calendar-day w-5"></i><span>Daily Work</span></div>
             <div class="nav-item" data-section="cashflow"><i class="fas fa-exchange-alt w-5"></i><span>Cashflow</span></div>
-            <div class="nav-item" data-section="reports"><i class="fas fa-chart-line w-5"></i><span>Reports</span></div>
             <div class="nav-item" data-section="messages"><i class="fas fa-envelope w-5"></i><span>Messages</span><span id="msgBadge" class="notification-badge">0</span></div>
+            <div class="nav-item" data-section="reports"><i class="fas fa-chart-line w-5"></i><span>Reports</span></div>
             <div class="nav-item" data-section="settings"><i class="fas fa-cog w-5"></i><span>Settings</span></div>
         </nav>
         <div class="p-4 border-t border-white/20">
-            <button id="logoutBtn" class="w-full bg-red-600/80 hover:bg-red-600 py-2 rounded-lg text-sm">Logout</button>
+            <button id="logoutBtn" class="w-full bg-red-600/80 hover:bg-red-600 py-2 rounded-lg text-sm transition">Logout</button>
         </div>
     </aside>
     
     <main class="flex-1 main-content">
         <header class="bg-white shadow-sm px-5 py-3 sticky top-0 z-10 flex justify-between items-center border-b">
             <button id="mobileMenuBtn" class="md:hidden text-gray-600 text-xl"><i class="fas fa-bars"></i></button>
-            <div class="relative flex-1 max-w-md mx-4">
-                <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                <input type="text" id="searchInput" placeholder="Search..." class="w-full pl-10 pr-4 py-2 border rounded-lg text-sm" style="padding: 8px 12px 8px 38px !important;">
-                <div id="searchResults" class="absolute top-full left-0 right-0 bg-white rounded-lg shadow-lg z-50 hidden max-h-80 overflow-y-auto"></div>
+            <div class="relative search-container max-w-[280px] w-full">
+                <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 search-icon text-xs"></i>
+                <input type="text" id="searchInput" placeholder="Search..." class="w-full pl-8 pr-3 py-1.5 border rounded-lg text-sm search-input">
+                <div id="searchResultsDropdown" class="search-results-dropdown"></div>
             </div>
             <button id="darkModeBtn" class="text-gray-500"><i id="darkIcon" class="fas fa-moon text-xl"></i></button>
         </header>
@@ -150,7 +216,7 @@
 </div>
 
 <!-- MODALS -->
-<div id="empModal" class="modal"><div class="modal-content"><h3 id="empModalTitle" class="text-xl font-bold mb-4">Add Employee</h3><input type="hidden" id="empId"><input type="text" id="empName" placeholder="Full Name"><input type="email" id="empEmail" placeholder="Email"><input type="text" id="empPhone" placeholder="Phone"><select id="empDept"></select><input type="text" id="empRole" placeholder="Role"><input type="text" id="empSalary" placeholder="Salary (TZS)"><div class="password-wrapper"><input type="password" id="empPassword" placeholder="Password" value="1234"><i class="fas fa-eye toggle-password" onclick="togglePassword('empPassword')"></i></div><div class="flex gap-3 pt-4"><button onclick="saveEmployee()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('empModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
+<div id="empModal" class="modal"><div class="modal-content"><h3 id="empModalTitle" class="text-xl font-bold mb-4">Add Employee</h3><input type="hidden" id="empId"><input type="text" id="empName" placeholder="Full Name"><input type="email" id="empEmail" placeholder="Email"><input type="text" id="empPhone" placeholder="Phone"><select id="empDept"></select><select id="empRole"></select><input type="text" id="empSalary" placeholder="Salary (TZS)"><div class="password-wrapper"><input type="password" id="empPassword" placeholder="Password" value="1234"><i class="fas fa-eye toggle-password" onclick="togglePassword('empPassword')"></i></div><div class="flex gap-3 pt-4"><button onclick="saveEmployee()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('empModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
 
 <div id="viewEmpModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Employee Details</h3><div id="viewEmpContent"></div><button onclick="closeModal('viewEmpModal')" class="w-full bg-gray-200 py-2 rounded mt-3">Close</button></div></div>
 
@@ -176,7 +242,7 @@
 
 <div id="msgModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Send Message</h3><select id="msgTo"></select><textarea id="msgContent" rows="4" placeholder="Type your message..."></textarea><div class="flex gap-3 pt-4"><button onclick="sendMessage()" class="flex-1 btn-primary">Send</button><button onclick="closeModal('msgModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
 
-<div id="chatModal" class="modal"><div class="modal-content" style="max-width:600px"><h3 id="chatModalTitle" class="text-xl font-bold mb-4">Chat</h3><div id="chatMessagesArea" class="bg-gray-50 rounded-xl p-4 h-80 overflow-y-auto mb-3"></div><textarea id="replyMsg" rows="2" placeholder="Type your reply..."></textarea><button onclick="sendReply()" class="w-full btn-primary mt-3">Send Reply</button><button onclick="closeModal('chatModal')" class="mt-3 w-full bg-gray-200 py-2 rounded">Close</button></div></div>
+<div id="chatModal" class="modal"><div class="modal-content" style="max-width:650px;"><div class="flex justify-between items-center mb-4"><h3 id="chatModalTitle" class="text-xl font-bold">Chat</h3><button onclick="closeModal('chatModal')" class="text-gray-400 text-2xl hover:text-gray-600">&times;</button></div><button id="deleteConversationBtn" class="delete-conversation-btn"><i class="fas fa-trash-alt mr-2"></i>Delete Entire Conversation</button><div class="chat-container"><div id="chatMessagesArea" class="chat-messages"></div><div class="chat-input-area"><textarea id="replyMsg" rows="2" placeholder="Type your message..."></textarea><button onclick="sendReply()" class="btn-primary">Send</button></div></div></div></div>
 
 <div id="pwdModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Change Password</h3><div class="password-wrapper"><input type="password" id="oldPwd" placeholder="Current Password"><i class="fas fa-eye toggle-password" onclick="togglePassword('oldPwd')"></i></div><div class="password-wrapper mt-2"><input type="password" id="newPwd" placeholder="New Password"><i class="fas fa-eye toggle-password" onclick="togglePassword('newPwd')"></i></div><div class="password-wrapper mt-2"><input type="password" id="confirmPwd" placeholder="Confirm Password"><i class="fas fa-eye toggle-password" onclick="togglePassword('confirmPwd')"></i></div><div class="flex gap-3 pt-4"><button onclick="changePassword()" class="flex-1 btn-primary">Change</button><button onclick="closeModal('pwdModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
 
@@ -186,7 +252,8 @@
 
 <script>
     // ==================== CONFIGURATION ====================
-    const API_BASE = '/geotraverse/backend/api/';
+    const API_BASE = '../backend/api/';
+    let searchTimeout = null;
     
     const departmentNames = {
         1: "Super Admin", 2: "Finance", 3: "Sales & Marketing", 4: "Manager",
@@ -194,9 +261,40 @@
         9: "Architectural", 10: "Survey", 11: "Construction", 12: "Hatimiliki"
     };
     
+    const departmentFiles = {
+        2: "finance.html",
+        3: "sales_marketing.html",
+        4: "manager.html",
+        5: "secretary.html",
+        6: "bricks_timber.html",
+        7: "aluminium.html",
+        8: "town_planning.html",
+        9: "architectural.html",
+        10: "survey.html",
+        11: "construction.html",
+        12: "hatimiliki.html"
+    };
+    
+    const rolesList = [
+        { value: 'Super Administrator', label: 'Super Administrator', class: 'role-super-admin' },
+        { value: 'Administrator', label: 'Administrator', class: 'role-admin' },
+        { value: 'Manager', label: 'Manager', class: 'role-manager' },
+        { value: 'Finance Manager', label: 'Finance Manager', class: 'role-finance' },
+        { value: 'Accountant', label: 'Accountant', class: 'role-finance' },
+        { value: 'HR Manager', label: 'HR Manager', class: 'role-manager' },
+        { value: 'Secretary', label: 'Secretary', class: 'role-staff' },
+        { value: 'Department Head', label: 'Department Head', class: 'role-manager' },
+        { value: 'Team Leader', label: 'Team Leader', class: 'role-manager' },
+        { value: 'Senior Staff', label: 'Senior Staff', class: 'role-staff' },
+        { value: 'Staff', label: 'Staff', class: 'role-staff' },
+        { value: 'Junior Staff', label: 'Junior Staff', class: 'role-staff' },
+        { value: 'Intern', label: 'Intern', class: 'role-staff' }
+    ];
+    
     const colorOptions = ["#0f74ba", "#1e3a5f", "#7c3aed", "#059669", "#dc2626", "#d97706", "#0d9488", "#db2777", "#4f46e5", "#10b981", "#06b6d4", "#e11d48"];
     
     let currentChatDept = null;
+    let currentChatDeptName = null;
     let statusChart = null;
     let currentProjectImageFile = null;
     let projectsData = [];
@@ -204,6 +302,7 @@
     let dailyworkData = [];
     let transactionsData = [];
     let reportsData = [];
+    let messagesData = [];
     
     // ==================== HELPER FUNCTIONS ====================
     function showToast(msg, isError) { 
@@ -249,20 +348,59 @@
         }
     }
     
+    function getRoleBadgeClass(role) {
+        const roleItem = rolesList.find(r => r.value === role);
+        return roleItem ? roleItem.class : 'role-staff';
+    }
+    
+    // Go to department dashboard
+    function goToDepartmentDashboard(deptId, deptName) {
+        const file = departmentFiles[deptId];
+        if (file) {
+            if (confirm(`Go to ${deptName} dashboard?`)) {
+                window.open(file, '_blank');
+            }
+        } else {
+            showToast('Department dashboard not available', true);
+        }
+    }
+    
     // ==================== API CALL ====================
     async function apiCall(endpoint, method = 'GET', data = null) {
         const url = API_BASE + endpoint;
-        console.log('API Call:', method, url);
         try { 
-            const opts = { method, headers: { 'Content-Type': 'application/json' } }; 
-            if (data && method !== 'GET') opts.body = JSON.stringify(data); 
+            const opts = { 
+                method: method, 
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include'
+            }; 
+            if (data && (method === 'POST' || method === 'PUT' || method === 'DELETE')) {
+                opts.body = JSON.stringify(data); 
+            }
             const res = await fetch(url, opts); 
+            if (!res.ok) {
+                throw new Error(`HTTP ${res.status}`);
+            }
             const result = await res.json(); 
             return result; 
         } catch(e) { 
-            console.error('API Error:', e);
-            showToast('API Error: ' + e.message, true);
-            return { success: false, error: e.message }; 
+            console.error('API Error:', endpoint, e);
+            return { success: false, message: 'API Error: ' + e.message }; 
+        }
+    }
+    
+    // ==================== LOGOUT ====================
+    async function logout() {
+        if (confirm('Are you sure you want to logout?')) {
+            const result = await apiCall('logout.php', 'POST');
+            if (result.success) {
+                showToast('Logged out successfully');
+                setTimeout(() => {
+                    window.location.href = 'login_system.html';
+                }, 1000);
+            } else {
+                showToast('Logout failed', true);
+            }
         }
     }
     
@@ -285,6 +423,15 @@
         }
     }
     
+    function loadRolesDropdown() {
+        const roleSelect = document.getElementById('empRole');
+        if (roleSelect) {
+            roleSelect.innerHTML = rolesList.map(role => 
+                `<option value="${role.value}">${role.label}</option>`
+            ).join('');
+        }
+    }
+    
     // ==================== DASHBOARD ====================
     async function loadDashboard() {
         document.getElementById('mainContainer').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div><span class="ml-3">Loading dashboard...</span></div>';
@@ -295,10 +442,14 @@
         ]);
         
         const empList = employees.success ? (employees.data || []) : [];
+        employeesData = empList;
         const projList = projects.success ? (projects.data || []) : [];
-        const dailyList = dailywork.success ? (dailywork.data || []) : [];
+        projectsData = projList;
+        dailyworkData = dailywork.success ? (dailywork.data || []) : [];
         const transList = transactions.success ? (transactions.data || []) : [];
+        transactionsData = transList;
         const msgList = messages.success ? (messages.data || []) : [];
+        messagesData = msgList;
         
         const unreadCount = msgList.filter(m => m.to_department_id === 1 && !m.is_read).length;
         document.getElementById('msgBadge').innerText = unreadCount;
@@ -377,8 +528,9 @@
         <div class="bg-white rounded-xl overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th class="p-3">ID</th><th class="p-3">Name</th><th class="p-3">Email</th><th class="p-3">Department</th><th class="p-3">Role</th><th class="p-3">Salary</th><th class="p-3">Actions</th></tr></thead><tbody>`;
         
         for (let e of employeesData) {
-            html += `<tr class="border-b employee-row"><td class="p-3">${e.id}</td><td class="p-3 font-medium">${escapeHtml(e.name)}</td><td class="p-3">${escapeHtml(e.email)}</td><td class="p-3"><span class="status-badge status-progress">${departmentNames[e.department_id] || e.department_id}</span></td><td class="p-3">${e.role || 'Staff'}</td><td class="p-3 text-green-600">${formatMoney(e.salary)}</td>
-            <td class="p-3"><div class="action-buttons"><button onclick="viewEmployee(${e.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="openEditEmployeeModal(${e.id})" class="action-btn edit"><i class="fas fa-edit"></i></button><button onclick="deleteEmployee(${e.id})" class="action-btn delete"><i class="fas fa-trash"></i></button></div></td></tr>`;
+            html += `<tr class="border-b employee-row"><td class="p-3">${e.id}</td><td class="p-3 font-medium">${escapeHtml(e.name)}</td><td class="p-3">${escapeHtml(e.email)}</td><td class="p-3"><span class="status-badge status-progress">${departmentNames[e.department_id] || e.department_id}</span></td><td class="p-3"><span class="role-badge ${getRoleBadgeClass(e.role)}">${e.role || 'Staff'}</span></td><td class="p-3 text-green-600">${formatMoney(e.salary)}</td>
+            <td class="p-3"><div class="action-buttons"><button onclick="viewEmployee(${e.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="openEditEmployeeModal(${e.id})" class="action-btn edit"><i class="fas fa-edit"></i></button><button onclick="deleteEmployee(${e.id})" class="action-btn delete"><i class="fas fa-trash"></i></button></div></td>
+            </tr>`;
         }
         if (employeesData.length === 0) html += `<tr><td colspan="7" class="text-center py-8 text-gray-400">No employees found</td></tr>`;
         html += `</tbody></table></div></div>`;
@@ -393,7 +545,7 @@
                 <p><strong>Email:</strong> ${escapeHtml(emp.email)}</p>
                 <p><strong>Phone:</strong> ${escapeHtml(emp.phone || '-')}</p>
                 <p><strong>Department:</strong> ${departmentNames[emp.department_id]}</p>
-                <p><strong>Role:</strong> ${emp.role || 'Staff'}</p>
+                <p><strong>Role:</strong> <span class="role-badge ${getRoleBadgeClass(emp.role)}">${emp.role || 'Staff'}</span></p>
                 <p><strong>Salary:</strong> ${formatMoney(emp.salary)}</p>
                 <p><strong>Joined:</strong> ${emp.join_date || 'N/A'}</p>`;
             openModal('viewEmpModal');
@@ -407,7 +559,7 @@
         document.getElementById('empEmail').value = '';
         document.getElementById('empPhone').value = '';
         document.getElementById('empDept').value = '';
-        document.getElementById('empRole').value = '';
+        document.getElementById('empRole').value = 'Staff';
         document.getElementById('empSalary').value = '';
         document.getElementById('empPassword').value = '1234';
         openModal('empModal');
@@ -422,7 +574,7 @@
             document.getElementById('empEmail').value = emp.email;
             document.getElementById('empPhone').value = emp.phone || '';
             document.getElementById('empDept').value = emp.department_id;
-            document.getElementById('empRole').value = emp.role || '';
+            document.getElementById('empRole').value = emp.role || 'Staff';
             document.getElementById('empSalary').value = emp.salary;
             document.getElementById('empPassword').value = '';
             openModal('empModal');
@@ -437,28 +589,47 @@
             phone: document.getElementById('empPhone').value,
             department_id: parseInt(document.getElementById('empDept').value) || 1,
             role: document.getElementById('empRole').value || 'Staff',
-            salary: parseFloat(document.getElementById('empSalary').value) || 0,
-            password: document.getElementById('empPassword').value || '1234'
+            salary: parseFloat(document.getElementById('empSalary').value) || 0
         };
-        if (!data.name || !data.email) { showToast('Name and email required', true); return; }
+        
+        let password = document.getElementById('empPassword').value;
+        if (password) {
+            data.password = password;
+        }
+        
+        if (!data.name || !data.email) { 
+            showToast('Name and email required', true); 
+            return; 
+        }
         
         let res;
-        if (id) res = await apiCall('update_employee.php', 'PUT', { ...data, id: parseInt(id) });
-        else res = await apiCall('add_employee.php', 'POST', data);
+        if (id) {
+            data.id = parseInt(id);
+            res = await apiCall('update_employee.php', 'POST', data);
+        } else {
+            res = await apiCall('add_employee.php', 'POST', data);
+        }
         
-        if (res.success) {
+        if (res && res.success) {
             showToast(id ? 'Employee updated' : 'Employee added');
             closeModal('empModal');
             loadEmployees();
             loadDashboard();
-        } else showToast(res.error || 'Failed', true);
+        } else {
+            showToast((res && res.message) || 'Operation failed', true);
+        }
     }
     
     async function deleteEmployee(id) {
         if (confirm('Delete this employee?')) {
-            const res = await apiCall(`delete_employee.php`, 'DELETE', { id });
-            if (res.success) { showToast('Employee deleted'); loadEmployees(); loadDashboard(); }
-            else showToast(res.error || 'Failed', true);
+            const res = await apiCall('delete_employee.php', 'DELETE', { id });
+            if (res && res.success) { 
+                showToast('Employee deleted'); 
+                loadEmployees(); 
+                loadDashboard(); 
+            } else { 
+                showToast((res && res.message) || 'Failed to delete', true); 
+            }
         }
     }
     
@@ -473,12 +644,12 @@
     
     async function exportEmployeesToPDF() {
         let element = document.createElement('div');
-        element.innerHTML = `<div style="padding:20px"><h1>Employees Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><thead><tr><th>Name</th><th>Email</th><th>Department</th><th>Role</th><th>Salary</th></tr></thead><tbody>${employeesData.map(e => `<tr><td>${e.name}</td><td>${e.email}</td><td>${departmentNames[e.department_id]}</td><td>${e.role || 'Staff'}</td><td>${e.salary}</td></tr>`).join('')}</tbody></table></div>`;
+        element.innerHTML = `<div style="padding:20px"><h1>Employees Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><thead><tr><th>Name</th><th>Email</th><th>Department</th><th>Role</th><th>Salary</th></tr></thead><tbody>${employeesData.map(e => `<tr><td class="px-2 py-1">${e.name}</td><td class="px-2 py-1">${e.email}</td><td class="px-2 py-1">${departmentNames[e.department_id]}</td><td class="px-2 py-1">${e.role || 'Staff'}</td><td class="px-2 py-1">${formatMoney(e.salary)}</td></tr>`).join('')}</tbody></table></div>`;
         html2pdf().set({ margin: 0.5, filename: `employees_report.pdf` }).from(element).save();
         showToast('Exported to PDF');
     }
     
-    // ==================== DEPARTMENTS ====================
+    // ==================== DEPARTMENTS (with clickable links) ====================
     async function loadDepartments() {
         document.getElementById('mainContainer').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div><span class="ml-3">Loading departments...</span></div>';
         const res = await apiCall('get_departments.php');
@@ -486,15 +657,45 @@
         
         const icons = {1:"fa-user-cog",2:"fa-coins",3:"fa-chart-line",4:"fa-user-tie",5:"fa-calendar-check",6:"fa-cubes",7:"fa-industry",8:"fa-city",9:"fa-draw-polygon",10:"fa-drafting-compass",11:"fa-hard-hat",12:"fa-file-contract"};
         
-        let html = `<h2 class="text-xl font-bold mb-4"><i class="fas fa-building text-blue-500 mr-2"></i>Departments (${depts.length})</h2><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">`;
+        let html = `<h2 class="text-xl font-bold mb-4"><i class="fas fa-building text-blue-500 mr-2"></i>Departments (${depts.length})</h2>
+        <p class="text-sm text-gray-500 mb-4">Click on any department to open its dashboard</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">`;
+        
         for (let d of depts) {
-            html += `<div class="dept-card"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center"><i class="fas ${icons[d.id] || 'fa-building'} text-blue-600"></i></div><div><h3 class="font-semibold">${escapeHtml(d.name)}</h3><p class="text-sm text-gray-500">${d.email}</p></div></div></div>`;
+            const canNavigate = d.id !== 1 && departmentFiles[d.id];
+            const cursorClass = canNavigate ? 'cursor-pointer hover:shadow-md' : 'cursor-default';
+            const onClickAction = canNavigate ? `goToDepartmentDashboard(${d.id}, '${escapeHtml(d.name)}')` : '';
+            
+            html += `<div class="dept-card ${cursorClass}" onclick="${onClickAction}">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                        <i class="fas ${icons[d.id] || 'fa-building'} text-blue-600"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-semibold">${escapeHtml(d.name)}</h3>
+                        <p class="text-sm text-gray-500">${d.email}</p>
+                    </div>
+                    ${canNavigate ? '<i class="fas fa-external-link-alt text-gray-400 text-sm"></i>' : ''}
+                </div>
+            </div>`;
         }
         html += `</div>`;
         document.getElementById('mainContainer').innerHTML = html;
     }
     
-    // ==================== PROJECTS ====================
+    // Go to department dashboard
+    function goToDepartmentDashboard(deptId, deptName) {
+        const file = departmentFiles[deptId];
+        if (file) {
+            if (confirm(`Open ${deptName} dashboard in new tab?`)) {
+                window.open(file, '_blank');
+            }
+        } else {
+            showToast('Department dashboard not available', true);
+        }
+    }
+    
+    // ==================== PROJECTS (Simplified) ====================
     async function loadProjects() {
         document.getElementById('mainContainer').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div><span class="ml-3">Loading projects...</span></div>';
         const res = await apiCall('get_projects.php');
@@ -511,7 +712,7 @@
                 <p class="text-sm text-gray-500 mt-1">${escapeHtml(p.client_name || 'N/A')}</p>
                 <p class="text-lg font-bold text-blue-600 mt-2">${formatMoney(p.amount)}</p>
                 <div class="mt-2"><div class="flex justify-between text-xs"><span>Progress</span><span>${p.progress || 0}%</span></div><div class="w-full bg-gray-200 rounded-full h-1.5 mt-1"><div class="bg-blue-600 h-1.5 rounded-full" style="width:${p.progress || 0}%"></div></div></div>
-                <div class="action-buttons mt-3"><button onclick="viewProject(${p.id})" class="action-btn view"><i class="fas fa-eye"></i> View</button><button onclick="openEditProjectModal(${p.id})" class="action-btn edit"><i class="fas fa-edit"></i> Edit</button><button onclick="deleteProject(${p.id})" class="action-btn delete"><i class="fas fa-trash"></i> Delete</button><button onclick="exportSingleProject(${p.id})" class="action-btn excel"><i class="fas fa-file-excel"></i> Excel</button><button onclick="openSendProjectModal(${p.id})" class="action-btn send"><i class="fas fa-paper-plane"></i> Send</button></div>
+                <div class="action-buttons mt-3"><button onclick="viewProject(${p.id})" class="action-btn view"><i class="fas fa-eye"></i> View</button><button onclick="openEditProjectModal(${p.id})" class="action-btn edit"><i class="fas fa-edit"></i> Edit</button><button onclick="deleteProject(${p.id})" class="action-btn delete"><i class="fas fa-trash"></i> Delete</button><button onclick="exportSingleProject(${p.id})" class="action-btn excel"><i class="fas fa-file-excel"></i> Excel</button><button onclick="exportSingleProjectPDF(${p.id})" class="action-btn pdf"><i class="fas fa-file-pdf"></i> PDF</button><button onclick="openSendProjectModal(${p.id})" class="action-btn send"><i class="fas fa-paper-plane"></i> Send</button></div>
             </div>
         `).join('');
         if (projectsData.length === 0) document.getElementById('projectsGrid').innerHTML = '<div class="col-span-3 text-center py-8 text-gray-400">No projects found</div>';
@@ -614,14 +815,14 @@
             closeModal('projModal');
             loadProjects();
             loadDashboard();
-        } else showToast(res.error || 'Failed', true);
+        } else showToast(res.message || 'Failed', true);
     }
     
     async function deleteProject(id) {
         if (confirm('Delete this project?')) {
             const res = await apiCall('delete_project.php', 'DELETE', { id });
             if (res.success) { showToast('Project deleted'); loadProjects(); loadDashboard(); }
-            else showToast(res.error || 'Failed', true);
+            else showToast(res.message || 'Failed', true);
         }
     }
     
@@ -642,7 +843,7 @@
         if (!toDept) { showToast('Select department', true); return; }
         const res = await apiCall('send_project.php', 'POST', { project_id: id, to_department_id: toDept, message: msg });
         if (res.success) { showToast('Project sent'); closeModal('sendProjModal'); }
-        else showToast(res.error || 'Failed', true);
+        else showToast(res.message || 'Failed', true);
     }
     
     async function exportProjectsToExcel() {
@@ -656,7 +857,7 @@
     
     async function exportProjectsToPDF() {
         let element = document.createElement('div');
-        element.innerHTML = `<div style="padding:20px"><h1>Projects Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><thead><tr><th>Name</th><th>Client</th><th>Amount</th><th>Status</th><th>Progress</th></tr></thead><tbody>${projectsData.map(p => `<tr><td>${p.name}</td><td>${p.client_name || '-'}</td><td>${formatMoney(p.amount)}</td><td>${p.status}</td><td>${p.progress}%</td></tr>`).join('')}</tbody></table></div>`;
+        element.innerHTML = `<div style="padding:20px"><h1>Projects Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><thead><tr><th>Name</th><th>Client</th><th>Amount</th><th>Status</th><th>Progress</th></tr></thead><tbody>${projectsData.map(p => `<tr><td class="px-2 py-1">${p.name}</td><td class="px-2 py-1">${p.client_name || '-'}</td><td class="px-2 py-1">${formatMoney(p.amount)}</td><td class="px-2 py-1">${p.status}</td><td class="px-2 py-1">${p.progress}%</td></tr>`).join('')}</tbody></table></div>`;
         html2pdf().set({ margin: 0.5, filename: `projects_report.pdf` }).from(element).save();
         showToast('Exported to PDF');
     }
@@ -673,13 +874,23 @@
         }
     }
     
+    function exportSingleProjectPDF(id) {
+        const p = projectsData.find(p => p.id === id);
+        if (p) {
+            let element = document.createElement('div');
+            element.innerHTML = `<div style="padding:20px"><h1 style="color:#0f74ba">${escapeHtml(p.name)}</h1><p><strong>Client:</strong> ${p.client_name || 'N/A'}</p><p><strong>Amount:</strong> ${formatMoney(p.amount)}</p><p><strong>Status:</strong> ${p.status}</p><p><strong>Progress:</strong> ${p.progress}%</p><p><strong>Location:</strong> ${p.location || 'N/A'}</p><p><strong>Description:</strong> ${p.description || 'N/A'}</p><p>Generated: ${new Date().toLocaleString()}</p></div>`;
+            html2pdf().set({ margin: 0.5, filename: `project_${p.id}.pdf` }).from(element).save();
+            showToast('Exported to PDF');
+        }
+    }
+    
     // ==================== DAILY WORK ====================
     async function loadDailyWork() {
         document.getElementById('mainContainer').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div><span class="ml-3">Loading daily work...</span></div>';
         const res = await apiCall('get_dailywork.php');
         dailyworkData = res.success ? (res.data || []) : [];
         
-        let html = `<div class="flex justify-between flex-wrap gap-3 mb-4"><h2 class="text-xl font-bold"><i class="fas fa-calendar-day text-purple-500 mr-2"></i>Daily Work (${dailyworkData.length})</h2><button onclick="openAddDailyWorkModal()" class="btn-primary"><i class="fas fa-plus mr-1"></i> Add Daily Work</button></div>
+        let html = `<div class="flex justify-between flex-wrap gap-3 mb-4"><h2 class="text-xl font-bold"><i class="fas fa-calendar-day text-purple-500 mr-2"></i>Daily Work (${dailyworkData.length})</h2><div class="flex gap-2"><button onclick="exportDailyWorkToExcel()" class="btn-success"><i class="fas fa-file-excel mr-1"></i> Excel</button><button onclick="exportDailyWorkToPDF()" class="btn-danger"><i class="fas fa-file-pdf mr-1"></i> PDF</button><button onclick="openAddDailyWorkModal()" class="btn-primary"><i class="fas fa-plus mr-1"></i> Add Daily Work</button></div></div>
         <div class="bg-white rounded-xl overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th class="p-2">Date</th><th class="p-2">Department</th><th class="p-2">Project</th><th class="p-2">Income</th><th class="p-2">Expenses</th><th class="p-2">Profit</th><th class="p-2">Status</th><th class="p-2">Actions</th></tr></thead><tbody>`;
         
         for (let w of dailyworkData) {
@@ -688,11 +899,28 @@
             <td class="p-2 text-green-600">${formatMoney(w.income)}</td><td class="p-2 text-red-600">${formatMoney(w.expenses)}</td>
             <td class="p-2 ${profit >= 0 ? 'text-green-600' : 'text-red-600'}">${formatMoney(profit)}</td>
             <td class="p-2"><span class="status-badge ${w.status === 'paid' ? 'status-completed' : 'status-pending'}">${w.status}</span></td>
-            <td class="p-2"><div class="action-buttons"><button onclick="viewDailyWork(${w.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="openEditDailyWorkModal(${w.id})" class="action-btn edit"><i class="fas fa-edit"></i></button><button onclick="deleteDailyWork(${w.id})" class="action-btn delete"><i class="fas fa-trash"></i></button></div></td></tr>`;
+            <td class="p-2"><div class="action-buttons"><button onclick="viewDailyWork(${w.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="openEditDailyWorkModal(${w.id})" class="action-btn edit"><i class="fas fa-edit"></i></button><button onclick="deleteDailyWork(${w.id})" class="action-btn delete"><i class="fas fa-trash"></i></button></div></td>
+            </tr>`;
         }
         if (dailyworkData.length === 0) html += `<tr><td colspan="8" class="text-center py-8 text-gray-400">No daily work records</td></tr>`;
         html += `</tbody>}</div></div>`;
         document.getElementById('mainContainer').innerHTML = html;
+    }
+    
+    async function exportDailyWorkToExcel() {
+        let ws = [['Date', 'Department', 'Project', 'Income', 'Expenses', 'Profit', 'Status']];
+        dailyworkData.forEach(w => ws.push([w.date, departmentNames[w.department_id], w.project_name, w.income, w.expenses, (w.income - w.expenses), w.status]));
+        let wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), 'DailyWork');
+        XLSX.writeFile(wb, `dailywork_${new Date().toISOString().slice(0,10)}.xlsx`);
+        showToast('Exported to Excel');
+    }
+    
+    async function exportDailyWorkToPDF() {
+        let element = document.createElement('div');
+        element.innerHTML = `<div style="padding:20px"><h1>Daily Work Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><thead><tr><th>Date</th><th>Project</th><th>Income</th><th>Expenses</th><th>Profit</th><th>Status</th></tr></thead><tbody>${dailyworkData.map(w => `<tr><td class="px-2 py-1">${w.date}</td><td class="px-2 py-1">${w.project_name}</td><td class="px-2 py-1">${formatMoney(w.income)}</td><td class="px-2 py-1">${formatMoney(w.expenses)}</td><td class="px-2 py-1">${formatMoney(w.income - w.expenses)}</td><td class="px-2 py-1">${w.status}</td></tr>`).join('')}</tbody>}</div>`;
+        html2pdf().set({ margin: 0.5, filename: `dailywork_report.pdf` }).from(element).save();
+        showToast('Exported to PDF');
     }
     
     async function viewDailyWork(id) {
@@ -768,18 +996,18 @@
             closeModal('dailyworkModal');
             loadDailyWork();
             loadDashboard();
-        } else showToast(res.error || 'Failed', true);
+        } else showToast(res.message || 'Failed', true);
     }
     
     async function deleteDailyWork(id) {
         if (confirm('Delete this daily work record?')) {
             const res = await apiCall('delete_dailywork.php', 'DELETE', { id });
             if (res.success) { showToast('Record deleted'); loadDailyWork(); loadDashboard(); }
-            else showToast(res.error || 'Failed', true);
+            else showToast(res.message || 'Failed', true);
         }
     }
     
-    // ==================== CASHFLOW (TRANSACTIONS) ====================
+    // ==================== CASHFLOW ====================
     async function loadCashflow() {
         document.getElementById('mainContainer').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div><span class="ml-3">Loading cashflow...</span></div>';
         const res = await apiCall('get_transactions.php');
@@ -801,11 +1029,28 @@
             <td class="p-2">${escapeHtml(t.source)}</td>
             <td class="p-2 ${t.type === 'income' ? 'text-green-600' : 'text-red-600'}">${formatMoney(t.amount)}</td>
             <td class="p-2"><span class="status-badge ${t.status === 'paid' ? 'status-completed' : 'status-pending'}">${t.status}</span></td>
-            <td class="p-2"><div class="action-buttons"><button onclick="viewTransaction(${t.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="openEditTransactionModal(${t.id})" class="action-btn edit"><i class="fas fa-edit"></i></button><button onclick="deleteTransaction(${t.id})" class="action-btn delete"><i class="fas fa-trash"></i></button></div></td></tr>`;
+            <td class="p-2"><div class="action-buttons"><button onclick="viewTransaction(${t.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="openEditTransactionModal(${t.id})" class="action-btn edit"><i class="fas fa-edit"></i></button><button onclick="deleteTransaction(${t.id})" class="action-btn delete"><i class="fas fa-trash"></i></button></div></td>
+            </tr>`;
         }
         if (transactionsData.length === 0) html += `<tr><td colspan="7" class="text-center py-8 text-gray-400">No transactions found</td></tr>`;
         html += `</tbody>}</div></div>`;
         document.getElementById('mainContainer').innerHTML = html;
+    }
+    
+    async function exportCashflowToExcel() {
+        let ws = [['Date', 'Type', 'Department', 'Source', 'Amount', 'Status']];
+        transactionsData.forEach(t => ws.push([t.transaction_date, t.type, departmentNames[t.department_id], t.source, t.amount, t.status]));
+        let wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), 'Cashflow');
+        XLSX.writeFile(wb, `cashflow_${new Date().toISOString().slice(0,10)}.xlsx`);
+        showToast('Exported to Excel');
+    }
+    
+    async function exportCashflowToPDF() {
+        let element = document.createElement('div');
+        element.innerHTML = `<div style="padding:20px"><h1>Cashflow Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><thead><tr><th>Date</th><th>Type</th><th>Source</th><th>Amount</th></tr></thead><tbody>${transactionsData.map(t => `<tr><td class="px-2 py-1">${t.transaction_date}</td><td class="px-2 py-1">${t.type}</td><td class="px-2 py-1">${t.source}</td><td class="px-2 py-1">${formatMoney(t.amount)}</td></tr>`).join('')}</tbody>}</div>`;
+        html2pdf().set({ margin: 0.5, filename: `cashflow_report.pdf` }).from(element).save();
+        showToast('Exported to PDF');
     }
     
     async function viewTransaction(id) {
@@ -876,31 +1121,15 @@
             closeModal('transModal');
             loadCashflow();
             loadDashboard();
-        } else showToast(res.error || 'Failed', true);
+        } else showToast(res.message || 'Failed', true);
     }
     
     async function deleteTransaction(id) {
         if (confirm('Delete this transaction?')) {
             const res = await apiCall('delete_transaction.php', 'DELETE', { id });
             if (res.success) { showToast('Transaction deleted'); loadCashflow(); loadDashboard(); }
-            else showToast(res.error || 'Failed', true);
+            else showToast(res.message || 'Failed', true);
         }
-    }
-    
-    async function exportCashflowToExcel() {
-        let ws = [['Date', 'Type', 'Department', 'Source', 'Amount', 'Status', 'Description']];
-        transactionsData.forEach(t => ws.push([t.transaction_date || t.created_at, t.type, departmentNames[t.department_id], t.source, t.amount, t.status, t.description || '']));
-        let wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), 'Cashflow');
-        XLSX.writeFile(wb, `cashflow_${new Date().toISOString().slice(0,10)}.xlsx`);
-        showToast('Exported to Excel');
-    }
-    
-    async function exportCashflowToPDF() {
-        let element = document.createElement('div');
-        element.innerHTML = `<div style="padding:20px"><h1>Cashflow Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><thead><tr><th>Date</th><th>Type</th><th>Department</th><th>Source</th><th>Amount</th><th>Status</th></tr></thead><tbody>${transactionsData.map(t => `<tr><td class="px-2 py-1">${t.transaction_date || t.created_at}</td><td class="px-2 py-1">${t.type}</td><td class="px-2 py-1">${departmentNames[t.department_id]}</td><td class="px-2 py-1">${t.source}<td><td class="px-2 py-1">${formatMoney(t.amount)}</td><td class="px-2 py-1">${t.status}</td></tr>`).join('')}</tbody></table></div>`;
-        html2pdf().set({ margin: 0.5, filename: `cashflow_report.pdf` }).from(element).save();
-        showToast('Exported to PDF');
     }
     
     // ==================== REPORTS ====================
@@ -915,10 +1144,48 @@
         
         let reportsHtml = '';
         for (let r of reportsData) {
-            reportsHtml += `<div class="report-sample"><div class="flex justify-between items-start flex-wrap gap-2"><div class="flex-1 cursor-pointer" onclick="viewReport(${r.id})"><h4 class="font-semibold">${escapeHtml(r.title)}</h4><p class="text-xs text-gray-500">Period: ${r.period} · Created: ${formatDate(r.created_at)} · By: ${departmentNames[r.department_id] || r.department_id}</p><p class="text-sm text-gray-600 mt-1">${escapeHtml(r.content?.substring(0, 100))}...</p></div><div class="action-buttons"><button onclick="viewReport(${r.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="openEditReportModal(${r.id})" class="action-btn edit"><i class="fas fa-edit"></i></button><button onclick="deleteReport(${r.id})" class="action-btn delete"><i class="fas fa-trash"></i></button><button onclick="exportSingleReport(${r.id})" class="action-btn excel"><i class="fas fa-file-excel"></i></button><button onclick="openSendReportModal(${r.id})" class="action-btn send"><i class="fas fa-paper-plane"></i></button></div></div></div>`;
+            reportsHtml += `<div class="report-sample"><div class="flex justify-between items-start flex-wrap gap-2"><div class="flex-1 cursor-pointer" onclick="viewReport(${r.id})"><h4 class="font-semibold">${escapeHtml(r.title)}</h4><p class="text-xs text-gray-500">Period: ${r.period} · Created: ${formatDate(r.created_at)} · By: ${departmentNames[r.department_id] || r.department_id}</p><p class="text-sm text-gray-600 mt-1">${escapeHtml(r.content?.substring(0, 100))}...</p></div><div class="action-buttons"><button onclick="viewReport(${r.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="openEditReportModal(${r.id})" class="action-btn edit"><i class="fas fa-edit"></i></button><button onclick="deleteReport(${r.id})" class="action-btn delete"><i class="fas fa-trash"></i></button><button onclick="exportSingleReport(${r.id})" class="action-btn excel"><i class="fas fa-file-excel"></i></button><button onclick="exportSingleReportPDF(${r.id})" class="action-btn pdf"><i class="fas fa-file-pdf"></i></button><button onclick="openSendReportModal(${r.id})" class="action-btn send"><i class="fas fa-paper-plane"></i></button></div></div></div>`;
         }
         if (reportsData.length === 0) reportsHtml = '<div class="bg-white rounded-xl p-8 text-center text-gray-400">No reports found. Click "Add Report" to create one.</div>';
         document.getElementById('reportsList').innerHTML = reportsHtml;
+    }
+    
+    async function exportAllReportsToExcel() {
+        let ws = [['Title', 'Period', 'Department', 'Content', 'Created']];
+        reportsData.forEach(r => ws.push([r.title, r.period, departmentNames[r.department_id], r.content, r.created_at]));
+        let wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), 'Reports');
+        XLSX.writeFile(wb, `reports_${new Date().toISOString().slice(0,10)}.xlsx`);
+        showToast('Exported to Excel');
+    }
+    
+    async function exportAllReportsToPDF() {
+        let element = document.createElement('div');
+        element.innerHTML = `<div style="padding:20px"><h1>Reports</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/>${reportsData.map(r => `<div style="margin-bottom:20px"><h3>${r.title}</h3><p><strong>Period:</strong> ${r.period}</p><p><strong>Department:</strong> ${departmentNames[r.department_id]}</p><p>${r.content}</p><small>${formatDate(r.created_at)}</small></div>`).join('')}</div>`;
+        html2pdf().set({ margin: 0.5, filename: `reports.pdf` }).from(element).save();
+        showToast('Exported to PDF');
+    }
+    
+    function exportSingleReport(id) {
+        const r = reportsData.find(r => r.id === id);
+        if (r) {
+            let ws = [['Title', 'Period', 'Content', 'Created']];
+            ws.push([r.title, r.period, r.content, r.created_at]);
+            let wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), 'Report');
+            XLSX.writeFile(wb, `report_${r.id}_${r.title.replace(/[^a-z0-9]/gi, '_')}.xlsx`);
+            showToast('Exported to Excel');
+        }
+    }
+    
+    function exportSingleReportPDF(id) {
+        const r = reportsData.find(r => r.id === id);
+        if (r) {
+            let element = document.createElement('div');
+            element.innerHTML = `<div style="padding:20px"><h1 style="color:#0f74ba">${escapeHtml(r.title)}</h1><p><strong>Period:</strong> ${r.period}</p><p><strong>Date:</strong> ${formatDate(r.created_at)}</p><hr/><div style="margin-top:15px">${escapeHtml(r.content)}</div><p>Generated: ${new Date().toLocaleString()}</p></div>`;
+            html2pdf().set({ margin: 0.5, filename: `report_${r.id}.pdf` }).from(element).save();
+            showToast('Exported to PDF');
+        }
     }
     
     async function viewReport(id) {
@@ -973,14 +1240,14 @@
             showToast(id ? 'Report updated' : 'Report added');
             closeModal('reportModal');
             loadReports();
-        } else showToast(res.error || 'Failed', true);
+        } else showToast(res.message || 'Failed', true);
     }
     
     async function deleteReport(id) {
         if (confirm('Delete this report?')) {
             const res = await apiCall('delete_report.php', 'DELETE', { id });
             if (res.success) { showToast('Report deleted'); loadReports(); }
-            else showToast(res.error || 'Failed', true);
+            else showToast(res.message || 'Failed', true);
         }
     }
     
@@ -1001,35 +1268,7 @@
         if (!toDept) { showToast('Select department', true); return; }
         const res = await apiCall('send_report.php', 'POST', { report_id: id, to_department_id: toDept, message: msg });
         if (res.success) { showToast('Report sent'); closeModal('sendReportModal'); }
-        else showToast(res.error || 'Failed', true);
-    }
-    
-    async function exportAllReportsToExcel() {
-        let ws = [['Title', 'Period', 'Department', 'Content', 'Created', 'Status']];
-        reportsData.forEach(r => ws.push([r.title, r.period, departmentNames[r.department_id], r.content, r.created_at, r.status]));
-        let wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), 'Reports');
-        XLSX.writeFile(wb, `reports_${new Date().toISOString().slice(0,10)}.xlsx`);
-        showToast('Exported to Excel');
-    }
-    
-    async function exportAllReportsToPDF() {
-        let element = document.createElement('div');
-        element.innerHTML = `<div style="padding:20px"><h1>Reports</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/>${reportsData.map(r => `<div style="margin-bottom:20px"><h3>${r.title}</h3><p><strong>Period:</strong> ${r.period}</p><p><strong>Department:</strong> ${departmentNames[r.department_id]}</p><p>${r.content}</p><small>${formatDate(r.created_at)}</small></div>`).join('')}</div>`;
-        html2pdf().set({ margin: 0.5, filename: `reports.pdf` }).from(element).save();
-        showToast('Exported to PDF');
-    }
-    
-    function exportSingleReport(id) {
-        const r = reportsData.find(r => r.id === id);
-        if (r) {
-            let ws = [['Title', 'Period', 'Content', 'Created']];
-            ws.push([r.title, r.period, r.content, r.created_at]);
-            let wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), 'Report');
-            XLSX.writeFile(wb, `report_${r.id}_${r.title.replace(/[^a-z0-9]/gi, '_')}.xlsx`);
-            showToast('Exported to Excel');
-        }
+        else showToast(res.message || 'Failed', true);
     }
     
     // ==================== MESSAGES ====================
@@ -1037,6 +1276,7 @@
         document.getElementById('mainContainer').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div><span class="ml-3">Loading messages...</span></div>';
         const res = await apiCall('get_messages.php');
         const messages = res.success ? (res.data || []) : [];
+        messagesData = messages;
         const unread = messages.filter(m => m.to_department_id === 1 && !m.is_read).length;
         document.getElementById('msgBadge').innerText = unread;
         
@@ -1047,17 +1287,61 @@
             conv[other].push(m);
         });
         
-        let html = `<div class="flex justify-between flex-wrap gap-3 mb-4"><h2 class="text-xl font-bold"><i class="fas fa-envelope text-blue-500 mr-2"></i>Messages</h2><button onclick="openModal('msgModal')" class="btn-primary">Send Message</button></div><div class="space-y-2" id="messagesList"></div>`;
+        let html = `<div class="flex justify-between flex-wrap gap-3 mb-4">
+            <h2 class="text-xl font-bold"><i class="fas fa-envelope text-blue-500 mr-2"></i>Messages</h2>
+            <div class="flex gap-2">
+                <button onclick="exportMessagesToExcel()" class="btn-success"><i class="fas fa-file-excel mr-1"></i> Excel</button>
+                <button onclick="exportMessagesToPDF()" class="btn-danger"><i class="fas fa-file-pdf mr-1"></i> PDF</button>
+                <button onclick="openModal('msgModal')" class="btn-primary"><i class="fas fa-plus mr-1"></i> New Message</button>
+            </div>
+        </div>
+        <div class="space-y-2" id="messagesList"></div>`;
         document.getElementById('mainContainer').innerHTML = html;
         
         let msgsHtml = '';
         for (let d in conv) {
             let last = conv[d][conv[d].length - 1];
             let un = conv[d].filter(m => m.to_department_id === 1 && !m.is_read).length;
-            msgsHtml += `<div class="message-item ${un > 0 ? 'message-unread' : ''}" onclick="openChat(${d})"><div class="flex justify-between"><div><p class="font-semibold">${departmentNames[d]}</p><p class="text-sm text-gray-500 truncate">${escapeHtml(last.message.substring(0, 80))}</p></div><div class="text-right"><span class="text-xs text-gray-400">${new Date(last.created_at).toLocaleTimeString()}</span>${un > 0 ? `<span class="ml-2 bg-red-500 text-white text-xs px-2 rounded-full">${un}</span>` : ''}</div></div></div>`;
+            let deptName = departmentNames[d] || 'Department ' + d;
+            msgsHtml += `<div class="message-item ${un > 0 ? 'message-unread' : ''} flex justify-between items-center" onclick="openChat(${d}, '${deptName}')">
+                <div class="flex-1">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <p class="font-semibold">${deptName}</p>
+                        ${un > 0 ? `<span class="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full">${un} new</span>` : ''}
+                        <span class="text-[10px] text-gray-400">${new Date(last.created_at).toLocaleString()}</span>
+                    </div>
+                    <p class="text-sm text-gray-600 mt-1">${escapeHtml(last.message.substring(0, 100))}${last.message.length > 100 ? '...' : ''}</p>
+                </div>
+                <button onclick="event.stopPropagation(); deleteConversationById(${d}, '${deptName}')" class="text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-50 transition" title="Delete conversation">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            </div>`;
         }
-        if (Object.keys(conv).length === 0) msgsHtml = '<div class="bg-white rounded-xl p-8 text-center text-gray-400">No messages</div>';
+        if (Object.keys(conv).length === 0) msgsHtml = '<div class="bg-white rounded-xl p-8 text-center text-gray-400">No messages. Click "New Message" to start a conversation.</div>';
         document.getElementById('messagesList').innerHTML = msgsHtml;
+    }
+    
+    async function exportMessagesToExcel() {
+        let ws = [['From', 'To', 'Message', 'Date', 'Read']];
+        messagesData.forEach(m => {
+            let fromName = departmentNames[m.from_department_id] || 'Unknown';
+            let toName = departmentNames[m.to_department_id] || 'Unknown';
+            ws.push([fromName, toName, m.message, m.created_at, m.is_read ? 'Yes' : 'No']);
+        });
+        let wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), 'Messages');
+        XLSX.writeFile(wb, `messages_${new Date().toISOString().slice(0,10)}.xlsx`);
+        showToast('Exported to Excel');
+    }
+    
+    async function exportMessagesToPDF() {
+        let element = document.createElement('div');
+        element.innerHTML = `<div style="padding:20px"><h1>Messages Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/>${messagesData.map(m => {
+            let fromName = departmentNames[m.from_department_id] || 'Unknown';
+            return `<div style="margin-bottom:15px"><strong>From:</strong> ${fromName}<br><strong>Message:</strong> ${escapeHtml(m.message)}<br><small>${new Date(m.created_at).toLocaleString()}</small></div><hr>`;
+        }).join('')}</div>`;
+        html2pdf().set({ margin: 0.5, filename: `messages_report.pdf` }).from(element).save();
+        showToast('Exported to PDF');
     }
     
     async function sendMessage() {
@@ -1065,38 +1349,212 @@
         let msg = document.getElementById('msgContent').value.trim();
         if (!toDept) { showToast('Select department', true); return; }
         if (!msg) { showToast('Enter message', true); return; }
-        const res = await apiCall('send_message.php', 'POST', { to_department_id: parseInt(toDept), message: msg });
-        if (res.success) { showToast('Message sent'); closeModal('msgModal'); loadMessages(); loadDashboard(); }
-        else showToast(res.error || 'Failed', true);
+        
+        const res = await apiCall('send_message.php', 'POST', { 
+            to_department_id: parseInt(toDept), 
+            message: msg 
+        });
+        
+        if (res && res.success) { 
+            showToast('Message sent'); 
+            closeModal('msgModal'); 
+            document.getElementById('msgContent').value = '';
+            await loadMessages(); 
+            await loadDashboard(); 
+        } else { 
+            showToast((res && res.message) || 'Failed to send message', true); 
+        }
     }
     
-    async function openChat(deptId) {
-        currentChatDept = deptId;
-        const res = await apiCall(`get_messages.php`);
-        const messages = res.success ? (res.data || []) : [];
-        const chatMessages = messages.filter(m => m.from_department_id === deptId || m.to_department_id === deptId);
-        
-        document.getElementById('chatModalTitle').innerHTML = `Chat with ${departmentNames[deptId]}`;
-        let chatHtml = '';
-        for (let m of chatMessages) {
-            chatHtml += `<div class="chat-message ${m.from_department_id === 1 ? 'chat-sent' : 'chat-received'}"><div class="bubble"><p>${escapeHtml(m.message)}</p><p class="text-[10px] opacity-70 mt-1">${new Date(m.created_at).toLocaleString()}</p></div></div>`;
+    async function deleteMessage(messageId) {
+        if (!confirm('Delete this message?')) return;
+        const res = await apiCall('delete_message.php', 'DELETE', { message_id: messageId });
+        if (res && res.success) {
+            showToast('Message deleted');
+            if (currentChatDept) {
+                await openChat(currentChatDept, currentChatDeptName);
+            }
+            await loadMessages();
+        } else {
+            showToast((res && res.message) || 'Delete failed', true);
         }
-        if (chatMessages.length === 0) chatHtml = '<div class="text-center text-gray-400 py-4">No messages. Send a message to start.</div>';
+    }
+    
+    async function deleteConversation() {
+        if (!currentChatDept) return;
+        if (!confirm(`Delete entire conversation with ${currentChatDeptName}? This cannot be undone.`)) return;
+        
+        const res = await apiCall('delete_conversation.php', 'DELETE', { department_id: currentChatDept });
+        if (res && res.success) {
+            showToast('Conversation deleted');
+            closeModal('chatModal');
+            await loadMessages();
+            currentChatDept = null;
+            currentChatDeptName = null;
+        } else {
+            showToast((res && res.message) || 'Delete failed', true);
+        }
+    }
+    
+    async function deleteConversationById(deptId, deptName) {
+        if (!confirm(`Delete entire conversation with ${deptName}? This cannot be undone.`)) return;
+        
+        const res = await apiCall('delete_conversation.php', 'DELETE', { department_id: deptId });
+        if (res && res.success) {
+            showToast('Conversation deleted');
+            await loadMessages();
+        } else {
+            showToast((res && res.message) || 'Delete failed', true);
+        }
+    }
+    
+    async function openChat(deptId, deptName) {
+        currentChatDept = deptId;
+        currentChatDeptName = deptName;
+        
+        const result = await apiCall(`get_conversation.php?department_id=${deptId}`);
+        const messages = result.success ? (result.data || []) : [];
+        
+        // Mark messages as read
+        for (let m of messages) {
+            if (m.to_department_id === 1 && !m.is_read) {
+                await apiCall('mark_message_read.php', 'POST', { message_id: m.id });
+            }
+        }
+        
+        document.getElementById('chatModalTitle').innerHTML = `Chat with ${deptName}`;
+        document.getElementById('deleteConversationBtn').onclick = () => deleteConversation();
+        
+        let chatHtml = '';
+        if (messages.length === 0) {
+            chatHtml = '<div class="empty-chat-message">💬 No messages yet. Send a message to start the conversation.</div>';
+        } else {
+            for (let m of messages) {
+                let isSent = m.from_department_id === 1;
+                chatHtml += `<div class="chat-message ${isSent ? 'chat-sent' : 'chat-received'}">
+                    <div class="chat-bubble">
+                        <div>${escapeHtml(m.message)}</div>
+                        <span class="chat-time">${new Date(m.created_at).toLocaleString()}</span>
+                    </div>
+                    <button onclick="deleteMessage(${m.id})" class="chat-delete-btn" title="Delete message">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>`;
+            }
+        }
         document.getElementById('chatMessagesArea').innerHTML = chatHtml;
+        document.getElementById('chatMessagesArea').scrollTop = document.getElementById('chatMessagesArea').scrollHeight;
         openModal('chatModal');
+        
+        // Refresh messages list to update unread count
+        await loadMessages();
+        await loadDashboard();
     }
     
     async function sendReply() {
         let reply = document.getElementById('replyMsg')?.value.trim();
         if (!reply || !currentChatDept) { showToast('Enter message', true); return; }
-        const res = await apiCall('send_message.php', 'POST', { to_department_id: currentChatDept, message: reply });
-        if (res.success) {
+        
+        const res = await apiCall('send_message.php', 'POST', { 
+            to_department_id: currentChatDept, 
+            message: reply 
+        });
+        
+        if (res && res.success) {
             document.getElementById('replyMsg').value = '';
-            openChat(currentChatDept);
-            loadMessages();
-            loadDashboard();
-        } else showToast(res.error || 'Failed', true);
+            await openChat(currentChatDept, currentChatDeptName);
+            await loadMessages();
+            await loadDashboard();
+        } else { 
+            showToast((res && res.message) || 'Failed to send', true); 
+        }
     }
+    
+    // ==================== GLOBAL SEARCH ====================
+    function performGlobalSearch() {
+        const term = document.getElementById('searchInput').value.toLowerCase().trim();
+        const dropdown = document.getElementById('searchResultsDropdown');
+        
+        if (searchTimeout) clearTimeout(searchTimeout);
+        
+        if (term === "") {
+            dropdown.classList.remove('active');
+            dropdown.innerHTML = "";
+            return;
+        }
+        
+        searchTimeout = setTimeout(() => {
+            let html = '';
+            
+            const empResults = employeesData.filter(e => 
+                e.name.toLowerCase().includes(term) || 
+                e.email.toLowerCase().includes(term) ||
+                (e.role && e.role.toLowerCase().includes(term))
+            );
+            
+            if (empResults.length > 0) {
+                html += '<div class="p-2 bg-gray-100 text-xs font-semibold">👥 EMPLOYEES</div>';
+                empResults.slice(0, 5).forEach(emp => {
+                    html += `<div class="search-result-item" onclick="goToSectionAndSearch('employees', '${emp.name}')">
+                        <div class="font-medium">${escapeHtml(emp.name)}</div>
+                        <div class="text-xs text-gray-500">${emp.role || 'Staff'}</div>
+                    </div>`;
+                });
+            }
+            
+            const projResults = projectsData.filter(p => 
+                p.name.toLowerCase().includes(term) || 
+                (p.client_name && p.client_name.toLowerCase().includes(term))
+            );
+            
+            if (projResults.length > 0) {
+                html += '<div class="p-2 bg-gray-100 text-xs font-semibold">📁 PROJECTS</div>';
+                projResults.slice(0, 5).forEach(proj => {
+                    html += `<div class="search-result-item" onclick="goToSectionAndSearch('projects', '${proj.name}')">
+                        <div class="font-medium">${escapeHtml(proj.name)}</div>
+                        <div class="text-xs text-gray-500">${formatMoney(proj.amount)}</div>
+                    </div>`;
+                });
+            }
+            
+            if (messagesData && messagesData.length > 0) {
+                const msgResults = messagesData.filter(m => m.message && m.message.toLowerCase().includes(term));
+                if (msgResults.length > 0) {
+                    html += '<div class="p-2 bg-gray-100 text-xs font-semibold">💬 MESSAGES</div>';
+                    msgResults.slice(0, 5).forEach(msg => {
+                        const otherDept = msg.from_department_id === 1 ? msg.to_department_id : msg.from_department_id;
+                        const deptName = departmentNames[otherDept] || 'Department';
+                        html += `<div class="search-result-item" onclick="goToSectionAndSearch('messages', '${deptName}')">
+                            <div class="font-medium">${deptName}</div>
+                            <div class="text-xs text-gray-500">${escapeHtml(msg.message.substring(0, 50))}...</div>
+                        </div>`;
+                    });
+                }
+            }
+            
+            if (!html) {
+                html = '<div class="p-4 text-center text-gray-400 text-sm">No results found</div>';
+            }
+            
+            dropdown.innerHTML = html;
+            dropdown.classList.add('active');
+        }, 300);
+    }
+    
+    function goToSectionAndSearch(section, searchTerm) {
+        document.getElementById('searchResultsDropdown').classList.remove('active');
+        document.getElementById('searchInput').value = searchTerm;
+        loadSection(section);
+        showToast(`Showing results for "${searchTerm}"`);
+    }
+    
+    document.addEventListener('click', function(e) {
+        const searchInput = document.getElementById('searchInput');
+        const dropdown = document.getElementById('searchResultsDropdown');
+        if (searchInput && dropdown && !searchInput.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.classList.remove('active');
+        }
+    });
     
     // ==================== SETTINGS ====================
     function loadSettings() {
@@ -1105,13 +1563,14 @@
         
         let html = `<div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
             <div class="bg-white rounded-xl p-5 shadow-sm"><h3 class="font-semibold mb-3"><i class="fas fa-key text-blue-500 mr-2"></i>Change Password</h3><button onclick="openModal('pwdModal')" class="w-full btn-primary">Change Password</button></div>
-            <div class="bg-white rounded-xl p-5 shadow-sm"><h3 class="font-semibold mb-3"><i class="fas fa-palette text-purple-500 mr-2"></i>Sidebar Colors</h3><div class="flex flex-wrap gap-2" id="colorOptionsContainer"></div></div>
+            <div class="bg-white rounded-xl p-5 shadow-sm"><h3 class="font-semibold mb-3"><i class="fas fa-palette text-purple-500 mr-2"></i>Sidebar Colors</h3><div class="color-settings-grid" id="colorOptionsContainer"></div></div>
             <div class="bg-white rounded-xl p-5 shadow-sm"><h3 class="font-semibold mb-3"><i class="fas fa-globe text-blue-500 mr-2"></i>General Settings</h3><div><div>Company: ${escapeHtml(savedSettings.company_name || 'GeoTraverse')}</div><div>Email: ${escapeHtml(savedSettings.company_email || 'info@geotraverse.com')}</div></div><button onclick="openGeneralSettingsModal()" class="w-full btn-primary mt-3">Edit Settings</button></div>
             <div class="bg-white rounded-xl p-5 shadow-sm"><h3 class="font-semibold mb-3"><i class="fas fa-database text-green-500 mr-2"></i>Backup & Restore</h3><button onclick="openModal('backupModal')" class="w-full btn-success">Backup Database</button></div>
         </div>`;
         document.getElementById('mainContainer').innerHTML = html;
         
         const container = document.getElementById('colorOptionsContainer');
+        container.innerHTML = '';
         colorOptions.forEach(color => {
             const isSelected = savedColor === color;
             container.innerHTML += `<div class="color-option ${isSelected ? 'selected' : ''}" style="background: ${color}" onclick="changeSidebarColor('${color}', this)"></div>`;
@@ -1155,15 +1614,15 @@
         if (!newPwd) { showToast('Enter new password', true); return; }
         if (newPwd !== confirmPwd) { showToast('Passwords do not match', true); return; }
         const res = await apiCall('change_password.php', 'POST', { current_password: oldPwd, new_password: newPwd });
-        if (res.success) { showToast('Password changed'); closeModal('pwdModal'); }
-        else showToast(res.error || 'Failed', true);
+        if (res && res.success) { showToast('Password changed'); closeModal('pwdModal'); }
+        else showToast((res && res.message) || 'Failed', true);
     }
     
     async function createBackup() {
         try {
             showToast('Creating backup...');
             const res = await apiCall('backup_data.php');
-            if (res.success && res.data) {
+            if (res && res.success && res.data) {
                 let blob = new Blob([JSON.stringify(res.data, null, 2)], { type: 'application/json' });
                 let a = document.createElement('a');
                 a.href = URL.createObjectURL(blob);
@@ -1186,17 +1645,25 @@
         else if (section === 'projects') loadProjects();
         else if (section === 'dailywork') loadDailyWork();
         else if (section === 'cashflow') loadCashflow();
-        else if (section === 'reports') loadReports();
         else if (section === 'messages') loadMessages();
+        else if (section === 'reports') loadReports();
         else if (section === 'settings') loadSettings();
     }
     
-    function logout() { if (confirm('Logout?')) { localStorage.clear(); window.location.href = 'login_system.html'; } }
-    function closeMobileSidebar() { document.getElementById('mainSidebar').classList.remove('mobile-open'); document.getElementById('mobileMenuOverlay').classList.add('hidden'); }
+    function closeMobileSidebar() { 
+        document.getElementById('mainSidebar').classList.remove('mobile-open'); 
+        document.getElementById('mobileMenuOverlay').classList.add('hidden'); 
+    }
     
     // ==================== INIT ====================
     async function init() {
         await loadDepartmentsForDropdowns();
+        loadRolesDropdown();
+        
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.addEventListener('input', performGlobalSearch);
+        }
         
         document.querySelectorAll('.nav-item').forEach(item => {
             item.addEventListener('click', (e) => {
@@ -1209,11 +1676,20 @@
             document.getElementById('mainSidebar').classList.add('mobile-open');
             document.getElementById('mobileMenuOverlay').classList.remove('hidden');
         });
+        
         document.getElementById('logoutBtn').addEventListener('click', logout);
         
         document.getElementById('darkModeBtn').addEventListener('click', () => {
             document.body.classList.toggle('dark-mode');
             localStorage.setItem('dark_mode', document.body.classList.contains('dark-mode'));
+            const icon = document.getElementById('darkIcon');
+            if (document.body.classList.contains('dark-mode')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
         });
         
         document.getElementById('restoreFileInput').addEventListener('change', async (e) => {
@@ -1224,7 +1700,7 @@
                 try {
                     let data = JSON.parse(ev.target.result);
                     const res = await apiCall('restore_data.php', 'POST', data);
-                    if (res.success) { showToast('Restored! Reloading...'); setTimeout(() => location.reload(), 1500); }
+                    if (res && res.success) { showToast('Restored! Reloading...'); setTimeout(() => location.reload(), 1500); }
                     else showToast('Restore failed', true);
                 } catch(err) { showToast('Invalid backup file', true); }
             };
@@ -1233,7 +1709,11 @@
         
         let savedColor = localStorage.getItem('sidebar_color');
         if (savedColor) document.getElementById('mainSidebar').style.background = savedColor;
-        if (localStorage.getItem('dark_mode') === 'true') document.body.classList.add('dark-mode');
+        if (localStorage.getItem('dark_mode') === 'true') {
+            document.body.classList.add('dark-mode');
+            document.getElementById('darkIcon').classList.remove('fa-moon');
+            document.getElementById('darkIcon').classList.add('fa-sun');
+        }
         
         let scrollBtn = document.createElement('div');
         scrollBtn.className = 'scroll-top';
@@ -1245,6 +1725,7 @@
         loadDashboard();
     }
     
+    // Expose functions globally
     window.loadSection = loadSection;
     window.openModal = openModal;
     window.closeModal = closeModal;
@@ -1264,6 +1745,7 @@
     window.exportProjectsToExcel = exportProjectsToExcel;
     window.exportProjectsToPDF = exportProjectsToPDF;
     window.exportSingleProject = exportSingleProject;
+    window.exportSingleProjectPDF = exportSingleProjectPDF;
     window.openSendProjectModal = openSendProjectModal;
     window.confirmSendProject = confirmSendProject;
     window.viewDailyWork = viewDailyWork;
@@ -1271,6 +1753,8 @@
     window.openEditDailyWorkModal = openEditDailyWorkModal;
     window.saveDailyWork = saveDailyWork;
     window.deleteDailyWork = deleteDailyWork;
+    window.exportDailyWorkToExcel = exportDailyWorkToExcel;
+    window.exportDailyWorkToPDF = exportDailyWorkToPDF;
     window.viewTransaction = viewTransaction;
     window.openAddTransactionModal = openAddTransactionModal;
     window.openEditTransactionModal = openEditTransactionModal;
@@ -1286,11 +1770,17 @@
     window.exportAllReportsToExcel = exportAllReportsToExcel;
     window.exportAllReportsToPDF = exportAllReportsToPDF;
     window.exportSingleReport = exportSingleReport;
+    window.exportSingleReportPDF = exportSingleReportPDF;
     window.openSendReportModal = openSendReportModal;
     window.confirmSendReport = confirmSendReport;
     window.sendMessage = sendMessage;
     window.openChat = openChat;
     window.sendReply = sendReply;
+    window.deleteMessage = deleteMessage;
+    window.deleteConversation = deleteConversation;
+    window.deleteConversationById = deleteConversationById;
+    window.exportMessagesToExcel = exportMessagesToExcel;
+    window.exportMessagesToPDF = exportMessagesToPDF;
     window.changePassword = changePassword;
     window.changeSidebarColor = changeSidebarColor;
     window.openGeneralSettingsModal = openGeneralSettingsModal;
@@ -1298,6 +1788,9 @@
     window.createBackup = createBackup;
     window.logout = logout;
     window.closeMobileSidebar = closeMobileSidebar;
+    window.goToSectionAndSearch = goToSectionAndSearch;
+    window.performGlobalSearch = performGlobalSearch;
+    window.goToDepartmentDashboard = goToDepartmentDashboard;
     
     init();
 </script>

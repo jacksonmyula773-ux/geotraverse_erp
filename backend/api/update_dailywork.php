@@ -1,102 +1,110 @@
 <?php
-/**
- * Update Daily Work Record
- * Method: PUT
- * Parameters: id (in URL or body)
- * Body: fields to update
- */
+// backend/api/update_dailywork.php
+session_start();
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST, PUT');
+
+if (!isset($_SESSION['user_id'])) {
+    echo json_encode(['success' => false, 'message' => 'Not logged in']);
+    exit();
+}
 
 require_once '../config/database.php';
-require_once '../includes/auth.php';
 
-$auth = new Auth();
-$user = $auth->validateToken();
+$data = json_decode(file_get_contents('php://input'));
 
-if (!$user) {
-    sendResponse(false, null, "Unauthorized", 401);
+if (!$data || empty($data->id)) {
+    echo json_encode(['success' => false, 'message' => 'Daily work ID required']);
+    exit();
 }
 
 $database = new Database();
 $db = $database->getConnection();
 
-// Get ID from URL or body
-$id = isset($_GET['id']) ? $_GET['id'] : null;
-$data = json_decode(file_get_contents("php://input"));
-
-if (!$id && isset($data->id)) {
-    $id = $data->id;
+if (!$db) {
+    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
+    exit();
 }
 
-if (!$id) {
-    sendResponse(false, null, "Daily work ID required");
-}
+$id = (int)$data->id;
+$user_dept = $_SESSION['department_id'];
+$user_role = $_SESSION['role'];
 
-// First, check if record exists and belongs to this department
-$checkQuery = "SELECT * FROM daily_work WHERE id = :id";
+// Check if daily work exists and get its department
+$checkQuery = "SELECT department_id FROM daily_work WHERE id = ?";
 $checkStmt = $db->prepare($checkQuery);
-$checkStmt->bindParam(':id', $id);
-$checkStmt->execute();
-$existing = $checkStmt->fetch(PDO::FETCH_ASSOC);
+$checkStmt->execute([$id]);
+$dailywork = $checkStmt->fetch(PDO::FETCH_ASSOC);
 
-if (!$existing) {
-    sendResponse(false, null, "Daily work record not found");
+if (!$dailywork) {
+    echo json_encode(['success' => false, 'message' => 'Daily work record not found']);
+    exit();
 }
 
-// Super Admin can edit any, others only their own
-if ($user['role'] !== 'Super Admin' && $existing['department_id'] != $user['department_id']) {
-    sendResponse(false, null, "You can only edit your own department's records", 403);
+// Check permission
+if ($user_dept != 1 && $user_role != 'Super Administrator' && $dailywork['department_id'] != $user_dept) {
+    echo json_encode(['success' => false, 'message' => 'Access denied']);
+    exit();
 }
 
 // Build update query
-$fields = [];
-$params = [':id' => $id];
+$updates = [];
+$params = [];
 
-$updatableFields = ['date', 'project_name', 'work_description', 'income', 'expenses', 'paid_amount', 'status'];
-
-foreach ($updatableFields as $field) {
-    if (isset($data->$field)) {
-        $fields[] = "$field = :$field";
-        $params[":$field"] = $data->$field;
+if (isset($data->date)) {
+    $updates[] = "date = ?";
+    $params[] = $data->date;
+}
+if (isset($data->project_name)) {
+    $updates[] = "project_name = ?";
+    $params[] = $data->project_name;
+}
+if (isset($data->work_description)) {
+    $updates[] = "work_description = ?";
+    $params[] = $data->work_description;
+}
+if (isset($data->income)) {
+    $updates[] = "income = ?";
+    $params[] = $data->income;
+}
+if (isset($data->expenses)) {
+    $updates[] = "expenses = ?";
+    $params[] = $data->expenses;
+}
+if (isset($data->paid_amount)) {
+    $updates[] = "paid_amount = ?";
+    $params[] = $data->paid_amount;
+}
+if (isset($data->status)) {
+    $updates[] = "status = ?";
+    $params[] = $data->status;
+    
+    // If status is paid, set paid_amount = income
+    if ($data->status == 'paid') {
+        $incomeQuery = "SELECT income FROM daily_work WHERE id = ?";
+        $incomeStmt = $db->prepare($incomeQuery);
+        $incomeStmt->execute([$id]);
+        $incomeData = $incomeStmt->fetch(PDO::FETCH_ASSOC);
+        if ($incomeData) {
+            $updates[] = "paid_amount = ?";
+            $params[] = $incomeData['income'];
+        }
     }
 }
 
-if (empty($fields)) {
-    sendResponse(false, null, "No fields to update");
+if (empty($updates)) {
+    echo json_encode(['success' => false, 'message' => 'No fields to update']);
+    exit();
 }
 
-// Recalculate remaining and profit if income, expenses, or paid_amount changed
-if (isset($data->income) || isset($data->expenses) || isset($data->paid_amount) || isset($data->status)) {
-    $income = isset($data->income) ? $data->income : $existing['income'];
-    $expenses = isset($data->expenses) ? $data->expenses : $existing['expenses'];
-    $paid_amount = isset($data->paid_amount) ? $data->paid_amount : $existing['paid_amount'];
-    $status = isset($data->status) ? $data->status : $existing['status'];
-    
-    if ($status === 'paid') {
-        $paid_amount = $income;
-    }
-    
-    $remaining = $income - $paid_amount;
-    $profit = $income - $expenses;
-    
-    $fields[] = "remaining = :remaining";
-    $fields[] = "profit = :profit";
-    $params[':remaining'] = $remaining;
-    $params[':profit'] = $profit;
-}
-
-$fields[] = "updated_at = NOW()";
-
-$query = "UPDATE daily_work SET " . implode(", ", $fields) . " WHERE id = :id";
+$params[] = $id;
+$query = "UPDATE daily_work SET " . implode(", ", $updates) . " WHERE id = ?";
 $stmt = $db->prepare($query);
 
-foreach ($params as $key => $value) {
-    $stmt->bindValue($key, $value);
-}
-
-if ($stmt->execute()) {
-    logActivity($user['id'], "Updated daily work record", "ID: $id");
-    sendResponse(true, null, "Daily work updated successfully");
+if ($stmt->execute($params)) {
+    echo json_encode(['success' => true, 'message' => 'Daily work updated successfully']);
 } else {
-    sendResponse(false, null, "Failed to update daily work");
+    echo json_encode(['success' => false, 'message' => 'Failed to update daily work']);
 }
 ?>

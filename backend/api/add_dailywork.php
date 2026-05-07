@@ -1,44 +1,85 @@
 <?php
+// backend/api/add_dailywork.php
+session_start();
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST');
 
-require_once '../includes/auth.php';
-require_once '../config/database.php';
-
-require_permission('add_daily_work');
-
-$data = json_decode(file_get_contents('php://input'), true);
-
-$required_fields = ['project_name', 'work_description'];
-foreach ($required_fields as $field) {
-    if (!isset($data[$field]) || empty($data[$field])) {
-        echo json_encode(['success' => false, 'message' => "$field is required"]);
-        exit();
-    }
+if (!isset($_SESSION['user_id'])) {
+    echo json_encode(['success' => false, 'message' => 'Not logged in']);
+    exit();
 }
 
-$date = isset($data['date']) ? $data['date'] : date('Y-m-d');
-$project_name = $conn->real_escape_string($data['project_name']);
-$work_description = $conn->real_escape_string($data['work_description']);
-$income = isset($data['income']) ? floatval($data['income']) : 0;
-$expenses = isset($data['expenses']) ? floatval($data['expenses']) : 0;
-$paid_amount = isset($data['paid_amount']) ? floatval($data['paid_amount']) : 0;
-$profit = $income - $expenses;
-$remaining = $income - $paid_amount;
-$status = $paid_amount >= $income ? 'paid' : ($paid_amount > 0 ? 'partial' : 'pending');
-$department_id = get_current_department_id();
+require_once '../config/database.php';
 
-$stmt = $conn->prepare("
-    INSERT INTO daily_work (department_id, date, project_name, work_description, income, expenses, paid_amount, remaining, profit, status) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-");
-$stmt->bind_param("isssddddds", $department_id, $date, $project_name, $work_description, $income, $expenses, $paid_amount, $remaining, $profit, $status);
+$data = json_decode(file_get_contents('php://input'));
 
-if ($stmt->execute()) {
-    log_activity(get_current_user_id(), $department_id, "Added daily work for: $project_name");
-    echo json_encode(['success' => true, 'message' => 'Daily work added successfully', 'id' => $conn->insert_id]);
+if (!$data) {
+    echo json_encode(['success' => false, 'message' => 'Invalid data']);
+    exit();
+}
+
+// Validate required fields
+if (empty($data->date)) {
+    echo json_encode(['success' => false, 'message' => 'Date is required']);
+    exit();
+}
+
+if (empty($data->project_name)) {
+    echo json_encode(['success' => false, 'message' => 'Project name is required']);
+    exit();
+}
+
+$database = new Database();
+$db = $database->getConnection();
+
+if (!$db) {
+    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
+    exit();
+}
+
+$user_dept = $_SESSION['department_id'];
+$user_role = $_SESSION['role'];
+
+// Determine department_id
+if ($user_dept == 1 || $user_role == 'Super Administrator') {
+    $dept_id = isset($data->department_id) ? $data->department_id : null;
 } else {
-    echo json_encode(['success' => false, 'message' => 'Failed to add daily work: ' . $conn->error]);
+    $dept_id = $user_dept;
+}
+
+$date = $data->date;
+$project_name = $data->project_name;
+$work_description = $data->work_description ?? '';
+$income = $data->income ?? 0;
+$expenses = $data->expenses ?? 0;
+$paid_amount = $data->paid_amount ?? 0;
+$status = $data->status ?? 'pending';
+
+// Calculate remaining and profit
+$remaining = $income - $paid_amount;
+$profit = $income - $expenses;
+
+// If status is paid, set paid_amount = income
+if ($status == 'paid') {
+    $paid_amount = $income;
+    $remaining = 0;
+}
+
+$query = "INSERT INTO daily_work (date, project_name, work_description, income, expenses, paid_amount, status, department_id, created_at) 
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+
+$stmt = $db->prepare($query);
+
+if ($stmt->execute([$date, $project_name, $work_description, $income, $expenses, $paid_amount, $status, $dept_id])) {
+    $newId = $db->lastInsertId();
+    
+    echo json_encode([
+        'success' => true,
+        'message' => 'Daily work added successfully',
+        'data' => ['id' => $newId]
+    ]);
+} else {
+    echo json_encode(['success' => false, 'message' => 'Failed to add daily work']);
 }
 ?>

@@ -10,14 +10,14 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-require_once '../config/database.php';
-
 $other_dept = isset($_GET['department_id']) ? (int)$_GET['department_id'] : 0;
 
 if ($other_dept <= 0) {
     echo json_encode(['success' => false, 'message' => 'Department ID required']);
     exit();
 }
+
+require_once '../config/database.php';
 
 $database = new Database();
 $db = $database->getConnection();
@@ -46,11 +46,6 @@ $messages = [];
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $messages[] = $row;
 }
-
-// Mark messages as read
-$updateQuery = "UPDATE messages SET is_read = 1 WHERE from_department_id = ? AND to_department_id = ? AND is_read = 0";
-$updateStmt = $db->prepare($updateQuery);
-$updateStmt->execute([$other_dept, $user_dept]);
 
 echo json_encode([
     'success' => true,

@@ -1,40 +1,47 @@
 <?php
+// backend/api/delete_transaction.php
 session_start();
-require_once '../config/database.php';
-
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization');
+header('Access-Control-Allow-Methods: DELETE, POST');
 
-if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-    http_response_code(200);
+if (!isset($_SESSION['user_id'])) {
+    echo json_encode(['success' => false, 'message' => 'Not logged in']);
     exit();
 }
 
-if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
-    http_response_code(401);
-    echo json_encode(['success' => false, 'error' => 'Unauthorized']);
-    exit();
-}
+require_once '../config/database.php';
 
-$id = $_GET['id'] ?? 0;
+$data = json_decode(file_get_contents('php://input'));
 
-if (!$id) {
-    echo json_encode(['success' => false, 'error' => 'Transaction ID required']);
+if (!$data || empty($data->id)) {
+    echo json_encode(['success' => false, 'message' => 'Transaction ID required']);
     exit();
 }
 
 $database = new Database();
 $db = $database->getConnection();
 
-$query = "DELETE FROM transactions WHERE id = :id";
-$stmt = $db->prepare($query);
-$stmt->bindParam(':id', $id);
+if (!$db) {
+    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
+    exit();
+}
 
-if ($stmt->execute()) {
-    echo json_encode(['success' => true]);
+$id = (int)$data->id;
+$user_dept = $_SESSION['department_id'];
+$user_role = $_SESSION['role'];
+
+// Check permission (only admin can delete)
+if ($user_dept != 1 && $user_role != 'Super Administrator') {
+    echo json_encode(['success' => false, 'message' => 'Only admin can delete transactions']);
+    exit();
+}
+
+$stmt = $db->prepare("DELETE FROM transactions WHERE id = ?");
+
+if ($stmt->execute([$id])) {
+    echo json_encode(['success' => true, 'message' => 'Transaction deleted successfully']);
 } else {
-    echo json_encode(['success' => false, 'error' => 'Failed to delete transaction']);
+    echo json_encode(['success' => false, 'message' => 'Failed to delete transaction']);
 }
 ?>
