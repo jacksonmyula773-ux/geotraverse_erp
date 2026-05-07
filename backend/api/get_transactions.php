@@ -1,31 +1,35 @@
 <?php
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+header('Access-Control-Allow-Methods: GET');
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
-}
-
+require_once '../includes/auth.php';
 require_once '../config/database.php';
 
-$database = new Database();
-$db = $database->getConnection();
+require_permission('view_transactions');
 
-$id = isset($_GET['id']) ? $_GET['id'] : null;
+$dept_id = get_current_department_id();
 
-if ($id) {
-    $query = "SELECT * FROM transactions WHERE id = :id";
-    $stmt = $db->prepare($query);
-    $stmt->bindParam(':id', $id);
+if ($dept_id == DEPT_SUPER_ADMIN || $dept_id == DEPT_FINANCE) {
+    $result = $conn->query("
+        SELECT t.*, d.name as department_name
+        FROM transactions t
+        LEFT JOIN departments d ON t.department_id = d.id
+        ORDER BY t.created_at DESC
+    ");
 } else {
-    $query = "SELECT * FROM transactions ORDER BY transaction_date DESC";
-    $stmt = $db->prepare($query);
+    $stmt = $conn->prepare("
+        SELECT t.*, d.name as department_name
+        FROM transactions t
+        LEFT JOIN departments d ON t.department_id = d.id
+        WHERE t.department_id = ?
+        ORDER BY t.created_at DESC
+    ");
+    $stmt->bind_param("i", $dept_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
 }
 
-$stmt->execute();
-$transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
+$transactions = $result->fetch_all(MYSQLI_ASSOC);
 echo json_encode(['success' => true, 'data' => $transactions]);
 ?>

@@ -1,89 +1,67 @@
 <?php
-// C:\xampp\htdocs\geotraverse\backend\api\login.php
-
+// backend/api/login.php
 session_start();
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 
-if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-    http_response_code(200);
+require_once '../config/database.php';
+
+$data = json_decode(file_get_contents('php://input'));
+
+if (!isset($data->email) || !isset($data->password)) {
+    echo '{"success":false,"message":"Email and password required"}';
     exit();
 }
 
-// Database connection parameters
-$host = 'localhost';
-$dbname = 'geotraverse_erp';
-$username = 'root';
-$password = '';
+$database = new Database();
+$db = $database->getConnection();
 
-try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch(PDOException $e) {
-    echo json_encode(['success' => false, 'error' => 'Database connection failed: ' . $e->getMessage()]);
+if (!$db) {
+    echo '{"success":false,"message":"Database connection failed"}';
     exit();
 }
 
-// Get POST data
-$data = json_decode(file_get_contents('php://input'), true);
-$email = $data['email'] ?? '';
-$password_input = $data['password'] ?? '';
-$userType = $data['userType'] ?? 'admin';
+$email = $data->email;
+$password = md5($data->password);
 
-if (empty($email) || empty($password_input)) {
-    echo json_encode(['success' => false, 'error' => 'Email and password required']);
-    exit();
-}
+$query = "SELECT u.*, d.name as department_name 
+          FROM users u 
+          LEFT JOIN departments d ON u.department_id = d.id 
+          WHERE u.email = ? AND u.password = ? AND u.is_active = 1";
 
-if ($userType === 'admin') {
-    // Admin login from users table
-    $stmt = $pdo->prepare("SELECT * FROM users WHERE email = :email");
-    $stmt->execute([':email' => $email]);
+$stmt = $db->prepare($query);
+$stmt->execute([$email, $password]);
+
+if ($stmt->rowCount() > 0) {
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
     
-    if ($user && password_verify($password_input, $user['password'])) {
-        $_SESSION['logged_in'] = true;
-        $_SESSION['user_id'] = $user['id'];
-        $_SESSION['user_name'] = $user['name'];
-        $_SESSION['user_email'] = $user['email'];
-        $_SESSION['user_role'] = 'admin';
-        
-        echo json_encode([
-            'success' => true,
-            'user' => [
-                'id' => $user['id'],
-                'name' => $user['name'],
-                'email' => $user['email'],
-                'role' => 'admin'
-            ]
-        ]);
-    } else {
-        echo json_encode(['success' => false, 'error' => 'Invalid email or password']);
-    }
-} else {
-    // Department login from departments table
-    $stmt = $pdo->prepare("SELECT * FROM departments WHERE email = :email");
-    $stmt->execute([':email' => $email]);
-    $dept = $stmt->fetch(PDO::FETCH_ASSOC);
+    $_SESSION['user_id'] = $user['id'];
+    $_SESSION['user_name'] = $user['name'];
+    $_SESSION['user_email'] = $user['email'];
+    $_SESSION['department_id'] = $user['department_id'];
+    $_SESSION['department_name'] = $user['department_name'];
+    $_SESSION['role'] = $user['role'];
+    $_SESSION['logged_in'] = true;
     
-    if ($dept && password_verify($password_input, $dept['password'])) {
-        $_SESSION['logged_in'] = true;
-        $_SESSION['department_id'] = $dept['id'];
-        $_SESSION['department_name'] = $dept['name'];
-        $_SESSION['user_role'] = 'department';
-        
-        echo json_encode([
-            'success' => true,
-            'department' => [
-                'id' => $dept['id'],
-                'name' => $dept['name'],
-                'email' => $dept['email']
-            ]
-        ]);
-    } else {
-        echo json_encode(['success' => false, 'error' => 'Invalid email or password']);
-    }
+    // Determine redirect page based on department
+    $departmentPages = [
+        2 => 'finance.html', 3 => 'sales_marketing.html', 4 => 'manager.html',
+        5 => 'secretary.html', 6 => 'bricks_timber.html', 7 => 'aluminium.html',
+        8 => 'town_planning.html', 9 => 'architectural.html', 10 => 'survey.html',
+        11 => 'construction.html', 12 => 'hatimiliki.html'
+    ];
+    
+    $redirect = ($user['department_id'] == 1) ? 'super_admin.html' : ($departmentPages[$user['department_id']] ?? 'dashboard.html');
+    
+    unset($user['password']);
+    echo json_encode([
+        'success' => true,
+        'message' => 'Login successful',
+        'user' => $user,
+        'redirect' => $redirect
+    ]);
+} else {
+    echo '{"success":false,"message":"Invalid email or password"}';
 }
 ?>

@@ -1,11 +1,12 @@
 <?php
+// backend/api/get_projects.php
+session_start();
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
+header('Access-Control-Allow-Methods: GET');
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
+if (!isset($_SESSION['user_id'])) {
+    echo json_encode(['success' => false, 'message' => 'Not logged in']);
     exit();
 }
 
@@ -14,19 +15,42 @@ require_once '../config/database.php';
 $database = new Database();
 $db = $database->getConnection();
 
-$id = isset($_GET['id']) ? $_GET['id'] : null;
-
-if ($id) {
-    $query = "SELECT * FROM projects WHERE id = :id";
-    $stmt = $db->prepare($query);
-    $stmt->bindParam(':id', $id);
-} else {
-    $query = "SELECT * FROM projects ORDER BY id DESC";
-    $stmt = $db->prepare($query);
+if (!$db) {
+    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
+    exit();
 }
 
-$stmt->execute();
-$projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$user_dept = $_SESSION['department_id'];
+$user_role = $_SESSION['role'];
 
-echo json_encode(['success' => true, 'data' => $projects]);
+// Build query based on user role
+if ($user_dept == 1 || $user_role == 'Super Administrator') {
+    // Super admin sees all projects
+    $query = "SELECT p.*, d.name as department_name 
+              FROM projects p 
+              LEFT JOIN departments d ON p.department_id = d.id 
+              ORDER BY p.id DESC";
+    $stmt = $db->prepare($query);
+    $stmt->execute();
+} else {
+    // Other departments see only their projects
+    $query = "SELECT p.*, d.name as department_name 
+              FROM projects p 
+              LEFT JOIN departments d ON p.department_id = d.id 
+              WHERE p.department_id = ? 
+              ORDER BY p.id DESC";
+    $stmt = $db->prepare($query);
+    $stmt->execute([$user_dept]);
+}
+
+$projects = [];
+while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+    $projects[] = $row;
+}
+
+echo json_encode([
+    'success' => true,
+    'count' => count($projects),
+    'data' => $projects
+]);
 ?>

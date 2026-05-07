@@ -1,49 +1,106 @@
 <?php
+// backend/api/update_project.php
+session_start();
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: PUT, OPTIONS');
+header('Access-Control-Allow-Methods: POST, PUT');
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
+if (!isset($_SESSION['user_id'])) {
+    echo json_encode(['success' => false, 'message' => 'Not logged in']);
     exit();
 }
 
 require_once '../config/database.php';
 
-$database = new Database();
-$db = $database->getConnection();
+$data = json_decode(file_get_contents('php://input'));
 
-$data = json_decode(file_get_contents("php://input"));
-
-if (!isset($data->id)) {
-    echo json_encode(['success' => false, 'error' => 'Project ID required']);
+if (!$data || empty($data->id)) {
+    echo json_encode(['success' => false, 'message' => 'Project ID required']);
     exit();
 }
 
-$fields = [];
-$params = [':id' => $data->id];
+$database = new Database();
+$db = $database->getConnection();
 
-if (isset($data->name)) { $fields[] = "name = :name"; $params[':name'] = $data->name; }
-if (isset($data->client_name)) { $fields[] = "client_name = :client"; $params[':client'] = $data->client_name; }
-if (isset($data->amount)) { $fields[] = "amount = :amount"; $params[':amount'] = $data->amount; }
-if (isset($data->status)) { $fields[] = "status = :status"; $params[':status'] = $data->status; }
-if (isset($data->progress)) { $fields[] = "progress = :progress"; $params[':progress'] = $data->progress; }
-if (isset($data->location)) { $fields[] = "location = :location"; $params[':location'] = $data->location; }
-if (isset($data->description)) { $fields[] = "description = :desc"; $params[':desc'] = $data->description; }
-if (isset($data->image)) { $fields[] = "image = :image"; $params[':image'] = $data->image; }
-
-$fields[] = "updated_at = NOW()";
-
-$query = "UPDATE projects SET " . implode(", ", $fields) . " WHERE id = :id";
-$stmt = $db->prepare($query);
-
-foreach ($params as $key => $value) {
-    $stmt->bindValue($key, $value);
+if (!$db) {
+    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
+    exit();
 }
 
-if ($stmt->execute()) {
-    echo json_encode(['success' => true]);
+$id = (int)$data->id;
+$user_dept = $_SESSION['department_id'];
+$user_role = $_SESSION['role'];
+
+// Check if project exists and get its department
+$checkQuery = "SELECT department_id FROM projects WHERE id = ?";
+$checkStmt = $db->prepare($checkQuery);
+$checkStmt->execute([$id]);
+$project = $checkStmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$project) {
+    echo json_encode(['success' => false, 'message' => 'Project not found']);
+    exit();
+}
+
+// Check permission
+if ($user_dept != 1 && $user_role != 'Super Administrator' && $project['department_id'] != $user_dept) {
+    echo json_encode(['success' => false, 'message' => 'Access denied']);
+    exit();
+}
+
+// Build update query
+$updates = [];
+$params = [];
+
+if (isset($data->name)) {
+    $updates[] = "name = ?";
+    $params[] = $data->name;
+}
+if (isset($data->client_name)) {
+    $updates[] = "client_name = ?";
+    $params[] = $data->client_name;
+}
+if (isset($data->amount)) {
+    $updates[] = "amount = ?";
+    $params[] = $data->amount;
+}
+if (isset($data->location)) {
+    $updates[] = "location = ?";
+    $params[] = $data->location;
+}
+if (isset($data->description)) {
+    $updates[] = "description = ?";
+    $params[] = $data->description;
+}
+if (isset($data->status)) {
+    $updates[] = "status = ?";
+    $params[] = $data->status;
+}
+if (isset($data->progress)) {
+    $updates[] = "progress = ?";
+    $params[] = $data->progress;
+}
+if (isset($data->start_date)) {
+    $updates[] = "start_date = ?";
+    $params[] = $data->start_date;
+}
+if (isset($data->end_date)) {
+    $updates[] = "end_date = ?";
+    $params[] = $data->end_date;
+}
+
+if (empty($updates)) {
+    echo json_encode(['success' => false, 'message' => 'No fields to update']);
+    exit();
+}
+
+$params[] = $id;
+$query = "UPDATE projects SET " . implode(", ", $updates) . " WHERE id = ?";
+$stmt = $db->prepare($query);
+
+if ($stmt->execute($params)) {
+    echo json_encode(['success' => true, 'message' => 'Project updated successfully']);
 } else {
-    echo json_encode(['success' => false, 'error' => 'Failed to update project']);
+    echo json_encode(['success' => false, 'message' => 'Failed to update project']);
 }
 ?>

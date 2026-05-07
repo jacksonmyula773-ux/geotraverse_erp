@@ -1,30 +1,47 @@
 <?php
+// backend/api/get_messages.php
 session_start();
-require_once '../config/database.php';
-
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization');
+header('Access-Control-Allow-Methods: GET');
 
-if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-    http_response_code(200);
+if (!isset($_SESSION['user_id'])) {
+    echo json_encode(['success' => false, 'message' => 'Not logged in']);
     exit();
 }
 
-if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
-    http_response_code(401);
-    echo json_encode(['success' => false, 'error' => 'Unauthorized']);
-    exit();
-}
+require_once '../config/database.php';
 
 $database = new Database();
 $db = $database->getConnection();
 
-$query = "SELECT * FROM messages WHERE to_department_id = 1 ORDER BY created_at DESC";
-$stmt = $db->prepare($query);
-$stmt->execute();
-$messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
+if (!$db) {
+    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
+    exit();
+}
 
-echo json_encode(['success' => true, 'messages' => $messages]);
+$user_dept = $_SESSION['department_id'];
+
+$query = "SELECT m.*, 
+          d1.name as from_department_name,
+          d2.name as to_department_name
+          FROM messages m
+          LEFT JOIN departments d1 ON m.from_department_id = d1.id
+          LEFT JOIN departments d2 ON m.to_department_id = d2.id
+          WHERE m.from_department_id = ? OR m.to_department_id = ?
+          ORDER BY m.created_at DESC";
+
+$stmt = $db->prepare($query);
+$stmt->execute([$user_dept, $user_dept]);
+
+$messages = [];
+while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+    $messages[] = $row;
+}
+
+echo json_encode([
+    'success' => true,
+    'count' => count($messages),
+    'data' => $messages
+]);
 ?>

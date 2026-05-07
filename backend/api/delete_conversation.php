@@ -1,36 +1,46 @@
 <?php
+// backend/api/delete_conversation.php
+session_start();
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: DELETE, OPTIONS');
+header('Access-Control-Allow-Methods: DELETE, POST');
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
+if (!isset($_SESSION['user_id'])) {
+    echo json_encode(['success' => false, 'message' => 'Not logged in']);
     exit();
 }
 
 require_once '../config/database.php';
 
-$database = new Database();
-$db = $database->getConnection();
+$data = json_decode(file_get_contents('php://input'));
 
-$with_dept = isset($_GET['with_department_id']) ? $_GET['with_department_id'] : null;
-
-if (!$with_dept) {
-    echo json_encode(['success' => false, 'error' => 'Department ID required']);
+if (!$data || empty($data->department_id)) {
+    echo json_encode(['success' => false, 'message' => 'Department ID required']);
     exit();
 }
 
-$my_dept = 1; // Super Admin
+$database = new Database();
+$db = $database->getConnection();
 
-$query = "DELETE FROM messages WHERE (from_department_id = :my_dept AND to_department_id = :with_dept) 
-          OR (from_department_id = :with_dept AND to_department_id = :my_dept)";
+if (!$db) {
+    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
+    exit();
+}
+
+$other_dept = (int)$data->department_id;
+$user_dept = $_SESSION['department_id'];
+
+// Delete all messages between user and the other department
+$query = "DELETE FROM messages WHERE (from_department_id = ? AND to_department_id = ?) OR (from_department_id = ? AND to_department_id = ?)";
 $stmt = $db->prepare($query);
-$stmt->bindParam(':my_dept', $my_dept);
-$stmt->bindParam(':with_dept', $with_dept);
 
-if ($stmt->execute()) {
-    echo json_encode(['success' => true]);
+if ($stmt->execute([$user_dept, $other_dept, $other_dept, $user_dept])) {
+    $deleted_count = $stmt->rowCount();
+    echo json_encode([
+        'success' => true, 
+        'message' => "Conversation deleted successfully ($deleted_count messages removed)"
+    ]);
 } else {
-    echo json_encode(['success' => false, 'error' => 'Failed to delete conversation']);
+    echo json_encode(['success' => false, 'message' => 'Failed to delete conversation']);
 }
 ?>

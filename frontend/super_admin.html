@@ -2,7 +2,6 @@
 <html lang="sw">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GeoTraverse | Super Admin Dashboard</title>
     
@@ -15,69 +14,98 @@
     
     <style>
         * { font-family: 'Inter', sans-serif; }
-        body { background: #f0f2f5; }
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: #e4e4e7; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb { background: #0f74ba; border-radius: 10px; }
+        body { background: #f0f2f5; transition: background 0.3s; }
+        
         .sidebar { background: linear-gradient(180deg, #0f74ba 0%, #0a5a8e 100%); position: fixed; width: 260px; height: 100vh; overflow-y: auto; z-index: 30; }
         .main-content { margin-left: 260px; }
         @media (max-width: 768px) { .sidebar { left: -260px; } .sidebar.mobile-open { left: 0; } .main-content { margin-left: 0; } }
-        .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 10px; color: white; cursor: pointer; }
+        
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 10px; color: white; cursor: pointer; transition: all 0.2s; }
+        .nav-item:hover { background: rgba(255,255,255,0.1); }
         .nav-item.active { background: rgba(255,255,255,0.15); border-left: 3px solid #60a5fa; }
-        .stat-card { background: white; border-radius: 16px; border: 1px solid #e5e7eb; transition: all 0.2s; cursor: pointer; padding: 20px; }
+        
+        .stat-card { background: white; border-radius: 16px; border: 1px solid #e5e7eb; padding: 20px; transition: all 0.2s; cursor: pointer; }
         .stat-card:hover { transform: translateY(-3px); border-color: #0f74ba; }
+        
+        input, select, textarea { width: 100%; padding: 10px 14px !important; margin: 8px 0; border: 1px solid #e5e7eb; border-radius: 10px; font-size: 14px; background: white; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: #0f74ba; box-shadow: 0 0 0 2px rgba(15,116,186,0.1); }
+        
+        .password-wrapper { position: relative; width: 100%; }
+        .password-wrapper input { padding-right: 40px !important; }
+        .toggle-password { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #9ca3af; font-size: 16px; }
+        .toggle-password:hover { color: #0f74ba; }
+        
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000; }
-        .modal-content { background: white; border-radius: 16px; width: 90%; max-width: 600px; max-height: 85vh; overflow-y: auto; padding: 20px; }
-        input, select, textarea { width: 100%; padding: 10px 12px; margin: 8px 0; border: 1px solid #e5e7eb; border-radius: 8px; }
-        input:focus, select:focus, textarea:focus { outline: none; border-color: #0f74ba; }
-        .toast { position: fixed; bottom: 20px; right: 20px; background: #10b981; color: white; padding: 12px 20px; border-radius: 8px; z-index: 1000; animation: slideInRight 0.3s ease; }
+        .modal-content { background: white; border-radius: 20px; width: 90%; max-width: 550px; max-height: 85vh; overflow-y: auto; padding: 25px; }
+        
+        .toast { position: fixed; bottom: 20px; right: 20px; background: #10b981; color: white; padding: 12px 24px; border-radius: 12px; z-index: 1000; animation: slideInRight 0.3s ease; z-index: 2000; }
         .toast.error { background: #ef4444; }
-        .loading-spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid #fff; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; margin-right: 8px; }
-        .status-badge { padding: 2px 8px; border-radius: 20px; font-size: 10px; }
+        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        
+        .loading-spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid #0f74ba; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; display: inline-block; }
         .status-pending { background: #fef3c7; color: #d97706; }
         .status-progress { background: #dbeafe; color: #2563eb; }
         .status-completed { background: #d1fae5; color: #059669; }
-        .project-card { background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 16px; margin-bottom: 16px; }
+        
+        .project-card { background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 16px; margin-bottom: 16px; transition: all 0.2s; }
         .project-card:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
-        .project-image { width: 100%; height: 160px; object-fit: cover; border-radius: 8px; margin-bottom: 12px; cursor: pointer; }
-        .dept-card { background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 16px; cursor: pointer; }
+        .dept-card { background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 16px; cursor: pointer; transition: all 0.2s; }
         .dept-card:hover { transform: translateX(5px); border-color: #0f74ba; background: #f0f9ff; }
-        .report-card { background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 16px; margin-bottom: 12px; }
-        .report-card:hover { transform: translateY(-2px); box-shadow: 0 5px 12px rgba(0,0,0,0.08); }
         .message-item { background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 16px; margin-bottom: 12px; cursor: pointer; }
-        .message-item:hover { transform: translateX(5px); border-color: #0f74ba; }
         .message-unread { background: #eff6ff; border-left: 3px solid #3b82f6; }
         .notification-badge { background: #ef4444; color: white; border-radius: 9999px; padding: 2px 8px; font-size: 10px; margin-left: 8px; }
+        
         .chat-message { margin-bottom: 16px; }
         .chat-sent { text-align: right; }
-        .chat-sent .bubble { background: #0f74ba; color: white; display: inline-block; padding: 10px 14px; border-radius: 18px; max-width: 70%; }
+        .chat-sent .bubble { background: #0f74ba; color: white; display: inline-block; padding: 10px 16px; border-radius: 20px; max-width: 70%; }
         .chat-received { text-align: left; }
-        .chat-received .bubble { background: #e5e7eb; color: #333; display: inline-block; padding: 10px 14px; border-radius: 18px; max-width: 70%; }
-        body.dark-mode { background: #0f172a; }
-        body.dark-mode .bg-white { background: #1e293b; }
-        body.dark-mode .text-gray-800, body.dark-mode .text-gray-700 { color: #f1f5f9; }
-        body.dark-mode .text-gray-500, body.dark-mode .text-gray-400 { color: #94a3b8; }
-        body.dark-mode .stat-card, body.dark-mode .project-card, body.dark-mode .dept-card, body.dark-mode .report-card, body.dark-mode .message-item { background: #1e293b; border-color: #334155; }
-        body.dark-mode .modal-content { background: #1e293b; }
-        body.dark-mode input, body.dark-mode select, body.dark-mode textarea { background: #0f172a; border-color: #334155; color: #f1f5f9; }
-        body.dark-mode .chat-received .bubble { background: #334155; color: #f1f5f9; }
-        .employee-row:hover { background-color: #f9fafb; cursor: pointer; }
-        body.dark-mode .employee-row:hover { background-color: #334155; }
-        .color-option { width: 32px; height: 32px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; display: inline-block; margin: 4px; }
+        .chat-received .bubble { background: #e5e7eb; color: #333; display: inline-block; padding: 10px 16px; border-radius: 20px; max-width: 70%; }
+        
+        .color-option { width: 38px; height: 38px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: all 0.2s; margin: 5px; display: inline-flex; align-items: center; justify-content: center; }
+        .color-option:hover { transform: scale(1.1); }
         .color-option.selected { border-color: white; box-shadow: 0 0 0 2px #333; }
-        .scroll-top { position: fixed; bottom: 20px; right: 20px; background: #0f74ba; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: all 0.3s; z-index: 99; color: white; }
-        .scroll-top.visible { opacity: 1; }
-        .password-wrapper { position: relative; }
-        .password-wrapper input { padding-right: 40px; }
-        .toggle-password { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #9ca3af; }
-        .toggle-password:hover { color: #0f74ba; }
+        
         table { width: 100%; border-collapse: collapse; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e5e7eb; }
         th { background: #f9fafb; font-weight: 600; }
-        body.dark-mode th { background: #1e293b; }
-        .image-preview-modal { background: rgba(0,0,0,0.9); }
-        .image-preview-modal .modal-content { background: transparent; text-align: center; }
-        .full-image { max-width: 100%; max-height: 90vh; border-radius: 8px; }
+        .employee-row:hover { background: #f9fafb; }
+        
+        .btn-primary { background: #0f74ba; color: white; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; transition: all 0.2s; font-size: 13px; }
+        .btn-primary:hover { background: #0a5a8e; }
+        .btn-success { background: #10b981; color: white; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; }
+        .btn-success:hover { background: #059669; }
+        .btn-danger { background: #ef4444; color: white; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; }
+        .btn-danger:hover { background: #dc2626; }
+        .btn-warning { background: #f59e0b; color: white; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; }
+        .btn-warning:hover { background: #d97706; }
+        .btn-info { background: #3b82f6; color: white; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; }
+        .btn-info:hover { background: #2563eb; }
+        
+        .action-buttons { display: flex; gap: 5px; flex-wrap: wrap; }
+        .action-btn { padding: 5px 10px; font-size: 11px; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+        .action-btn.view { background: #3b82f6; color: white; }
+        .action-btn.edit { background: #f59e0b; color: white; }
+        .action-btn.delete { background: #ef4444; color: white; }
+        .action-btn.excel { background: #10b981; color: white; }
+        .action-btn.pdf { background: #ef4444; color: white; }
+        .action-btn.send { background: #8b5cf6; color: white; }
+        
+        body.dark-mode { background: #0f172a; }
+        body.dark-mode .bg-white, body.dark-mode .stat-card, body.dark-mode .project-card, 
+        body.dark-mode .dept-card, body.dark-mode .message-item, body.dark-mode .modal-content { background: #1e293b; border-color: #334155; }
+        body.dark-mode input, body.dark-mode select, body.dark-mode textarea { background: #0f172a; border-color: #334155; color: #f1f5f9; }
+        body.dark-mode .chat-received .bubble { background: #334155; color: #f1f5f9; }
+        body.dark-mode th { background: #1e293b; border-color: #334155; }
+        
+        .scroll-top { position: fixed; bottom: 20px; right: 20px; background: #0f74ba; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: all 0.3s; z-index: 99; color: white; }
+        .scroll-top.visible { opacity: 1; }
+        
+        .project-image { width: 100%; height: 160px; object-fit: cover; border-radius: 8px; margin-bottom: 12px; cursor: pointer; }
+        .report-sample { background: #f8fafc; border-left: 4px solid #0f74ba; padding: 12px; margin-bottom: 10px; border-radius: 8px; }
+        body.dark-mode .report-sample { background: #0f172a; }
     </style>
 </head>
 <body>
@@ -87,18 +115,18 @@
 <div class="flex">
     <aside id="mainSidebar" class="sidebar text-white">
         <div class="p-5 border-b border-white/20">
-            <div class="flex items-center gap-3 cursor-pointer" onclick="goToMainWebsite()">
-                <img src="https://i.postimg.cc/MT6jTVHh/weblogo.png" class="w-10 h-10 object-contain rounded-lg">
+            <div class="flex items-center gap-3">
                 <div><span class="text-xl font-bold">GeoTraverse</span><p class="text-[10px] text-white/60">Super Admin</p></div>
             </div>
         </div>
-        <nav class="flex-1 p-3 space-y-1 overflow-y-auto">
+        <nav class="flex-1 p-3 space-y-1">
             <div class="nav-item active" data-section="dashboard"><i class="fas fa-tachometer-alt w-5"></i><span>Dashboard</span></div>
             <div class="nav-item" data-section="employees"><i class="fas fa-users w-5"></i><span>Employees</span></div>
             <div class="nav-item" data-section="departments"><i class="fas fa-building w-5"></i><span>Departments</span></div>
-            <div class="nav-item" data-section="projects"><i class="fas fa-tasks w-5"></i><span>Projects</span><span id="projectsBadge" class="notification-badge hidden">0</span></div>
-            <div class="nav-item" data-section="transactions"><i class="fas fa-exchange-alt w-5"></i><span>Cashflow</span></div>
-            <div class="nav-item" data-section="reports"><i class="fas fa-chart-line w-5"></i><span>Reports</span><span id="reportsBadge" class="notification-badge hidden">0</span></div>
+            <div class="nav-item" data-section="projects"><i class="fas fa-tasks w-5"></i><span>Projects</span></div>
+            <div class="nav-item" data-section="dailywork"><i class="fas fa-calendar-day w-5"></i><span>Daily Work</span></div>
+            <div class="nav-item" data-section="cashflow"><i class="fas fa-exchange-alt w-5"></i><span>Cashflow</span></div>
+            <div class="nav-item" data-section="reports"><i class="fas fa-chart-line w-5"></i><span>Reports</span></div>
             <div class="nav-item" data-section="messages"><i class="fas fa-envelope w-5"></i><span>Messages</span><span id="msgBadge" class="notification-badge">0</span></div>
             <div class="nav-item" data-section="settings"><i class="fas fa-cog w-5"></i><span>Settings</span></div>
         </nav>
@@ -110,255 +138,1167 @@
     <main class="flex-1 main-content">
         <header class="bg-white shadow-sm px-5 py-3 sticky top-0 z-10 flex justify-between items-center border-b">
             <button id="mobileMenuBtn" class="md:hidden text-gray-600 text-xl"><i class="fas fa-bars"></i></button>
-            <div class="relative flex-1 max-w-md mx-4"><i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i><input type="text" id="searchInput" placeholder="Search employees, projects..." class="w-full pl-10 pr-4 py-2 border rounded-lg text-sm"><div id="searchResults" class="absolute top-full left-0 right-0 bg-white rounded-lg shadow-lg z-50 hidden max-h-80 overflow-y-auto"></div></div>
+            <div class="relative flex-1 max-w-md mx-4">
+                <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <input type="text" id="searchInput" placeholder="Search..." class="w-full pl-10 pr-4 py-2 border rounded-lg text-sm" style="padding: 8px 12px 8px 38px !important;">
+                <div id="searchResults" class="absolute top-full left-0 right-0 bg-white rounded-lg shadow-lg z-50 hidden max-h-80 overflow-y-auto"></div>
+            </div>
             <button id="darkModeBtn" class="text-gray-500"><i id="darkIcon" class="fas fa-moon text-xl"></i></button>
         </header>
-        <div class="p-5" id="mainContainer"><div class="flex justify-center items-center h-64"><div class="loading-spinner"></div> Loading...</div></div>
+        <div class="p-5" id="mainContainer"><div class="flex justify-center items-center h-64"><div class="loading-spinner"></div><span class="ml-3">Loading...</span></div></div>
     </main>
 </div>
 
 <!-- MODALS -->
-<div id="empModal" class="modal"><div class="modal-content"><h3 id="empModalTitle">Add Employee</h3><input type="hidden" id="empId"><input type="text" id="empName" placeholder="Full Name" class="border rounded mb-2"><input type="email" id="empEmail" placeholder="Email Address" class="border rounded mb-2"><input type="text" id="empPhone" placeholder="Phone Number" class="border rounded mb-2"><select id="empDept" class="border rounded mb-2"><option value="">Select Department</option><option value="1">Super Admin</option><option value="2">Finance</option><option value="3">Sales & Marketing</option><option value="4">Manager</option><option value="5">Survey</option><option value="6">Construction</option><option value="7">Bricks & Timber</option><option value="8">Aluminium</option><option value="9">Town Planning</option><option value="10">Hatimiliki</option><option value="11">Architectural</option><option value="12">Secretary</option></select><select id="empRole" class="border rounded mb-2"><option value="">Select Role</option><option value="Admin">Admin</option><option value="Manager">Manager</option><option value="Accountant">Accountant</option><option value="Staff">Staff</option></select><input type="text" id="empSalary" placeholder="Salary (TZS)" class="border rounded mb-2"><input type="password" id="empPassword" placeholder="Password" class="border rounded mb-2" value="1234"><div class="flex gap-3 pt-2"><button onclick="saveEmployee()" class="flex-1 bg-blue-600 text-white py-2 rounded">Save</button><button onclick="closeModal('empModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
-<div id="viewEmpModal" class="modal"><div class="modal-content"><h3>Employee Details</h3><div id="viewEmpContent"></div><button onclick="closeModal('viewEmpModal')" class="w-full bg-gray-200 py-2 rounded mt-3">Close</button></div></div>
-<div id="projModal" class="modal"><div class="modal-content"><h3 id="projModalTitle">Add Project</h3><input type="hidden" id="projId"><input type="text" id="projName" placeholder="Project Name" class="border rounded mb-2"><input type="text" id="projClient" placeholder="Client Name" class="border rounded mb-2"><input type="text" id="projAmount" placeholder="Amount (TZS)" class="border rounded mb-2"><input type="text" id="projLocation" placeholder="Location" class="border rounded mb-2"><textarea id="projDesc" rows="2" placeholder="Description" class="border rounded mb-2"></textarea><div class="border-2 border-dashed rounded-lg p-4 text-center cursor-pointer mb-2" onclick="document.getElementById('projImageFile').click()"><i class="fas fa-cloud-upload-alt text-2xl text-gray-400"></i><p class="text-sm">Click to upload project image</p></div><input type="file" id="projImageFile" accept="image/*" class="hidden"><div id="projImagePreview" class="hidden mt-2"></div><select id="projStatus" class="border rounded mb-2"><option value="pending">Pending</option><option value="in_progress">In Progress</option><option value="completed">Completed</option><option value="approved">Approved</option></select><input type="number" id="projProgress" placeholder="Progress (0-100)" class="border rounded mb-2"><select id="projDept" class="border rounded mb-2"><option value="1">Super Admin</option><option value="2">Finance</option><option value="3">Sales</option><option value="4">Manager</option><option value="5">Survey</option><option value="6">Construction</option><option value="7">Bricks</option><option value="8">Aluminium</option><option value="9">Town Planning</option><option value="10">Hatimiliki</option><option value="11">Architectural</option><option value="12">Secretary</option></select><div class="flex gap-3 pt-2"><button onclick="saveProject()" class="flex-1 bg-blue-600 text-white py-2 rounded">Save</button><button onclick="closeModal('projModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
-<div id="viewProjModal" class="modal"><div class="modal-content"><h3>Project Details</h3><div id="viewProjContent"></div><button onclick="closeModal('viewProjModal')" class="w-full bg-gray-200 py-2 rounded mt-3">Close</button></div></div>
-<div id="imagePreviewModal" class="modal image-preview-modal"><div class="modal-content"><img id="fullImagePreview" class="full-image"><button onclick="closeModal('imagePreviewModal')" class="mt-3 w-full bg-gray-800 text-white py-2 rounded">Close</button></div></div>
-<div id="transModal" class="modal"><div class="modal-content"><h3>Add Transaction</h3><select id="transType" class="border rounded mb-2"><option value="income">Income</option><option value="expense">Expense</option></select><select id="transDept" class="border rounded mb-2"><option value="">Select Department</option><option value="1">Super Admin</option><option value="2">Finance</option><option value="3">Sales</option><option value="4">Manager</option><option value="5">Survey</option><option value="6">Construction</option><option value="7">Bricks</option><option value="8">Aluminium</option><option value="9">Town Planning</option><option value="10">Hatimiliki</option><option value="11">Architectural</option><option value="12">Secretary</option></select><input type="text" id="transSource" placeholder="Source/Category" class="border rounded mb-2"><input type="text" id="transAmount" placeholder="Amount (TZS)" class="border rounded mb-2"><input type="date" id="transDate" class="border rounded mb-2"><select id="transStatus" class="border rounded mb-2"><option value="paid">Paid (Full)</option><option value="partial">Partial Payment</option><option value="pending">Pending</option></select><textarea id="transDesc" rows="2" placeholder="Description" class="border rounded mb-2"></textarea><div class="flex gap-3 pt-2"><button onclick="saveTransaction()" class="flex-1 bg-blue-600 text-white py-2 rounded">Save</button><button onclick="closeModal('transModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
-<div id="editTransModal" class="modal"><div class="modal-content"><h3>Edit Transaction</h3><input type="hidden" id="editTransId"><select id="editTransType" class="border rounded mb-2"><option value="income">Income</option><option value="expense">Expense</option></select><select id="editTransDept" class="border rounded mb-2"><option value="1">Super Admin</option><option value="2">Finance</option><option value="3">Sales</option><option value="4">Manager</option><option value="5">Survey</option><option value="6">Construction</option><option value="7">Bricks</option><option value="8">Aluminium</option><option value="9">Town Planning</option><option value="10">Hatimiliki</option><option value="11">Architectural</option><option value="12">Secretary</option></select><input type="text" id="editTransSource" placeholder="Source" class="border rounded mb-2"><input type="text" id="editTransAmount" placeholder="Amount" class="border rounded mb-2"><input type="date" id="editTransDate" class="border rounded mb-2"><select id="editTransStatus" class="border rounded mb-2"><option value="paid">Paid</option><option value="partial">Partial</option><option value="pending">Pending</option></select><textarea id="editTransDesc" rows="2" placeholder="Description" class="border rounded mb-2"></textarea><div class="flex gap-3 pt-2"><button onclick="updateTransaction()" class="flex-1 bg-blue-600 text-white py-2 rounded">Update</button><button onclick="closeModal('editTransModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
-<div id="viewTransModal" class="modal"><div class="modal-content"><h3>Transaction Details</h3><div id="viewTransContent"></div><button onclick="closeModal('viewTransModal')" class="w-full bg-gray-200 py-2 rounded mt-3">Close</button></div></div>
-<div id="msgModal" class="modal"><div class="modal-content"><h3>Send Message</h3><select id="msgTo" class="border rounded mb-2"><option value="">Select Department</option><option value="2">Finance</option><option value="3">Sales & Marketing</option><option value="4">Manager</option><option value="5">Survey</option><option value="6">Construction</option><option value="7">Bricks & Timber</option><option value="8">Aluminium</option><option value="9">Town Planning</option><option value="10">Hatimiliki</option><option value="11">Architectural</option><option value="12">Secretary</option></select><textarea id="msgContent" rows="4" placeholder="Type your message..." class="border rounded mb-2"></textarea><div class="flex gap-3 pt-2"><button onclick="sendMessage()" class="flex-1 bg-blue-600 text-white py-2 rounded">Send</button><button onclick="closeModal('msgModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
-<div id="chatModal" class="modal"><div class="modal-content" style="max-width:600px"><h3 id="chatModalTitle">Chat</h3><div id="chatMessagesArea" class="bg-gray-50 rounded-xl p-4 h-96 overflow-y-auto mb-3"></div><textarea id="replyMsg" rows="2" placeholder="Type your reply..." class="border rounded-lg mb-2"></textarea><button onclick="sendReply()" class="w-full bg-blue-600 text-white py-2 rounded mt-2">Send Reply</button><button onclick="closeModal('chatModal')" class="mt-3 w-full bg-gray-200 py-2 rounded">Close</button></div></div>
-<div id="startChatModal" class="modal"><div class="modal-content"><h3>Start New Chat</h3><select id="startChatDept" class="border rounded mb-2"><option value="">Select Department</option><option value="2">Finance</option><option value="3">Sales</option><option value="4">Manager</option><option value="5">Survey</option><option value="6">Construction</option><option value="7">Bricks</option><option value="8">Aluminium</option><option value="9">Town Planning</option><option value="10">Hatimiliki</option><option value="11">Architectural</option><option value="12">Secretary</option></select><textarea id="startChatMsg" rows="4" placeholder="Type your message..." class="border rounded mb-2"></textarea><div class="flex gap-3 pt-2"><button onclick="startNewChat()" class="flex-1 bg-blue-600 text-white py-2 rounded">Send</button><button onclick="closeModal('startChatModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
-<div id="viewReportModal" class="modal"><div class="modal-content"><h3>Report Details</h3><div id="viewReportContent"></div><button onclick="closeModal('viewReportModal')" class="w-full bg-gray-200 py-2 rounded mt-3">Close</button></div></div>
-<div id="editReportModal" class="modal"><div class="modal-content"><h3>Edit Report</h3><input type="hidden" id="editReportId"><input type="text" id="editReportTitle" placeholder="Title" class="border rounded mb-2"><select id="editReportPeriod" class="border rounded mb-2"><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="quarterly">Quarterly</option><option value="annual">Annual</option></select><textarea id="editReportContent" rows="5" placeholder="Content" class="border rounded mb-2"></textarea><div class="flex gap-3 pt-2"><button onclick="updateReport()" class="flex-1 bg-blue-600 text-white py-2 rounded">Save</button><button onclick="closeModal('editReportModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
-<div id="sendReportModal" class="modal"><div class="modal-content"><h3>Send Report</h3><input type="hidden" id="sendReportId"><p id="sendReportInfo" class="text-sm bg-gray-50 p-2 rounded mb-2"></p><select id="sendReportDept" class="border rounded mb-2"><option value="">Select Department</option><option value="2">Finance</option><option value="3">Sales</option><option value="4">Manager</option><option value="5">Survey</option><option value="6">Construction</option><option value="7">Bricks</option><option value="8">Aluminium</option><option value="9">Town Planning</option><option value="10">Hatimiliki</option><option value="11">Architectural</option><option value="12">Secretary</option></select><textarea id="sendReportMsg" rows="3" placeholder="Additional message" class="border rounded mb-2"></textarea><div class="flex gap-3 pt-2"><button onclick="confirmSendReport()" class="flex-1 bg-blue-600 text-white py-2 rounded">Send</button><button onclick="closeModal('sendReportModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
-<div id="uploadReportModal" class="modal"><div class="modal-content"><h3>Upload Report</h3><input type="text" id="uploadReportTitle" placeholder="Title" class="border rounded mb-2"><textarea id="uploadReportDesc" rows="3" placeholder="Description" class="border rounded mb-2"></textarea><div class="border-2 border-dashed rounded-lg p-4 text-center cursor-pointer" onclick="document.getElementById('uploadReportFile').click()"><i class="fas fa-cloud-upload-alt text-2xl text-gray-400"></i><p class="text-sm">Click to select file</p></div><input type="file" id="uploadReportFile" accept=".pdf,.doc,.docx,.xls,.xlsx" class="hidden"><div id="uploadFileInfo" class="hidden text-sm text-green-600 mt-2"></div><div class="flex gap-3 pt-2"><button onclick="uploadReport()" class="flex-1 bg-blue-600 text-white py-2 rounded">Upload</button><button onclick="closeModal('uploadReportModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
-<div id="generateReportModal" class="modal"><div class="modal-content"><h3>Generate Report</h3><input type="text" id="genReportTitle" placeholder="Title" class="border rounded mb-2"><select id="genReportPeriod" class="border rounded mb-2"><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="quarterly">Quarterly</option><option value="annual">Annual</option></select><textarea id="genReportContent" rows="5" placeholder="Content" class="border rounded mb-2"></textarea><div class="flex gap-3 pt-2"><button onclick="generateReport()" class="flex-1 bg-blue-600 text-white py-2 rounded">Generate</button><button onclick="closeModal('generateReportModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
-<div id="pwdModal" class="modal"><div class="modal-content"><h3>Change Password</h3><div class="password-wrapper"><input type="password" id="oldPwd" placeholder="Current Password" class="border rounded mb-2 w-full"><i class="fas fa-eye toggle-password" onclick="togglePassword('oldPwd')"></i></div><div class="password-wrapper"><input type="password" id="newPwd" placeholder="New Password" class="border rounded mb-2 w-full"><i class="fas fa-eye toggle-password" onclick="togglePassword('newPwd')"></i></div><div class="password-wrapper"><input type="password" id="confirmPwd" placeholder="Confirm Password" class="border rounded mb-2 w-full"><i class="fas fa-eye toggle-password" onclick="togglePassword('confirmPwd')"></i></div><div class="flex gap-3 pt-2"><button onclick="changePassword()" class="flex-1 bg-blue-600 text-white py-2 rounded">Change</button><button onclick="closeModal('pwdModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
-<div id="backupModal" class="modal"><div class="modal-content"><h3>Backup & Restore</h3><button onclick="createBackup()" class="w-full bg-green-600 text-white py-2 rounded mb-2"><i class="fas fa-download mr-2"></i> Backup Data</button><input type="file" id="restoreFile" class="hidden" accept=".json"><button onclick="restoreBackup()" class="w-full bg-orange-600 text-white py-2 rounded mb-2"><i class="fas fa-upload mr-2"></i> Restore Data</button><button onclick="closeModal('backupModal')" class="w-full bg-gray-200 py-2 rounded">Close</button></div></div></div>
-<div id="generalModal" class="modal"><div class="modal-content"><h3>General Settings</h3><input type="text" id="companyName" placeholder="Company Name" class="border rounded mb-2"><input type="text" id="companyAddress" placeholder="Company Address" class="border rounded mb-2"><input type="email" id="companyEmail" placeholder="Company Email" class="border rounded mb-2"><input type="text" id="companyPhone" placeholder="Company Phone" class="border rounded mb-2"><div class="flex gap-3 pt-2"><button onclick="saveGeneralSettings()" class="flex-1 bg-blue-600 text-white py-2 rounded">Save</button><button onclick="closeModal('generalModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
+<div id="empModal" class="modal"><div class="modal-content"><h3 id="empModalTitle" class="text-xl font-bold mb-4">Add Employee</h3><input type="hidden" id="empId"><input type="text" id="empName" placeholder="Full Name"><input type="email" id="empEmail" placeholder="Email"><input type="text" id="empPhone" placeholder="Phone"><select id="empDept"></select><input type="text" id="empRole" placeholder="Role"><input type="text" id="empSalary" placeholder="Salary (TZS)"><div class="password-wrapper"><input type="password" id="empPassword" placeholder="Password" value="1234"><i class="fas fa-eye toggle-password" onclick="togglePassword('empPassword')"></i></div><div class="flex gap-3 pt-4"><button onclick="saveEmployee()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('empModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
+
+<div id="viewEmpModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Employee Details</h3><div id="viewEmpContent"></div><button onclick="closeModal('viewEmpModal')" class="w-full bg-gray-200 py-2 rounded mt-3">Close</button></div></div>
+
+<div id="projModal" class="modal"><div class="modal-content"><h3 id="projModalTitle" class="text-xl font-bold mb-4">Add Project</h3><input type="hidden" id="projId"><input type="text" id="projName" placeholder="Project Name"><input type="text" id="projClient" placeholder="Client"><input type="text" id="projAmount" placeholder="Amount (TZS)"><input type="text" id="projLocation" placeholder="Location"><textarea id="projDesc" rows="2" placeholder="Description"></textarea><select id="projStatus"><option value="pending">Pending</option><option value="in_progress">In Progress</option><option value="completed">Completed</option></select><input type="number" id="projProgress" placeholder="Progress (0-100)"><select id="projDept"></select><div class="border-2 border-dashed rounded-lg p-3 text-center cursor-pointer mt-2" onclick="document.getElementById('projImageFile').click()"><i class="fas fa-cloud-upload-alt"></i><p class="text-xs">Upload Image</p></div><input type="file" id="projImageFile" accept="image/*" class="hidden"><div id="projImagePreview" class="hidden mt-2"></div><div class="flex gap-3 pt-4"><button onclick="saveProject()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('projModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
+
+<div id="viewProjModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Project Details</h3><div id="viewProjContent"></div><button onclick="closeModal('viewProjModal')" class="w-full bg-gray-200 py-2 rounded mt-3">Close</button></div></div>
+
+<div id="sendProjModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Send Project</h3><input type="hidden" id="sendProjId"><p id="sendProjName" class="text-sm bg-gray-100 p-2 rounded mb-3"></p><select id="sendProjDept" class="mb-3"></select><textarea id="sendProjMsg" rows="3" placeholder="Additional message (optional)"></textarea><div class="flex gap-3 pt-2"><button onclick="confirmSendProject()" class="flex-1 btn-primary">Send</button><button onclick="closeModal('sendProjModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
+
+<div id="dailyworkModal" class="modal"><div class="modal-content"><h3 id="dailyworkModalTitle" class="text-xl font-bold mb-4">Add Daily Work</h3><input type="hidden" id="dailyworkId"><input type="date" id="dailyworkDate"><input type="text" id="dailyworkProject" placeholder="Project Name"><textarea id="dailyworkDesc" rows="2" placeholder="Work Description"></textarea><input type="text" id="dailyworkIncome" placeholder="Income (TZS)"><input type="text" id="dailyworkExpenses" placeholder="Expenses (TZS)"><input type="text" id="dailyworkPaid" placeholder="Paid Amount"><select id="dailyworkStatus"><option value="pending">Pending</option><option value="paid">Paid</option></select><select id="dailyworkDept"></select><div class="flex gap-3 pt-4"><button onclick="saveDailyWork()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('dailyworkModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
+
+<div id="viewDailyworkModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Daily Work Details</h3><div id="viewDailyworkContent"></div><button onclick="closeModal('viewDailyworkModal')" class="w-full bg-gray-200 py-2 rounded mt-3">Close</button></div></div>
+
+<div id="transModal" class="modal"><div class="modal-content"><h3 id="transModalTitle" class="text-xl font-bold mb-4">Add Transaction</h3><input type="hidden" id="transId"><select id="transType"><option value="income">Income</option><option value="expense">Expense</option></select><select id="transDept"></select><input type="text" id="transSource" placeholder="Source"><input type="text" id="transAmount" placeholder="Amount (TZS)"><input type="date" id="transDate"><select id="transStatus"><option value="paid">Paid</option><option value="pending">Pending</option></select><textarea id="transDesc" rows="2" placeholder="Description"></textarea><div class="flex gap-3 pt-4"><button onclick="saveTransaction()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('transModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
+
+<div id="viewTransModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Transaction Details</h3><div id="viewTransContent"></div><button onclick="closeModal('viewTransModal')" class="w-full bg-gray-200 py-2 rounded mt-3">Close</button></div></div>
+
+<div id="reportModal" class="modal"><div class="modal-content"><h3 id="reportModalTitle" class="text-xl font-bold mb-4">Add Report</h3><input type="hidden" id="reportId"><input type="text" id="reportTitle" placeholder="Report Title"><select id="reportPeriod"><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="quarterly">Quarterly</option><option value="annual">Annual</option></select><textarea id="reportContent" rows="5" placeholder="Report Content"></textarea><div class="flex gap-3 pt-4"><button onclick="saveReport()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('reportModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
+
+<div id="viewReportModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Report Details</h3><div id="viewReportContent"></div><button onclick="closeModal('viewReportModal')" class="w-full bg-gray-200 py-2 rounded mt-3">Close</button></div></div>
+
+<div id="sendReportModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Send Report</h3><input type="hidden" id="sendReportId"><p id="sendReportTitle" class="text-sm bg-gray-100 p-2 rounded mb-3"></p><select id="sendReportDept" class="mb-3"></select><textarea id="sendReportMsg" rows="3" placeholder="Additional message (optional)"></textarea><div class="flex gap-3 pt-2"><button onclick="confirmSendReport()" class="flex-1 btn-primary">Send</button><button onclick="closeModal('sendReportModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
+
+<div id="msgModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Send Message</h3><select id="msgTo"></select><textarea id="msgContent" rows="4" placeholder="Type your message..."></textarea><div class="flex gap-3 pt-4"><button onclick="sendMessage()" class="flex-1 btn-primary">Send</button><button onclick="closeModal('msgModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
+
+<div id="chatModal" class="modal"><div class="modal-content" style="max-width:600px"><h3 id="chatModalTitle" class="text-xl font-bold mb-4">Chat</h3><div id="chatMessagesArea" class="bg-gray-50 rounded-xl p-4 h-80 overflow-y-auto mb-3"></div><textarea id="replyMsg" rows="2" placeholder="Type your reply..."></textarea><button onclick="sendReply()" class="w-full btn-primary mt-3">Send Reply</button><button onclick="closeModal('chatModal')" class="mt-3 w-full bg-gray-200 py-2 rounded">Close</button></div></div>
+
+<div id="pwdModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Change Password</h3><div class="password-wrapper"><input type="password" id="oldPwd" placeholder="Current Password"><i class="fas fa-eye toggle-password" onclick="togglePassword('oldPwd')"></i></div><div class="password-wrapper mt-2"><input type="password" id="newPwd" placeholder="New Password"><i class="fas fa-eye toggle-password" onclick="togglePassword('newPwd')"></i></div><div class="password-wrapper mt-2"><input type="password" id="confirmPwd" placeholder="Confirm Password"><i class="fas fa-eye toggle-password" onclick="togglePassword('confirmPwd')"></i></div><div class="flex gap-3 pt-4"><button onclick="changePassword()" class="flex-1 btn-primary">Change</button><button onclick="closeModal('pwdModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
+
+<div id="generalSettingsModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">General Settings</h3><input type="text" id="companyName" placeholder="Company Name"><input type="text" id="companyAddress" placeholder="Company Address"><input type="email" id="companyEmail" placeholder="Company Email"><input type="text" id="companyPhone" placeholder="Company Phone"><div class="flex gap-3 pt-4"><button onclick="saveGeneralSettings()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('generalSettingsModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
+
+<div id="backupModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Backup & Restore</h3><button onclick="createBackup()" class="w-full btn-success mb-3"><i class="fas fa-download mr-2"></i> Backup Database</button><input type="file" id="restoreFileInput" accept=".json" class="hidden"><button onclick="document.getElementById('restoreFileInput').click()" class="w-full bg-orange-500 text-white py-2 rounded mb-3"><i class="fas fa-upload mr-2"></i> Restore Database</button><button onclick="closeModal('backupModal')" class="w-full bg-gray-200 py-2 rounded">Close</button></div></div>
 
 <script>
+    // ==================== CONFIGURATION ====================
     const API_BASE = '/geotraverse/backend/api/';
-    const departmentNames = {1:"Super Admin",2:"Finance",3:"Sales & Marketing",4:"Manager",5:"Survey",6:"Construction",7:"Bricks & Timber",8:"Aluminium",9:"Town Planning",10:"Hatimiliki",11:"Architectural",12:"Secretary"};
-    const departmentFiles = {2:"finance.html",3:"sales_marketing.html",4:"manager.html",5:"survey.html",6:"construction.html",7:"bricks_timber.html",8:"aluminium.html",9:"town_planning.html",10:"hatimiliki.html",11:"architectural.html",12:"secretary.html"};
     
-    let currentChatDept = null, statusChart = null, searchTimeout = null, currentProjectImageFile = null, newProjectsCount = 0, newReportsCount = 0;
+    const departmentNames = {
+        1: "Super Admin", 2: "Finance", 3: "Sales & Marketing", 4: "Manager",
+        5: "Secretary", 6: "Bricks & Timber", 7: "Aluminium", 8: "Town Planning",
+        9: "Architectural", 10: "Survey", 11: "Construction", 12: "Hatimiliki"
+    };
     
-    function showToast(msg, isError) { let t = document.createElement('div'); t.className = 'toast' + (isError ? ' error' : ''); t.innerHTML = '<i class="fas ' + (isError ? 'fa-exclamation-circle' : 'fa-check-circle') + ' mr-2"></i>' + msg; document.body.appendChild(t); setTimeout(() => t.remove(), 3000); }
-    function escapeHtml(t) { if (!t) return ''; let d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
-    function formatMoney(amt) { return "TZS " + (parseFloat(amt) || 0).toLocaleString('en-US'); }
-    function formatDate(d) { if (!d) return 'N/A'; return new Date(d).toLocaleDateString('en-GB'); }
-    function togglePassword(fieldId) { let input = document.getElementById(fieldId); if (input.type === 'password') { input.type = 'text'; input.nextElementSibling.classList.remove('fa-eye'); input.nextElementSibling.classList.add('fa-eye-slash'); } else { input.type = 'password'; input.nextElementSibling.classList.remove('fa-eye-slash'); input.nextElementSibling.classList.add('fa-eye'); } }
-    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    const colorOptions = ["#0f74ba", "#1e3a5f", "#7c3aed", "#059669", "#dc2626", "#d97706", "#0d9488", "#db2777", "#4f46e5", "#10b981", "#06b6d4", "#e11d48"];
     
-    async function apiCall(endpoint, method = 'GET', data = null) {
-        try { const opts = { method, headers: { 'Content-Type': 'application/json' } }; if (data && method !== 'GET') opts.body = JSON.stringify(data); const res = await fetch(API_BASE + endpoint, opts); return await res.json(); } 
-        catch(e) { return { success: false, error: e.message }; }
+    let currentChatDept = null;
+    let statusChart = null;
+    let currentProjectImageFile = null;
+    let projectsData = [];
+    let employeesData = [];
+    let dailyworkData = [];
+    let transactionsData = [];
+    let reportsData = [];
+    
+    // ==================== HELPER FUNCTIONS ====================
+    function showToast(msg, isError) { 
+        let t = document.createElement('div'); 
+        t.className = 'toast' + (isError ? ' error' : ''); 
+        t.innerHTML = '<i class="fas ' + (isError ? 'fa-exclamation-circle' : 'fa-check-circle') + ' mr-2"></i>' + msg; 
+        document.body.appendChild(t); 
+        setTimeout(() => t.remove(), 3000); 
     }
     
-    function updateBadges() {
-        const projectsBadge = document.getElementById('projectsBadge'), reportsBadge = document.getElementById('reportsBadge');
-        if (projectsBadge) { if(newProjectsCount > 0){ projectsBadge.innerText = newProjectsCount; projectsBadge.classList.remove('hidden'); } else projectsBadge.classList.add('hidden'); }
-        if (reportsBadge) { if(newReportsCount > 0){ reportsBadge.innerText = newReportsCount; reportsBadge.classList.remove('hidden'); } else reportsBadge.classList.add('hidden'); }
+    function escapeHtml(str) { 
+        if (!str) return ''; 
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+    
+    function formatMoney(amt) { 
+        return "TZS " + (parseFloat(amt) || 0).toLocaleString('en-US'); 
+    }
+    
+    function formatDate(d) { 
+        if (!d) return 'N/A'; 
+        return new Date(d).toLocaleDateString('en-GB'); 
+    }
+    
+    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    function togglePassword(fieldId) {
+        let input = document.getElementById(fieldId);
+        let icon = input.nextElementSibling;
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+    
+    // ==================== API CALL ====================
+    async function apiCall(endpoint, method = 'GET', data = null) {
+        const url = API_BASE + endpoint;
+        console.log('API Call:', method, url);
+        try { 
+            const opts = { method, headers: { 'Content-Type': 'application/json' } }; 
+            if (data && method !== 'GET') opts.body = JSON.stringify(data); 
+            const res = await fetch(url, opts); 
+            const result = await res.json(); 
+            return result; 
+        } catch(e) { 
+            console.error('API Error:', e);
+            showToast('API Error: ' + e.message, true);
+            return { success: false, error: e.message }; 
+        }
+    }
+    
+    // ==================== LOAD DEPARTMENTS ====================
+    async function loadDepartmentsForDropdowns() {
+        const res = await apiCall('get_departments.php');
+        if (res.success && res.data) {
+            const deptSelects = ['empDept', 'projDept', 'dailyworkDept', 'transDept', 'msgTo', 'sendProjDept', 'sendReportDept'];
+            deptSelects.forEach(selectId => {
+                const select = document.getElementById(selectId);
+                if (select) {
+                    select.innerHTML = '<option value="">Select Department</option>';
+                    res.data.forEach(d => {
+                        if (d.id !== 1) {
+                            select.innerHTML += `<option value="${d.id}">${escapeHtml(d.name)}</option>`;
+                        }
+                    });
+                }
+            });
+        }
     }
     
     // ==================== DASHBOARD ====================
     async function loadDashboard() {
-        document.getElementById('mainContainer').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div> Loading...</div>';
-        const emps = await apiCall('get_employees.php'); const projs = await apiCall('get_projects.php'); const stats = await apiCall('get_dashboard_stats.php'); const msgs = await apiCall('get_messages.php');
-        const employees = emps.success ? (emps.data || []) : []; const projects = projs.success ? (projs.data || []) : [];
-        const unread = msgs.success ? (msgs.data?.unread_count || 0) : 0; document.getElementById('msgBadge').innerText = unread;
-        let pending=0, inProgress=0, completed=0, approved=0;
-        projects.forEach(p => { if(p.status==='pending') pending++; else if(p.status==='in_progress') inProgress++; else if(p.status==='completed') completed++; else if(p.status==='approved') approved++; });
-        const totalInc = stats.success ? (stats.data?.total_income || 0) : 0; const totalExp = stats.success ? (stats.data?.total_expenses || 0) : 0;
-        const html = `<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-5"><div class="stat-card cursor-pointer" onclick="loadSection('employees')"><div><p class="text-gray-500 text-xs">Employees</p><p class="text-2xl font-bold">${employees.length}</p></div><i class="fas fa-users text-blue-500 text-2xl"></i></div><div class="stat-card cursor-pointer" onclick="loadSection('projects')"><div><p class="text-gray-500 text-xs">Projects</p><p class="text-2xl font-bold text-green-600">${projects.length}</p></div><i class="fas fa-tasks text-green-500 text-2xl"></i></div><div class="stat-card cursor-pointer" onclick="loadSection('transactions')"><div><p class="text-gray-500 text-xs">Net Profit</p><p class="text-2xl font-bold text-blue-600">${formatMoney(totalInc - totalExp)}</p></div><i class="fas fa-chart-line text-blue-500 text-2xl"></i></div><div class="stat-card cursor-pointer" onclick="loadSection('messages')"><div><p class="text-gray-500 text-xs">Unread</p><p class="text-2xl font-bold text-red-600">${unread}</p></div><i class="fas fa-envelope text-red-500 text-2xl"></i></div></div><div class="grid grid-cols-1 lg:grid-cols-2 gap-5"><div class="bg-white rounded-xl p-5 shadow-sm"><h3 class="font-semibold mb-3">Project Status</h3><canvas id="statusChart" height="200"></canvas></div><div class="bg-white rounded-xl p-5 shadow-sm"><h3 class="font-semibold mb-3">Quick Actions</h3><div class="grid grid-cols-2 gap-3"><button onclick="loadSection('employees')" class="bg-blue-600 text-white py-2 rounded text-sm">+ Employee</button><button onclick="loadSection('projects')" class="bg-green-600 text-white py-2 rounded text-sm">+ Project</button><button onclick="openModal('transModal')" class="bg-purple-600 text-white py-2 rounded text-sm">+ Transaction</button><button onclick="openModal('msgModal')" class="bg-orange-600 text-white py-2 rounded text-sm">Send Message</button></div></div></div>`;
+        document.getElementById('mainContainer').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div><span class="ml-3">Loading dashboard...</span></div>';
+        
+        const [employees, projects, dailywork, transactions, messages] = await Promise.all([
+            apiCall('get_employees.php'), apiCall('get_projects.php'), apiCall('get_dailywork.php'),
+            apiCall('get_transactions.php'), apiCall('get_messages.php')
+        ]);
+        
+        const empList = employees.success ? (employees.data || []) : [];
+        const projList = projects.success ? (projects.data || []) : [];
+        const dailyList = dailywork.success ? (dailywork.data || []) : [];
+        const transList = transactions.success ? (transactions.data || []) : [];
+        const msgList = messages.success ? (messages.data || []) : [];
+        
+        const unreadCount = msgList.filter(m => m.to_department_id === 1 && !m.is_read).length;
+        document.getElementById('msgBadge').innerText = unreadCount;
+        
+        let totalIncome = 0, totalExpense = 0;
+        transList.forEach(t => {
+            if (t.type === 'income') totalIncome += parseFloat(t.amount);
+            else totalExpense += parseFloat(t.amount);
+        });
+        
+        let pending = 0, inProgress = 0, completed = 0;
+        projList.forEach(p => {
+            if (p.status === 'pending') pending++;
+            else if (p.status === 'in_progress') inProgress++;
+            else if (p.status === 'completed') completed++;
+        });
+        
+        const html = `
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-5">
+                <div class="stat-card cursor-pointer" onclick="loadSection('employees')">
+                    <div><p class="text-gray-500 text-xs">Employees</p><p class="text-2xl font-bold">${empList.length}</p></div>
+                    <i class="fas fa-users text-blue-500 text-2xl"></i>
+                </div>
+                <div class="stat-card cursor-pointer" onclick="loadSection('projects')">
+                    <div><p class="text-gray-500 text-xs">Projects</p><p class="text-2xl font-bold">${projList.length}</p></div>
+                    <i class="fas fa-tasks text-green-500 text-2xl"></i>
+                </div>
+                <div class="stat-card cursor-pointer" onclick="loadSection('cashflow')">
+                    <div><p class="text-gray-500 text-xs">Net Profit</p><p class="text-2xl font-bold ${totalIncome - totalExpense >= 0 ? 'text-green-600' : 'text-red-600'}">${formatMoney(totalIncome - totalExpense)}</p></div>
+                    <i class="fas fa-chart-line text-blue-500 text-2xl"></i>
+                </div>
+                <div class="stat-card cursor-pointer" onclick="loadSection('messages')">
+                    <div><p class="text-gray-500 text-xs">Unread</p><p class="text-2xl font-bold text-red-600">${unreadCount}</p></div>
+                    <i class="fas fa-envelope text-red-500 text-2xl"></i>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                <div class="bg-white rounded-xl p-5 shadow-sm">
+                    <h3 class="font-semibold mb-3">Project Status</h3>
+                    <canvas id="statusChart" height="200"></canvas>
+                </div>
+                <div class="bg-white rounded-xl p-5 shadow-sm">
+                    <h3 class="font-semibold mb-3">Quick Actions</h3>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="openAddEmployeeModal()" class="bg-blue-600 text-white py-2 rounded text-sm"><i class="fas fa-user-plus mr-1"></i> Add Employee</button>
+                        <button onclick="openAddProjectModal()" class="bg-green-600 text-white py-2 rounded text-sm"><i class="fas fa-plus mr-1"></i> Add Project</button>
+                        <button onclick="openAddDailyWorkModal()" class="bg-purple-600 text-white py-2 rounded text-sm"><i class="fas fa-tasks mr-1"></i> Add Daily Work</button>
+                        <button onclick="openAddTransactionModal()" class="bg-orange-600 text-white py-2 rounded text-sm"><i class="fas fa-coins mr-1"></i> Add Transaction</button>
+                        <button onclick="openModal('msgModal')" class="bg-indigo-600 text-white py-2 rounded text-sm"><i class="fas fa-paper-plane mr-1"></i> Send Message</button>
+                        <button onclick="openAddReportModal()" class="bg-rose-600 text-white py-2 rounded text-sm"><i class="fas fa-chart-bar mr-1"></i> Add Report</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
         document.getElementById('mainContainer').innerHTML = html;
+        
         const ctx = document.getElementById('statusChart')?.getContext('2d');
-        if(ctx){ if(statusChart) statusChart.destroy(); statusChart = new Chart(ctx,{type:'doughnut',data:{labels:['Pending','In Progress','Completed','Approved'],datasets:[{data:[pending,inProgress,completed,approved],backgroundColor:['#f59e0b','#3b82f6','#10b981','#8b5cf6']}]},options:{responsive:true}}); }
+        if (ctx) {
+            if (statusChart) statusChart.destroy();
+            statusChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: { labels: ['Pending', 'In Progress', 'Completed'], datasets: [{ data: [pending, inProgress, completed], backgroundColor: ['#f59e0b', '#3b82f6', '#10b981'] }] },
+                options: { responsive: true }
+            });
+        }
     }
     
     // ==================== EMPLOYEES ====================
     async function loadEmployees() {
-        document.getElementById('mainContainer').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div> Loading employees...</div>';
-        const res = await apiCall('get_employees.php'); const employees = res.success ? (res.data || []) : [];
-        let html = `<div class="flex justify-between flex-wrap gap-3 mb-4"><h2 class="text-xl font-bold"><i class="fas fa-users text-blue-500 mr-2"></i>Employees (${employees.length})</h2><div class="flex gap-2"><button onclick="exportEmployeesToExcel()" class="bg-green-600 text-white px-3 py-2 rounded text-sm">Excel</button><button onclick="exportEmployeesToPDF()" class="bg-red-600 text-white px-3 py-2 rounded text-sm">PDF</button><button onclick="openAddEmployeeModal()" class="bg-blue-600 text-white px-4 py-2 rounded text-sm">+ Add Employee</button></div></div>
+        document.getElementById('mainContainer').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div><span class="ml-3">Loading employees...</span></div>';
+        const res = await apiCall('get_employees.php');
+        employeesData = res.success ? (res.data || []) : [];
+        
+        let html = `<div class="flex justify-between flex-wrap gap-3 mb-4"><h2 class="text-xl font-bold"><i class="fas fa-users text-blue-500 mr-2"></i>Employees (${employeesData.length})</h2><div class="flex gap-2"><button onclick="exportEmployeesToExcel()" class="btn-success"><i class="fas fa-file-excel mr-1"></i> Excel</button><button onclick="exportEmployeesToPDF()" class="btn-danger"><i class="fas fa-file-pdf mr-1"></i> PDF</button><button onclick="openAddEmployeeModal()" class="btn-primary"><i class="fas fa-plus mr-1"></i> Add Employee</button></div></div>
         <div class="bg-white rounded-xl overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th class="p-3">ID</th><th class="p-3">Name</th><th class="p-3">Email</th><th class="p-3">Department</th><th class="p-3">Role</th><th class="p-3">Salary</th><th class="p-3">Actions</th></tr></thead><tbody>`;
-        for(let e of employees){ html += `<tr class="border-b hover:bg-gray-50 employee-row"><td class="p-3">${e.id}<\/td><td class="p-3 font-medium">${escapeHtml(e.name)}<\/td><td class="p-3">${escapeHtml(e.email)}<\/td><td class="p-3"><span class="px-2 py-1 rounded-full text-[10px] bg-blue-100 text-blue-700">${departmentNames[e.department_id]}</span><\/td><td class="p-3">${e.role||'Staff'}<\/td><td class="p-3 text-green-600">${formatMoney(e.salary)}<\/td><td class="p-3"><button onclick="viewEmployee(${e.id})" class="text-blue-500 mr-2"><i class="fas fa-eye"></i></button><button onclick="openEditEmployeeModal(${e.id})" class="text-green-500 mr-2"><i class="fas fa-edit"></i></button><button onclick="deleteEmployee(${e.id})" class="text-red-500"><i class="fas fa-trash"></i></button><\/td><\/tr>`; }
-        if(employees.length===0) html += `<tr><td colspan="7" class="text-center py-8 text-gray-400">No employees found<\/td><\/tr>`;
-        html += `</tbody><\/table><\/div><\/div>`;
+        
+        for (let e of employeesData) {
+            html += `<tr class="border-b employee-row"><td class="p-3">${e.id}</td><td class="p-3 font-medium">${escapeHtml(e.name)}</td><td class="p-3">${escapeHtml(e.email)}</td><td class="p-3"><span class="status-badge status-progress">${departmentNames[e.department_id] || e.department_id}</span></td><td class="p-3">${e.role || 'Staff'}</td><td class="p-3 text-green-600">${formatMoney(e.salary)}</td>
+            <td class="p-3"><div class="action-buttons"><button onclick="viewEmployee(${e.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="openEditEmployeeModal(${e.id})" class="action-btn edit"><i class="fas fa-edit"></i></button><button onclick="deleteEmployee(${e.id})" class="action-btn delete"><i class="fas fa-trash"></i></button></div></td></tr>`;
+        }
+        if (employeesData.length === 0) html += `<tr><td colspan="7" class="text-center py-8 text-gray-400">No employees found</td></tr>`;
+        html += `</tbody></table></div></div>`;
         document.getElementById('mainContainer').innerHTML = html;
     }
-    function openAddEmployeeModal() { document.getElementById('empModalTitle').innerText='Add Employee'; document.getElementById('empId').value=''; document.getElementById('empName').value=''; document.getElementById('empEmail').value=''; document.getElementById('empPhone').value=''; document.getElementById('empDept').value=''; document.getElementById('empRole').value=''; document.getElementById('empSalary').value=''; document.getElementById('empPassword').value='1234'; openModal('empModal'); }
-    async function viewEmployee(id) { const res = await apiCall(`get_employees.php?id=${id}`); if(res.success && res.data){ let e=res.data; document.getElementById('viewEmpContent').innerHTML=`<p><strong>Name:</strong> ${escapeHtml(e.name)}</p><p><strong>Email:</strong> ${escapeHtml(e.email)}</p><p><strong>Phone:</strong> ${escapeHtml(e.phone||'-')}</p><p><strong>Department:</strong> ${departmentNames[e.department_id]}</p><p><strong>Role:</strong> ${e.role||'Staff'}</p><p><strong>Salary:</strong> ${formatMoney(e.salary)}</p><p><strong>Join Date:</strong> ${e.join_date||'N/A'}</p>`; openModal('viewEmpModal'); } }
-    async function openEditEmployeeModal(id) { const res = await apiCall(`get_employees.php?id=${id}`); if(res.success && res.data){ let e=res.data; document.getElementById('empModalTitle').innerText='Edit Employee'; document.getElementById('empId').value=e.id; document.getElementById('empName').value=e.name; document.getElementById('empEmail').value=e.email; document.getElementById('empPhone').value=e.phone||''; document.getElementById('empDept').value=e.department_id; document.getElementById('empRole').value=e.role; document.getElementById('empSalary').value=e.salary; document.getElementById('empPassword').value=''; openModal('empModal'); } }
-    async function saveEmployee() { let id=document.getElementById('empId').value; let salaryRaw=document.getElementById('empSalary').value.replace(/,/g,''); let data={name:document.getElementById('empName').value, email:document.getElementById('empEmail').value, phone:document.getElementById('empPhone').value, department_id:parseInt(document.getElementById('empDept').value), role:document.getElementById('empRole').value, salary:parseFloat(salaryRaw)||0, password:document.getElementById('empPassword').value}; if(!data.name||!data.email){ showToast('Name and email required',true); return; } let res; if(id) res=await apiCall('update_employee.php','PUT',{...data,id:parseInt(id)}); else{ if(!data.password) data.password='1234'; res=await apiCall('add_employee.php','POST',data); } if(res.success){ showToast(id?'Employee updated':'Employee added'); closeModal('empModal'); loadEmployees(); loadDashboard(); } else showToast(res.error||'Failed',true); }
-    async function deleteEmployee(id) { if(confirm('Delete this employee?')){ const res=await apiCall(`delete_employee.php?id=${id}`,'DELETE'); if(res.success){ showToast('Employee deleted'); loadEmployees(); loadDashboard(); } else showToast(res.error||'Failed',true); } }
-    async function exportEmployeesToExcel() { const res=await apiCall('get_employees.php'); const employees=res.success?(res.data||[]):[]; let ws=[['ID','Name','Email','Phone','Department','Role','Salary']]; employees.forEach(e=>ws.push([e.id,e.name,e.email,e.phone||'-',departmentNames[e.department_id],e.role||'Staff',e.salary])); let wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(ws),'Employees'); XLSX.writeFile(wb,`employees_${new Date().toISOString().slice(0,10)}.xlsx`); showToast('Exported to Excel'); }
-    async function exportEmployeesToPDF() { const res=await apiCall('get_employees.php'); const employees=res.success?(res.data||[]):[]; let element=document.createElement('div'); element.innerHTML=`<div style="padding:20px"><h1>Employees Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><thead><tr style="background:#0f74ba;color:white"><th>Name</th><th>Email</th><th>Department</th><th>Role</th><th>Salary</th></tr></thead><tbody>${employees.map(e=>`<tr><td class="px-2 py-1">${e.name}<\/td><td class="px-2 py-1">${e.email}<\/td><td class="px-2 py-1">${departmentNames[e.department_id]}<\/td><td class="px-2 py-1">${e.role||'Staff'}<\/td><td class="px-2 py-1">${formatMoney(e.salary)}<\/td><\/tr>`).join('')}</tbody><\/table><\/div>`; html2pdf().set({margin:0.5,filename:`employees_report.pdf`}).from(element).save(); showToast('Exported to PDF'); }
+    
+    async function viewEmployee(id) {
+        const emp = employeesData.find(e => e.id === id);
+        if (emp) {
+            document.getElementById('viewEmpContent').innerHTML = `
+                <p><strong>Name:</strong> ${escapeHtml(emp.name)}</p>
+                <p><strong>Email:</strong> ${escapeHtml(emp.email)}</p>
+                <p><strong>Phone:</strong> ${escapeHtml(emp.phone || '-')}</p>
+                <p><strong>Department:</strong> ${departmentNames[emp.department_id]}</p>
+                <p><strong>Role:</strong> ${emp.role || 'Staff'}</p>
+                <p><strong>Salary:</strong> ${formatMoney(emp.salary)}</p>
+                <p><strong>Joined:</strong> ${emp.join_date || 'N/A'}</p>`;
+            openModal('viewEmpModal');
+        }
+    }
+    
+    function openAddEmployeeModal() {
+        document.getElementById('empModalTitle').innerText = 'Add Employee';
+        document.getElementById('empId').value = '';
+        document.getElementById('empName').value = '';
+        document.getElementById('empEmail').value = '';
+        document.getElementById('empPhone').value = '';
+        document.getElementById('empDept').value = '';
+        document.getElementById('empRole').value = '';
+        document.getElementById('empSalary').value = '';
+        document.getElementById('empPassword').value = '1234';
+        openModal('empModal');
+    }
+    
+    async function openEditEmployeeModal(id) {
+        const emp = employeesData.find(e => e.id === id);
+        if (emp) {
+            document.getElementById('empModalTitle').innerText = 'Edit Employee';
+            document.getElementById('empId').value = emp.id;
+            document.getElementById('empName').value = emp.name;
+            document.getElementById('empEmail').value = emp.email;
+            document.getElementById('empPhone').value = emp.phone || '';
+            document.getElementById('empDept').value = emp.department_id;
+            document.getElementById('empRole').value = emp.role || '';
+            document.getElementById('empSalary').value = emp.salary;
+            document.getElementById('empPassword').value = '';
+            openModal('empModal');
+        }
+    }
+    
+    async function saveEmployee() {
+        let id = document.getElementById('empId').value;
+        let data = {
+            name: document.getElementById('empName').value,
+            email: document.getElementById('empEmail').value,
+            phone: document.getElementById('empPhone').value,
+            department_id: parseInt(document.getElementById('empDept').value) || 1,
+            role: document.getElementById('empRole').value || 'Staff',
+            salary: parseFloat(document.getElementById('empSalary').value) || 0,
+            password: document.getElementById('empPassword').value || '1234'
+        };
+        if (!data.name || !data.email) { showToast('Name and email required', true); return; }
+        
+        let res;
+        if (id) res = await apiCall('update_employee.php', 'PUT', { ...data, id: parseInt(id) });
+        else res = await apiCall('add_employee.php', 'POST', data);
+        
+        if (res.success) {
+            showToast(id ? 'Employee updated' : 'Employee added');
+            closeModal('empModal');
+            loadEmployees();
+            loadDashboard();
+        } else showToast(res.error || 'Failed', true);
+    }
+    
+    async function deleteEmployee(id) {
+        if (confirm('Delete this employee?')) {
+            const res = await apiCall(`delete_employee.php`, 'DELETE', { id });
+            if (res.success) { showToast('Employee deleted'); loadEmployees(); loadDashboard(); }
+            else showToast(res.error || 'Failed', true);
+        }
+    }
+    
+    async function exportEmployeesToExcel() {
+        let ws = [['ID', 'Name', 'Email', 'Phone', 'Department', 'Role', 'Salary']];
+        employeesData.forEach(e => ws.push([e.id, e.name, e.email, e.phone || '-', departmentNames[e.department_id], e.role || 'Staff', e.salary]));
+        let wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), 'Employees');
+        XLSX.writeFile(wb, `employees_${new Date().toISOString().slice(0,10)}.xlsx`);
+        showToast('Exported to Excel');
+    }
+    
+    async function exportEmployeesToPDF() {
+        let element = document.createElement('div');
+        element.innerHTML = `<div style="padding:20px"><h1>Employees Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><thead><tr><th>Name</th><th>Email</th><th>Department</th><th>Role</th><th>Salary</th></tr></thead><tbody>${employeesData.map(e => `<tr><td>${e.name}</td><td>${e.email}</td><td>${departmentNames[e.department_id]}</td><td>${e.role || 'Staff'}</td><td>${e.salary}</td></tr>`).join('')}</tbody></table></div>`;
+        html2pdf().set({ margin: 0.5, filename: `employees_report.pdf` }).from(element).save();
+        showToast('Exported to PDF');
+    }
     
     // ==================== DEPARTMENTS ====================
     async function loadDepartments() {
-        document.getElementById('mainContainer').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div> Loading departments...</div>';
-        const res = await apiCall('get_departments.php'); const depts = res.success ? (res.data || []) : [];
+        document.getElementById('mainContainer').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div><span class="ml-3">Loading departments...</span></div>';
+        const res = await apiCall('get_departments.php');
+        const depts = res.success ? (res.data || []) : [];
+        
+        const icons = {1:"fa-user-cog",2:"fa-coins",3:"fa-chart-line",4:"fa-user-tie",5:"fa-calendar-check",6:"fa-cubes",7:"fa-industry",8:"fa-city",9:"fa-draw-polygon",10:"fa-drafting-compass",11:"fa-hard-hat",12:"fa-file-contract"};
+        
         let html = `<h2 class="text-xl font-bold mb-4"><i class="fas fa-building text-blue-500 mr-2"></i>Departments (${depts.length})</h2><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">`;
-        const icons = {1:"fa-user-cog",2:"fa-coins",3:"fa-chart-line",4:"fa-user-tie",5:"fa-drafting-compass",6:"fa-hard-hat",7:"fa-cubes",8:"fa-industry",9:"fa-city",10:"fa-file-contract",11:"fa-draw-polygon",12:"fa-calendar-check"};
-        const colors = {1:"purple",2:"green",3:"orange",4:"blue",5:"teal",6:"amber",7:"brown",8:"gray",9:"indigo",10:"emerald",11:"rose",12:"cyan"};
-        for(let d of depts){ const file = departmentFiles[d.id]; html += `<div class="dept-card" onclick="${file ? `openDepartmentDashboard(${d.id})` : `showToast('Not available',true)`}"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-${colors[d.id]||'blue'}-100 rounded-full flex items-center justify-center"><i class="fas ${icons[d.id]||'fa-building'} text-${colors[d.id]||'blue'}-600"></i></div><div><h3 class="font-semibold">${escapeHtml(d.name)}</h3><p class="text-sm text-gray-500">Employees: ${d.employee_count||0}</p></div></div></div>`; }
-        html += `</div><button onclick="openModal('startChatModal')" class="mt-4 w-full bg-blue-600 text-white py-2 rounded">+ Start New Chat</button>`;
+        for (let d of depts) {
+            html += `<div class="dept-card"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center"><i class="fas ${icons[d.id] || 'fa-building'} text-blue-600"></i></div><div><h3 class="font-semibold">${escapeHtml(d.name)}</h3><p class="text-sm text-gray-500">${d.email}</p></div></div></div>`;
+        }
+        html += `</div>`;
         document.getElementById('mainContainer').innerHTML = html;
     }
-    function openDepartmentDashboard(deptId) { const file = departmentFiles[deptId]; if(file) { window.open(file, '_blank'); showToast(`Opening ${departmentNames[deptId]} dashboard...`); } else showToast('Dashboard not available', true); }
     
     // ==================== PROJECTS ====================
-    document.getElementById('projImageFile')?.addEventListener('change',function(e){ if(e.target.files&&e.target.files[0]){ currentProjectImageFile=e.target.files[0]; let reader=new FileReader(); reader.onload=ev=>{ document.getElementById('projImagePreview').innerHTML=`<img src="${ev.target.result}" class="w-full h-24 object-cover rounded-lg"><button type="button" onclick="removeProjectImage()" class="mt-1 text-red-500 text-sm w-full">Remove Image</button>`; document.getElementById('projImagePreview').classList.remove('hidden'); }; reader.readAsDataURL(e.target.files[0]); } });
-    function removeProjectImage() { currentProjectImageFile=null; document.getElementById('projImageFile').value=''; document.getElementById('projImagePreview').innerHTML=''; document.getElementById('projImagePreview').classList.add('hidden'); }
     async function loadProjects() {
-        document.getElementById('mainContainer').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div> Loading projects...</div>';
-        const res = await apiCall('get_projects.php'); const projects = res.success ? (res.data || []) : [];
-        newProjectsCount = projects.filter(p => p.status === 'pending').length; updateBadges();
-        let html = `<div class="flex justify-between flex-wrap gap-3 mb-4"><h2 class="text-xl font-bold"><i class="fas fa-tasks text-green-500 mr-2"></i>Projects (${projects.length})</h2><div class="flex gap-2"><button onclick="exportProjectsToExcel()" class="bg-green-600 text-white px-3 py-2 rounded text-sm">Excel</button><button onclick="exportProjectsToPDF()" class="bg-red-600 text-white px-3 py-2 rounded text-sm">PDF</button><button onclick="openAddProjectModal()" class="bg-blue-600 text-white px-4 py-2 rounded text-sm">+ Add Project</button></div></div>
+        document.getElementById('mainContainer').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div><span class="ml-3">Loading projects...</span></div>';
+        const res = await apiCall('get_projects.php');
+        projectsData = res.success ? (res.data || []) : [];
+        
+        let html = `<div class="flex justify-between flex-wrap gap-3 mb-4"><h2 class="text-xl font-bold"><i class="fas fa-tasks text-green-500 mr-2"></i>Projects (${projectsData.length})</h2><div class="flex gap-2"><button onclick="exportProjectsToExcel()" class="btn-success"><i class="fas fa-file-excel mr-1"></i> Excel</button><button onclick="exportProjectsToPDF()" class="btn-danger"><i class="fas fa-file-pdf mr-1"></i> PDF</button><button onclick="openAddProjectModal()" class="btn-primary"><i class="fas fa-plus mr-1"></i> Add Project</button></div></div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="projectsGrid"></div>`;
         document.getElementById('mainContainer').innerHTML = html;
-        document.getElementById('projectsGrid').innerHTML = projects.map(p => `<div class="project-card">${p.image?`<img src="${p.image}" class="project-image" onclick="viewFullImage('${p.image}')">`:'<div class="project-image bg-gray-100 flex items-center justify-center text-gray-400"><i class="fas fa-image text-3xl"></i><p class="text-sm">No Image</p></div>'}<div class="flex justify-between items-start"><h4 class="font-semibold">${escapeHtml(p.name)}</h4><span class="px-2 py-0.5 text-[10px] rounded-full ${p.status==='pending'?'status-pending':p.status==='in_progress'?'status-progress':p.status==='completed'?'status-completed':'bg-purple-100 text-purple-700'}">${p.status}</span></div><p class="text-sm text-gray-500">${escapeHtml(p.client_name||'N/A')}</p><p class="text-lg font-bold text-blue-600">${formatMoney(p.amount)}</p><div><div class="flex justify-between text-xs"><span>Progress</span><span>${p.progress||0}%</span></div><div class="w-full bg-gray-200 rounded-full h-1.5"><div class="bg-blue-600 h-1.5 rounded-full" style="width:${p.progress||0}%"></div></div></div><div class="flex gap-1 mt-3"><button onclick="viewProject(${p.id})" class="text-xs bg-blue-500 text-white px-2 py-1 rounded"><i class="fas fa-eye"></i></button><button onclick="openEditProjectModal(${p.id})" class="text-xs bg-green-500 text-white px-2 py-1 rounded"><i class="fas fa-edit"></i></button><button onclick="deleteProject(${p.id})" class="text-xs bg-red-500 text-white px-2 py-1 rounded"><i class="fas fa-trash"></i></button><button onclick="exportSingleProject(${p.id},'excel')" class="text-xs bg-emerald-600 text-white px-2 py-1 rounded"><i class="fas fa-file-excel"></i> Excel</button><button onclick="exportSingleProject(${p.id},'pdf')" class="text-xs bg-rose-600 text-white px-2 py-1 rounded"><i class="fas fa-file-pdf"></i> PDF</button><button onclick="openSendProjectModal(${p.id})" class="text-xs bg-purple-600 text-white px-2 py-1 rounded"><i class="fas fa-paper-plane"></i> Send</button></div></div>`).join('');
-        if(projects.length===0) document.getElementById('projectsGrid').innerHTML='<div class="col-span-3 text-center py-8 text-gray-400">No projects found</div>';
+        
+        document.getElementById('projectsGrid').innerHTML = projectsData.map(p => `
+            <div class="project-card">
+                ${p.image ? `<img src="/geotraverse/frontend/${p.image}" class="project-image" onclick="viewFullImage('${p.image}')">` : '<div class="project-image bg-gray-100 flex items-center justify-center text-gray-400"><i class="fas fa-image text-3xl"></i></div>'}
+                <div class="flex justify-between items-start"><h4 class="font-semibold">${escapeHtml(p.name)}</h4><span class="status-badge ${p.status === 'pending' ? 'status-pending' : p.status === 'in_progress' ? 'status-progress' : 'status-completed'}">${p.status}</span></div>
+                <p class="text-sm text-gray-500 mt-1">${escapeHtml(p.client_name || 'N/A')}</p>
+                <p class="text-lg font-bold text-blue-600 mt-2">${formatMoney(p.amount)}</p>
+                <div class="mt-2"><div class="flex justify-between text-xs"><span>Progress</span><span>${p.progress || 0}%</span></div><div class="w-full bg-gray-200 rounded-full h-1.5 mt-1"><div class="bg-blue-600 h-1.5 rounded-full" style="width:${p.progress || 0}%"></div></div></div>
+                <div class="action-buttons mt-3"><button onclick="viewProject(${p.id})" class="action-btn view"><i class="fas fa-eye"></i> View</button><button onclick="openEditProjectModal(${p.id})" class="action-btn edit"><i class="fas fa-edit"></i> Edit</button><button onclick="deleteProject(${p.id})" class="action-btn delete"><i class="fas fa-trash"></i> Delete</button><button onclick="exportSingleProject(${p.id})" class="action-btn excel"><i class="fas fa-file-excel"></i> Excel</button><button onclick="openSendProjectModal(${p.id})" class="action-btn send"><i class="fas fa-paper-plane"></i> Send</button></div>
+            </div>
+        `).join('');
+        if (projectsData.length === 0) document.getElementById('projectsGrid').innerHTML = '<div class="col-span-3 text-center py-8 text-gray-400">No projects found</div>';
     }
-    function viewFullImage(src){ document.getElementById('fullImagePreview').src=src; openModal('imagePreviewModal'); }
-    function openAddProjectModal() { document.getElementById('projModalTitle').innerText='Add Project'; document.getElementById('projId').value=''; document.getElementById('projName').value=''; document.getElementById('projClient').value=''; document.getElementById('projAmount').value=''; document.getElementById('projLocation').value=''; document.getElementById('projDesc').value=''; document.getElementById('projStatus').value='pending'; document.getElementById('projProgress').value='0'; document.getElementById('projDept').value='1'; removeProjectImage(); openModal('projModal'); }
-    function openSendProjectModal(id) { showToast(`Sending project ID: ${id} - Feature coming soon`); }
-    function exportSingleProject(id, format) { showToast(`Exporting project to ${format.toUpperCase()}...`); }
-    async function viewProject(id) { const res=await apiCall(`get_projects.php?id=${id}`); if(res.success&&res.data){ let p=res.data; document.getElementById('viewProjContent').innerHTML=`${p.image?`<img src="${p.image}" class="w-full h-40 object-cover rounded-lg mb-2 cursor-pointer" onclick="viewFullImage('${p.image}')">`:''}<p><strong>Name:</strong> ${escapeHtml(p.name)}</p><p><strong>Client:</strong> ${escapeHtml(p.client_name||'N/A')}</p><p><strong>Amount:</strong> ${formatMoney(p.amount)}</p><p><strong>Status:</strong> ${p.status}</p><p><strong>Progress:</strong> ${p.progress}%</p><p><strong>Location:</strong> ${escapeHtml(p.location||'N/A')}</p><p><strong>Description:</strong> ${escapeHtml(p.description||'N/A')}</p>`; openModal('viewProjModal'); } }
-    async function openEditProjectModal(id) { const res=await apiCall(`get_projects.php?id=${id}`); if(res.success&&res.data){ let p=res.data; document.getElementById('projModalTitle').innerText='Edit Project'; document.getElementById('projId').value=p.id; document.getElementById('projName').value=p.name; document.getElementById('projClient').value=p.client_name||''; document.getElementById('projAmount').value=p.amount; document.getElementById('projLocation').value=p.location||''; document.getElementById('projDesc').value=p.description||''; document.getElementById('projStatus').value=p.status; document.getElementById('projProgress').value=p.progress; document.getElementById('projDept').value=p.department_id; if(p.image){ document.getElementById('projImagePreview').innerHTML=`<img src="${p.image}" class="w-full h-24 object-cover rounded-lg"><button type="button" onclick="removeProjectImage()" class="mt-1 text-red-500 text-sm w-full">Remove Image</button>`; document.getElementById('projImagePreview').classList.remove('hidden'); }else removeProjectImage(); openModal('projModal'); } }
-    async function saveProject() { let id=document.getElementById('projId').value; let data={name:document.getElementById('projName').value, client_name:document.getElementById('projClient').value, amount:parseFloat(document.getElementById('projAmount').value.replace(/,/g,''))||0, location:document.getElementById('projLocation').value, description:document.getElementById('projDesc').value, status:document.getElementById('projStatus').value, progress:parseInt(document.getElementById('projProgress').value)||0, department_id:parseInt(document.getElementById('projDept').value)}; if(!data.name){ showToast('Project name required',true); return; } let res; if(id) res=await apiCall('update_project.php','PUT',{...data,id:parseInt(id)}); else res=await apiCall('add_project.php','POST',data); if(res.success){ if(currentProjectImageFile){ let fd=new FormData(); fd.append('project_id',res.data?.id||id); fd.append('image',currentProjectImageFile); await fetch(API_BASE+'upload_project_image.php',{method:'POST',body:fd}); } showToast(id?'Project updated':'Project added'); closeModal('projModal'); loadProjects(); loadDashboard(); } else showToast(res.error||'Failed',true); }
-    async function deleteProject(id) { if(confirm('Delete this project?')){ const res=await apiCall(`delete_project.php?id=${id}`,'DELETE'); if(res.success){ showToast('Project deleted'); loadProjects(); loadDashboard(); } else showToast(res.error||'Failed',true); } }
-    async function exportProjectsToExcel() { const res=await apiCall('get_projects.php'); const projects=res.success?(res.data||[]):[]; let ws=[['ID','Name','Client','Amount','Status','Progress','Location']]; projects.forEach(p=>ws.push([p.id,p.name,p.client_name||'-',p.amount,p.status,p.progress||0,p.location||'-'])); let wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(ws),'Projects'); XLSX.writeFile(wb,`projects_${new Date().toISOString().slice(0,10)}.xlsx`); showToast('Exported to Excel'); }
-    async function exportProjectsToPDF() { const res=await apiCall('get_projects.php'); const projects=res.success?(res.data||[]):[]; let element=document.createElement('div'); element.innerHTML=`<div style="padding:20px"><h1>Projects Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><thead><tr style="background:#0f74ba;color:white"><th>Name</th><th>Client</th><th>Amount</th><th>Status</th><th>Progress</th></tr></thead><tbody>${projects.map(p=>`<tr><td class="px-2 py-1">${p.name}<\/td><td class="px-2 py-1">${p.client_name||'-'}<\/td><td class="px-2 py-1">${formatMoney(p.amount)}<\/td><td class="px-2 py-1">${p.status}<\/td><td class="px-2 py-1">${p.progress||0}%<\/td><\/tr>`).join('')}</tbody><\/table><\/div>`; html2pdf().set({margin:0.5,filename:`projects_report.pdf`}).from(element).save(); showToast('Exported to PDF'); }
     
-    // ==================== TRANSACTIONS ====================
-    async function loadTransactions() {
-        document.getElementById('mainContainer').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div> Loading transactions...</div>';
-        const res = await apiCall('get_transactions.php'); const trans = res.success ? (res.data || []) : [];
-        let totalInc=0, totalExp=0; trans.forEach(t=>{ if(t.type==='income') totalInc+=parseFloat(t.amount); else totalExp+=parseFloat(t.amount); });
-        let html = `<div class="flex justify-between flex-wrap gap-2 mb-4"><div class="bg-green-100 rounded-xl p-3 flex-1 text-center"><p class="text-gray-500 text-xs">Total Income</p><p class="text-xl font-bold text-green-600">${formatMoney(totalInc)}</p></div><div class="bg-red-100 rounded-xl p-3 flex-1 text-center"><p class="text-gray-500 text-xs">Total Expenses</p><p class="text-xl font-bold text-red-600">${formatMoney(totalExp)}</p></div><div class="bg-blue-100 rounded-xl p-3 flex-1 text-center"><p class="text-gray-500 text-xs">Net Profit</p><p class="text-xl font-bold text-blue-600">${formatMoney(totalInc-totalExp)}</p></div><button onclick="exportTransactionsToExcel()" class="bg-green-600 text-white px-3 py-1 rounded text-sm"><i class="fas fa-file-excel"></i> Excel</button><button onclick="exportTransactionsToPDF()" class="bg-red-600 text-white px-3 py-1 rounded text-sm"><i class="fas fa-file-pdf"></i> PDF</button><button onclick="openModal('transModal')" class="bg-blue-600 text-white px-3 py-1 rounded text-sm">+ Add</button></div>
+    function viewFullImage(imagePath) {
+        window.open('/geotraverse/frontend/' + imagePath, '_blank');
+    }
+    
+    async function viewProject(id) {
+        const p = projectsData.find(p => p.id === id);
+        if (p) {
+            document.getElementById('viewProjContent').innerHTML = `
+                ${p.image ? `<img src="/geotraverse/frontend/${p.image}" class="w-full h-40 object-cover rounded-lg mb-3 cursor-pointer" onclick="viewFullImage('${p.image}')">` : ''}
+                <p><strong>Name:</strong> ${escapeHtml(p.name)}</p>
+                <p><strong>Client:</strong> ${escapeHtml(p.client_name || 'N/A')}</p>
+                <p><strong>Amount:</strong> ${formatMoney(p.amount)}</p>
+                <p><strong>Location:</strong> ${escapeHtml(p.location || 'N/A')}</p>
+                <p><strong>Status:</strong> ${p.status}</p>
+                <p><strong>Progress:</strong> ${p.progress}%</p>
+                <p><strong>Description:</strong> ${escapeHtml(p.description || 'N/A')}</p>
+                <p><strong>Created:</strong> ${formatDate(p.created_at)}</p>`;
+            openModal('viewProjModal');
+        }
+    }
+    
+    function openAddProjectModal() {
+        document.getElementById('projModalTitle').innerText = 'Add Project';
+        document.getElementById('projId').value = '';
+        document.getElementById('projName').value = '';
+        document.getElementById('projClient').value = '';
+        document.getElementById('projAmount').value = '';
+        document.getElementById('projLocation').value = '';
+        document.getElementById('projDesc').value = '';
+        document.getElementById('projStatus').value = 'pending';
+        document.getElementById('projProgress').value = '0';
+        document.getElementById('projDept').value = '';
+        document.getElementById('projImagePreview').innerHTML = '';
+        document.getElementById('projImagePreview').classList.add('hidden');
+        currentProjectImageFile = null;
+        openModal('projModal');
+    }
+    
+    async function openEditProjectModal(id) {
+        const p = projectsData.find(p => p.id === id);
+        if (p) {
+            document.getElementById('projModalTitle').innerText = 'Edit Project';
+            document.getElementById('projId').value = p.id;
+            document.getElementById('projName').value = p.name;
+            document.getElementById('projClient').value = p.client_name || '';
+            document.getElementById('projAmount').value = p.amount;
+            document.getElementById('projLocation').value = p.location || '';
+            document.getElementById('projDesc').value = p.description || '';
+            document.getElementById('projStatus').value = p.status;
+            document.getElementById('projProgress').value = p.progress;
+            document.getElementById('projDept').value = p.department_id;
+            openModal('projModal');
+        }
+    }
+    
+    document.getElementById('projImageFile')?.addEventListener('change', function(e) {
+        if (e.target.files && e.target.files[0]) {
+            currentProjectImageFile = e.target.files[0];
+            let reader = new FileReader();
+            reader.onload = ev => {
+                document.getElementById('projImagePreview').innerHTML = `<img src="${ev.target.result}" class="w-full h-24 object-cover rounded-lg mt-2">`;
+                document.getElementById('projImagePreview').classList.remove('hidden');
+            };
+            reader.readAsDataURL(e.target.files[0]);
+        }
+    });
+    
+    async function saveProject() {
+        let id = document.getElementById('projId').value;
+        let data = {
+            name: document.getElementById('projName').value,
+            client_name: document.getElementById('projClient').value,
+            amount: parseFloat(document.getElementById('projAmount').value) || 0,
+            location: document.getElementById('projLocation').value,
+            description: document.getElementById('projDesc').value,
+            status: document.getElementById('projStatus').value,
+            progress: parseInt(document.getElementById('projProgress').value) || 0,
+            department_id: parseInt(document.getElementById('projDept').value) || 1
+        };
+        if (!data.name) { showToast('Project name required', true); return; }
+        
+        let res;
+        if (id) res = await apiCall('update_project.php', 'PUT', { ...data, id: parseInt(id) });
+        else res = await apiCall('add_project.php', 'POST', data);
+        
+        if (res.success) {
+            const projectId = res.data?.id || id;
+            if (currentProjectImageFile) {
+                let fd = new FormData();
+                fd.append('project_id', projectId);
+                fd.append('image', currentProjectImageFile);
+                await fetch(API_BASE + 'upload_project_image.php', { method: 'POST', body: fd });
+            }
+            showToast(id ? 'Project updated' : 'Project added');
+            closeModal('projModal');
+            loadProjects();
+            loadDashboard();
+        } else showToast(res.error || 'Failed', true);
+    }
+    
+    async function deleteProject(id) {
+        if (confirm('Delete this project?')) {
+            const res = await apiCall('delete_project.php', 'DELETE', { id });
+            if (res.success) { showToast('Project deleted'); loadProjects(); loadDashboard(); }
+            else showToast(res.error || 'Failed', true);
+        }
+    }
+    
+    function openSendProjectModal(id) {
+        const p = projectsData.find(p => p.id === id);
+        if (p) {
+            document.getElementById('sendProjId').value = id;
+            document.getElementById('sendProjName').innerHTML = `<strong>${escapeHtml(p.name)}</strong> - ${formatMoney(p.amount)}`;
+            document.getElementById('sendProjMsg').value = '';
+            openModal('sendProjModal');
+        }
+    }
+    
+    async function confirmSendProject() {
+        const id = document.getElementById('sendProjId').value;
+        const toDept = document.getElementById('sendProjDept').value;
+        const msg = document.getElementById('sendProjMsg').value;
+        if (!toDept) { showToast('Select department', true); return; }
+        const res = await apiCall('send_project.php', 'POST', { project_id: id, to_department_id: toDept, message: msg });
+        if (res.success) { showToast('Project sent'); closeModal('sendProjModal'); }
+        else showToast(res.error || 'Failed', true);
+    }
+    
+    async function exportProjectsToExcel() {
+        let ws = [['ID', 'Name', 'Client', 'Amount', 'Location', 'Status', 'Progress', 'Created']];
+        projectsData.forEach(p => ws.push([p.id, p.name, p.client_name || '-', p.amount, p.location || '-', p.status, p.progress, p.created_at]));
+        let wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), 'Projects');
+        XLSX.writeFile(wb, `projects_${new Date().toISOString().slice(0,10)}.xlsx`);
+        showToast('Exported to Excel');
+    }
+    
+    async function exportProjectsToPDF() {
+        let element = document.createElement('div');
+        element.innerHTML = `<div style="padding:20px"><h1>Projects Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><thead><tr><th>Name</th><th>Client</th><th>Amount</th><th>Status</th><th>Progress</th></tr></thead><tbody>${projectsData.map(p => `<tr><td>${p.name}</td><td>${p.client_name || '-'}</td><td>${formatMoney(p.amount)}</td><td>${p.status}</td><td>${p.progress}%</td></tr>`).join('')}</tbody></table></div>`;
+        html2pdf().set({ margin: 0.5, filename: `projects_report.pdf` }).from(element).save();
+        showToast('Exported to PDF');
+    }
+    
+    function exportSingleProject(id) {
+        const p = projectsData.find(p => p.id === id);
+        if (p) {
+            let ws = [['ID', 'Name', 'Client', 'Amount', 'Location', 'Status', 'Progress', 'Description']];
+            ws.push([p.id, p.name, p.client_name || '-', p.amount, p.location || '-', p.status, p.progress, p.description || '-']);
+            let wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), 'Project');
+            XLSX.writeFile(wb, `project_${p.id}_${p.name.replace(/[^a-z0-9]/gi, '_')}.xlsx`);
+            showToast('Exported to Excel');
+        }
+    }
+    
+    // ==================== DAILY WORK ====================
+    async function loadDailyWork() {
+        document.getElementById('mainContainer').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div><span class="ml-3">Loading daily work...</span></div>';
+        const res = await apiCall('get_dailywork.php');
+        dailyworkData = res.success ? (res.data || []) : [];
+        
+        let html = `<div class="flex justify-between flex-wrap gap-3 mb-4"><h2 class="text-xl font-bold"><i class="fas fa-calendar-day text-purple-500 mr-2"></i>Daily Work (${dailyworkData.length})</h2><button onclick="openAddDailyWorkModal()" class="btn-primary"><i class="fas fa-plus mr-1"></i> Add Daily Work</button></div>
+        <div class="bg-white rounded-xl overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th class="p-2">Date</th><th class="p-2">Department</th><th class="p-2">Project</th><th class="p-2">Income</th><th class="p-2">Expenses</th><th class="p-2">Profit</th><th class="p-2">Status</th><th class="p-2">Actions</th></tr></thead><tbody>`;
+        
+        for (let w of dailyworkData) {
+            let profit = (parseFloat(w.income) || 0) - (parseFloat(w.expenses) || 0);
+            html += `<tr class="border-b"><td class="p-2">${w.date}</td><td class="p-2">${departmentNames[w.department_id] || w.department_id}</td><td class="p-2">${escapeHtml(w.project_name)}</td>
+            <td class="p-2 text-green-600">${formatMoney(w.income)}</td><td class="p-2 text-red-600">${formatMoney(w.expenses)}</td>
+            <td class="p-2 ${profit >= 0 ? 'text-green-600' : 'text-red-600'}">${formatMoney(profit)}</td>
+            <td class="p-2"><span class="status-badge ${w.status === 'paid' ? 'status-completed' : 'status-pending'}">${w.status}</span></td>
+            <td class="p-2"><div class="action-buttons"><button onclick="viewDailyWork(${w.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="openEditDailyWorkModal(${w.id})" class="action-btn edit"><i class="fas fa-edit"></i></button><button onclick="deleteDailyWork(${w.id})" class="action-btn delete"><i class="fas fa-trash"></i></button></div></td></tr>`;
+        }
+        if (dailyworkData.length === 0) html += `<tr><td colspan="8" class="text-center py-8 text-gray-400">No daily work records</td></tr>`;
+        html += `</tbody>}</div></div>`;
+        document.getElementById('mainContainer').innerHTML = html;
+    }
+    
+    async function viewDailyWork(id) {
+        const w = dailyworkData.find(w => w.id === id);
+        if (w) {
+            let profit = (parseFloat(w.income) || 0) - (parseFloat(w.expenses) || 0);
+            document.getElementById('viewDailyworkContent').innerHTML = `
+                <p><strong>Date:</strong> ${w.date}</p>
+                <p><strong>Department:</strong> ${departmentNames[w.department_id]}</p>
+                <p><strong>Project:</strong> ${escapeHtml(w.project_name)}</p>
+                <p><strong>Work Description:</strong> ${escapeHtml(w.work_description || 'N/A')}</p>
+                <p><strong>Income:</strong> ${formatMoney(w.income)}</p>
+                <p><strong>Expenses:</strong> ${formatMoney(w.expenses)}</p>
+                <p><strong>Profit:</strong> ${formatMoney(profit)}</p>
+                <p><strong>Paid Amount:</strong> ${formatMoney(w.paid_amount)}</p>
+                <p><strong>Remaining:</strong> ${formatMoney((parseFloat(w.income) || 0) - (parseFloat(w.paid_amount) || 0))}</p>
+                <p><strong>Status:</strong> ${w.status}</p>`;
+            openModal('viewDailyworkModal');
+        }
+    }
+    
+    function openAddDailyWorkModal() {
+        document.getElementById('dailyworkModalTitle').innerText = 'Add Daily Work';
+        document.getElementById('dailyworkId').value = '';
+        document.getElementById('dailyworkDate').value = new Date().toISOString().slice(0,10);
+        document.getElementById('dailyworkProject').value = '';
+        document.getElementById('dailyworkDesc').value = '';
+        document.getElementById('dailyworkIncome').value = '';
+        document.getElementById('dailyworkExpenses').value = '';
+        document.getElementById('dailyworkPaid').value = '';
+        document.getElementById('dailyworkStatus').value = 'pending';
+        document.getElementById('dailyworkDept').value = '';
+        openModal('dailyworkModal');
+    }
+    
+    async function openEditDailyWorkModal(id) {
+        const w = dailyworkData.find(w => w.id === id);
+        if (w) {
+            document.getElementById('dailyworkModalTitle').innerText = 'Edit Daily Work';
+            document.getElementById('dailyworkId').value = w.id;
+            document.getElementById('dailyworkDate').value = w.date;
+            document.getElementById('dailyworkProject').value = w.project_name;
+            document.getElementById('dailyworkDesc').value = w.work_description || '';
+            document.getElementById('dailyworkIncome').value = w.income;
+            document.getElementById('dailyworkExpenses').value = w.expenses;
+            document.getElementById('dailyworkPaid').value = w.paid_amount;
+            document.getElementById('dailyworkStatus').value = w.status;
+            document.getElementById('dailyworkDept').value = w.department_id;
+            openModal('dailyworkModal');
+        }
+    }
+    
+    async function saveDailyWork() {
+        let id = document.getElementById('dailyworkId').value;
+        let data = {
+            date: document.getElementById('dailyworkDate').value,
+            project_name: document.getElementById('dailyworkProject').value,
+            work_description: document.getElementById('dailyworkDesc').value,
+            income: parseFloat(document.getElementById('dailyworkIncome').value) || 0,
+            expenses: parseFloat(document.getElementById('dailyworkExpenses').value) || 0,
+            paid_amount: parseFloat(document.getElementById('dailyworkPaid').value) || 0,
+            status: document.getElementById('dailyworkStatus').value,
+            department_id: parseInt(document.getElementById('dailyworkDept').value) || 1
+        };
+        if (!data.project_name) { showToast('Project name required', true); return; }
+        
+        let res;
+        if (id) res = await apiCall('update_dailywork.php', 'PUT', { ...data, id: parseInt(id) });
+        else res = await apiCall('add_dailywork.php', 'POST', data);
+        
+        if (res.success) {
+            showToast(id ? 'Daily work updated' : 'Daily work added');
+            closeModal('dailyworkModal');
+            loadDailyWork();
+            loadDashboard();
+        } else showToast(res.error || 'Failed', true);
+    }
+    
+    async function deleteDailyWork(id) {
+        if (confirm('Delete this daily work record?')) {
+            const res = await apiCall('delete_dailywork.php', 'DELETE', { id });
+            if (res.success) { showToast('Record deleted'); loadDailyWork(); loadDashboard(); }
+            else showToast(res.error || 'Failed', true);
+        }
+    }
+    
+    // ==================== CASHFLOW (TRANSACTIONS) ====================
+    async function loadCashflow() {
+        document.getElementById('mainContainer').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div><span class="ml-3">Loading cashflow...</span></div>';
+        const res = await apiCall('get_transactions.php');
+        transactionsData = res.success ? (res.data || []) : [];
+        
+        let totalInc = 0, totalExp = 0;
+        transactionsData.forEach(t => { if (t.type === 'income') totalInc += parseFloat(t.amount); else totalExp += parseFloat(t.amount); });
+        
+        let html = `<div class="flex justify-between flex-wrap gap-2 mb-4"><div class="bg-green-100 rounded-xl p-3 flex-1 text-center"><p class="text-gray-500 text-xs">Total Income</p><p class="text-xl font-bold text-green-600">${formatMoney(totalInc)}</p></div>
+        <div class="bg-red-100 rounded-xl p-3 flex-1 text-center"><p class="text-gray-500 text-xs">Total Expenses</p><p class="text-xl font-bold text-red-600">${formatMoney(totalExp)}</p></div>
+        <div class="bg-blue-100 rounded-xl p-3 flex-1 text-center"><p class="text-gray-500 text-xs">Net Profit</p><p class="text-xl font-bold text-blue-600">${formatMoney(totalInc - totalExp)}</p></div>
+        <div class="flex gap-2"><button onclick="exportCashflowToExcel()" class="btn-success"><i class="fas fa-file-excel mr-1"></i> Excel</button><button onclick="exportCashflowToPDF()" class="btn-danger"><i class="fas fa-file-pdf mr-1"></i> PDF</button><button onclick="openAddTransactionModal()" class="btn-primary"><i class="fas fa-plus mr-1"></i> Add</button></div></div>
         <div class="bg-white rounded-xl p-4"><div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th class="p-2">Date</th><th class="p-2">Type</th><th class="p-2">Department</th><th class="p-2">Source</th><th class="p-2">Amount</th><th class="p-2">Status</th><th class="p-2">Actions</th></tr></thead><tbody>`;
-        for(let t of trans){ html += `<tr class="border-b"><td class="p-2">${t.transaction_date}<\/td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-xs ${t.type==='income'?'bg-green-100':'bg-red-100'}">${t.type}</span><\/td><td class="p-2">${departmentNames[t.department_id]||t.department_id}<\/td><td class="p-2">${escapeHtml(t.source)}<\/td><td class="p-2 ${t.type==='income'?'text-green-600':'text-red-600'}">${formatMoney(t.amount)}<\/td><td class="p-2">${t.status}<\/td><td class="p-2"><button onclick="viewTransaction(${t.id})" class="text-blue-500 mr-2"><i class="fas fa-eye"></i></button><button onclick="openEditTransactionModal(${t.id})" class="text-green-500 mr-2"><i class="fas fa-edit"></i></button><button onclick="deleteTransaction(${t.id})" class="text-red-500"><i class="fas fa-trash"></i></button><\/td><\/tr>`; }
-        if(trans.length===0) html += `<tr><td colspan="7" class="text-center py-8 text-gray-400">No transactions found<\/td><\/tr>`;
-        html += `</tbody><\/table><\/div><\/div>`;
+        
+        for (let t of transactionsData) {
+            html += `<tr class="border-b"><td class="p-2">${t.transaction_date || t.created_at?.split(' ')[0]}</td>
+            <td class="p-2"><span class="status-badge ${t.type === 'income' ? 'status-completed' : 'status-pending'}">${t.type}</span></td>
+            <td class="p-2">${departmentNames[t.department_id] || t.department_id}</td>
+            <td class="p-2">${escapeHtml(t.source)}</td>
+            <td class="p-2 ${t.type === 'income' ? 'text-green-600' : 'text-red-600'}">${formatMoney(t.amount)}</td>
+            <td class="p-2"><span class="status-badge ${t.status === 'paid' ? 'status-completed' : 'status-pending'}">${t.status}</span></td>
+            <td class="p-2"><div class="action-buttons"><button onclick="viewTransaction(${t.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="openEditTransactionModal(${t.id})" class="action-btn edit"><i class="fas fa-edit"></i></button><button onclick="deleteTransaction(${t.id})" class="action-btn delete"><i class="fas fa-trash"></i></button></div></td></tr>`;
+        }
+        if (transactionsData.length === 0) html += `<tr><td colspan="7" class="text-center py-8 text-gray-400">No transactions found</td></tr>`;
+        html += `</tbody>}</div></div>`;
         document.getElementById('mainContainer').innerHTML = html;
     }
-    async function viewTransaction(id) { const res=await apiCall(`get_transactions.php?id=${id}`); if(res.success&&res.data){ let t=res.data; document.getElementById('viewTransContent').innerHTML=`<p><strong>Date:</strong> ${t.transaction_date}</p><p><strong>Type:</strong> ${t.type}</p><p><strong>Department:</strong> ${departmentNames[t.department_id]}</p><p><strong>Source:</strong> ${escapeHtml(t.source)}</p><p><strong>Amount:</strong> ${formatMoney(t.amount)}</p><p><strong>Status:</strong> ${t.status}</p><p><strong>Description:</strong> ${escapeHtml(t.description||'N/A')}</p>`; openModal('viewTransModal'); } }
-    function openEditTransactionModal(id) { const t = transactionsData.find(t=>t.id===id); if(t){ document.getElementById('editTransId').value=t.id; document.getElementById('editTransType').value=t.type; document.getElementById('editTransSource').value=t.source; document.getElementById('editTransAmount').value=t.amount; document.getElementById('editTransDate').value=t.transaction_date; document.getElementById('editTransStatus').value=t.status; document.getElementById('editTransDesc').value=t.description||''; document.getElementById('editTransDept').value=t.department_id; openModal('editTransModal'); } }
-    async function updateTransaction() { let id=parseInt(document.getElementById('editTransId').value); let data={type:document.getElementById('editTransType').value, department_id:parseInt(document.getElementById('editTransDept').value), source:document.getElementById('editTransSource').value, amount:parseFloat(document.getElementById('editTransAmount').value.replace(/,/g,''))||0, transaction_date:document.getElementById('editTransDate').value, paid_amount:parseFloat(document.getElementById('editTransAmount').value.replace(/,/g,''))||0, status:document.getElementById('editTransStatus').value, description:document.getElementById('editTransDesc').value}; const res=await apiCall(`update_transaction.php?id=${id}`,'PUT',data); if(res.success){ showToast('Transaction updated'); closeModal('editTransModal'); loadTransactions(); loadDashboard(); } else showToast(res.error||'Failed',true); }
-    async function saveTransaction() { let data={type:document.getElementById('transType').value, department_id:parseInt(document.getElementById('transDept').value), source:document.getElementById('transSource').value, amount:parseFloat(document.getElementById('transAmount').value.replace(/,/g,''))||0, transaction_date:document.getElementById('transDate').value, paid_amount:parseFloat(document.getElementById('transAmount').value.replace(/,/g,''))||0, status:document.getElementById('transStatus').value, description:document.getElementById('transDesc').value}; if(!data.source||data.amount<=0){ showToast('Source and valid amount required',true); return; } const res=await apiCall('add_transaction.php','POST',data); if(res.success){ showToast('Transaction added'); closeModal('transModal'); loadTransactions(); loadDashboard(); } else showToast(res.error||'Failed',true); }
-    async function deleteTransaction(id) { if(confirm('Delete this transaction?')){ const res=await apiCall(`delete_transaction.php?id=${id}`,'DELETE'); if(res.success){ showToast('Transaction deleted'); loadTransactions(); loadDashboard(); } else showToast(res.error||'Failed',true); } }
-    async function exportTransactionsToExcel() { const res=await apiCall('get_transactions.php'); const trans=res.success?(res.data||[]):[]; let ws=[['Date','Type','Department','Source','Amount','Status','Description']]; trans.forEach(t=>ws.push([t.transaction_date,t.type,departmentNames[t.department_id]||t.department_id,t.source,t.amount,t.status,t.description||''])); let wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(ws),'Transactions'); XLSX.writeFile(wb,`transactions_${new Date().toISOString().slice(0,10)}.xlsx`); showToast('Exported to Excel'); }
-    async function exportTransactionsToPDF() { const res=await apiCall('get_transactions.php'); const trans=res.success?(res.data||[]):[]; let element=document.createElement('div'); element.innerHTML=`<div style="padding:20px"><h1>Transactions Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><thead><tr style="background:#0f74ba;color:white"><th>Date</th><th>Type</th><th>Department</th><th>Source</th><th>Amount</th><th>Status</th><tr></thead><tbody>${trans.map(t=>`<tr><td class="px-2 py-1">${t.transaction_date}<\/td><td class="px-2 py-1">${t.type}<\/td><td class="px-2 py-1">${departmentNames[t.department_id]||t.department_id}<\/td><td class="px-2 py-1">${t.source}<\/td><td class="px-2 py-1">${formatMoney(t.amount)}<\/td><td class="px-2 py-1">${t.status}<\/td><\/tr>`).join('')}</tbody><\/table><\/div>`; html2pdf().set({margin:0.5,filename:`transactions_report.pdf`}).from(element).save(); showToast('Exported to PDF'); }
-    let transactionsData = [];
     
-    // ==================== MESSAGES ====================
-    async function loadMessages() {
-        document.getElementById('mainContainer').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div> Loading messages...</div>';
-        const res = await apiCall('get_messages.php'); const messages = res.success ? (res.data?.messages || res.messages || []) : []; const unread = res.success ? (res.data?.unread_count || 0) : 0;
-        document.getElementById('msgBadge').innerText = unread; let conv = {};
-        messages.forEach(m => { let other = m.from_department_id===1 ? m.to_department_id : m.from_department_id; if(!conv[other]) conv[other]=[]; conv[other].push(m); });
-        let html = `<div class="flex justify-between flex-wrap gap-3 mb-4"><h2 class="text-xl font-bold"><i class="fas fa-envelope text-blue-500 mr-2"></i>Messages</h2><div class="flex gap-2"><button onclick="openModal('msgModal')" class="bg-blue-600 text-white px-4 py-2 rounded text-sm">Send Message</button><button onclick="openModal('startChatModal')" class="bg-green-600 text-white px-4 py-2 rounded text-sm">Start Chat</button></div></div><div class="space-y-2" id="messagesList"></div>`;
-        document.getElementById('mainContainer').innerHTML = html;
-        let msgsHtml = '';
-        if(Object.keys(conv).length===0) msgsHtml='<div class="bg-white rounded-xl p-8 text-center text-gray-400">No messages</div>';
-        else{ for(let d in conv){ let last=conv[d][conv[d].length-1]; let un=conv[d].filter(m=>m.to_department_id===1&&!m.is_read).length; msgsHtml+=`<div class="message-item ${un>0?'message-unread':''}" onclick="openChat(${d})"><div class="flex justify-between"><div><p class="font-semibold">${departmentNames[d]}</p><p class="text-sm text-gray-500 truncate">${escapeHtml(last.message.substring(0,80))}</p></div><div class="text-right"><span class="text-xs text-gray-400">${new Date(last.created_at).toLocaleTimeString()}</span>${un>0?`<span class="ml-2 bg-red-500 text-white text-xs px-2 rounded-full">${un}</span>`:''}</div></div><button onclick="event.stopPropagation(); deleteConversation(${d})" class="mt-2 text-red-500 text-sm">Delete Conversation</button></div>`; } }
-        document.getElementById('messagesList').innerHTML = msgsHtml;
+    async function viewTransaction(id) {
+        const t = transactionsData.find(t => t.id === id);
+        if (t) {
+            document.getElementById('viewTransContent').innerHTML = `
+                <p><strong>Date:</strong> ${t.transaction_date || t.created_at}</p>
+                <p><strong>Type:</strong> ${t.type}</p>
+                <p><strong>Department:</strong> ${departmentNames[t.department_id]}</p>
+                <p><strong>Source:</strong> ${escapeHtml(t.source)}</p>
+                <p><strong>Amount:</strong> ${formatMoney(t.amount)}</p>
+                <p><strong>Paid Amount:</strong> ${formatMoney(t.paid_amount)}</p>
+                <p><strong>Status:</strong> ${t.status}</p>
+                <p><strong>Description:</strong> ${escapeHtml(t.description || 'N/A')}</p>`;
+            openModal('viewTransModal');
+        }
     }
-    async function sendMessage() { let toDept=document.getElementById('msgTo').value; let msg=document.getElementById('msgContent').value.trim(); if(!toDept){ showToast('Select department',true); return; } if(!msg){ showToast('Enter message',true); return; } const res=await apiCall('send_message.php','POST',{to_department_id:parseInt(toDept),message:msg}); if(res.success){ showToast('Message sent'); closeModal('msgModal'); loadMessages(); loadDashboard(); } else showToast(res.error||'Failed',true); }
-    async function startNewChat() { let toDept=document.getElementById('startChatDept').value; let msg=document.getElementById('startChatMsg').value.trim(); if(!toDept){ showToast('Select department',true); return; } if(!msg){ showToast('Enter message',true); return; } const res=await apiCall('send_message.php','POST',{to_department_id:parseInt(toDept),message:msg}); if(res.success){ showToast('Message sent'); closeModal('startChatModal'); loadMessages(); loadDashboard(); } else showToast(res.error||'Failed',true); }
-    async function openChat(deptId) { currentChatDept=deptId; const res=await apiCall(`get_messages.php?with_department_id=${deptId}`); const messages=res.success?(res.data?.messages||res.messages||[]):[]; document.getElementById('chatModalTitle').innerHTML=`Chat with ${departmentNames[deptId]}<button onclick="deleteConversation(${deptId})" class="ml-3 text-red-500 text-sm"><i class="fas fa-trash"></i> Delete All</button>`; let chatHtml=''; for(let m of messages){ chatHtml+=`<div class="chat-message ${m.from_department_id===1?'chat-sent':'chat-received'}"><div class="bubble"><p>${escapeHtml(m.message)}</p><p class="text-[10px] opacity-70 mt-1">${new Date(m.created_at).toLocaleString()}</p></div><button onclick="deleteMessage(${m.id})" class="text-red-500 text-xs mt-1 block">Delete</button></div>`; } if(messages.length===0) chatHtml='<div class="text-center text-gray-400 py-4">No messages. Send a message to start the conversation.</div>'; document.getElementById('chatMessagesArea').innerHTML=chatHtml; openModal('chatModal'); }
-    async function sendReply() { let reply=document.getElementById('replyMsg')?.value.trim(); if(!reply||!currentChatDept){ showToast('Enter message',true); return; } const res=await apiCall('send_message.php','POST',{to_department_id:currentChatDept,message:reply}); if(res.success){ document.getElementById('replyMsg').value=''; openChat(currentChatDept); loadMessages(); loadDashboard(); } else showToast(res.error||'Failed',true); }
-    async function deleteMessage(id) { if(confirm('Delete this message?')){ const res=await apiCall(`delete_message.php?id=${id}`,'DELETE'); if(res.success){ showToast('Message deleted'); if(currentChatDept) openChat(currentChatDept); loadMessages(); loadDashboard(); } else showToast(res.error||'Failed',true); } }
-    async function deleteConversation(deptId) { if(confirm(`Delete ALL messages with ${departmentNames[deptId]}?`)){ const res=await apiCall(`delete_conversation.php?with_department_id=${deptId}`,'DELETE'); if(res.success){ showToast('Conversation deleted'); closeModal('chatModal'); loadMessages(); loadDashboard(); } else showToast(res.error||'Failed',true); } }
+    
+    function openAddTransactionModal() {
+        document.getElementById('transModalTitle').innerText = 'Add Transaction';
+        document.getElementById('transId').value = '';
+        document.getElementById('transType').value = 'income';
+        document.getElementById('transDept').value = '';
+        document.getElementById('transSource').value = '';
+        document.getElementById('transAmount').value = '';
+        document.getElementById('transDate').value = new Date().toISOString().slice(0,10);
+        document.getElementById('transStatus').value = 'paid';
+        document.getElementById('transDesc').value = '';
+        openModal('transModal');
+    }
+    
+    async function openEditTransactionModal(id) {
+        const t = transactionsData.find(t => t.id === id);
+        if (t) {
+            document.getElementById('transModalTitle').innerText = 'Edit Transaction';
+            document.getElementById('transId').value = t.id;
+            document.getElementById('transType').value = t.type;
+            document.getElementById('transDept').value = t.department_id;
+            document.getElementById('transSource').value = t.source;
+            document.getElementById('transAmount').value = t.amount;
+            document.getElementById('transDate').value = t.transaction_date;
+            document.getElementById('transStatus').value = t.status;
+            document.getElementById('transDesc').value = t.description || '';
+            openModal('transModal');
+        }
+    }
+    
+    async function saveTransaction() {
+        let id = document.getElementById('transId').value;
+        let data = {
+            type: document.getElementById('transType').value,
+            department_id: parseInt(document.getElementById('transDept').value) || 1,
+            source: document.getElementById('transSource').value,
+            amount: parseFloat(document.getElementById('transAmount').value) || 0,
+            transaction_date: document.getElementById('transDate').value || new Date().toISOString().slice(0,10),
+            paid_amount: parseFloat(document.getElementById('transAmount').value) || 0,
+            status: document.getElementById('transStatus').value,
+            description: document.getElementById('transDesc').value
+        };
+        if (!data.source || data.amount <= 0) { showToast('Source and amount required', true); return; }
+        
+        let res;
+        if (id) res = await apiCall('update_transaction.php', 'PUT', { ...data, id: parseInt(id) });
+        else res = await apiCall('add_transaction.php', 'POST', data);
+        
+        if (res.success) {
+            showToast(id ? 'Transaction updated' : 'Transaction added');
+            closeModal('transModal');
+            loadCashflow();
+            loadDashboard();
+        } else showToast(res.error || 'Failed', true);
+    }
+    
+    async function deleteTransaction(id) {
+        if (confirm('Delete this transaction?')) {
+            const res = await apiCall('delete_transaction.php', 'DELETE', { id });
+            if (res.success) { showToast('Transaction deleted'); loadCashflow(); loadDashboard(); }
+            else showToast(res.error || 'Failed', true);
+        }
+    }
+    
+    async function exportCashflowToExcel() {
+        let ws = [['Date', 'Type', 'Department', 'Source', 'Amount', 'Status', 'Description']];
+        transactionsData.forEach(t => ws.push([t.transaction_date || t.created_at, t.type, departmentNames[t.department_id], t.source, t.amount, t.status, t.description || '']));
+        let wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), 'Cashflow');
+        XLSX.writeFile(wb, `cashflow_${new Date().toISOString().slice(0,10)}.xlsx`);
+        showToast('Exported to Excel');
+    }
+    
+    async function exportCashflowToPDF() {
+        let element = document.createElement('div');
+        element.innerHTML = `<div style="padding:20px"><h1>Cashflow Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><thead><tr><th>Date</th><th>Type</th><th>Department</th><th>Source</th><th>Amount</th><th>Status</th></tr></thead><tbody>${transactionsData.map(t => `<tr><td class="px-2 py-1">${t.transaction_date || t.created_at}</td><td class="px-2 py-1">${t.type}</td><td class="px-2 py-1">${departmentNames[t.department_id]}</td><td class="px-2 py-1">${t.source}<td><td class="px-2 py-1">${formatMoney(t.amount)}</td><td class="px-2 py-1">${t.status}</td></tr>`).join('')}</tbody></table></div>`;
+        html2pdf().set({ margin: 0.5, filename: `cashflow_report.pdf` }).from(element).save();
+        showToast('Exported to PDF');
+    }
     
     // ==================== REPORTS ====================
     async function loadReports() {
-        document.getElementById('mainContainer').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div> Loading reports...</div>';
-        const res = await apiCall('get_reports.php'); const reports = res.success ? (res.data || []) : [];
-        newReportsCount = reports.filter(r => r.status === 'unread').length; updateBadges();
-        let html = `<div class="flex justify-between flex-wrap gap-3 mb-4"><h2 class="text-xl font-bold"><i class="fas fa-chart-line text-purple-500 mr-2"></i>Reports (${reports.length})</h2><div class="flex gap-2"><button onclick="exportAllReportsToExcel()" class="bg-green-600 text-white px-3 py-2 rounded text-sm">Excel All</button><button onclick="exportAllReportsToPDF()" class="bg-red-600 text-white px-3 py-2 rounded text-sm">PDF All</button><button onclick="openModal('uploadReportModal')" class="bg-purple-600 text-white px-3 py-2 rounded text-sm">Upload</button><button onclick="openModal('generateReportModal')" class="bg-blue-600 text-white px-3 py-2 rounded text-sm">Generate</button></div></div><div class="space-y-2" id="reportsList"></div>`;
+        document.getElementById('mainContainer').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div><span class="ml-3">Loading reports...</span></div>';
+        const res = await apiCall('get_reports.php');
+        reportsData = res.success ? (res.data || []) : [];
+        
+        let html = `<div class="flex justify-between flex-wrap gap-3 mb-4"><h2 class="text-xl font-bold"><i class="fas fa-chart-line text-purple-500 mr-2"></i>Reports (${reportsData.length})</h2><div class="flex gap-2"><button onclick="exportAllReportsToExcel()" class="btn-success"><i class="fas fa-file-excel mr-1"></i> Excel All</button><button onclick="exportAllReportsToPDF()" class="btn-danger"><i class="fas fa-file-pdf mr-1"></i> PDF All</button><button onclick="openAddReportModal()" class="btn-primary"><i class="fas fa-plus mr-1"></i> Add Report</button></div></div>
+        <div class="space-y-2" id="reportsList"></div>`;
         document.getElementById('mainContainer').innerHTML = html;
+        
         let reportsHtml = '';
-        for(let r of reports){ 
-            let statusText = r.status === 'read' ? 'Read' : 'Unread';
-            let statusClass = r.status === 'read' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700';
-            reportsHtml+=`<div class="report-card"><div class="flex justify-between items-start flex-wrap gap-2"><div class="flex-1 cursor-pointer" onclick="viewReport(${r.id})"><h4 class="font-semibold">${escapeHtml(r.title)}</h4><p class="text-xs text-gray-500">From: ${departmentNames[r.department_id]||r.department_id} · ${r.period} · ${formatDate(r.created_at)}</p><p class="text-sm text-gray-600 mt-1">${escapeHtml(r.content.substring(0,100))}...</p></div><div class="flex gap-1"><button onclick="viewReport(${r.id})" class="text-blue-500 p-1" title="View"><i class="fas fa-eye"></i></button><button onclick="openEditReportModal(${r.id})" class="text-green-500 p-1" title="Edit"><i class="fas fa-edit"></i></button><button onclick="deleteReport(${r.id})" class="text-red-500 p-1" title="Delete"><i class="fas fa-trash"></i></button><button onclick="openSendReportModal(${r.id})" class="text-purple-500 p-1" title="Send"><i class="fas fa-paper-plane"></i></button><button onclick="exportSingleReport(${r.id},'excel')" class="text-emerald-500 p-1" title="Export Excel"><i class="fas fa-file-excel"></i></button><button onclick="exportSingleReport(${r.id},'pdf')" class="text-rose-500 p-1" title="Export PDF"><i class="fas fa-file-pdf"></i></button><span class="px-2 py-0.5 rounded-full text-xs ${statusClass} ml-2">${statusText}</span></div></div></div>`; }
-        if(reports.length===0) reportsHtml='<div class="bg-white rounded-xl p-8 text-center text-gray-400">No reports</div>';
+        for (let r of reportsData) {
+            reportsHtml += `<div class="report-sample"><div class="flex justify-between items-start flex-wrap gap-2"><div class="flex-1 cursor-pointer" onclick="viewReport(${r.id})"><h4 class="font-semibold">${escapeHtml(r.title)}</h4><p class="text-xs text-gray-500">Period: ${r.period} · Created: ${formatDate(r.created_at)} · By: ${departmentNames[r.department_id] || r.department_id}</p><p class="text-sm text-gray-600 mt-1">${escapeHtml(r.content?.substring(0, 100))}...</p></div><div class="action-buttons"><button onclick="viewReport(${r.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="openEditReportModal(${r.id})" class="action-btn edit"><i class="fas fa-edit"></i></button><button onclick="deleteReport(${r.id})" class="action-btn delete"><i class="fas fa-trash"></i></button><button onclick="exportSingleReport(${r.id})" class="action-btn excel"><i class="fas fa-file-excel"></i></button><button onclick="openSendReportModal(${r.id})" class="action-btn send"><i class="fas fa-paper-plane"></i></button></div></div></div>`;
+        }
+        if (reportsData.length === 0) reportsHtml = '<div class="bg-white rounded-xl p-8 text-center text-gray-400">No reports found. Click "Add Report" to create one.</div>';
         document.getElementById('reportsList').innerHTML = reportsHtml;
     }
-    async function viewReport(id) { const res=await apiCall(`get_reports.php?id=${id}`); if(res.success&&res.data){ let r=res.data; document.getElementById('viewReportContent').innerHTML=`<h4 class="font-bold text-lg">${escapeHtml(r.title)}</h4><p class="text-sm text-gray-500">From: ${departmentNames[r.department_id]} · ${r.period} · ${formatDate(r.created_at)}</p><div class="border-t pt-3 mt-2"><p class="whitespace-pre-wrap">${escapeHtml(r.content)}</p></div>`; openModal('viewReportModal'); if(r.status!=='read') markReportRead(r.id); } }
-    async function markReportRead(id) { const res=await apiCall('mark_report_read.php','POST',{id}); if(res.success){ showToast('Marked as read'); loadReports(); loadDashboard(); } else showToast(res.error||'Failed',true); }
-    async function openEditReportModal(id) { const res=await apiCall(`get_reports.php?id=${id}`); if(res.success&&res.data){ let r=res.data; document.getElementById('editReportId').value=r.id; document.getElementById('editReportTitle').value=r.title; document.getElementById('editReportPeriod').value=r.period; document.getElementById('editReportContent').value=r.content; openModal('editReportModal'); } }
-    async function updateReport() { let id=parseInt(document.getElementById('editReportId').value); let data={title:document.getElementById('editReportTitle').value, period:document.getElementById('editReportPeriod').value, content:document.getElementById('editReportContent').value}; const res=await apiCall('update_report.php','PUT',{...data,id}); if(res.success){ showToast('Report updated'); closeModal('editReportModal'); loadReports(); } else showToast(res.error||'Failed',true); }
-    async function deleteReport(id) { if(confirm('Delete this report?')){ const res=await apiCall(`delete_report.php?id=${id}`,'DELETE'); if(res.success){ showToast('Report deleted'); loadReports(); } else showToast(res.error||'Failed',true); } }
-    function openSendReportModal(id) { document.getElementById('sendReportId').value=id; document.getElementById('sendReportInfo').innerHTML=`<strong>${escapeHtml(reportsData.find(r=>r.id===id)?.title||'Report')}</strong>`; document.getElementById('sendReportDept').value=''; document.getElementById('sendReportMsg').value=''; openModal('sendReportModal'); }
-    async function confirmSendReport() { let id=parseInt(document.getElementById('sendReportId').value); let toDept=document.getElementById('sendReportDept').value; let extra=document.getElementById('sendReportMsg').value; if(!toDept){ showToast('Select department',true); return; } const reportRes=await apiCall(`get_reports.php?id=${id}`); if(reportRes.success&&reportRes.data){ let r=reportRes.data; let msg=`REPORT: ${r.title}\nPeriod: ${r.period}\nDate: ${formatDate(r.created_at)}\n\n${r.content}`; if(extra) msg+=`\n\nMessage: ${extra}`; const res=await apiCall('send_message.php','POST',{to_department_id:parseInt(toDept),message:msg}); if(res.success){ showToast('Report sent'); closeModal('sendReportModal'); loadMessages(); } else showToast(res.error||'Failed',true); } }
-    async function generateReport() { let title=document.getElementById('genReportTitle').value.trim(); let period=document.getElementById('genReportPeriod').value; let content=document.getElementById('genReportContent').value.trim(); if(!title||!content){ showToast('Title and content required',true); return; } const res=await apiCall('add_report.php','POST',{title,period,content,department_id:1}); if(res.success){ showToast('Report generated'); closeModal('generateReportModal'); loadReports(); } else showToast(res.error||'Failed',true); }
-    let selectedReportFile=null;
-    document.getElementById('uploadReportFile')?.addEventListener('change',function(e){ if(e.target.files&&e.target.files[0]){ selectedReportFile=e.target.files[0]; document.getElementById('uploadFileInfo').innerHTML=`Selected: ${selectedReportFile.name} (${(selectedReportFile.size/1024).toFixed(2)} KB)`; document.getElementById('uploadFileInfo').classList.remove('hidden'); } });
-    async function uploadReport() { let title=document.getElementById('uploadReportTitle').value.trim(); if(!title){ showToast('Report title required',true); return; } if(!selectedReportFile){ showToast('Please select a file',true); return; } let fd=new FormData(); fd.append('title',title); fd.append('description',document.getElementById('uploadReportDesc').value); fd.append('report_file',selectedReportFile); const res=await fetch(API_BASE+'upload_report.php',{method:'POST',body:fd}); const result=await res.json(); if(result.success){ showToast('Report uploaded'); closeModal('uploadReportModal'); loadReports(); } else showToast(result.error||'Failed',true); }
-    async function exportAllReportsToExcel() { const res=await apiCall('get_reports.php'); const reports=res.success?(res.data||[]):[]; let ws=[['Department','Title','Period','Content','Date','Status']]; reports.forEach(r=>ws.push([departmentNames[r.department_id]||r.department_id,r.title,r.period,r.content,r.created_at,r.status])); let wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(ws),'Reports'); XLSX.writeFile(wb,`reports_${new Date().toISOString().slice(0,10)}.xlsx`); showToast('Exported to Excel'); }
-    async function exportAllReportsToPDF() { const res=await apiCall('get_reports.php'); const reports=res.success?(res.data||[]):[]; let element=document.createElement('div'); element.innerHTML=`<div style="padding:20px"><h1>Reports</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/>${reports.map(r=>`<div style="margin-bottom:20px"><strong>${departmentNames[r.department_id]||r.department_id}</strong><h3>${r.title}</h3><p>${r.content}</p><small>${formatDate(r.created_at)}</small><p>Status: ${r.status === 'read' ? 'Read' : 'Unread'}</p></div>`).join('')}</div>`; html2pdf().set({margin:0.5,filename:`reports.pdf`}).from(element).save(); showToast('Exported to PDF'); }
-    function exportSingleReport(reportId,format) { showToast(`Exporting to ${format}...`); }
-    let reportsData = [];
+    
+    async function viewReport(id) {
+        const r = reportsData.find(r => r.id === id);
+        if (r) {
+            document.getElementById('viewReportContent').innerHTML = `
+                <p><strong>Title:</strong> ${escapeHtml(r.title)}</p>
+                <p><strong>Period:</strong> ${r.period}</p>
+                <p><strong>Department:</strong> ${departmentNames[r.department_id]}</p>
+                <p><strong>Created:</strong> ${formatDate(r.created_at)}</p>
+                <hr class="my-3"><div class="whitespace-pre-wrap">${escapeHtml(r.content)}</div>`;
+            openModal('viewReportModal');
+        }
+    }
+    
+    function openAddReportModal() {
+        document.getElementById('reportModalTitle').innerText = 'Add Report';
+        document.getElementById('reportId').value = '';
+        document.getElementById('reportTitle').value = '';
+        document.getElementById('reportPeriod').value = 'monthly';
+        document.getElementById('reportContent').value = '';
+        openModal('reportModal');
+    }
+    
+    async function openEditReportModal(id) {
+        const r = reportsData.find(r => r.id === id);
+        if (r) {
+            document.getElementById('reportModalTitle').innerText = 'Edit Report';
+            document.getElementById('reportId').value = r.id;
+            document.getElementById('reportTitle').value = r.title;
+            document.getElementById('reportPeriod').value = r.period;
+            document.getElementById('reportContent').value = r.content;
+            openModal('reportModal');
+        }
+    }
+    
+    async function saveReport() {
+        let id = document.getElementById('reportId').value;
+        let data = {
+            title: document.getElementById('reportTitle').value,
+            period: document.getElementById('reportPeriod').value,
+            content: document.getElementById('reportContent').value,
+            department_id: 1
+        };
+        if (!data.title || !data.content) { showToast('Title and content required', true); return; }
+        
+        let res;
+        if (id) res = await apiCall('update_report.php', 'PUT', { ...data, id: parseInt(id) });
+        else res = await apiCall('add_report.php', 'POST', data);
+        
+        if (res.success) {
+            showToast(id ? 'Report updated' : 'Report added');
+            closeModal('reportModal');
+            loadReports();
+        } else showToast(res.error || 'Failed', true);
+    }
+    
+    async function deleteReport(id) {
+        if (confirm('Delete this report?')) {
+            const res = await apiCall('delete_report.php', 'DELETE', { id });
+            if (res.success) { showToast('Report deleted'); loadReports(); }
+            else showToast(res.error || 'Failed', true);
+        }
+    }
+    
+    function openSendReportModal(id) {
+        const r = reportsData.find(r => r.id === id);
+        if (r) {
+            document.getElementById('sendReportId').value = id;
+            document.getElementById('sendReportTitle').innerHTML = `<strong>${escapeHtml(r.title)}</strong> - ${r.period}`;
+            document.getElementById('sendReportMsg').value = '';
+            openModal('sendReportModal');
+        }
+    }
+    
+    async function confirmSendReport() {
+        const id = document.getElementById('sendReportId').value;
+        const toDept = document.getElementById('sendReportDept').value;
+        const msg = document.getElementById('sendReportMsg').value;
+        if (!toDept) { showToast('Select department', true); return; }
+        const res = await apiCall('send_report.php', 'POST', { report_id: id, to_department_id: toDept, message: msg });
+        if (res.success) { showToast('Report sent'); closeModal('sendReportModal'); }
+        else showToast(res.error || 'Failed', true);
+    }
+    
+    async function exportAllReportsToExcel() {
+        let ws = [['Title', 'Period', 'Department', 'Content', 'Created', 'Status']];
+        reportsData.forEach(r => ws.push([r.title, r.period, departmentNames[r.department_id], r.content, r.created_at, r.status]));
+        let wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), 'Reports');
+        XLSX.writeFile(wb, `reports_${new Date().toISOString().slice(0,10)}.xlsx`);
+        showToast('Exported to Excel');
+    }
+    
+    async function exportAllReportsToPDF() {
+        let element = document.createElement('div');
+        element.innerHTML = `<div style="padding:20px"><h1>Reports</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/>${reportsData.map(r => `<div style="margin-bottom:20px"><h3>${r.title}</h3><p><strong>Period:</strong> ${r.period}</p><p><strong>Department:</strong> ${departmentNames[r.department_id]}</p><p>${r.content}</p><small>${formatDate(r.created_at)}</small></div>`).join('')}</div>`;
+        html2pdf().set({ margin: 0.5, filename: `reports.pdf` }).from(element).save();
+        showToast('Exported to PDF');
+    }
+    
+    function exportSingleReport(id) {
+        const r = reportsData.find(r => r.id === id);
+        if (r) {
+            let ws = [['Title', 'Period', 'Content', 'Created']];
+            ws.push([r.title, r.period, r.content, r.created_at]);
+            let wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), 'Report');
+            XLSX.writeFile(wb, `report_${r.id}_${r.title.replace(/[^a-z0-9]/gi, '_')}.xlsx`);
+            showToast('Exported to Excel');
+        }
+    }
+    
+    // ==================== MESSAGES ====================
+    async function loadMessages() {
+        document.getElementById('mainContainer').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div><span class="ml-3">Loading messages...</span></div>';
+        const res = await apiCall('get_messages.php');
+        const messages = res.success ? (res.data || []) : [];
+        const unread = messages.filter(m => m.to_department_id === 1 && !m.is_read).length;
+        document.getElementById('msgBadge').innerText = unread;
+        
+        let conv = {};
+        messages.forEach(m => {
+            let other = m.from_department_id === 1 ? m.to_department_id : m.from_department_id;
+            if (!conv[other]) conv[other] = [];
+            conv[other].push(m);
+        });
+        
+        let html = `<div class="flex justify-between flex-wrap gap-3 mb-4"><h2 class="text-xl font-bold"><i class="fas fa-envelope text-blue-500 mr-2"></i>Messages</h2><button onclick="openModal('msgModal')" class="btn-primary">Send Message</button></div><div class="space-y-2" id="messagesList"></div>`;
+        document.getElementById('mainContainer').innerHTML = html;
+        
+        let msgsHtml = '';
+        for (let d in conv) {
+            let last = conv[d][conv[d].length - 1];
+            let un = conv[d].filter(m => m.to_department_id === 1 && !m.is_read).length;
+            msgsHtml += `<div class="message-item ${un > 0 ? 'message-unread' : ''}" onclick="openChat(${d})"><div class="flex justify-between"><div><p class="font-semibold">${departmentNames[d]}</p><p class="text-sm text-gray-500 truncate">${escapeHtml(last.message.substring(0, 80))}</p></div><div class="text-right"><span class="text-xs text-gray-400">${new Date(last.created_at).toLocaleTimeString()}</span>${un > 0 ? `<span class="ml-2 bg-red-500 text-white text-xs px-2 rounded-full">${un}</span>` : ''}</div></div></div>`;
+        }
+        if (Object.keys(conv).length === 0) msgsHtml = '<div class="bg-white rounded-xl p-8 text-center text-gray-400">No messages</div>';
+        document.getElementById('messagesList').innerHTML = msgsHtml;
+    }
+    
+    async function sendMessage() {
+        let toDept = document.getElementById('msgTo').value;
+        let msg = document.getElementById('msgContent').value.trim();
+        if (!toDept) { showToast('Select department', true); return; }
+        if (!msg) { showToast('Enter message', true); return; }
+        const res = await apiCall('send_message.php', 'POST', { to_department_id: parseInt(toDept), message: msg });
+        if (res.success) { showToast('Message sent'); closeModal('msgModal'); loadMessages(); loadDashboard(); }
+        else showToast(res.error || 'Failed', true);
+    }
+    
+    async function openChat(deptId) {
+        currentChatDept = deptId;
+        const res = await apiCall(`get_messages.php`);
+        const messages = res.success ? (res.data || []) : [];
+        const chatMessages = messages.filter(m => m.from_department_id === deptId || m.to_department_id === deptId);
+        
+        document.getElementById('chatModalTitle').innerHTML = `Chat with ${departmentNames[deptId]}`;
+        let chatHtml = '';
+        for (let m of chatMessages) {
+            chatHtml += `<div class="chat-message ${m.from_department_id === 1 ? 'chat-sent' : 'chat-received'}"><div class="bubble"><p>${escapeHtml(m.message)}</p><p class="text-[10px] opacity-70 mt-1">${new Date(m.created_at).toLocaleString()}</p></div></div>`;
+        }
+        if (chatMessages.length === 0) chatHtml = '<div class="text-center text-gray-400 py-4">No messages. Send a message to start.</div>';
+        document.getElementById('chatMessagesArea').innerHTML = chatHtml;
+        openModal('chatModal');
+    }
+    
+    async function sendReply() {
+        let reply = document.getElementById('replyMsg')?.value.trim();
+        if (!reply || !currentChatDept) { showToast('Enter message', true); return; }
+        const res = await apiCall('send_message.php', 'POST', { to_department_id: currentChatDept, message: reply });
+        if (res.success) {
+            document.getElementById('replyMsg').value = '';
+            openChat(currentChatDept);
+            loadMessages();
+            loadDashboard();
+        } else showToast(res.error || 'Failed', true);
+    }
     
     // ==================== SETTINGS ====================
     function loadSettings() {
-        let html = `<div class="grid grid-cols-1 md:grid-cols-2 gap-5"><div class="bg-white rounded-xl p-5 shadow-sm"><h3 class="font-semibold mb-2"><i class="fas fa-key text-blue-500 mr-2"></i>Security</h3><button onclick="openModal('pwdModal')" class="w-full bg-blue-600 text-white py-2 rounded">Change Password</button></div>
-        <div class="bg-white rounded-xl p-5 shadow-sm"><h3 class="font-semibold mb-2"><i class="fas fa-palette text-purple-500 mr-2"></i>Sidebar Colors</h3><div class="flex flex-wrap gap-2"><div class="color-option" style="background:#0f74ba" onclick="changeSidebarColor('#0f74ba',this)"></div><div class="color-option" style="background:#1e3a5f" onclick="changeSidebarColor('#1e3a5f',this)"></div><div class="color-option" style="background:#7c3aed" onclick="changeSidebarColor('#7c3aed',this)"></div><div class="color-option" style="background:#059669" onclick="changeSidebarColor('#059669',this)"></div><div class="color-option" style="background:#dc2626" onclick="changeSidebarColor('#dc2626',this)"></div><div class="color-option" style="background:#d97706" onclick="changeSidebarColor('#d97706',this)"></div></div></div>
-        <div class="bg-white rounded-xl p-5 shadow-sm"><h3 class="font-semibold mb-2"><i class="fas fa-database text-green-500 mr-2"></i>Backup & Restore</h3><button onclick="openModal('backupModal')" class="w-full bg-green-600 text-white py-2 rounded">Backup / Restore</button></div>
-        <div class="bg-white rounded-xl p-5 shadow-sm"><h3 class="font-semibold mb-2"><i class="fas fa-globe text-blue-500 mr-2"></i>General Settings</h3><button onclick="openGeneralSettingsModal()" class="w-full bg-blue-600 text-white py-2 rounded">Configure</button></div></div>`;
+        const savedSettings = JSON.parse(localStorage.getItem('geotraverse_settings') || '{}');
+        const savedColor = localStorage.getItem('sidebar_color') || '#0f74ba';
+        
+        let html = `<div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            <div class="bg-white rounded-xl p-5 shadow-sm"><h3 class="font-semibold mb-3"><i class="fas fa-key text-blue-500 mr-2"></i>Change Password</h3><button onclick="openModal('pwdModal')" class="w-full btn-primary">Change Password</button></div>
+            <div class="bg-white rounded-xl p-5 shadow-sm"><h3 class="font-semibold mb-3"><i class="fas fa-palette text-purple-500 mr-2"></i>Sidebar Colors</h3><div class="flex flex-wrap gap-2" id="colorOptionsContainer"></div></div>
+            <div class="bg-white rounded-xl p-5 shadow-sm"><h3 class="font-semibold mb-3"><i class="fas fa-globe text-blue-500 mr-2"></i>General Settings</h3><div><div>Company: ${escapeHtml(savedSettings.company_name || 'GeoTraverse')}</div><div>Email: ${escapeHtml(savedSettings.company_email || 'info@geotraverse.com')}</div></div><button onclick="openGeneralSettingsModal()" class="w-full btn-primary mt-3">Edit Settings</button></div>
+            <div class="bg-white rounded-xl p-5 shadow-sm"><h3 class="font-semibold mb-3"><i class="fas fa-database text-green-500 mr-2"></i>Backup & Restore</h3><button onclick="openModal('backupModal')" class="w-full btn-success">Backup Database</button></div>
+        </div>`;
         document.getElementById('mainContainer').innerHTML = html;
+        
+        const container = document.getElementById('colorOptionsContainer');
+        colorOptions.forEach(color => {
+            const isSelected = savedColor === color;
+            container.innerHTML += `<div class="color-option ${isSelected ? 'selected' : ''}" style="background: ${color}" onclick="changeSidebarColor('${color}', this)"></div>`;
+        });
     }
-    async function changePassword() { let oldPwd=document.getElementById('oldPwd').value; let newPwd=document.getElementById('newPwd').value; let confirmPwd=document.getElementById('confirmPwd').value; if(!newPwd){ showToast('Enter new password',true); return; } if(newPwd!==confirmPwd){ showToast('Passwords do not match',true); return; } const res=await apiCall('change_password.php','POST',{email:'admin@geotraverse.com',current_password:oldPwd,new_password:newPwd}); if(res.success){ showToast('Password changed'); closeModal('pwdModal'); } else showToast(res.error||'Current password incorrect',true); }
-    function changeSidebarColor(color,el) { document.getElementById('mainSidebar').style.background=color; document.querySelectorAll('.color-option').forEach(opt=>opt.classList.remove('selected')); el.classList.add('selected'); localStorage.setItem('sidebar_color',color); showToast('Sidebar color changed'); }
-    function openGeneralSettingsModal() { const settings=JSON.parse(localStorage.getItem('geotraverse_settings')||'{}'); document.getElementById('companyName').value=settings.company_name||'GeoTraverse'; document.getElementById('companyAddress').value=settings.company_address||'Dar es Salaam, Tanzania'; document.getElementById('companyEmail').value=settings.company_email||'info@geotraverse.com'; document.getElementById('companyPhone').value=settings.company_phone||'+255 719 336 667'; openModal('generalModal'); }
-    function saveGeneralSettings() { let settings={company_name:document.getElementById('companyName').value,company_address:document.getElementById('companyAddress').value,company_email:document.getElementById('companyEmail').value,company_phone:document.getElementById('companyPhone').value}; localStorage.setItem('geotraverse_settings',JSON.stringify(settings)); showToast('Settings saved'); closeModal('generalModal'); }
-    async function createBackup() { const res=await apiCall('backup_data.php'); if(res.success&&res.data){ let blob=new Blob([JSON.stringify(res.data,null,2)],{type:'application/json'}); let a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`geotraverse_backup_${new Date().toISOString().slice(0,19)}.json`; a.click(); showToast('Backup created'); } else showToast('Backup failed',true); closeModal('backupModal'); }
-    function restoreBackup() { let input=document.getElementById('restoreFile'); input.onchange=e=>{ let file=e.target.files[0]; if(!file)return; let reader=new FileReader(); reader.onload=ev=>{ fetch(API_BASE+'restore_data.php',{method:'POST',body:ev.target.result,headers:{'Content-Type':'application/json'}}).then(r=>r.json()).then(res=>{ if(res.success){ showToast('Restored! Reloading...'); setTimeout(()=>location.reload(),1500); } else showToast('Restore failed',true); }); }; reader.readAsText(file); }; input.click(); }
     
-    // ==================== SEARCH & NAVIGATION ====================
-    async function performSearch() { let term=document.getElementById('searchInput').value.toLowerCase().trim(); let dropdown=document.getElementById('searchResults'); if(searchTimeout) clearTimeout(searchTimeout); if(term===''){ dropdown.classList.add('hidden'); return; } searchTimeout=setTimeout(async()=>{ const emps=await apiCall('get_employees.php'); const projs=await apiCall('get_projects.php'); const employees=emps.success?(emps.data||[]):[]; const projects=projs.success?(projs.data||[]):[]; let results=[]; results.push(...employees.filter(e=>e.name.toLowerCase().includes(term)).map(e=>({type:'Employee',name:e.name,section:'employees'}))); results.push(...projects.filter(p=>p.name.toLowerCase().includes(term)).map(p=>({type:'Project',name:p.name,section:'projects'}))); dropdown.innerHTML=results.length?results.map(r=>`<div class="p-2 border-b cursor-pointer hover:bg-gray-50" onclick="loadSection('${r.section}'); document.getElementById('searchInput').value=''; dropdown.classList.add('hidden');">${escapeHtml(r.name)} <span class="text-xs text-gray-400">(${r.type})</span></div>`).join(''):'<div class="p-3 text-center text-gray-400">No results</div>'; dropdown.classList.remove('hidden'); },300); }
-    function loadSection(section) { document.querySelectorAll('.nav-item').forEach(nav=>nav.classList.remove('active')); document.querySelector(`.nav-item[data-section="${section}"]`).classList.add('active'); if(section==='dashboard') loadDashboard(); else if(section==='employees') loadEmployees(); else if(section==='departments') loadDepartments(); else if(section==='projects') loadProjects(); else if(section==='transactions') loadTransactions(); else if(section==='reports') loadReports(); else if(section==='messages') loadMessages(); else if(section==='settings') loadSettings(); }
-    function logout() { if(confirm('Logout?')){ localStorage.clear(); sessionStorage.clear(); window.location.href='login_system.html'; } }
-    function goToMainWebsite() { window.location.href='index.html'; }
+    function openGeneralSettingsModal() {
+        const settings = JSON.parse(localStorage.getItem('geotraverse_settings') || '{}');
+        document.getElementById('companyName').value = settings.company_name || 'GeoTraverse';
+        document.getElementById('companyAddress').value = settings.company_address || 'Dar es Salaam';
+        document.getElementById('companyEmail').value = settings.company_email || 'info@geotraverse.com';
+        document.getElementById('companyPhone').value = settings.company_phone || '+255 719 336 667';
+        openModal('generalSettingsModal');
+    }
+    
+    function saveGeneralSettings() {
+        let settings = {
+            company_name: document.getElementById('companyName').value,
+            company_address: document.getElementById('companyAddress').value,
+            company_email: document.getElementById('companyEmail').value,
+            company_phone: document.getElementById('companyPhone').value
+        };
+        localStorage.setItem('geotraverse_settings', JSON.stringify(settings));
+        showToast('Settings saved');
+        closeModal('generalSettingsModal');
+        loadSettings();
+    }
+    
+    function changeSidebarColor(color, element) {
+        document.getElementById('mainSidebar').style.background = color;
+        localStorage.setItem('sidebar_color', color);
+        document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
+        element.classList.add('selected');
+        showToast('Sidebar color changed');
+    }
+    
+    async function changePassword() {
+        let oldPwd = document.getElementById('oldPwd').value;
+        let newPwd = document.getElementById('newPwd').value;
+        let confirmPwd = document.getElementById('confirmPwd').value;
+        if (!newPwd) { showToast('Enter new password', true); return; }
+        if (newPwd !== confirmPwd) { showToast('Passwords do not match', true); return; }
+        const res = await apiCall('change_password.php', 'POST', { current_password: oldPwd, new_password: newPwd });
+        if (res.success) { showToast('Password changed'); closeModal('pwdModal'); }
+        else showToast(res.error || 'Failed', true);
+    }
+    
+    async function createBackup() {
+        try {
+            showToast('Creating backup...');
+            const res = await apiCall('backup_data.php');
+            if (res.success && res.data) {
+                let blob = new Blob([JSON.stringify(res.data, null, 2)], { type: 'application/json' });
+                let a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `backup_${new Date().toISOString().slice(0,19)}.json`;
+                a.click();
+                showToast('Backup created');
+            } else showToast('Backup failed', true);
+        } catch(e) { showToast('Backup failed', true); }
+        closeModal('backupModal');
+    }
+    
+    // ==================== NAVIGATION ====================
+    function loadSection(section) {
+        document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+        document.querySelector(`.nav-item[data-section="${section}"]`).classList.add('active');
+        
+        if (section === 'dashboard') loadDashboard();
+        else if (section === 'employees') loadEmployees();
+        else if (section === 'departments') loadDepartments();
+        else if (section === 'projects') loadProjects();
+        else if (section === 'dailywork') loadDailyWork();
+        else if (section === 'cashflow') loadCashflow();
+        else if (section === 'reports') loadReports();
+        else if (section === 'messages') loadMessages();
+        else if (section === 'settings') loadSettings();
+    }
+    
+    function logout() { if (confirm('Logout?')) { localStorage.clear(); window.location.href = 'login_system.html'; } }
     function closeMobileSidebar() { document.getElementById('mainSidebar').classList.remove('mobile-open'); document.getElementById('mobileMenuOverlay').classList.add('hidden'); }
     
     // ==================== INIT ====================
-    function init() {
-        document.querySelectorAll('.nav-item').forEach(item=>{ item.addEventListener('click',(e)=>{ e.preventDefault(); const section=item.getAttribute('data-section'); if(section) loadSection(section); }); });
-        document.getElementById('mobileMenuBtn').addEventListener('click',()=>{ document.getElementById('mainSidebar').classList.add('mobile-open'); document.getElementById('mobileMenuOverlay').classList.remove('hidden'); });
-        document.getElementById('logoutBtn').addEventListener('click',logout);
-        document.getElementById('darkModeBtn').addEventListener('click',()=>{ document.body.classList.toggle('dark-mode'); localStorage.setItem('dark_mode',document.body.classList.contains('dark-mode')); let icon=document.getElementById('darkIcon'); if(document.body.classList.contains('dark-mode')){ icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); }else{ icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); } });
-        document.getElementById('searchInput').addEventListener('input',performSearch);
-        document.addEventListener('click',(e)=>{ let inp=document.getElementById('searchInput'); let dd=document.getElementById('searchResults'); if(inp&&dd&&!inp.contains(e.target)&&!dd.contains(e.target)) dd.classList.add('hidden'); });
-        let savedColor=localStorage.getItem('sidebar_color'); if(savedColor) document.getElementById('mainSidebar').style.background=savedColor;
-        if(localStorage.getItem('dark_mode')==='true'){ document.body.classList.add('dark-mode'); document.getElementById('darkIcon').classList.remove('fa-moon'); document.getElementById('darkIcon').classList.add('fa-sun'); }
-        let scrollBtn=document.createElement('div'); scrollBtn.className='scroll-top'; scrollBtn.innerHTML='<i class="fas fa-arrow-up text-white"></i>'; document.body.appendChild(scrollBtn); scrollBtn.onclick=()=>window.scrollTo({top:0,behavior:'smooth'}); window.addEventListener('scroll',()=>scrollBtn.classList.toggle('visible',window.scrollY>200));
+    async function init() {
+        await loadDepartmentsForDropdowns();
+        
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                const section = item.getAttribute('data-section');
+                if (section) loadSection(section);
+            });
+        });
+        
+        document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+            document.getElementById('mainSidebar').classList.add('mobile-open');
+            document.getElementById('mobileMenuOverlay').classList.remove('hidden');
+        });
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+        
+        document.getElementById('darkModeBtn').addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('dark_mode', document.body.classList.contains('dark-mode'));
+        });
+        
+        document.getElementById('restoreFileInput').addEventListener('change', async (e) => {
+            let file = e.target.files[0];
+            if (!file) return;
+            let reader = new FileReader();
+            reader.onload = async (ev) => {
+                try {
+                    let data = JSON.parse(ev.target.result);
+                    const res = await apiCall('restore_data.php', 'POST', data);
+                    if (res.success) { showToast('Restored! Reloading...'); setTimeout(() => location.reload(), 1500); }
+                    else showToast('Restore failed', true);
+                } catch(err) { showToast('Invalid backup file', true); }
+            };
+            reader.readAsText(file);
+        });
+        
+        let savedColor = localStorage.getItem('sidebar_color');
+        if (savedColor) document.getElementById('mainSidebar').style.background = savedColor;
+        if (localStorage.getItem('dark_mode') === 'true') document.body.classList.add('dark-mode');
+        
+        let scrollBtn = document.createElement('div');
+        scrollBtn.className = 'scroll-top';
+        scrollBtn.innerHTML = '<i class="fas fa-arrow-up"></i>';
+        document.body.appendChild(scrollBtn);
+        scrollBtn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.addEventListener('scroll', () => scrollBtn.classList.toggle('visible', window.scrollY > 200));
+        
         loadDashboard();
     }
     
-    window.loadSection=loadSection; window.openModal=openModal; window.closeModal=closeModal; window.togglePassword=togglePassword;
-    window.openAddEmployeeModal=openAddEmployeeModal; window.viewEmployee=viewEmployee; window.openEditEmployeeModal=openEditEmployeeModal; window.saveEmployee=saveEmployee; window.deleteEmployee=deleteEmployee;
-    window.exportEmployeesToExcel=exportEmployeesToExcel; window.exportEmployeesToPDF=exportEmployeesToPDF;
-    window.openAddProjectModal=openAddProjectModal; window.viewProject=viewProject; window.openEditProjectModal=openEditProjectModal; window.saveProject=saveProject; window.deleteProject=deleteProject;
-    window.exportProjectsToExcel=exportProjectsToExcel; window.exportProjectsToPDF=exportProjectsToPDF; window.viewFullImage=viewFullImage; window.removeProjectImage=removeProjectImage;
-    window.exportSingleProject=exportSingleProject; window.openSendProjectModal=openSendProjectModal;
-    window.viewTransaction=viewTransaction; window.saveTransaction=saveTransaction; window.deleteTransaction=deleteTransaction; window.openEditTransactionModal=openEditTransactionModal; window.updateTransaction=updateTransaction;
-    window.exportTransactionsToExcel=exportTransactionsToExcel; window.exportTransactionsToPDF=exportTransactionsToPDF;
-    window.sendMessage=sendMessage; window.openChat=openChat; window.sendReply=sendReply; window.deleteMessage=deleteMessage; window.deleteConversation=deleteConversation; window.startNewChat=startNewChat;
-    window.viewReport=viewReport; window.markReportRead=markReportRead; window.openEditReportModal=openEditReportModal; window.updateReport=updateReport; window.deleteReport=deleteReport;
-    window.openSendReportModal=openSendReportModal; window.confirmSendReport=confirmSendReport; window.generateReport=generateReport; window.uploadReport=uploadReport;
-    window.exportAllReportsToExcel=exportAllReportsToExcel; window.exportAllReportsToPDF=exportAllReportsToPDF; window.exportSingleReport=exportSingleReport;
-    window.changePassword=changePassword; window.changeSidebarColor=changeSidebarColor; window.createBackup=createBackup; window.restoreBackup=restoreBackup;
-    window.openGeneralSettingsModal=openGeneralSettingsModal; window.saveGeneralSettings=saveGeneralSettings;
-    window.openDepartmentDashboard=openDepartmentDashboard;
-    window.logout=logout; window.goToMainWebsite=goToMainWebsite; window.closeMobileSidebar=closeMobileSidebar;
+    window.loadSection = loadSection;
+    window.openModal = openModal;
+    window.closeModal = closeModal;
+    window.togglePassword = togglePassword;
+    window.viewEmployee = viewEmployee;
+    window.openAddEmployeeModal = openAddEmployeeModal;
+    window.openEditEmployeeModal = openEditEmployeeModal;
+    window.saveEmployee = saveEmployee;
+    window.deleteEmployee = deleteEmployee;
+    window.exportEmployeesToExcel = exportEmployeesToExcel;
+    window.exportEmployeesToPDF = exportEmployeesToPDF;
+    window.viewProject = viewProject;
+    window.openAddProjectModal = openAddProjectModal;
+    window.openEditProjectModal = openEditProjectModal;
+    window.saveProject = saveProject;
+    window.deleteProject = deleteProject;
+    window.exportProjectsToExcel = exportProjectsToExcel;
+    window.exportProjectsToPDF = exportProjectsToPDF;
+    window.exportSingleProject = exportSingleProject;
+    window.openSendProjectModal = openSendProjectModal;
+    window.confirmSendProject = confirmSendProject;
+    window.viewDailyWork = viewDailyWork;
+    window.openAddDailyWorkModal = openAddDailyWorkModal;
+    window.openEditDailyWorkModal = openEditDailyWorkModal;
+    window.saveDailyWork = saveDailyWork;
+    window.deleteDailyWork = deleteDailyWork;
+    window.viewTransaction = viewTransaction;
+    window.openAddTransactionModal = openAddTransactionModal;
+    window.openEditTransactionModal = openEditTransactionModal;
+    window.saveTransaction = saveTransaction;
+    window.deleteTransaction = deleteTransaction;
+    window.exportCashflowToExcel = exportCashflowToExcel;
+    window.exportCashflowToPDF = exportCashflowToPDF;
+    window.viewReport = viewReport;
+    window.openAddReportModal = openAddReportModal;
+    window.openEditReportModal = openEditReportModal;
+    window.saveReport = saveReport;
+    window.deleteReport = deleteReport;
+    window.exportAllReportsToExcel = exportAllReportsToExcel;
+    window.exportAllReportsToPDF = exportAllReportsToPDF;
+    window.exportSingleReport = exportSingleReport;
+    window.openSendReportModal = openSendReportModal;
+    window.confirmSendReport = confirmSendReport;
+    window.sendMessage = sendMessage;
+    window.openChat = openChat;
+    window.sendReply = sendReply;
+    window.changePassword = changePassword;
+    window.changeSidebarColor = changeSidebarColor;
+    window.openGeneralSettingsModal = openGeneralSettingsModal;
+    window.saveGeneralSettings = saveGeneralSettings;
+    window.createBackup = createBackup;
+    window.logout = logout;
+    window.closeMobileSidebar = closeMobileSidebar;
+    
     init();
 </script>
 </body>

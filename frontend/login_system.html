@@ -2,10 +2,12 @@
 <html lang="sw">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>GeoTraverse ERP - Login System</title>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
         * {
             margin: 0;
@@ -15,7 +17,7 @@
         }
         
         body {
-            background: #1e3a8a;
+            background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -24,12 +26,12 @@
         }
         
         body.dark-mode {
-            background: #0f172a;
+            background: linear-gradient(135deg, #0f172a 0%, #020617 100%);
         }
         
         .login-container {
             width: 100%;
-            max-width: 480px;
+            max-width: 500px;
             background: white;
             border-radius: 32px;
             box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
@@ -53,30 +55,30 @@
         }
         
         .login-header {
-            background: #1e3a8a;
-            padding: 30px;
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+            padding: 35px;
             text-align: center;
             color: white;
         }
         
         body.dark-mode .login-header {
-            background: #0f172a;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
         }
         
         .logo {
-            width: 70px;
-            height: 70px;
+            width: 80px;
+            height: 80px;
             background: rgba(255,255,255,0.15);
-            border-radius: 20px;
+            border-radius: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 15px;
-            font-size: 32px;
+            font-size: 36px;
         }
         
         .login-header h1 {
-            font-size: 24px;
+            font-size: 26px;
             font-weight: 700;
             margin-bottom: 5px;
         }
@@ -106,6 +108,10 @@
             cursor: pointer;
             transition: all 0.3s;
             position: relative;
+        }
+        
+        body.dark-mode .tab-button {
+            color: #94a3b8;
         }
         
         .tab-button.active {
@@ -219,21 +225,6 @@
             color: #1e3a8a;
         }
         
-        .forgot-password {
-            text-align: right;
-            margin-bottom: 20px;
-        }
-        
-        .forgot-password a {
-            font-size: 12px;
-            color: #1e3a8a;
-            text-decoration: none;
-        }
-        
-        body.dark-mode .forgot-password a {
-            color: #60a5fa;
-        }
-        
         .login-btn {
             width: 100%;
             padding: 12px;
@@ -253,6 +244,12 @@
             box-shadow: 0 10px 20px -5px rgba(30,58,138,0.4);
         }
         
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
         .error-message {
             background: #fee2e2;
             color: #dc2626;
@@ -268,6 +265,21 @@
         body.dark-mode .error-message {
             background: rgba(220,38,38,0.2);
             color: #fca5a5;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.6s linear infinite;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
         
         .demo-credentials {
@@ -314,6 +326,7 @@
             justify-content: center;
             cursor: pointer;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: all 0.3s;
             z-index: 100;
         }
         
@@ -322,17 +335,23 @@
             color: #f1f5f9;
         }
         
+        .theme-toggle:hover {
+            transform: scale(1.05);
+        }
+        
         .toast-notification {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: #1e3a8a;
+            background: #10b981;
             color: white;
             padding: 12px 20px;
             border-radius: 12px;
             font-size: 13px;
+            font-weight: 500;
             z-index: 1000;
             animation: slideInRight 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             display: flex;
             align-items: center;
             gap: 8px;
@@ -353,6 +372,17 @@
             }
         }
         
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+        
         @media (max-width: 480px) {
             .login-container {
                 border-radius: 24px;
@@ -362,6 +392,10 @@
             }
             .login-form {
                 padding: 25px;
+            }
+            .tab-button {
+                padding: 14px;
+                font-size: 13px;
             }
         }
     </style>
@@ -375,7 +409,7 @@
 <div class="login-container">
     <div class="login-header">
         <div class="logo">
-            <i class="fas fa-chart-line"></i>
+            <i class="fas fa-globe-africa"></i>
         </div>
         <h1>GeoTraverse ERP</h1>
         <p>Enterprise Resource Planning System</p>
@@ -395,29 +429,25 @@
         
         <div class="input-group">
             <label><i class="fas fa-envelope"></i> Email Address</label>
-            <input type="email" id="adminEmail" placeholder="admin@geotraverse.com" autocomplete="off">
+            <input type="email" id="adminEmail" placeholder="admin@geotraverse.com" autocomplete="off" value="jacksonmyula773@gmail.com">
         </div>
         
         <div class="input-group">
             <label><i class="fas fa-lock"></i> Password</label>
             <div class="password-wrapper">
-                <input type="password" id="adminPassword" placeholder="Enter password">
+                <input type="password" id="adminPassword" placeholder="Enter password" value="1234">
                 <i class="fas fa-eye toggle-password" onclick="togglePassword('adminPassword')"></i>
             </div>
         </div>
         
-        <div class="forgot-password">
-            <a href="#" onclick="showForgotPassword()">Forgot password?</a>
-        </div>
-        
-        <button class="login-btn" onclick="loginAdmin()">
+        <button class="login-btn" id="adminLoginBtn" onclick="loginAdmin()">
             <i class="fas fa-sign-in-alt"></i> Login as Admin
         </button>
         
         <div class="demo-credentials">
-            <p><i class="fas fa-info-circle"></i> Demo Credentials:</p>
+            <p><i class="fas fa-info-circle"></i> Admin Credentials:</p>
             <div class="cred-row"><span>Email:</span><span>jacksonmyula773@gmail.com</span></div>
-            <div class="cred-row"><span>Password:</span><span>admin1234</span></div>
+            <div class="cred-row"><span>Password:</span><span>1234</span></div>
         </div>
     </div>
     
@@ -432,17 +462,6 @@
             <label><i class="fas fa-building"></i> Select Department</label>
             <select id="deptSelect">
                 <option value="">-- Select Department --</option>
-                <option value="finance">Finance Department</option>
-                <option value="sales_marketing">Sales & Marketing Department</option>
-                <option value="manager">Manager Department</option>
-                <option value="secretary">Secretary Department</option>
-                <option value="bricks_timber">Bricks & Timber Department</option>
-                <option value="aluminium">Aluminium Department</option>
-                <option value="town_planning">Town Planning Department</option>
-                <option value="architectural">Architectural Department</option>
-                <option value="survey">Survey Department</option>
-                <option value="construction">Construction Department</option>
-                <option value="hatimiliki">Hatimiliki Department</option>
             </select>
         </div>
         
@@ -454,70 +473,109 @@
         <div class="input-group">
             <label><i class="fas fa-lock"></i> Password</label>
             <div class="password-wrapper">
-                <input type="password" id="deptPassword" placeholder="Enter password">
+                <input type="password" id="deptPassword" placeholder="Enter password" value="1234">
                 <i class="fas fa-eye toggle-password" onclick="togglePassword('deptPassword')"></i>
             </div>
         </div>
         
-        <button class="login-btn" onclick="loginDepartment()">
+        <button class="login-btn" id="deptLoginBtn" onclick="loginDepartment()">
             <i class="fas fa-sign-in-alt"></i> Login as Department
         </button>
         
-        <div class="demo-credentials">
-            <p><i class="fas fa-info-circle"></i> Demo Credentials (All Departments):</p>
-            <div class="cred-row"><span>Email:</span><span>[department]@geotraverse.com</span></div>
-            <div class="cred-row"><span>Password:</span><span>1234</span></div>
-            <div class="cred-row"><span>Example:</span><span>finance@geotraverse.com / 1234</span></div>
+        <div class="demo-credentials" id="deptDemoCredentials">
+            <p><i class="fas fa-info-circle"></i> Department Credentials (Password: 1234):</p>
+            <div id="deptCredentialsList"></div>
         </div>
     </div>
 </div>
 
 <script>
-    // API Base URL
-    const API_BASE = 'http://localhost/geotraverse/backend/api';
+    // ==================== API CONFIGURATION ====================
+    const API_BASE = '../backend/api/';
     
-    // Department email mapping
+    // Department ID to Page Mapping
+    const departmentPages = {
+        2: "finance.html",
+        3: "sales_marketing.html",
+        4: "manager.html",
+        5: "secretary.html",
+        6: "bricks_timber.html",
+        7: "aluminium.html",
+        8: "town_planning.html",
+        9: "architectural.html",
+        10: "survey.html",
+        11: "construction.html",
+        12: "hatimiliki.html"
+    };
+    
+    const departmentNames = {
+        2: "Finance",
+        3: "Sales & Marketing",
+        4: "Manager",
+        5: "Secretary",
+        6: "Bricks & Timber",
+        7: "Aluminium",
+        8: "Town Planning",
+        9: "Architectural",
+        10: "Survey",
+        11: "Construction",
+        12: "Hatimiliki"
+    };
+    
     const departmentEmails = {
-        finance: "finance@geotraverse.com",
-        sales_marketing: "sales@geotraverse.com",
-        manager: "manager@geotraverse.com",
-        secretary: "secretary@geotraverse.com",
-        bricks_timber: "bricks@geotraverse.com",
-        aluminium: "aluminium@geotraverse.com",
-        town_planning: "townplanning@geotraverse.com",
-        architectural: "architectural@geotraverse.com",
-        survey: "survey@geotraverse.com",
-        construction: "construction@geotraverse.com",
-        hatimiliki: "hatimiliki@geotraverse.com"
+        2: "john.mwita@geotraverse.com",
+        3: "sarah.kijazi@geotraverse.com",
+        4: "james.ndege@geotraverse.com",
+        5: "mary.kilimanjaro@geotraverse.com",
+        6: "peter.tabora@geotraverse.com",
+        7: "grace.zanzibar@geotraverse.com",
+        8: "daniel.singida@geotraverse.com",
+        9: "elizabeth.morogoro@geotraverse.com",
+        10: "william.ruvuma@geotraverse.com",
+        11: "catherine.mbeya@geotraverse.com",
+        12: "richard.arusha@geotraverse.com"
     };
     
-    // Department file mapping
-    const departmentFiles = {
-        finance: "finance.html",
-        sales_marketing: "sales_marketing.html",
-        manager: "manager.html",
-        secretary: "secretary.html",
-        bricks_timber: "bricks_timber.html",
-        aluminium: "aluminium.html",
-        town_planning: "town_planning.html",
-        architectural: "architectural.html",
-        survey: "survey.html",
-        construction: "construction.html",
-        hatimiliki: "hatimiliki.html"
-    };
+    // Load departments for dropdown
+    async function loadDepartments() {
+        try {
+            const response = await fetch(API_BASE + 'get_departments.php');
+            const result = await response.json();
+            
+            if (result.success && result.data) {
+                const deptSelect = document.getElementById('deptSelect');
+                const credList = document.getElementById('deptCredentialsList');
+                
+                deptSelect.innerHTML = '<option value="">-- Select Department --</option>';
+                let credHtml = '';
+                
+                result.data.forEach(dept => {
+                    deptSelect.innerHTML += `<option value="${dept.id}">${dept.name}</option>`;
+                    if (departmentEmails[dept.id]) {
+                        credHtml += `<div class="cred-row"><span>${dept.name}:</span><span>${departmentEmails[dept.id]}</span></div>`;
+                    }
+                });
+                
+                credHtml += `<div class="cred-row"><span>Password:</span><span>1234 (for all)</span></div>`;
+                document.getElementById('deptCredentialsList').innerHTML = credHtml;
+            }
+        } catch (error) {
+            console.error('Error loading departments:', error);
+        }
+    }
     
-    // Update email when department is selected
-    document.getElementById('deptSelect').addEventListener('change', function() {
-        const dept = this.value;
+    // Update email field when department is selected
+    document.getElementById('deptSelect')?.addEventListener('change', function() {
+        const deptId = this.value;
         const emailInput = document.getElementById('deptEmail');
-        if (dept && departmentEmails[dept]) {
-            emailInput.value = departmentEmails[dept];
+        if (deptId && departmentEmails[deptId]) {
+            emailInput.value = departmentEmails[deptId];
         } else {
             emailInput.value = '';
         }
     });
     
-    // Toggle password visibility
+    // ==================== TOGGLE PASSWORD ====================
     function togglePassword(fieldId) {
         const input = document.getElementById(fieldId);
         const icon = input.nextElementSibling;
@@ -532,12 +590,20 @@
         }
     }
     
-    // Show forgot password message
-    function showForgotPassword() {
-        alert("📧 Forgot Password?\n\nPlease contact the System Administrator at:\nEmail: jacksonmyula773@gmail.com\nPhone: +255 719 336 667");
+    // ==================== SHOW ERROR ====================
+    function showError(errorDivId, errorMsgId, message) {
+        const errorDiv = document.getElementById(errorDivId);
+        const errorMsg = document.getElementById(errorMsgId);
+        
+        errorMsg.innerText = message;
+        errorDiv.style.display = 'flex';
+        
+        setTimeout(() => {
+            errorDiv.style.display = 'none';
+        }, 5000);
     }
     
-    // Show toast notification
+    // ==================== SHOW TOAST ====================
     function showToast(message, isError = false) {
         const existingToast = document.querySelector('.toast-notification');
         if (existingToast) existingToast.remove();
@@ -553,136 +619,135 @@
         }, 3000);
     }
     
-    // Show error in form
-    function showFormError(formType, message) {
-        if (formType === 'admin') {
-            const errorDiv = document.getElementById('adminError');
-            const errorMsg = document.getElementById('adminErrorMsg');
-            errorMsg.innerText = message;
-            errorDiv.style.display = 'flex';
-            setTimeout(() => {
-                errorDiv.style.display = 'none';
-            }, 5000);
+    // ==================== SET LOADING STATE ====================
+    function setLoading(buttonId, isLoading) {
+        const btn = document.getElementById(buttonId);
+        if (isLoading) {
+            btn.innerHTML = '<span class="loading-spinner"></span> Processing...';
+            btn.disabled = true;
         } else {
-            const errorDiv = document.getElementById('deptError');
-            const errorMsg = document.getElementById('deptErrorMsg');
-            errorMsg.innerText = message;
-            errorDiv.style.display = 'flex';
-            setTimeout(() => {
-                errorDiv.style.display = 'none';
-            }, 5000);
+            if (buttonId === 'adminLoginBtn') {
+                btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login as Admin';
+            } else {
+                btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login as Department';
+            }
+            btn.disabled = false;
         }
     }
     
-    // Admin Login
+    // ==================== CHECK IF USER IS ALREADY LOGGED IN ====================
+    async function checkSession() {
+        try {
+            const response = await fetch(API_BASE + 'check_session.php', {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include'
+            });
+            
+            const result = await response.json();
+            
+            if (result.success && result.logged_in) {
+                // User is already logged in, redirect
+                window.location.href = result.redirect;
+            }
+        } catch (error) {
+            console.error('Session check error:', error);
+        }
+    }
+    
+    // ==================== ADMIN LOGIN ====================
     async function loginAdmin() {
         const email = document.getElementById('adminEmail').value.trim();
         const password = document.getElementById('adminPassword').value;
         
-        if (!email || !password) {
-            showFormError('admin', 'Please enter email and password');
+        if (!email) {
+            showError('adminError', 'adminErrorMsg', 'Please enter email address');
             return;
         }
         
-        showToast('Logging in...');
+        if (!password) {
+            showError('adminError', 'adminErrorMsg', 'Please enter password');
+            return;
+        }
+        
+        setLoading('adminLoginBtn', true);
         
         try {
-            const response = await fetch(`${API_BASE}/login.php`, {
+            const response = await fetch(API_BASE + 'login.php', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    email: email,
-                    password: password,
-                    userType: 'admin'
-                })
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ email, password })
             });
             
-            const data = await response.json();
+            const result = await response.json();
             
-            if (data.success) {
-                // Store session in localStorage
-                localStorage.setItem('geotraverse_logged_in', 'true');
-                localStorage.setItem('geotraverse_user_type', 'admin');
-                localStorage.setItem('geotraverse_user_email', email);
-                localStorage.setItem('geotraverse_user_name', data.user.name);
-                
+            if (result.success) {
                 showToast('✅ Login successful! Redirecting...');
-                
                 setTimeout(() => {
-                    window.location.href = 'super_admin.html';
+                    window.location.href = result.redirect;
                 }, 1000);
             } else {
-                showFormError('admin', data.error || 'Invalid email or password');
+                showError('adminError', 'adminErrorMsg', result.message || 'Invalid email or password');
+                setLoading('adminLoginBtn', false);
             }
         } catch (error) {
             console.error('Login error:', error);
-            showFormError('admin', 'Connection error. Please check if backend is running.');
+            showError('adminError', 'adminErrorMsg', 'Network error. Please check your connection.');
+            setLoading('adminLoginBtn', false);
         }
     }
     
-    // Department Login
+    // ==================== DEPARTMENT LOGIN ====================
     async function loginDepartment() {
-        const dept = document.getElementById('deptSelect').value;
+        const deptId = document.getElementById('deptSelect').value;
         const email = document.getElementById('deptEmail').value.trim();
         const password = document.getElementById('deptPassword').value;
         
-        if (!dept) {
-            showFormError('dept', 'Please select a department');
+        if (!deptId) {
+            showError('deptError', 'deptErrorMsg', 'Please select a department');
             return;
         }
         
-        if (!email || !password) {
-            showFormError('dept', 'Please enter email and password');
+        if (!email) {
+            showError('deptError', 'deptErrorMsg', 'Please enter email address');
             return;
         }
         
-        showToast('Logging in...');
+        if (!password) {
+            showError('deptError', 'deptErrorMsg', 'Please enter password');
+            return;
+        }
+        
+        setLoading('deptLoginBtn', true);
         
         try {
-            const response = await fetch(`${API_BASE}/login.php`, {
+            const response = await fetch(API_BASE + 'login.php', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    email: email,
-                    password: password,
-                    userType: 'department',
-                    department: dept
-                })
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ email, password, department_id: parseInt(deptId) })
             });
             
-            const data = await response.json();
+            const result = await response.json();
             
-            if (data.success) {
-                // Store session in localStorage
-                localStorage.setItem('geotraverse_logged_in', 'true');
-                localStorage.setItem('geotraverse_user_type', 'department');
-                localStorage.setItem('geotraverse_department', dept);
-                localStorage.setItem('geotraverse_user_email', email);
-                
-                showToast('✅ Login successful! Redirecting...');
-                
+            if (result.success) {
+                showToast(`✅ Login successful! Redirecting to ${result.user.department_name} Dashboard...`);
                 setTimeout(() => {
-                    const dashboardFile = departmentFiles[dept];
-                    if (dashboardFile) {
-                        window.location.href = dashboardFile;
-                    } else {
-                        showFormError('dept', 'Dashboard not found');
-                    }
+                    window.location.href = result.redirect;
                 }, 1000);
             } else {
-                showFormError('dept', data.error || 'Invalid email or password');
+                showError('deptError', 'deptErrorMsg', result.message || 'Invalid email or password');
+                setLoading('deptLoginBtn', false);
             }
         } catch (error) {
             console.error('Login error:', error);
-            showFormError('dept', 'Connection error. Please check if backend is running.');
+            showError('deptError', 'deptErrorMsg', 'Network error. Please check your connection.');
+            setLoading('deptLoginBtn', false);
         }
     }
     
-    // Tab switching
+    // ==================== TAB SWITCHING ====================
     const tabButtons = document.querySelectorAll('.tab-button');
     const adminForm = document.getElementById('adminForm');
     const deptForm = document.getElementById('departmentForm');
@@ -705,7 +770,7 @@
         });
     });
     
-    // Dark mode toggle
+    // ==================== DARK MODE TOGGLE ====================
     const themeToggle = document.getElementById('themeToggle');
     const themeIcon = document.getElementById('themeIcon');
     
@@ -729,29 +794,18 @@
         }
     });
     
-    // Enter key support
-    document.getElementById('adminPassword').addEventListener('keypress', function(e) {
+    // ==================== ENTER KEY SUPPORT ====================
+    document.getElementById('adminPassword')?.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') loginAdmin();
     });
     
-    document.getElementById('deptPassword').addEventListener('keypress', function(e) {
+    document.getElementById('deptPassword')?.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') loginDepartment();
     });
     
-    // Check if already logged in
-    if (localStorage.getItem('geotraverse_logged_in') === 'true') {
-        const userType = localStorage.getItem('geotraverse_user_type');
-        if (userType === 'admin') {
-            window.location.href = 'super_admin.html';
-        } else if (userType === 'department') {
-            const dept = localStorage.getItem('geotraverse_department');
-            if (dept && departmentFiles[dept]) {
-                window.location.href = departmentFiles[dept];
-            }
-        }
-    }
-    
-    console.log('Login System Ready ✅');
+    // ==================== INIT ====================
+    loadDepartments();
+    checkSession();
 </script>
 </body>
 </html>

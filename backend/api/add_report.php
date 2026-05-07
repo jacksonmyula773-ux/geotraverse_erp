@@ -1,49 +1,53 @@
 <?php
+// backend/api/add_report.php
 session_start();
-require_once '../config/database.php';
-
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization');
+header('Access-Control-Allow-Methods: POST');
 
-if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-    http_response_code(200);
+if (!isset($_SESSION['user_id'])) {
+    echo json_encode(['success' => false, 'message' => 'Not logged in']);
     exit();
 }
 
-if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
-    http_response_code(401);
-    echo json_encode(['success' => false, 'error' => 'Unauthorized']);
+require_once '../config/database.php';
+
+$data = json_decode(file_get_contents('php://input'));
+
+if (!$data) {
+    echo json_encode(['success' => false, 'message' => 'Invalid data']);
     exit();
 }
 
-$data = json_decode(file_get_contents('php://input'), true);
-$title = $data['title'] ?? '';
-$period = $data['period'] ?? 'monthly';
-$content = $data['content'] ?? '';
-$department_id = 1; // Super Admin
-
-if (empty($title) || empty($content)) {
-    echo json_encode(['success' => false, 'error' => 'Title and content required']);
+if (empty($data->title) || empty($data->content)) {
+    echo json_encode(['success' => false, 'message' => 'Title and content required']);
     exit();
 }
 
 $database = new Database();
 $db = $database->getConnection();
 
-$query = "INSERT INTO reports (department_id, title, period, content, status) 
-          VALUES (:dept_id, :title, :period, :content, 'draft')";
+if (!$db) {
+    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
+    exit();
+}
 
+$title = $data->title;
+$period = $data->period ?? 'monthly';
+$content = $data->content;
+$department_id = $_SESSION['department_id'];
+$status = $data->status ?? 'draft';
+
+$query = "INSERT INTO reports (title, period, content, department_id, status, created_at) VALUES (?, ?, ?, ?, ?, NOW())";
 $stmt = $db->prepare($query);
-$stmt->bindParam(':dept_id', $department_id);
-$stmt->bindParam(':title', $title);
-$stmt->bindParam(':period', $period);
-$stmt->bindParam(':content', $content);
 
-if ($stmt->execute()) {
-    echo json_encode(['success' => true, 'report_id' => $db->lastInsertId()]);
+if ($stmt->execute([$title, $period, $content, $department_id, $status])) {
+    echo json_encode([
+        'success' => true,
+        'message' => 'Report added successfully',
+        'data' => ['id' => $db->lastInsertId()]
+    ]);
 } else {
-    echo json_encode(['success' => false, 'error' => 'Failed to add report']);
+    echo json_encode(['success' => false, 'message' => 'Failed to add report']);
 }
 ?>

@@ -1,58 +1,60 @@
 <?php
-/**
- * Get All Conversations for a Department
- * Method: GET
- * Returns list of departments that have exchanged messages with current department
- */
+// backend/api/get_conversation.php
+session_start();
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET');
+
+if (!isset($_SESSION['user_id'])) {
+    echo json_encode(['success' => false, 'message' => 'Not logged in']);
+    exit();
+}
 
 require_once '../config/database.php';
-require_once '../includes/auth.php';
 
-$auth = new Auth();
-$user = $auth->validateToken();
+$other_dept = isset($_GET['department_id']) ? (int)$_GET['department_id'] : 0;
 
-if (!$user) {
-    sendResponse(false, null, "Unauthorized", 401);
+if ($other_dept <= 0) {
+    echo json_encode(['success' => false, 'message' => 'Department ID required']);
+    exit();
 }
 
 $database = new Database();
 $db = $database->getConnection();
 
-$my_dept_id = $user['department_id'];
+if (!$db) {
+    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
+    exit();
+}
 
-// Get all unique departments that have exchanged messages with current department
-$query = "SELECT DISTINCT 
-            CASE 
-                WHEN from_department_id = :my_dept THEN to_department_id
-                ELSE from_department_id
-            END as other_dept_id,
-            d.name as department_name,
-            d.email as department_email,
-            (SELECT message FROM messages m2 
-             WHERE (m2.from_department_id = :my_dept AND m2.to_department_id = other_dept_id)
-                OR (m2.from_department_id = other_dept_id AND m2.to_department_id = :my_dept)
-             ORDER BY m2.created_at DESC LIMIT 1) as last_message,
-            (SELECT created_at FROM messages m3 
-             WHERE (m3.from_department_id = :my_dept AND m3.to_department_id = other_dept_id)
-                OR (m3.from_department_id = other_dept_id AND m3.to_department_id = :my_dept)
-             ORDER BY m3.created_at DESC LIMIT 1) as last_message_time,
-            (SELECT COUNT(*) FROM messages m4 
-             WHERE m4.to_department_id = :my_dept 
-             AND m4.from_department_id = other_dept_id 
-             AND m4.is_read = 0) as unread_count
+$user_dept = $_SESSION['department_id'];
+
+$query = "SELECT m.*, 
+          d1.name as from_department_name,
+          d2.name as to_department_name
           FROM messages m
-          LEFT JOIN departments d ON d.id = (CASE 
-              WHEN from_department_id = :my_dept THEN to_department_id
-              ELSE from_department_id
-          END)
-          WHERE from_department_id = :my_dept OR to_department_id = :my_dept
-          ORDER BY last_message_time DESC";
+          LEFT JOIN departments d1 ON m.from_department_id = d1.id
+          LEFT JOIN departments d2 ON m.to_department_id = d2.id
+          WHERE (m.from_department_id = ? AND m.to_department_id = ?) 
+             OR (m.from_department_id = ? AND m.to_department_id = ?)
+          ORDER BY m.created_at ASC";
 
 $stmt = $db->prepare($query);
-$stmt->bindParam(':my_dept', $my_dept_id);
-$stmt->execute();
+$stmt->execute([$user_dept, $other_dept, $other_dept, $user_dept]);
 
-$conversations = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$messages = [];
+while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+    $messages[] = $row;
+}
 
-sendResponse(true, $conversations);
+// Mark messages as read
+$updateQuery = "UPDATE messages SET is_read = 1 WHERE from_department_id = ? AND to_department_id = ? AND is_read = 0";
+$updateStmt = $db->prepare($updateQuery);
+$updateStmt->execute([$other_dept, $user_dept]);
+
+echo json_encode([
+    'success' => true,
+    'count' => count($messages),
+    'data' => $messages
+]);
 ?>

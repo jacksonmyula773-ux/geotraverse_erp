@@ -1,57 +1,47 @@
 <?php
+// backend/api/upload_project_image.php
+session_start();
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
+
+if (!isset($_SESSION['user_id'])) {
+    echo json_encode(['success' => false, 'message' => 'Not logged in']);
+    exit();
+}
+
+if (!isset($_FILES['image']) || !isset($_POST['project_id'])) {
+    echo json_encode(['success' => false, 'message' => 'Image and project ID required']);
+    exit();
+}
 
 require_once '../config/database.php';
 
 $database = new Database();
 $db = $database->getConnection();
 
-$project_id = isset($_POST['project_id']) ? $_POST['project_id'] : null;
-
-if (!$project_id) {
-    echo json_encode(['success' => false, 'error' => 'Project ID required']);
+if (!$db) {
+    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
     exit();
 }
 
-if (!isset($_FILES['image']) || $_FILES['image']['error'] !== UPLOAD_ERR_OK) {
-    echo json_encode(['success' => false, 'error' => 'Image file required']);
-    exit();
+$project_id = (int)$_POST['project_id'];
+$upload_dir = '../../frontend/uploads/projects/';
+
+if (!file_exists($upload_dir)) {
+    mkdir($upload_dir, 0777, true);
 }
 
-$file = $_FILES['image'];
-$allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-$maxSize = 5 * 1024 * 1024;
+$file_extension = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
+$file_name = 'project_' . $project_id . '_' . time() . '.' . $file_extension;
+$file_path = $upload_dir . $file_name;
 
-if (!in_array($file['type'], $allowedTypes)) {
-    echo json_encode(['success' => false, 'error' => 'Invalid file type. Allowed: JPG, PNG, GIF, WEBP']);
-    exit();
-}
-
-if ($file['size'] > $maxSize) {
-    echo json_encode(['success' => false, 'error' => 'File too large. Max 5MB']);
-    exit();
-}
-
-$uploadDir = $_SERVER['DOCUMENT_ROOT'] . '/geotraverse/frontend/assets/uploads/projects/';
-if (!is_dir($uploadDir)) {
-    mkdir($uploadDir, 0777, true);
-}
-
-$extension = pathinfo($file['name'], PATHINFO_EXTENSION);
-$filename = 'project_' . $project_id . '_' . time() . '.' . $extension;
-$filepath = $uploadDir . $filename;
-$webPath = '/geotraverse/frontend/assets/uploads/projects/' . $filename;
-
-if (move_uploaded_file($file['tmp_name'], $filepath)) {
-    $query = "UPDATE projects SET image = :image WHERE id = :id";
-    $stmt = $db->prepare($query);
-    $stmt->bindParam(':image', $webPath);
-    $stmt->bindParam(':id', $project_id);
-    $stmt->execute();
+if (move_uploaded_file($_FILES['image']['tmp_name'], $file_path)) {
+    $db_path = 'uploads/projects/' . $file_name;
+    $updateQuery = "UPDATE projects SET image = ? WHERE id = ?";
+    $updateStmt = $db->prepare($updateQuery);
+    $updateStmt->execute([$db_path, $project_id]);
     
-    echo json_encode(['success' => true, 'data' => ['image_path' => $webPath]]);
+    echo json_encode(['success' => true, 'message' => 'Image uploaded', 'path' => $db_path]);
 } else {
-    echo json_encode(['success' => false, 'error' => 'Failed to upload image']);
+    echo json_encode(['success' => false, 'message' => 'Failed to upload image']);
 }
 ?>

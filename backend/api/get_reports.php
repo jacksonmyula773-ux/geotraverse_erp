@@ -1,10 +1,12 @@
 <?php
+// backend/api/get_reports.php
+session_start();
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+header('Access-Control-Allow-Methods: GET');
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
+if (!isset($_SESSION['user_id'])) {
+    echo json_encode(['success' => false, 'message' => 'Not logged in']);
     exit();
 }
 
@@ -13,14 +15,39 @@ require_once '../config/database.php';
 $database = new Database();
 $db = $database->getConnection();
 
-$query = "SELECT r.*, d.name as department_name 
-          FROM reports r 
-          LEFT JOIN departments d ON r.department_id = d.id 
-          ORDER BY r.created_at DESC";
+if (!$db) {
+    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
+    exit();
+}
 
-$stmt = $db->prepare($query);
-$stmt->execute();
-$reports = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$user_dept = $_SESSION['department_id'];
+$user_role = $_SESSION['role'];
 
-echo json_encode(['success' => true, 'data' => $reports]);
+if ($user_dept == 1 || $user_role == 'Super Administrator') {
+    $query = "SELECT r.*, d.name as department_name 
+              FROM reports r 
+              LEFT JOIN departments d ON r.department_id = d.id 
+              ORDER BY r.id DESC";
+    $stmt = $db->prepare($query);
+    $stmt->execute();
+} else {
+    $query = "SELECT r.*, d.name as department_name 
+              FROM reports r 
+              LEFT JOIN departments d ON r.department_id = d.id 
+              WHERE r.department_id = ? 
+              ORDER BY r.id DESC";
+    $stmt = $db->prepare($query);
+    $stmt->execute([$user_dept]);
+}
+
+$reports = [];
+while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+    $reports[] = $row;
+}
+
+echo json_encode([
+    'success' => true,
+    'count' => count($reports),
+    'data' => $reports
+]);
 ?>

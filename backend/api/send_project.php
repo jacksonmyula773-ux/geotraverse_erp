@@ -1,70 +1,64 @@
 <?php
+// backend/api/send_project.php
 session_start();
-require_once '../config/database.php';
-
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization');
+header('Access-Control-Allow-Methods: POST');
 
-if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-    http_response_code(200);
+if (!isset($_SESSION['user_id'])) {
+    echo json_encode(['success' => false, 'message' => 'Not logged in']);
     exit();
 }
 
-if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
-    http_response_code(401);
-    echo json_encode(['success' => false, 'error' => 'Unauthorized']);
-    exit();
-}
+require_once '../config/database.php';
 
-$data = json_decode(file_get_contents('php://input'), true);
-$project_id = $data['project_id'] ?? 0;
-$to_department_id = $data['department_id'] ?? 0;
-$message = $data['message'] ?? '';
+$data = json_decode(file_get_contents('php://input'));
 
-if (!$project_id || !$to_department_id) {
-    echo json_encode(['success' => false, 'error' => 'Project ID and Department ID required']);
+if (!$data || empty($data->project_id) || empty($data->to_department_id)) {
+    echo json_encode(['success' => false, 'message' => 'Project ID and destination department required']);
     exit();
 }
 
 $database = new Database();
 $db = $database->getConnection();
 
-// Get project details
-$query = "SELECT * FROM projects WHERE id = :id";
-$stmt = $db->prepare($query);
-$stmt->bindParam(':id', $project_id);
-$stmt->execute();
-$project = $stmt->fetch(PDO::FETCH_ASSOC);
-
-if (!$project) {
-    echo json_encode(['success' => false, 'error' => 'Project not found']);
+if (!$db) {
+    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
     exit();
 }
 
-$fullMessage = "PROJECT SHARED FROM ADMIN:\n";
-$fullMessage .= "Name: " . $project['name'] . "\n";
-$fullMessage .= "Client: " . $project['client_name'] . "\n";
-$fullMessage .= "Amount: " . number_format($project['amount'], 0) . " TZS\n";
-$fullMessage .= "Status: " . $project['status'] . "\n";
-$fullMessage .= "Progress: " . $project['progress'] . "%\n";
-$fullMessage .= "Location: " . ($project['location'] ?? 'N/A') . "\n";
-$fullMessage .= "Description: " . ($project['description'] ?? 'N/A') . "\n";
-if ($message) {
-    $fullMessage .= "\nMessage from Admin:\n" . $message;
+$project_id = (int)$data->project_id;
+$to_dept = (int)$data->to_department_id;
+$message = $data->message ?? '';
+$from_dept = $_SESSION['department_id'];
+
+// Get project details
+$projQuery = "SELECT name, amount, status FROM projects WHERE id = ?";
+$projStmt = $db->prepare($projQuery);
+$projStmt->execute([$project_id]);
+$project = $projStmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$project) {
+    echo json_encode(['success' => false, 'message' => 'Project not found']);
+    exit();
 }
 
-$query = "INSERT INTO messages (from_department_id, to_department_id, message, is_read) 
-          VALUES (1, :to_dept, :message, 0)";
+// Create message content
+$fullMessage = "PROJECT SHARED:\n";
+$fullMessage .= "Project: " . $project['name'] . "\n";
+$fullMessage .= "Amount: " . number_format($project['amount'], 2) . "\n";
+$fullMessage .= "Status: " . $project['status'] . "\n";
+if ($message) {
+    $fullMessage .= "\nMessage from sender: " . $message;
+}
 
-$stmt = $db->prepare($query);
-$stmt->bindParam(':to_dept', $to_department_id);
-$stmt->bindParam(':message', $fullMessage);
+// Insert message
+$msgQuery = "INSERT INTO messages (from_department_id, to_department_id, message, created_at) VALUES (?, ?, ?, NOW())";
+$msgStmt = $db->prepare($msgQuery);
 
-if ($stmt->execute()) {
-    echo json_encode(['success' => true]);
+if ($msgStmt->execute([$from_dept, $to_dept, $fullMessage])) {
+    echo json_encode(['success' => true, 'message' => 'Project sent successfully']);
 } else {
-    echo json_encode(['success' => false, 'error' => 'Failed to send project']);
+    echo json_encode(['success' => false, 'message' => 'Failed to send project']);
 }
 ?>
