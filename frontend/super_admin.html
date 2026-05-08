@@ -45,23 +45,19 @@
         .status-pending { background: #fef3c7; color: #d97706; }
         .status-progress { background: #dbeafe; color: #2563eb; }
         .status-completed { background: #d1fae5; color: #059669; }
-        .status-paid { background: #d1fae5; color: #059669; }
-        .status-partial { background: #fef3c7; color: #d97706; }
         
-        .project-card { background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 16px; margin-bottom: 16px; transition: all 0.2s; position: relative; }
-        .project-card:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
+        .project-card, .report-card { background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 16px; transition: all 0.2s; position: relative; cursor: pointer; }
+        .project-card:hover, .report-card:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
+        .new-badge { position: absolute; top: -8px; right: -8px; background: #ef4444; color: white; border-radius: 50%; width: 22px; height: 22px; font-size: 11px; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; z-index: 10; }
         
         .dept-card { background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 16px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 12px; }
         .dept-card:hover { transform: translateX(5px); border-color: #0f74ba; background: #f0f9ff; }
-        .dept-icon { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
         
         .action-buttons { display: flex; gap: 5px; flex-wrap: wrap; }
-        .action-btn { padding: 5px 10px; font-size: 10px; border-radius: 5px; cursor: pointer; transition: all 0.2s; }
+        .action-btn { padding: 5px 10px; font-size: 11px; border-radius: 5px; cursor: pointer; transition: all 0.2s; }
         .action-btn.view { background: #3b82f6; color: white; }
         .action-btn.edit { background: #f59e0b; color: white; }
         .action-btn.delete { background: #ef4444; color: white; }
-        .action-btn.excel { background: #10b981; color: white; }
-        .action-btn.pdf { background: #ef4444; color: white; }
         .action-btn.send { background: #8b5cf6; color: white; }
         
         .btn-primary { background: #0f74ba; color: white; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; }
@@ -70,79 +66,45 @@
         .btn-success:hover { background: #059669; }
         .btn-danger { background: #ef4444; color: white; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; }
         .btn-danger:hover { background: #dc2626; }
-        .btn-warning { background: #f59e0b; color: white; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; }
         
         body.dark-mode { background: #0f172a; }
         body.dark-mode .bg-white, body.dark-mode .stat-card, body.dark-mode .project-card, 
-        body.dark-mode .dept-card, body.dark-mode .modal-content { background: #1e293b; border-color: #334155; color: #f1f5f9; }
+        body.dark-mode .report-card, body.dark-mode .dept-card, body.dark-mode .modal-content { background: #1e293b; border-color: #334155; color: #f1f5f9; }
         body.dark-mode input, body.dark-mode select, body.dark-mode textarea { background: #0f172a; border-color: #334155; color: #f1f5f9; }
-        body.dark-mode th { background: #1e293b; border-color: #334155; }
         
         .search-results-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: white; border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); z-index: 50; max-height: 350px; overflow-y: auto; display: none; }
         .search-results-dropdown.active { display: block; }
         .search-result-item { padding: 10px 16px; border-bottom: 1px solid #e5e7eb; cursor: pointer; transition: background 0.2s; font-size: 13px; }
         .search-result-item:hover { background-color: #f3f4f6; }
         
-        .report-sample { background: #f8fafc; border-left: 4px solid #0f74ba; padding: 12px; margin-bottom: 10px; border-radius: 8px; position: relative; cursor: pointer; transition: all 0.2s; }
-        .report-sample:hover { transform: translateX(3px); background: #f0f9ff; }
-        
-        .role-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; }
-        .role-super-admin { background: #8b5cf6; color: white; }
-        .role-admin { background: #3b82f6; color: white; }
-        .role-manager { background: #f59e0b; color: white; }
-        .role-finance { background: #10b981; color: white; }
-        .role-staff { background: #6b7280; color: white; }
-        
         .notification-badge { background: #ef4444; color: white; border-radius: 9999px; padding: 2px 8px; font-size: 10px; margin-left: 8px; }
         
-        .logo-container { display: flex; align-items: center; gap: 10px; }
-        .logo-icon { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; background: rgba(255,255,255,0.1); }
-        .logo-icon img { width: 100%; height: 100%; object-fit: contain; border-radius: 10px; }
-        .logo-text h1 { font-size: 18px; font-weight: 700; margin: 0; }
-        .logo-text p { font-size: 9px; opacity: 0.7; margin: 0; }
-        
-        .profile-pic { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; cursor: pointer; border: 3px solid #0f74ba; }
-        .profile-pic-small { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; cursor: pointer; }
-        
-        .payment-card { background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 12px; margin-bottom: 12px; transition: all 0.2s; }
-        .payment-card:hover { transform: translateX(3px); }
-        .payment-overdue { border-left: 3px solid #ef4444; background: #fef2f2; }
-        .payment-partial { border-left: 3px solid #f59e0b; background: #fffbeb; }
-        .payment-pending { border-left: 3px solid #3b82f6; background: #eff6ff; }
-        
-        .send-dropdown { position: relative; display: inline-block; }
-        .send-dropdown-content { display: none; position: absolute; right: 0; top: 100%; background: white; min-width: 200px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); border-radius: 8px; z-index: 1000; border: 1px solid #e5e7eb; max-height: 300px; overflow-y: auto; margin-top: 5px; }
-        .send-dropdown-content a { color: #333; padding: 10px 15px; text-decoration: none; display: block; font-size: 13px; cursor: pointer; }
-        .send-dropdown-content a:hover { background: #f3f4f6; }
-        .send-dropdown:hover .send-dropdown-content { display: block; }
-        body.dark-mode .send-dropdown-content { background: #1e293b; border-color: #334155; }
-        body.dark-mode .send-dropdown-content a { color: #f1f5f9; }
-        body.dark-mode .send-dropdown-content a:hover { background: #334155; }
-        
+        /* Chat Styles */
         .chat-container { display: flex; flex-direction: column; height: 500px; }
-        .chat-messages { flex: 1; overflow-y: auto; padding: 16px; background: #f9fafb; border-radius: 12px; }
-        .chat-message { margin-bottom: 16px; display: flex; position: relative; }
+        .chat-messages { flex: 1; overflow-y: auto; padding: 16px; background: #f9fafb; border-radius: 12px; display: flex; flex-direction: column; }
+        .chat-message { margin-bottom: 16px; display: flex; }
         .chat-sent { justify-content: flex-end; }
         .chat-received { justify-content: flex-start; }
-        .chat-bubble { max-width: 70%; padding: 10px 16px; border-radius: 20px; }
+        .chat-bubble { max-width: 70%; padding: 10px 16px; border-radius: 20px; position: relative; word-wrap: break-word; }
         .chat-sent .chat-bubble { background: #0f74ba; color: white; border-bottom-right-radius: 4px; }
         .chat-received .chat-bubble { background: white; color: #333; border: 1px solid #e5e7eb; border-bottom-left-radius: 4px; }
         .chat-time { font-size: 10px; opacity: 0.7; margin-top: 4px; display: block; }
         .chat-delete-btn { position: absolute; top: 50%; transform: translateY(-50%); right: -30px; background: white; border: 1px solid #e5e7eb; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: opacity 0.2s; color: #ef4444; font-size: 10px; }
         .chat-message:hover .chat-delete-btn { opacity: 1; }
         .chat-input-area { display: flex; gap: 10px; padding: 12px; background: white; border-radius: 12px; border: 1px solid #e5e7eb; margin-top: 12px; }
+        .chat-input-area textarea { flex: 1; margin: 0; resize: none; padding: 10px !important; font-size: 14px; }
+        .chat-input-area button { padding: 10px 20px; white-space: nowrap; }
         .delete-conversation-btn { background: #ef4444; color: white; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; margin-bottom: 16px; width: 100%; }
-        .message-item { background: white; border-radius: 12px; border: 1px solid #e5e7eb; margin-bottom: 12px; overflow: hidden; }
+        .message-item { background: white; border-radius: 12px; border: 1px solid #e5e7eb; margin-bottom: 12px; overflow: hidden; cursor: pointer; transition: all 0.2s; }
+        .message-item:hover { transform: translateX(3px); background: #f9fafb; }
         .message-unread { background: #eff6ff; border-left: 4px solid #3b82f6; }
-        .message-header { padding: 14px 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-        .message-preview { padding: 0 16px 12px 16px; font-size: 13px; color: #6b7280; cursor: pointer; }
+        .message-header { padding: 14px 16px 8px 16px; display: flex; justify-content: space-between; align-items: center; }
+        .message-preview { padding: 0 16px 8px 16px; font-size: 13px; color: #6b7280; }
         .message-actions { padding: 8px 16px 12px 16px; border-top: 1px solid #e5e7eb; display: flex; gap: 10px; background: #fafafa; }
         
-        .scroll-top { position: fixed; bottom: 20px; right: 20px; background: #0f74ba; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: all 0.3s; z-index: 99; color: white; }
-        .scroll-top.visible { opacity: 1; }
-        
-        .image-upload-area { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s; }
-        .image-upload-area:hover { border-color: #0f74ba; background-color: #f0f9ff; }
+        body.dark-mode .chat-received .chat-bubble { background: #1e293b; border-color: #334155; color: #f1f5f9; }
+        body.dark-mode .chat-messages { background: #0f172a; }
+        body.dark-mode .chat-input-area { background: #1e293b; border-color: #334155; }
         
         .color-option { width: 42px; height: 42px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: all 0.2s; display: inline-block; margin: 5px; }
         .color-option:hover { transform: scale(1.1); }
@@ -151,15 +113,35 @@
         .section { display: block; }
         .section.hidden { display: none; }
         
+        .role-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; }
+        .role-super-admin { background: #8b5cf6; color: white; }
+        .role-admin { background: #3b82f6; color: white; }
+        .role-manager { background: #f59e0b; color: white; }
+        .role-finance { background: #10b981; color: white; }
+        .role-staff { background: #6b7280; color: white; }
+        
+        .image-upload-area { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s; }
+        .image-upload-area:hover { border-color: #0f74ba; background-color: #f0f9ff; }
+        
+        .report-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 16px; }
+        
         .employees-table { overflow-x: auto; }
-        .employees-table table { min-width: 800px; }
+        .employees-table table { min-width: 700px; }
         .employees-table th, .employees-table td { padding: 10px 12px; text-align: left; }
         
-        .detail-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; padding-top: 15px; border-top: 1px solid #e5e7eb; justify-content: center; }
-        .detail-btn { padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; transition: all 0.2s; }
+        .send-dropdown { position: relative; display: inline-block; }
+        .send-dropdown-content { display: none; position: absolute; right: 0; top: 100%; background: white; min-width: 200px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); border-radius: 8px; z-index: 1001; border: 1px solid #e5e7eb; max-height: 300px; overflow-y: auto; margin-top: 5px; }
+        .send-dropdown-content a { color: #333; padding: 10px 15px; text-decoration: none; display: block; font-size: 13px; cursor: pointer; }
+        .send-dropdown-content a:hover { background: #f3f4f6; }
+        body.dark-mode .send-dropdown-content { background: #1e293b; border-color: #334155; }
+        body.dark-mode .send-dropdown-content a { color: #f1f5f9; }
+        body.dark-mode .send-dropdown-content a:hover { background: #334155; }
+        
+        .detail-buttons { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 15px; padding-top: 15px; border-top: 1px solid #e5e7eb; }
+        .detail-btn { padding: 8px 16px; border-radius: 6px; font-size: 12px; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
         .detail-btn.excel { background: #10b981; color: white; }
         .detail-btn.pdf { background: #ef4444; color: white; }
-        .detail-btn.send { background: #8b5cf6; color: white; }
+        .detail-btn.send { background: #8b5cf6; color: white; position: relative; }
         .detail-btn:hover { transform: translateY(-2px); }
     </style>
 </head>
@@ -170,31 +152,18 @@
 <div class="flex">
     <aside id="mainSidebar" class="sidebar text-white">
         <div class="p-5 border-b border-white/20">
-            <div class="logo-container">
-                <div class="logo-icon">
-                    <img id="sidebarLogo" src="upload/profiles/weblogo.PNG" alt="GeoTraverse" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%230f74ba%22/%3E%3Ctext x=%2250%22 y=%2265%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2240%22 font-weight=%22bold%22%3EG%3C/text%3E%3C/svg%3E';">
-                </div>
-                <div class="logo-text">
-                    <h1>GeoTraverse</h1>
-                    <p>Super Admin</p>
-                </div>
+            <div class="flex items-center gap-3">
+                <i class="fas fa-globe-africa text-2xl"></i>
+                <div><span class="text-xl font-bold">GeoTraverse</span><p class="text-[10px] text-white/60">Super Admin</p></div>
             </div>
         </div>
-        <div class="flex items-center gap-3 px-4 py-3 border-b border-white/20">
-            <img id="sidebarProfilePic" class="profile-pic-small" src="upload/profiles/default-avatar.png" alt="Profile" onclick="openProfileSettings()" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2250%22 fill=%22%233b82f6%22/%3E%3Ctext x=%2250%22 y=%2265%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2240%22%3EA%3C/text%3E%3C/svg%3E';">
-            <div>
-                <p class="text-sm font-semibold" id="adminName">Jackson Myula</p>
-                <p class="text-[9px] text-white/50">jacksonmyula773@gmail.com</p>
-            </div>
-        </div>
-        <nav class="flex-1 p-3 space-y-1" id="sidebarNav">
+        <nav class="flex-1 p-3 space-y-1">
             <div class="nav-item active" data-page="dashboard"><i class="fas fa-tachometer-alt w-5"></i><span>Dashboard</span></div>
             <div class="nav-item" data-page="employees"><i class="fas fa-users w-5"></i><span>Employees</span></div>
             <div class="nav-item" data-page="departments"><i class="fas fa-building w-5"></i><span>Departments</span></div>
             <div class="nav-item" data-page="projects"><i class="fas fa-tasks w-5"></i><span>Projects</span><span id="projectBadge" class="notification-badge" style="display:none;">0</span></div>
             <div class="nav-item" data-page="dailywork"><i class="fas fa-calendar-day w-5"></i><span>Daily Work</span></div>
             <div class="nav-item" data-page="cashflow"><i class="fas fa-exchange-alt w-5"></i><span>Cashflow</span></div>
-            <div class="nav-item" data-page="pending"><i class="fas fa-clock w-5"></i><span>Pending Payments</span><span id="pendingBadge" class="notification-badge" style="display:none;">0</span></div>
             <div class="nav-item" data-page="messages"><i class="fas fa-envelope w-5"></i><span>Messages</span><span id="msgBadge" class="notification-badge">0</span></div>
             <div class="nav-item" data-page="reports"><i class="fas fa-chart-line w-5"></i><span>Reports</span><span id="reportBadge" class="notification-badge" style="display:none;">0</span></div>
             <div class="nav-item" data-page="settings"><i class="fas fa-cog w-5"></i><span>Settings</span></div>
@@ -214,18 +183,16 @@
             </div>
             <div class="flex items-center gap-3">
                 <button id="darkModeBtn" class="text-gray-500"><i id="darkIcon" class="fas fa-moon text-xl"></i></button>
-                <img id="headerProfilePic" class="profile-pic-small cursor-pointer" src="upload/profiles/default-avatar.png" alt="Profile" onclick="openProfileSettings()" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2250%22 fill=%22%233b82f6%22/%3E%3Ctext x=%2250%22 y=%2265%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2240%22%3EA%3C/text%3E%3C/svg%3E';">
+                <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">SA</div>
             </div>
         </header>
         
-        <!-- ALL SECTIONS -->
         <div id="dashboardPage" class="section p-5"></div>
         <div id="employeesPage" class="section p-5 hidden"></div>
         <div id="departmentsPage" class="section p-5 hidden"></div>
         <div id="projectsPage" class="section p-5 hidden"></div>
         <div id="dailyworkPage" class="section p-5 hidden"></div>
         <div id="cashflowPage" class="section p-5 hidden"></div>
-        <div id="pendingPage" class="section p-5 hidden"></div>
         <div id="messagesPage" class="section p-5 hidden"></div>
         <div id="reportsPage" class="section p-5 hidden"></div>
         <div id="settingsPage" class="section p-5 hidden"></div>
@@ -233,41 +200,33 @@
 </div>
 
 <!-- MODALS -->
-<div id="empModal" class="modal"><div class="modal-content"><h3 id="empModalTitle" class="text-xl font-bold mb-4">Add Employee</h3><input type="hidden" id="empId"><input type="text" id="empName" placeholder="Full Name"><input type="email" id="empEmail" placeholder="Email"><input type="text" id="empPhone" placeholder="Phone"><select id="empDept"></select><select id="empRole"><option value="Super Administrator">Super Administrator</option><option value="Administrator">Administrator</option><option value="Manager">Manager</option><option value="Finance Manager">Finance Manager</option><option value="Accountant">Accountant</option><option value="Staff">Staff</option></select><input type="text" id="empSalary" placeholder="Salary (TZS)"><div class="password-wrapper"><input type="password" id="empPassword" placeholder="Password" value="1234"><i class="fas fa-eye toggle-password" onclick="togglePassword('empPassword')"></i></div><div class="flex gap-3 pt-4"><button onclick="saveEmployee()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('empModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
+<div id="empModal" class="modal"><div class="modal-content"><h3 id="empModalTitle" class="text-xl font-bold mb-4">Add Employee</h3><input type="hidden" id="empId"><input type="text" id="empName" placeholder="e.g., John Mwita"><input type="email" id="empEmail" placeholder="e.g., john@geotraverse.com"><input type="text" id="empPhone" placeholder="e.g., +255 712 345 678"><select id="empDept"></select><select id="empRole"><option>Super Administrator</option><option>Administrator</option><option>Manager</option><option>Finance Manager</option><option>Staff</option></select><input type="text" id="empSalary" placeholder="e.g., 1,500,000"><div class="password-wrapper"><input type="password" id="empPassword" placeholder="Enter password (min 4 characters)" value="1234"><i class="fas fa-eye toggle-password" onclick="togglePassword('empPassword')"></i></div><div class="flex gap-3 pt-4"><button onclick="saveEmployee()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('empModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
 
 <div id="viewEmpModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Employee Details</h3><div id="viewEmpContent"></div><button onclick="closeModal('viewEmpModal')" class="w-full bg-gray-200 py-2 rounded mt-3">Close</button></div></div>
 
-<div id="projModal" class="modal"><div class="modal-content"><h3 id="projModalTitle" class="text-xl font-bold mb-4">Add Project</h3><input type="hidden" id="projId"><input type="text" id="projName" placeholder="Project Name"><input type="text" id="projClient" placeholder="Client"><input type="text" id="projAmount" placeholder="Amount (TZS)"><input type="text" id="projLocation" placeholder="Location"><textarea id="projDesc" rows="2" placeholder="Description"></textarea><select id="projStatus"><option value="pending">Pending</option><option value="in_progress">In Progress</option><option value="completed">Completed</option></select><input type="number" id="projProgress" placeholder="Progress (0-100)"><select id="projDept"></select><div id="projImageUploadArea" class="image-upload-area text-sm" onclick="document.getElementById('projImageFile').click()"><i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i><p>Click to upload project image</p></div><input type="file" id="projImageFile" accept="image/*" class="hidden"><div id="projImagePreviewContainer" class="hidden mt-2"><img id="projImagePreview" class="w-full h-24 object-cover rounded-lg border"><button type="button" onclick="removeProjectImage()" class="mt-1 text-red-500 text-sm w-full">Remove</button></div><div class="flex gap-3 pt-4"><button onclick="saveProject()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('projModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
+<!-- Project Modal - With Image Upload -->
+<div id="projModal" class="modal"><div class="modal-content"><h3 id="projModalTitle" class="text-xl font-bold mb-4">Add/Edit Project</h3><input type="hidden" id="projId"><input type="text" id="projName" placeholder="e.g., Modern Villa Construction"><input type="text" id="projClient" placeholder="e.g., John Mwita"><input type="text" id="projAmount" placeholder="e.g., 250,000,000"><input type="text" id="projLocation" placeholder="e.g., Kigamboni, Dar es Salaam"><textarea id="projDesc" rows="2" placeholder="e.g., Construction of luxury modern villa"></textarea><select id="projStatus"><option value="pending">Pending</option><option value="in_progress">In Progress</option><option value="completed">Completed</option></select><input type="number" id="projProgress" placeholder="e.g., 0-100%"><select id="projDept"></select><div id="projImageUploadArea" class="image-upload-area text-sm" onclick="document.getElementById('projImageFile').click()"><i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i><p>Click to upload project image</p></div><input type="file" id="projImageFile" accept="image/*" class="hidden"><div id="projImagePreviewContainer" class="hidden mt-2"><img id="projImagePreview" class="w-full h-32 object-cover rounded-lg border"><button type="button" onclick="removeProjectImage()" class="mt-2 text-red-500 text-sm w-full py-1 bg-red-50 rounded">Remove Image</button></div><div class="flex gap-3 pt-4"><button onclick="saveProject()" class="flex-1 btn-primary">Save Project</button><button onclick="closeModal('projModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
 
 <div id="viewProjModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Project Details</h3><div id="viewProjContent"></div><div id="viewProjButtons" class="detail-buttons"></div><button onclick="closeModal('viewProjModal')" class="w-full bg-gray-200 py-2 rounded mt-3">Close</button></div></div>
 
-<div id="dailyworkModal" class="modal"><div class="modal-content"><h3 id="dailyworkModalTitle" class="text-xl font-bold mb-4">Add Daily Work</h3><input type="hidden" id="dailyworkId"><input type="date" id="dailyworkDate"><input type="text" id="dailyworkProject" placeholder="Project Name"><textarea id="dailyworkDesc" rows="2" placeholder="Work Description"></textarea><input type="text" id="dailyworkIncome" placeholder="Income (TZS)"><input type="text" id="dailyworkExpenses" placeholder="Expenses (TZS)"><input type="text" id="dailyworkPaid" placeholder="Paid Amount"><select id="dailyworkStatus"><option value="pending">Pending</option><option value="paid">Paid</option></select><select id="dailyworkDept"></select><div class="flex gap-3 pt-4"><button onclick="saveDailyWork()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('dailyworkModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
+<div id="dailyworkModal" class="modal"><div class="modal-content"><h3 id="dailyworkModalTitle" class="text-xl font-bold mb-4">Add Daily Work</h3><input type="hidden" id="dailyworkId"><input type="date" id="dailyworkDate"><input type="text" id="dailyworkProject" placeholder="e.g., Modern Villa - Kigamboni"><textarea id="dailyworkDesc" rows="2" placeholder="e.g., Foundation excavation and concrete pouring"></textarea><input type="text" id="dailyworkIncome" placeholder="e.g., 2,500,000"><input type="text" id="dailyworkExpenses" placeholder="e.g., 800,000"><input type="text" id="dailyworkPaid" placeholder="e.g., 1,000,000"><select id="dailyworkStatus"><option value="pending">Pending</option><option value="paid">Paid</option></select><select id="dailyworkDept"></select><div class="flex gap-3 pt-4"><button onclick="saveDailyWork()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('dailyworkModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
 
 <div id="viewDailyworkModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Daily Work Details</h3><div id="viewDailyworkContent"></div><button onclick="closeModal('viewDailyworkModal')" class="w-full bg-gray-200 py-2 rounded mt-3">Close</button></div></div>
 
-<div id="transModal" class="modal"><div class="modal-content"><h3 id="transModalTitle" class="text-xl font-bold mb-4">Add Transaction</h3><input type="hidden" id="transId"><select id="transType"><option value="income">Income</option><option value="expense">Expense</option></select><select id="transDept"></select><input type="text" id="transSource" placeholder="Source"><input type="text" id="transAmount" placeholder="Amount (TZS)"><input type="date" id="transDate"><select id="transStatus"><option value="paid">Paid</option><option value="pending">Pending</option></select><textarea id="transDesc" rows="2" placeholder="Description"></textarea><div class="flex gap-3 pt-4"><button onclick="saveTransaction()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('transModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
+<div id="transModal" class="modal"><div class="modal-content"><h3 id="transModalTitle" class="text-xl font-bold mb-4">Add Transaction</h3><input type="hidden" id="transId"><select id="transType"><option value="income">Income</option><option value="expense">Expense</option></select><select id="transDept"></select><input type="text" id="transSource" placeholder="e.g., Client Payment - John Mwita"><input type="text" id="transAmount" placeholder="e.g., 25,000,000"><input type="date" id="transDate"><select id="transStatus"><option value="paid">Paid</option><option value="pending">Pending</option></select><textarea id="transDesc" rows="2" placeholder="e.g., Payment for villa construction - Phase 1"></textarea><div class="flex gap-3 pt-4"><button onclick="saveTransaction()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('transModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
 
-<div id="viewTransModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Transaction Details</h3><div id="viewTransContent"></div><button onclick="closeModal('viewTransModal')" class="w-full bg-gray-200 py-2 rounded mt-3">Close</button></div></div>
+<!-- Report Modal - Add Report Button inside -->
+<div id="reportModal" class="modal"><div class="modal-content"><h3 id="reportModalTitle" class="text-xl font-bold mb-4">Add Report</h3><input type="hidden" id="reportId"><input type="text" id="reportTitle" placeholder="e.g., April 2024 Financial Report"><select id="reportPeriod"><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="quarterly">Quarterly</option><option value="annual">Annual</option></select><textarea id="reportContent" rows="5" placeholder="e.g., Total Income: TZS 500M, Total Expenses: TZS 32M, Net Profit: TZS 468M..."></textarea><div class="flex gap-3 pt-4"><button onclick="saveReport()" class="flex-1 btn-primary">Save Report</button><button onclick="closeModal('reportModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
 
-<div id="reportModal" class="modal"><div class="modal-content"><h3 id="reportModalTitle" class="text-xl font-bold mb-4">Add Report</h3><input type="hidden" id="reportId"><input type="text" id="reportTitle" placeholder="Report Title"><select id="reportPeriod"><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="quarterly">Quarterly</option><option value="annual">Annual</option></select><textarea id="reportContent" rows="5" placeholder="Report Content"></textarea><div class="flex gap-3 pt-4"><button onclick="saveReport()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('reportModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
+<div id="viewReportModal" class="modal"><div class="modal-content modal-large"><h3 class="text-xl font-bold mb-4">Report Details</h3><div id="viewReportContent" class="whitespace-pre-wrap leading-relaxed max-h-80 overflow-y-auto"></div><div id="viewReportButtons" class="detail-buttons"></div><button onclick="closeModal('viewReportModal')" class="w-full bg-gray-200 py-2 rounded mt-3">Close</button></div></div>
 
-<div id="reportViewModal" class="modal"><div class="modal-content modal-large"><div class="flex justify-between items-center mb-4"><h3 id="reportViewTitle" class="text-xl font-bold">Report Details</h3><button onclick="closeModal('reportViewModal')" class="text-gray-400 text-2xl hover:text-gray-600">&times;</button></div><div id="reportViewContent" class="whitespace-pre-wrap leading-relaxed max-h-96 overflow-y-auto"></div><div id="reportViewButtons" class="detail-buttons"></div><div class="flex gap-3 mt-5"><button onclick="closeModal('reportViewModal')" class="flex-1 bg-gray-200 py-2 rounded">Close</button></div></div></div>
-
-<div id="msgModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Send Message</h3><select id="msgTo" class="mb-3"></select><textarea id="msgContent" rows="4" placeholder="Type your message..."></textarea><div class="flex gap-3 pt-4"><button onclick="sendNewMessage()" class="flex-1 btn-primary">Send</button><button onclick="closeModal('msgModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
+<div id="msgModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Send Message</h3><select id="msgTo" class="mb-3"></select><textarea id="msgContent" rows="4" placeholder="Type your message here..."></textarea><div class="flex gap-3 pt-4"><button onclick="sendNewMessage()" class="flex-1 btn-primary">Send</button><button onclick="closeModal('msgModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
 
 <div id="chatModal" class="modal"><div class="modal-content" style="max-width:700px;"><div class="flex justify-between items-center mb-4"><h3 id="chatModalTitle" class="text-xl font-bold">Chat</h3><button onclick="closeModal('chatModal')" class="text-gray-400 text-2xl hover:text-gray-600">&times;</button></div><button id="deleteConversationBtn" class="delete-conversation-btn"><i class="fas fa-trash-alt mr-2"></i>Delete Entire Conversation</button><div class="chat-container"><div id="chatMessagesArea" class="chat-messages"></div><div class="chat-input-area"><textarea id="replyMsg" rows="2" placeholder="Type your message..."></textarea><button onclick="sendChatMessage()" class="btn-primary">Send</button></div></div></div></div>
 
-<div id="pendingModal" class="modal"><div class="modal-content"><h3 id="pendingModalTitle" class="text-xl font-bold mb-4">Add Pending Payment</h3><input type="hidden" id="pendingId"><input type="text" id="pendingClientName" placeholder="Client Name"><input type="text" id="pendingProjectName" placeholder="Project Name"><input type="number" id="pendingAmount" placeholder="Amount (TZS)"><input type="number" id="pendingPaidAmount" placeholder="Paid Amount (TZS)" value="0"><input type="date" id="pendingDueDate"><select id="pendingStatus"><option value="pending">Pending</option><option value="partial">Partial</option><option value="overdue">Overdue</option></select><textarea id="pendingNotes" rows="2" placeholder="Notes"></textarea><div class="flex gap-3 pt-4"><button onclick="savePendingPayment()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('pendingModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
+<div id="pwdModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Change Password</h3><div class="password-wrapper"><input type="password" id="oldPwd" placeholder="Current Password"><i class="fas fa-eye toggle-password" onclick="togglePassword('oldPwd')"></i></div><div class="password-wrapper mt-2"><input type="password" id="newPwd" placeholder="New Password (min 4 characters)"><i class="fas fa-eye toggle-password" onclick="togglePassword('newPwd')"></i></div><div class="password-wrapper mt-2"><input type="password" id="confirmPwd" placeholder="Confirm Password"><i class="fas fa-eye toggle-password" onclick="togglePassword('confirmPwd')"></i></div><div class="flex gap-3 pt-4"><button onclick="changePassword()" class="flex-1 btn-primary">Change Password</button><button onclick="closeModal('pwdModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
 
-<div id="recordPaymentModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Record Payment</h3><input type="hidden" id="recordPaymentId"><p id="recordPaymentInfo" class="text-sm bg-gray-100 p-2 rounded mb-3"></p><input type="number" id="paymentAmount" placeholder="Payment Amount (TZS)"><div class="flex gap-3 pt-4"><button onclick="recordPaymentSubmit()" class="flex-1 btn-primary">Record</button><button onclick="closeModal('recordPaymentModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
-
-<div id="pwdModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Change Password</h3><div class="password-wrapper"><input type="password" id="oldPwd" placeholder="Current Password"><i class="fas fa-eye toggle-password" onclick="togglePassword('oldPwd')"></i></div><div class="password-wrapper mt-2"><input type="password" id="newPwd" placeholder="New Password"><i class="fas fa-eye toggle-password" onclick="togglePassword('newPwd')"></i></div><div class="password-wrapper mt-2"><input type="password" id="confirmPwd" placeholder="Confirm Password"><i class="fas fa-eye toggle-password" onclick="togglePassword('confirmPwd')"></i></div><div class="flex gap-3 pt-4"><button onclick="changePassword()" class="flex-1 btn-primary">Change</button><button onclick="closeModal('pwdModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
-
-<div id="profilePicModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Change Profile Picture</h3><div class="flex justify-center mb-4"><img id="profilePreview" class="profile-pic" src="upload/profiles/default-avatar.png" alt="Preview" style="width: 120px; height: 120px;"></div><div class="image-upload-area" onclick="document.getElementById('profilePicFile').click()"><i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i><p>Click to upload new profile picture</p></div><input type="file" id="profilePicFile" accept="image/*" class="hidden"><div class="flex gap-3 pt-4"><button onclick="saveProfilePicture()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('profilePicModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
-
-<div id="generalSettingsModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">General Settings</h3><input type="text" id="companyName" placeholder="Company Name"><input type="text" id="companyAddress" placeholder="Company Address"><input type="email" id="companyEmail" placeholder="Company Email"><input type="text" id="companyPhone" placeholder="Company Phone"><div class="flex gap-3 pt-4"><button onclick="saveGeneralSettings()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('generalSettingsModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
-
-<div id="backupModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Backup & Restore</h3><button onclick="createBackup()" class="w-full btn-success mb-3"><i class="fas fa-download mr-2"></i> Backup Database</button><button onclick="restoreBackup()" class="w-full btn-warning mb-3"><i class="fas fa-upload mr-2"></i> Auto Restore</button><button onclick="closeModal('backupModal')" class="w-full bg-gray-200 py-2 rounded">Close</button></div></div>
+<div id="backupModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Backup & Restore</h3><button onclick="createBackup()" class="w-full btn-success mb-3"><i class="fas fa-download mr-2"></i> Backup Database</button><button onclick="restoreBackup()" class="w-full bg-orange-500 text-white py-2 rounded mb-3"><i class="fas fa-upload mr-2"></i> Restore Database</button><button onclick="closeModal('backupModal')" class="w-full bg-gray-200 py-2 rounded">Close</button></div></div>
 
 <script>
     // ==================== CONFIGURATION ====================
@@ -282,14 +241,12 @@
     let transactionsData = [];
     let reportsData = [];
     let messagesData = [];
-    let pendingPaymentsData = [];
+    let departmentsList = [];
     let unviewedProjectsCount = 0;
     let unviewedReportsCount = 0;
-    let currentViewReport = null;
-    let currentProjectView = null;
-    let currentProfilePicture = localStorage.getItem('profile_picture') || 'upload/profiles/default-avatar.png';
-    let departmentsList = [];
     let currentProjectImageFile = null;
+    let currentViewProject = null;
+    let currentViewReport = null;
     
     const departmentNames = {
         1: "Super Admin", 2: "Finance", 3: "Sales & Marketing", 4: "Manager",
@@ -297,9 +254,30 @@
         9: "Architectural", 10: "Survey", 11: "Construction", 12: "Hatimiliki"
     };
     
-    const colorOptions = ["#0f74ba", "#1e3a5f", "#7c3aed", "#059669", "#dc2626", "#d97706", "#0d9488", "#db2777", "#4f46e5", "#10b981", "#06b6d4"];
+    const departmentIcons = {
+        2: "fa-coins", 3: "fa-chart-line", 4: "fa-user-tie", 5: "fa-calendar-check",
+        6: "fa-cubes", 7: "fa-industry", 8: "fa-city", 9: "fa-draw-polygon",
+        10: "fa-drafting-compass", 11: "fa-hard-hat", 12: "fa-file-contract"
+    };
     
-    // ==================== HELPER FUNCTIONS ====================
+    const departmentColors = {
+        2: "bg-emerald-100 text-emerald-600", 3: "bg-orange-100 text-orange-600",
+        4: "bg-blue-100 text-blue-600", 5: "bg-cyan-100 text-cyan-600",
+        6: "bg-amber-100 text-amber-600", 7: "bg-gray-100 text-gray-600",
+        8: "bg-indigo-100 text-indigo-600", 9: "bg-pink-100 text-pink-600",
+        10: "bg-teal-100 text-teal-600", 11: "bg-yellow-100 text-yellow-600",
+        12: "bg-green-100 text-green-600"
+    };
+    
+    const departmentFiles = {
+        2: "finance.html", 3: "sales_marketing.html", 4: "manager.html",
+        5: "secretary.html", 6: "bricks_timber.html", 7: "aluminium.html",
+        8: "town_planning.html", 9: "architectural.html", 10: "survey.html",
+        11: "construction.html", 12: "hatimiliki.html"
+    };
+    
+    const colorOptions = ["#0f74ba", "#1e3a5f", "#7c3aed", "#059669", "#dc2626", "#d97706", "#0d9488", "#db2777", "#4f46e5", "#10b981"];
+    
     function showToast(msg, isError) { 
         let t = document.createElement('div'); 
         t.className = 'toast' + (isError ? ' error' : ''); 
@@ -351,86 +329,35 @@
         return 'role-staff';
     }
     
-    function updateProfilePictures() {
-        const pics = document.querySelectorAll('#sidebarProfilePic, #headerProfilePic, #profilePreview');
-        pics.forEach(pic => { if (pic) pic.src = currentProfilePicture + '?t=' + Date.now(); });
-    }
-    
-    function openProfileSettings() {
-        document.getElementById('profilePreview').src = currentProfilePicture;
-        openModal('profilePicModal');
-    }
-    
-    function saveProfilePicture() {
-        const fileInput = document.getElementById('profilePicFile');
-        if (fileInput.files && fileInput.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                currentProfilePicture = e.target.result;
-                localStorage.setItem('profile_picture', currentProfilePicture);
-                updateProfilePictures();
-                showToast('Profile picture updated');
-                closeModal('profilePicModal');
-            };
-            reader.readAsDataURL(fileInput.files[0]);
-        } else {
-            showToast('Please select an image', true);
-        }
-    }
-    
-    document.getElementById('profilePicFile')?.addEventListener('change', function(e) {
-        if (e.target.files && e.target.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(ev) {
-                document.getElementById('profilePreview').src = ev.target.result;
-            };
-            reader.readAsDataURL(e.target.files[0]);
-        }
-    });
-    
-    document.getElementById('projImageFile')?.addEventListener('change', function(e) {
-        if (e.target.files && e.target.files[0]) {
-            currentProjectImageFile = e.target.files[0];
-            let reader = new FileReader();
-            reader.onload = ev => {
-                document.getElementById('projImagePreview').src = ev.target.result;
-                document.getElementById('projImagePreviewContainer').classList.remove('hidden');
-                document.getElementById('projImageUploadArea').classList.add('hidden');
-            };
-            reader.readAsDataURL(e.target.files[0]);
-        }
-    });
-    
-    function removeProjectImage() {
-        currentProjectImageFile = null;
-        document.getElementById('projImageFile').value = '';
-        document.getElementById('projImagePreviewContainer').classList.add('hidden');
-        document.getElementById('projImageUploadArea').classList.remove('hidden');
-    }
-    
-    function getImageAsBase64(file) { 
-        return new Promise((resolve) => { 
-            if (!file) resolve(''); 
-            let reader = new FileReader(); 
-            reader.onload = () => resolve(reader.result); 
-            reader.readAsDataURL(file); 
-        }); 
-    }
-    
-    function goToMainWebsite() { window.location.href = "index.html"; }
     function closeMobileSidebar() { document.getElementById("mainSidebar").classList.remove("mobile-open"); document.getElementById("mobileMenuOverlay").classList.add("hidden"); }
     
-    function exportCurrentReport() { if (currentViewReport) exportSingleReport(currentViewReport.id); }
-    function exportCurrentReportPDF() { if (currentViewReport) exportSingleReportPDF(currentViewReport.id); }
-    
-    // Update cashflow totals function
-    function updateCashflowTotals() {
-        let totalIncome = transactionsData.filter(t => t.type === 'income').reduce((s, t) => s + parseFloat(t.amount), 0);
-        let totalExpense = transactionsData.filter(t => t.type === 'expense').reduce((s, t) => s + parseFloat(t.amount), 0);
-        let netProfit = totalIncome - totalExpense;
-        let pendingAmount = pendingPaymentsData.reduce((sum, p) => sum + (p.amount - p.paid_amount), 0);
-        return { totalIncome, totalExpense, netProfit, pendingAmount };
+    function goToDepartmentDashboard(deptId) {
+        const file = departmentFiles[deptId];
+        if (file && deptId !== 1) {
+            window.open(file, '_blank');
+        } else {
+            showToast('Department dashboard not available', true);
+        }
     }
+    
+    function toggleSendDropdown(dropdownId) {
+        const dropdown = document.getElementById(dropdownId);
+        document.querySelectorAll('.send-dropdown-content').forEach(d => {
+            if (d.id !== dropdownId) d.style.display = 'none';
+        });
+        if (dropdown) dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+    
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.send-dropdown')) {
+            document.querySelectorAll('.send-dropdown-content').forEach(d => d.style.display = 'none');
+        }
+        const searchInput = document.getElementById('searchInput');
+        const dropdown = document.getElementById('searchResultsDropdown');
+        if (searchInput && dropdown && !searchInput.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.classList.remove('active');
+        }
+    });
     
     // ==================== API CALLS ====================
     async function apiCall(endpoint, method = 'GET', data = null) {
@@ -449,6 +376,7 @@
     
     async function logout() {
         if (confirm('Are you sure?')) {
+            await apiCall('logout.php', 'POST');
             window.location.href = 'login_system.html';
         }
     }
@@ -456,13 +384,13 @@
     async function loadDepartmentsForDropdowns() {
         const res = await apiCall('get_departments.php');
         if (res.success && res.data) {
-            departmentsList = res.data;
+            departmentsList = res.data.filter(d => d.id !== 1);
         } else {
             departmentsList = [
-                { id: 1, name: "Super Admin" }, { id: 2, name: "Finance" }, { id: 3, name: "Sales & Marketing" },
-                { id: 4, name: "Manager" }, { id: 5, name: "Secretary" }, { id: 6, name: "Bricks & Timber" },
-                { id: 7, name: "Aluminium" }, { id: 8, name: "Town Planning" }, { id: 9, name: "Architectural" },
-                { id: 10, name: "Survey" }, { id: 11, name: "Construction" }, { id: 12, name: "Hatimiliki" }
+                { id: 2, name: "Finance" }, { id: 3, name: "Sales & Marketing" }, { id: 4, name: "Manager" },
+                { id: 5, name: "Secretary" }, { id: 6, name: "Bricks & Timber" }, { id: 7, name: "Aluminium" },
+                { id: 8, name: "Town Planning" }, { id: 9, name: "Architectural" }, { id: 10, name: "Survey" },
+                { id: 11, name: "Construction" }, { id: 12, name: "Hatimiliki" }
             ];
         }
         
@@ -472,64 +400,37 @@
             if (select) {
                 select.innerHTML = '<option value="">Select Department</option>';
                 departmentsList.forEach(d => {
-                    if (d.id !== 1) select.innerHTML += `<option value="${d.id}">${escapeHtml(d.name)}</option>`;
+                    select.innerHTML += `<option value="${d.id}">${escapeHtml(d.name)}</option>`;
                 });
             }
         });
     }
     
-    let activityLogs = [{ action: "Super Admin Dashboard initialized", created_at: new Date().toISOString() }];
-    function addLog(action) { activityLogs.unshift({ action: action, created_at: new Date().toISOString() }); if (activityLogs.length > 50) activityLogs.pop(); saveBackup(); }
-    
-    // ==================== AUTO BACKUP SYSTEM ====================
-    function saveBackup() {
-        const backup = {
-            employeesData, projectsData, dailyworkData, transactionsData, reportsData, messagesData, pendingPaymentsData,
-            activityLogs, timestamp: new Date().toISOString()
-        };
-        localStorage.setItem('geotraverse_backup', JSON.stringify(backup));
-    }
-    
-    function loadBackup() {
-        const saved = localStorage.getItem('geotraverse_backup');
-        if (saved) {
-            try {
-                const data = JSON.parse(saved);
-                if (data.employeesData) employeesData = data.employeesData;
-                if (data.projectsData) projectsData = data.projectsData;
-                if (data.dailyworkData) dailyworkData = data.dailyworkData;
-                if (data.transactionsData) transactionsData = data.transactionsData;
-                if (data.reportsData) reportsData = data.reportsData;
-                if (data.messagesData) messagesData = data.messagesData;
-                if (data.pendingPaymentsData) pendingPaymentsData = data.pendingPaymentsData;
-                if (data.activityLogs) activityLogs = data.activityLogs;
-                showToast('Auto backup restored');
-                return true;
-            } catch(e) {}
-        }
-        return false;
-    }
-    
-    function createBackup() {
-        saveBackup();
-        showToast('Backup created successfully!');
-        closeModal('backupModal');
-    }
-    
-    function restoreBackup() {
-        if (loadBackup()) {
-            showToast('Backup restored! Refreshing...');
-            setTimeout(() => location.reload(), 1500);
+    // ==================== UPDATE BADGES ====================
+    function updateProjectBadge() {
+        const badge = document.getElementById('projectBadge');
+        if (unviewedProjectsCount > 0) {
+            badge.style.display = 'inline-block';
+            badge.innerText = unviewedProjectsCount;
         } else {
-            showToast('No backup found', true);
+            badge.style.display = 'none';
         }
-        closeModal('backupModal');
+    }
+    
+    function updateReportBadge() {
+        const badge = document.getElementById('reportBadge');
+        if (unviewedReportsCount > 0) {
+            badge.style.display = 'inline-block';
+            badge.innerText = unviewedReportsCount;
+        } else {
+            badge.style.display = 'none';
+        }
     }
     
     // ==================== NAVIGATION ====================
     function showPage(pageId) {
         const pages = ['dashboardPage', 'employeesPage', 'departmentsPage', 'projectsPage', 
-                      'dailyworkPage', 'cashflowPage', 'pendingPage', 'messagesPage', 'reportsPage', 'settingsPage'];
+                      'dailyworkPage', 'cashflowPage', 'messagesPage', 'reportsPage', 'settingsPage'];
         pages.forEach(page => {
             const el = document.getElementById(page);
             if (el) el.classList.add('hidden');
@@ -548,7 +449,6 @@
         else if (pageId === 'projects') loadProjects();
         else if (pageId === 'dailywork') loadDailyWork();
         else if (pageId === 'cashflow') loadCashflow();
-        else if (pageId === 'pending') loadPendingPayments();
         else if (pageId === 'messages') loadMessages();
         else if (pageId === 'reports') loadReports();
         else if (pageId === 'settings') loadSettings();
@@ -558,9 +458,9 @@
     async function loadDashboard() {
         document.getElementById('dashboardPage').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div><span class="ml-3">Loading...</span></div>';
         
-        const [employees, projects, dailywork, transactions, messages, pendingRes] = await Promise.all([
+        const [employees, projects, dailywork, transactions, messages] = await Promise.all([
             apiCall('get_employees.php'), apiCall('get_projects.php'), apiCall('get_dailywork.php'),
-            apiCall('get_transactions.php'), apiCall('get_messages.php'), apiCall('get_pending_payments.php')
+            apiCall('get_transactions.php'), apiCall('get_messages.php')
         ]);
         
         employeesData = employees.success ? (employees.data || []) : [];
@@ -569,15 +469,18 @@
         dailyworkData = dailywork.success ? (dailywork.data || []) : [];
         transactionsData = transactions.success ? (transactions.data || []) : [];
         messagesData = messages.success ? (messages.data || []) : [];
-        pendingPaymentsData = pendingRes.success ? (pendingRes.data || []) : [];
         
         const unreadCount = messages.unread_count || 0;
         document.getElementById('msgBadge').innerText = unreadCount;
-        document.getElementById('projectBadge').style.display = unviewedProjectsCount > 0 ? 'inline-block' : 'none';
-        if (unviewedProjectsCount > 0) document.getElementById('projectBadge').innerText = unviewedProjectsCount;
-        document.getElementById('pendingBadge').innerText = pendingPaymentsData.length;
+        updateProjectBadge();
+        updateReportBadge();
         
-        const totals = updateCashflowTotals();
+        let totalIncome = 0, totalExpense = 0;
+        transactionsData.forEach(t => {
+            if (t.type === 'income') totalIncome += parseFloat(t.amount);
+            else totalExpense += parseFloat(t.amount);
+        });
+        let netProfit = totalIncome - totalExpense;
         
         let projectsPending = 0, projectsInProgress = 0, projectsCompleted = 0;
         projectsData.forEach(p => {
@@ -587,16 +490,15 @@
         });
         
         const html = `
-            <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-5">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-5">
                 <div class="stat-card cursor-pointer" onclick="showPage('employees')"><div><p class="text-gray-500 text-xs">Employees</p><p class="text-2xl font-bold text-blue-600">${employeesData.length}</p></div><i class="fas fa-users text-blue-500 text-2xl"></i></div>
-                <div class="stat-card cursor-pointer" onclick="showPage('projects')"><div><p class="text-gray-500 text-xs">Projects</p><p class="text-2xl font-bold text-green-600">${projectsData.length}</p>${unviewedProjectsCount > 0 ? `<span class="text-xs text-red-500 ml-2">+${unviewedProjectsCount}</span>` : ''}</div><i class="fas fa-tasks text-green-500 text-2xl"></i></div>
-                <div class="stat-card cursor-pointer" onclick="showPage('cashflow')"><div><p class="text-gray-500 text-xs">Net Profit</p><p class="text-2xl font-bold ${totals.netProfit >= 0 ? 'text-green-600' : 'text-red-600'}">${formatMoney(totals.netProfit)}</p></div><i class="fas fa-chart-line text-blue-500 text-2xl"></i></div>
-                <div class="stat-card cursor-pointer" onclick="showPage('pending')"><div><p class="text-gray-500 text-xs">Pending Payments</p><p class="text-2xl font-bold text-orange-600">${formatMoney(totals.pendingAmount)}</p><p class="text-[10px] text-gray-400">${pendingPaymentsData.length} clients</p></div><i class="fas fa-clock text-orange-500 text-2xl"></i></div>
+                <div class="stat-card cursor-pointer" onclick="showPage('projects')"><div><p class="text-gray-500 text-xs">Projects</p><p class="text-2xl font-bold text-green-600">${projectsData.length}</p>${unviewedProjectsCount > 0 ? `<span class="text-xs text-red-500 ml-2">+${unviewedProjectsCount} new</span>` : ''}</div><i class="fas fa-tasks text-green-500 text-2xl"></i></div>
+                <div class="stat-card cursor-pointer" onclick="showPage('cashflow')"><div><p class="text-gray-500 text-xs">Net Profit</p><p class="text-2xl font-bold ${netProfit >= 0 ? 'text-green-600' : 'text-red-600'}">${formatMoney(netProfit)}</p></div><i class="fas fa-chart-line text-blue-500 text-2xl"></i></div>
                 <div class="stat-card cursor-pointer" onclick="showPage('messages')"><div><p class="text-gray-500 text-xs">Unread</p><p class="text-2xl font-bold text-red-600">${unreadCount}</p></div><i class="fas fa-envelope text-red-500 text-2xl"></i></div>
             </div>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
                 <div class="bg-white rounded-xl p-5 shadow-sm"><h3 class="font-semibold mb-3">Project Status</h3><canvas id="statusChart" height="200"></canvas></div>
-                <div class="bg-white rounded-xl p-5 shadow-sm"><h3 class="font-semibold mb-3">Quick Actions</h3><div class="grid grid-cols-2 gap-3"><button onclick="openModal('empModal')" class="bg-blue-600 text-white py-2 rounded text-sm"><i class="fas fa-user-plus mr-1"></i> Add Employee</button><button onclick="openAddProjectModal()" class="bg-green-600 text-white py-2 rounded text-sm"><i class="fas fa-plus mr-1"></i> Add Project</button><button onclick="openModal('dailyworkModal')" class="bg-purple-600 text-white py-2 rounded text-sm"><i class="fas fa-tasks mr-1"></i> Add Daily Work</button><button onclick="openModal('transModal')" class="bg-orange-600 text-white py-2 rounded text-sm"><i class="fas fa-coins mr-1"></i> Add Transaction</button><button onclick="openModal('pendingModal')" class="bg-amber-600 text-white py-2 rounded text-sm"><i class="fas fa-clock mr-1"></i> Add Pending</button><button onclick="openModal('msgModal')" class="bg-indigo-600 text-white py-2 rounded text-sm"><i class="fas fa-paper-plane mr-1"></i> Send Message</button></div></div>
+                <div class="bg-white rounded-xl p-5 shadow-sm"><h3 class="font-semibold mb-3">Quick Actions</h3><div class="grid grid-cols-2 gap-3"><button onclick="openModal('empModal')" class="bg-blue-600 text-white py-2 rounded text-sm"><i class="fas fa-user-plus mr-1"></i> Add Employee</button><button onclick="openAddProjectModal()" class="bg-green-600 text-white py-2 rounded text-sm"><i class="fas fa-plus mr-1"></i> Add Project</button><button onclick="openModal('dailyworkModal')" class="bg-purple-600 text-white py-2 rounded text-sm"><i class="fas fa-tasks mr-1"></i> Add Daily Work</button><button onclick="openModal('transModal')" class="bg-orange-600 text-white py-2 rounded text-sm"><i class="fas fa-coins mr-1"></i> Add Transaction</button><button onclick="openModal('msgModal')" class="bg-indigo-600 text-white py-2 rounded text-sm"><i class="fas fa-paper-plane mr-1"></i> Send Message</button><button onclick="openModal('reportModal')" class="bg-rose-600 text-white py-2 rounded text-sm"><i class="fas fa-chart-bar mr-1"></i> Add Report</button></div></div>
             </div>
         `;
         document.getElementById('dashboardPage').innerHTML = html;
@@ -620,22 +522,44 @@
         const res = await apiCall('get_employees.php');
         if (res.success) employeesData = res.data || [];
         
-        let html = `<div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold"><i class="fas fa-users text-blue-600 mr-2"></i>Employees Management</h2><button onclick="openModal('empModal')" class="btn-primary"><i class="fas fa-plus mr-1"></i>Add Employee</button></div>
-            <div class="bg-white rounded-xl shadow-sm p-3 employees-table"><div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th class="px-3 py-2">ID</th><th class="px-3 py-2">Name</th><th class="px-3 py-2">Email</th><th class="px-3 py-2">Department</th><th class="px-3 py-2">Role</th><th class="px-3 py-2">Salary</th><th class="px-3 py-2">Actions</th></tr></thead><tbody>`;
+        let html = `<div class="flex justify-between items-center mb-4 flex-wrap gap-2">
+            <h2 class="text-xl font-bold"><i class="fas fa-users text-blue-600 mr-2"></i>Employees Management</h2>
+            <div class="flex gap-2">
+                <button onclick="openModal('empModal')" class="btn-primary"><i class="fas fa-plus mr-1"></i>Add Employee</button>
+                <button onclick="exportEmployeesToExcel()" class="btn-success"><i class="fas fa-file-excel mr-1"></i> Excel</button>
+                <button onclick="exportEmployeesToPDF()" class="btn-danger"><i class="fas fa-file-pdf mr-1"></i> PDF</button>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm p-3 employees-table"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th class="p-2">ID</th><th class="p-2">Name</th><th class="p-2">Email</th><th class="p-2">Department</th><th class="p-2">Role</th><th class="p-2">Salary</th><th class="p-2">Actions</th></tr></thead><tbody>`;
         for (let e of employeesData) {
-            html += `<tr class="border-b hover:bg-gray-50"><td class="px-3 py-2">${e.id}</td><td class="px-3 py-2 font-medium">${escapeHtml(e.name)}</td><td class="px-3 py-2">${escapeHtml(e.email)}</td><td class="px-3 py-2"><span class="px-2 py-0.5 rounded-full text-xs bg-blue-100 text-blue-700">${departmentNames[e.department_id] || e.department_id}</span></td><td class="px-3 py-2"><span class="role-badge ${getRoleBadgeClass(e.role)}">${e.role || 'Staff'}</span></td><td class="px-3 py-2 text-green-600">${formatMoney(e.salary)}</td>
-            <td class="px-3 py-2"><div class="action-buttons"><button onclick="viewEmployee(${e.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="editEmployee(${e.id})" class="action-btn edit"><i class="fas fa-edit"></i></button><button onclick="deleteEmployee(${e.id})" class="action-btn delete"><i class="fas fa-trash"></i></button></div></td></tr>`;
+            html += `<tr class="border-b"><td class="p-2">${e.id}</td><td class="p-2 font-medium">${escapeHtml(e.name)}<\/td><td class="p-2">${escapeHtml(e.email)}<\/td><td class="p-2">${departmentNames[e.department_id] || e.department_id}<\/td><td class="p-2"><span class="role-badge ${getRoleBadgeClass(e.role)}">${e.role || 'Staff'}</span><\/td><td class="p-2 text-green-600">${formatMoney(e.salary)}<\/td>
+            <td class="p-2"><div class="action-buttons"><button onclick="viewEmployee(${e.id})" class="action-btn view"><i class="fas fa-eye"></i><\/button><button onclick="editEmployee(${e.id})" class="action-btn edit"><i class="fas fa-edit"></i><\/button><button onclick="deleteEmployee(${e.id})" class="action-btn delete"><i class="fas fa-trash"></i><\/button><\/div><\/td><\/tr>`;
         }
-        if (employeesData.length === 0) html += `<tr><td colspan="7" class="text-center py-8 text-gray-400">No employees found</td></tr>`;
-        html += `</tbody></table></div></div>`;
+        if (employeesData.length === 0) html += `<td><td colspan="7" class="text-center py-8 text-gray-400">No employees found<\/td><\/tr>`;
+        html += `<\/tbody><\/table><\/div>`;
         document.getElementById('employeesPage').innerHTML = html;
-        saveBackup();
     }
     
-    async function viewEmployee(id) {
+    function exportEmployeesToExcel() {
+        let ws = [['ID', 'Name', 'Email', 'Phone', 'Department', 'Role', 'Salary']];
+        employeesData.forEach(e => ws.push([e.id, e.name, e.email, e.phone || '-', departmentNames[e.department_id], e.role || 'Staff', e.salary]));
+        let wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), 'Employees');
+        XLSX.writeFile(wb, `employees_${new Date().toISOString().slice(0,10)}.xlsx`);
+        showToast('Exported to Excel');
+    }
+    
+    function exportEmployeesToPDF() {
+        let element = document.createElement('div');
+        element.innerHTML = `<div style="padding:20px"><h1>Employees Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><thead><tr><th>Name</th><th>Email</th><th>Department</th><th>Role</th><th>Salary</th></tr></thead><tbody>${employeesData.map(e => `<tr><td class="px-2 py-1">${e.name}</td><td class="px-2 py-1">${e.email}</td><td class="px-2 py-1">${departmentNames[e.department_id]}</td><td class="px-2 py-1">${e.role || 'Staff'}</td><td class="px-2 py-1">${formatMoney(e.salary)}</td><tr>`).join('')}</tbody></table></div>`;
+        html2pdf().set({ margin: 0.5, filename: `employees_report.pdf` }).from(element).save();
+        showToast('Exported to PDF');
+    }
+    
+    function viewEmployee(id) {
         const emp = employeesData.find(e => e.id === id);
         if (emp) {
-            document.getElementById('viewEmpContent').innerHTML = `<p><strong>Name:</strong> ${escapeHtml(emp.name)}</p><p><strong>Email:</strong> ${escapeHtml(emp.email)}</p><p><strong>Phone:</strong> ${escapeHtml(emp.phone || '-')}</p><p><strong>Department:</strong> ${departmentNames[emp.department_id]}</p><p><strong>Role:</strong> ${emp.role || 'Staff'}</p><p><strong>Salary:</strong> ${formatMoney(emp.salary)}</p>`;
+            document.getElementById('viewEmpContent').innerHTML = `<p><strong>Name:</strong> ${escapeHtml(emp.name)}<\/p><p><strong>Email:</strong> ${escapeHtml(emp.email)}<\/p><p><strong>Phone:</strong> ${escapeHtml(emp.phone || '-')}<\/p><p><strong>Department:</strong> ${departmentNames[emp.department_id]}<\/p><p><strong>Role:</strong> ${emp.role || 'Staff'}<\/p><p><strong>Salary:</strong> ${formatMoney(emp.salary)}<\/p>`;
             openModal('viewEmpModal');
         }
     }
@@ -669,15 +593,13 @@
         
         if (res.success) { showToast(id ? 'Employee updated' : 'Employee added'); closeModal('empModal'); loadEmployees(); loadDashboard(); }
         else showToast(res.message || 'Failed', true);
-        saveBackup();
     }
     
     async function deleteEmployee(id) {
         if (confirm('Delete this employee?')) {
             const res = await apiCall('delete_employee.php', 'DELETE', { id });
             if (res.success) { showToast('Employee deleted'); loadEmployees(); loadDashboard(); }
-            else { employeesData = employeesData.filter(e => e.id !== id); loadEmployees(); showToast('Employee deleted locally'); }
-            saveBackup();
+            else showToast(res.message || 'Failed', true);
         }
     }
     
@@ -686,100 +608,127 @@
         document.getElementById('departmentsPage').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div><span class="ml-3">Loading departments...</span></div>';
         const res = await apiCall('get_departments.php');
         const depts = res.success ? (res.data || []) : departmentsList;
-        let html = `<h2 class="text-xl font-bold mb-4"><i class="fas fa-building text-blue-500 mr-2"></i>Departments (${depts.length})</h2><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">`;
+        let html = `<h2 class="text-xl font-bold mb-4"><i class="fas fa-building text-blue-500 mr-2"></i>Departments (${depts.length})<\/h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">`;
         for (let d of depts) {
-            html += `<div class="dept-card"><div class="dept-icon bg-blue-100 text-blue-600 w-10 h-10 rounded-xl flex items-center justify-center"><i class="fas fa-building"></i></div><div class="dept-info"><h4>${escapeHtml(d.name)}</h4><p>${d.email || ''}</p></div></div>`;
+            if (d.id === 1) continue;
+            const iconClass = departmentColors[d.id] || 'bg-gray-100 text-gray-600';
+            const icon = departmentIcons[d.id] || 'fa-building';
+            html += `<div class="dept-card" onclick="goToDepartmentDashboard(${d.id})">
+                <div class="w-12 h-12 ${iconClass} rounded-xl flex items-center justify-center"><i class="fas ${icon} text-xl"></i><\/div>
+                <div class="flex-1"><h4 class="font-semibold">${escapeHtml(d.name)}<\/h4><p class="text-xs text-gray-500">${d.email || ''}<\/p><\/div>
+                <i class="fas fa-external-link-alt text-gray-400 text-sm"></i>
+            <\/div>`;
         }
-        html += `</div>`;
+        html += `<\/div>`;
         document.getElementById('departmentsPage').innerHTML = html;
     }
     
-    // ==================== PROJECTS ====================
+    // ==================== PROJECTS (with Upload Project Button) ====================
     async function loadProjects() {
         document.getElementById('projectsPage').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div><span class="ml-3">Loading projects...</span></div>';
         const res = await apiCall('get_projects.php');
         if (res.success) projectsData = res.data || [];
         unviewedProjectsCount = res.unviewed_count || 0;
-        document.getElementById('projectBadge').style.display = unviewedProjectsCount > 0 ? 'inline-block' : 'none';
-        if (unviewedProjectsCount > 0) document.getElementById('projectBadge').innerText = unviewedProjectsCount;
+        updateProjectBadge();
         
-        let html = `<div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold"><i class="fas fa-tasks text-green-600 mr-2"></i>Projects Management</h2><button onclick="openAddProjectModal()" class="btn-primary"><i class="fas fa-plus mr-1"></i>Add Project</button></div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="projectsGrid"></div>`;
+        const sortedProjects = [...projectsData].sort((a, b) => {
+            if (a.is_viewed_by_admin === b.is_viewed_by_admin) {
+                return new Date(b.created_at) - new Date(a.created_at);
+            }
+            if (a.is_viewed_by_admin === 0) return -1;
+            return 1;
+        });
+        
+        let html = `<div class="flex justify-between items-center mb-4 flex-wrap gap-2">
+            <h2 class="text-xl font-bold"><i class="fas fa-tasks text-green-600 mr-2"></i>Projects (${projectsData.length})</h2>
+            <button onclick="openAddProjectModal()" class="btn-primary"><i class="fas fa-upload mr-1"></i> Upload Project</button>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="projectsGrid"><\/div>`;
         document.getElementById('projectsPage').innerHTML = html;
         
-        if (projectsData.length === 0) {
-            document.getElementById('projectsGrid').innerHTML = '<div class="col-span-3 text-center py-8 text-gray-400">No projects found</div>';
+        if (sortedProjects.length === 0) {
+            document.getElementById('projectsGrid').innerHTML = '<div class="col-span-3 text-center py-8 text-gray-400">No projects found. Click "Upload Project" to add one.<\/div>';
             return;
         }
         
         let projectsHtml = '';
-        for (let p of projectsData) {
-            projectsHtml += `<div class="project-card"><div class="flex justify-between items-start"><h4 class="font-semibold">${escapeHtml(p.name)}</h4><span class="status-badge ${p.status === 'pending' ? 'status-pending' : p.status === 'in_progress' ? 'status-progress' : 'status-completed'}">${p.status}</span></div>
-                <p class="text-sm text-gray-500 mt-1">${escapeHtml(p.client_name || 'N/A')}</p><p class="text-lg font-bold text-blue-600 mt-2">${formatMoney(p.amount)}</p>
-                <div class="mt-2"><div class="flex justify-between text-xs"><span>Progress</span><span>${p.progress || 0}%</span></div><div class="w-full bg-gray-200 rounded-full h-1.5"><div class="bg-blue-600 h-1.5 rounded-full" style="width:${p.progress || 0}%"></div></div></div>
-                <div class="action-buttons mt-3"><button onclick="viewProjectDetails(${p.id})" class="action-btn view"><i class="fas fa-eye"></i> View</button><button onclick="editProject(${p.id})" class="action-btn edit"><i class="fas fa-edit"></i> Edit</button><button onclick="deleteProject(${p.id})" class="action-btn delete"><i class="fas fa-trash"></i> Delete</button></div>
-            </div>`;
+        for (let p of sortedProjects) {
+            const isUnviewed = p.is_viewed_by_admin == 0 && p.department_id != 1;
+            const imageHtml = p.image ? `<img src="${p.image}" class="w-full h-40 object-cover rounded-lg mb-3" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 fill=%22%23ccc%22 viewBox=%220 0 24 24%22%3E%3Cpath d=%22M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 10h2v7H7zm4-3h2v10h-2zm4 6h2v4h-2z%22/%3E%3C/svg%3E'">` : '<div class="w-full h-40 bg-gray-100 rounded-lg mb-3 flex items-center justify-center text-gray-400"><i class="fas fa-image text-3xl"></i></div>';
+            
+            projectsHtml += `<div class="project-card relative" onclick="viewProjectDetails(${p.id})">
+                ${isUnviewed ? '<div class="new-badge" onclick="event.stopPropagation(); markProjectAsViewed(' + p.id + ')">!</div>' : ''}
+                ${imageHtml}
+                <div class="flex justify-between items-start"><h4 class="font-semibold">${escapeHtml(p.name)}<\/h4><span class="status-badge ${p.status === 'pending' ? 'status-pending' : p.status === 'in_progress' ? 'status-progress' : 'status-completed'}">${p.status}</span><\/div>
+                <p class="text-sm text-gray-500 mt-1">Client: ${escapeHtml(p.client_name || 'N/A')}<\/p>
+                <p class="text-lg font-bold text-blue-600 mt-2">${formatMoney(p.amount)}<\/p>
+                <div class="mt-2"><div class="flex justify-between text-xs"><span>Progress</span><span>${p.progress || 0}%</span><\/div><div class="w-full bg-gray-200 rounded-full h-1.5"><div class="bg-blue-600 h-1.5 rounded-full" style="width:${p.progress || 0}%"><\/div><\/div><\/div>
+                <div class="action-buttons mt-3"><button onclick="event.stopPropagation(); viewProjectDetails(${p.id})" class="action-btn view"><i class="fas fa-eye"></i> View<\/button><button onclick="event.stopPropagation(); editProject(${p.id})" class="action-btn edit"><i class="fas fa-edit"></i> Edit<\/button><button onclick="event.stopPropagation(); deleteProject(${p.id})" class="action-btn delete"><i class="fas fa-trash"></i> Delete<\/button><\/div>
+            <\/div>`;
         }
         document.getElementById('projectsGrid').innerHTML = projectsHtml;
-        saveBackup();
+    }
+    
+    async function markProjectAsViewed(projectId) {
+        const res = await apiCall('mark_project_viewed.php', 'POST', { project_id: projectId });
+        if (res.success) { loadProjects(); loadDashboard(); }
+        else { const p = projectsData.find(p => p.id === projectId); if (p) p.is_viewed_by_admin = 1; loadProjects(); }
     }
     
     function viewProjectDetails(id) {
         const p = projectsData.find(p => p.id === id);
         if (p) {
-            currentProjectView = p;
-            let imgHtml = p.image ? `<img src="${p.image}" class="w-full h-40 object-cover rounded-lg mb-3">` : '';
-            document.getElementById('viewProjContent').innerHTML = `${imgHtml}<p><strong>Name:</strong> ${p.name}</p><p><strong>Client:</strong> ${p.client_name}</p><p><strong>Amount:</strong> ${formatMoney(p.amount)}</p><p><strong>Status:</strong> ${p.status}</p><p><strong>Progress:</strong> ${p.progress}%</p><p><strong>Location:</strong> ${escapeHtml(p.location)}</p><p><strong>Description:</strong> ${escapeHtml(p.description)}</p>`;
+            currentViewProject = p;
+            if (p.is_viewed_by_admin == 0 && p.department_id != 1) markProjectAsViewed(id);
             
-            let buttonsHtml = `
-                <button onclick="exportProjectExcel(${p.id})" class="detail-btn excel"><i class="fas fa-file-excel"></i> Export Excel</button>
-                <button onclick="exportProjectPDF(${p.id})" class="detail-btn pdf"><i class="fas fa-file-pdf"></i> Export PDF</button>
+            const imageHtml = p.image ? `<img src="${p.image}" class="w-full h-48 object-cover rounded-lg mb-3">` : '';
+            document.getElementById('viewProjContent').innerHTML = `${imageHtml}<p><strong>Name:</strong> ${escapeHtml(p.name)}<\/p><p><strong>Client:</strong> ${escapeHtml(p.client_name || 'N/A')}<\/p><p><strong>Amount:</strong> ${formatMoney(p.amount)}<\/p><p><strong>Status:</strong> ${p.status}<\/p><p><strong>Progress:</strong> ${p.progress}%<\/p><p><strong>Location:</strong> ${escapeHtml(p.location || 'N/A')}<\/p><p><strong>Description:</strong> ${escapeHtml(p.description || 'N/A')}<\/p><p><strong>Created:</strong> ${formatDate(p.created_at)}<\/p>`;
+            
+            let deptOptions = '';
+            departmentsList.forEach(d => {
+                deptOptions += `<a onclick="sendProjectToDept(${p.id}, ${d.id})">${escapeHtml(d.name)}</a>`;
+            });
+            
+            document.getElementById('viewProjButtons').innerHTML = `
+                <button onclick="exportSingleProjectExcel(${p.id})" class="detail-btn excel"><i class="fas fa-file-excel"></i> Export Excel</button>
+                <button onclick="exportSingleProjectPDF(${p.id})" class="detail-btn pdf"><i class="fas fa-file-pdf"></i> Export PDF</button>
                 <div class="send-dropdown" style="display:inline-block;">
-                    <button class="detail-btn send" onclick="toggleProjectSendDropdown(${p.id})"><i class="fas fa-paper-plane"></i> Send Project</button>
-                    <div id="projectSendDropdown-${p.id}" class="send-dropdown-content" style="display:none; position:absolute; z-index:1001;">`;
-            for (let d of departmentsList) {
-                if (d.id !== 1) buttonsHtml += `<a onclick="sendProjectToDept(${p.id}, ${d.id})">${escapeHtml(d.name)}</a>`;
-            }
-            buttonsHtml += `</div></div>`;
-            document.getElementById('viewProjButtons').innerHTML = buttonsHtml;
+                    <button class="detail-btn send" onclick="toggleSendDropdown('projectSendDropdown-${p.id}')"><i class="fas fa-paper-plane"></i> Send to Department</button>
+                    <div id="projectSendDropdown-${p.id}" class="send-dropdown-content" style="display:none;">
+                        ${deptOptions}
+                    </div>
+                </div>
+            `;
             openModal('viewProjModal');
         }
     }
     
-    function toggleProjectSendDropdown(projectId) {
-        const dropdown = document.getElementById(`projectSendDropdown-${projectId}`);
-        document.querySelectorAll('[id^="projectSendDropdown-"]').forEach(d => {
-            if (d.id !== `projectSendDropdown-${projectId}`) d.style.display = 'none';
-        });
-        if (dropdown) dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-    }
-    
-    function exportProjectExcel(id) {
-        const p = projectsData.find(p => p.id === id);
+    function exportSingleProjectExcel(projectId) {
+        const p = projectsData.find(p => p.id === projectId);
         if (p) {
             let ws = [['ID', 'Name', 'Client', 'Amount', 'Location', 'Status', 'Progress', 'Description']];
-            ws.push([p.id, p.name, p.client_name, p.amount, p.location, p.status, p.progress, p.description]);
+            ws.push([p.id, p.name, p.client_name || '-', p.amount, p.location || '-', p.status, p.progress, p.description || '-']);
             let wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), 'Project');
             XLSX.writeFile(wb, `project_${p.id}.xlsx`);
             showToast('Exported to Excel');
         }
+        const dropdown = document.getElementById(`projectSendDropdown-${projectId}`);
+        if (dropdown) dropdown.style.display = 'none';
     }
     
-    function exportProjectPDF(id) {
-        const p = projectsData.find(p => p.id === id);
+    function exportSingleProjectPDF(projectId) {
+        const p = projectsData.find(p => p.id === projectId);
         if (p) {
             let element = document.createElement('div');
             let imgHtml = p.image ? `<img src="${p.image}" style="max-width:100%; margin:10px 0;">` : '';
-            element.innerHTML = `<div style="padding:20px"><h1 style="color:#0f74ba;">${escapeHtml(p.name)}</h1>${imgHtml}
-                <table style="width:100%; border-collapse:collapse;"><tr><td style="padding:8px; border:1px solid #ddd;"><strong>Client:</strong></td><td style="padding:8px; border:1px solid #ddd;">${escapeHtml(p.client_name)}<\/td><\/tr>
-                <tr><td style="padding:8px; border:1px solid #ddd;"><strong>Amount:</strong></td><td style="padding:8px; border:1px solid #ddd;">${formatMoney(p.amount)}<\/td><\/tr>
-                <tr><td style="padding:8px; border:1px solid #ddd;"><strong>Status:</strong></td><td style="padding:8px; border:1px solid #ddd;">${p.status}<\/td><\/tr>
-                <tr><td style="padding:8px; border:1px solid #ddd;"><strong>Progress:</strong></td><td style="padding:8px; border:1px solid #ddd;">${p.progress}%<\/td><\/tr><\/table>
-                <p>Generated: ${new Date().toLocaleString()}<\/p><\/div>`;
+            element.innerHTML = `<div style="padding:20px"><h1 style="color:#0f74ba;">${escapeHtml(p.name)}<\/h1>${imgHtml}<table style="width:100%; border-collapse:collapse;"><tr><td style="padding:8px; border:1px solid #ddd;"><strong>Client:<\/strong><\/td><td style="padding:8px; border:1px solid #ddd;">${escapeHtml(p.client_name || 'N/A')}<\/td><\/tr><tr><td style="padding:8px; border:1px solid #ddd;"><strong>Amount:<\/strong><\/td><td style="padding:8px; border:1px solid #ddd;">${formatMoney(p.amount)}<\/td><\/tr><tr><td style="padding:8px; border:1px solid #ddd;"><strong>Status:<\/strong><\/td><td style="padding:8px; border:1px solid #ddd;">${p.status}<\/td><\/tr><\/table><p>Generated: ${new Date().toLocaleString()}<\/p><\/div>`;
             html2pdf().set({ margin: 0.5, filename: `project_${p.id}.pdf` }).from(element).save();
             showToast('Exported to PDF');
         }
+        const dropdown = document.getElementById(`projectSendDropdown-${projectId}`);
+        if (dropdown) dropdown.style.display = 'none';
     }
     
     async function sendProjectToDept(projectId, deptId) {
@@ -818,40 +767,74 @@
             document.getElementById('projStatus').value = p.status;
             document.getElementById('projProgress').value = p.progress;
             document.getElementById('projDept').value = p.department_id;
-            if (p.image) {
+            if (p.image && p.image !== '') {
                 document.getElementById('projImagePreview').src = p.image;
                 document.getElementById('projImagePreviewContainer').classList.remove('hidden');
                 document.getElementById('projImageUploadArea').classList.add('hidden');
-            } else {
-                document.getElementById('projImagePreviewContainer').classList.add('hidden');
-                document.getElementById('projImageUploadArea').classList.remove('hidden');
             }
             openModal('projModal');
         }
     }
     
+    document.getElementById('projImageFile')?.addEventListener('change', function(e) {
+        if (e.target.files && e.target.files[0]) {
+            currentProjectImageFile = e.target.files[0];
+            let reader = new FileReader();
+            reader.onload = ev => {
+                document.getElementById('projImagePreview').src = ev.target.result;
+                document.getElementById('projImagePreviewContainer').classList.remove('hidden');
+                document.getElementById('projImageUploadArea').classList.add('hidden');
+            };
+            reader.readAsDataURL(e.target.files[0]);
+        }
+    });
+    
+    function removeProjectImage() {
+        currentProjectImageFile = null;
+        document.getElementById('projImageFile').value = '';
+        document.getElementById('projImagePreviewContainer').classList.add('hidden');
+        document.getElementById('projImageUploadArea').classList.remove('hidden');
+    }
+    
+    function getImageAsBase64(file) { 
+        return new Promise((resolve) => { 
+            if (!file) resolve(''); 
+            let reader = new FileReader(); 
+            reader.onload = () => resolve(reader.result); 
+            reader.readAsDataURL(file); 
+        }); 
+    }
+    
     async function saveProject() {
+        let id = document.getElementById('projId').value;
         let name = document.getElementById('projName').value.trim();
         if (!name) { showToast('Project name required', true); return; }
+        
         let img = await getImageAsBase64(currentProjectImageFile);
-        let id = document.getElementById('projId').value;
-        let data = { name: name, client_name: document.getElementById('projClient').value, amount: parseFloat(document.getElementById('projAmount').value) || 0, location: document.getElementById('projLocation').value, description: document.getElementById('projDesc').value, status: document.getElementById('projStatus').value, progress: parseInt(document.getElementById('projProgress').value) || 0, department_id: parseInt(document.getElementById('projDept').value) || 1, image: img };
+        let data = { 
+            name: name, client_name: document.getElementById('projClient').value, 
+            amount: parseFloat(document.getElementById('projAmount').value) || 0, 
+            location: document.getElementById('projLocation').value, 
+            description: document.getElementById('projDesc').value, 
+            status: document.getElementById('projStatus').value, 
+            progress: parseInt(document.getElementById('projProgress').value) || 0, 
+            department_id: parseInt(document.getElementById('projDept').value) || 1,
+            image: img
+        };
         
         let res;
         if (id) { data.id = parseInt(id); res = await apiCall('update_project.php', 'PUT', data); }
         else { res = await apiCall('add_project.php', 'POST', data); }
         
         if (res.success) { showToast(id ? 'Project updated' : 'Project added'); closeModal('projModal'); loadProjects(); loadDashboard(); }
-        else { if (id) { const idx = projectsData.findIndex(p => p.id == id); if (idx !== -1) projectsData[idx] = data; } else { projectsData.unshift(data); } loadProjects(); showToast(id ? 'Project updated locally' : 'Project added locally'); }
-        saveBackup();
+        else showToast(res.message || 'Failed', true);
     }
     
     async function deleteProject(id) {
         if (confirm('Delete this project?')) {
             const res = await apiCall('delete_project.php', 'DELETE', { id });
-            if (res.success) { showToast('Deleted'); loadProjects(); loadDashboard(); }
-            else { projectsData = projectsData.filter(p => p.id !== id); loadProjects(); showToast('Deleted locally'); }
-            saveBackup();
+            if (res.success) { showToast('Project deleted'); loadProjects(); loadDashboard(); }
+            else showToast(res.message || 'Failed', true);
         }
     }
     
@@ -861,22 +844,19 @@
         const res = await apiCall('get_dailywork.php');
         if (res.success) dailyworkData = res.data || [];
         
-        let html = `<div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold"><i class="fas fa-calendar-day text-purple-600 mr-2"></i>Daily Work</h2><div><button onclick="openModal('dailyworkModal')" class="btn-primary mr-2"><i class="fas fa-plus mr-1"></i>Add</button><div class="send-dropdown" style="display:inline-block;"><button class="btn-primary" onclick="toggleDailyExportDropdown()"><i class="fas fa-download mr-1"></i> Export</button><div id="dailyExportDropdown" class="send-dropdown-content" style="display:none;"><a onclick="exportDailyWorkToExcel()">📊 Export to Excel</a><a onclick="exportDailyWorkToPDF()">📄 Export to PDF</a></div></div></div></div>
-            <div class="bg-white rounded-xl p-3"><div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th>Date</th><th>Department</th><th>Project</th><th>Income</th><th>Expenses</th><th>Profit</th><th>Status</th><th>Actions</th></tr></thead><tbody>`;
+        let html = `<div class="flex justify-between items-center mb-4 flex-wrap gap-2">
+            <h2 class="text-xl font-bold"><i class="fas fa-calendar-day text-purple-600 mr-2"></i>Daily Work</h2>
+            <div class="flex gap-2"><button onclick="openModal('dailyworkModal')" class="btn-primary"><i class="fas fa-plus mr-1"></i>Add</button><button onclick="exportDailyWorkToExcel()" class="btn-success"><i class="fas fa-file-excel mr-1"></i> Excel</button><button onclick="exportDailyWorkToPDF()" class="btn-danger"><i class="fas fa-file-pdf mr-1"></i> PDF</button></div>
+        </div>
+        <div class="bg-white rounded-xl p-3 overflow-x-auto"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th>Date</th><th>Department</th><th>Project</th><th>Income</th><th>Expenses</th><th>Profit</th><th>Status</th><th>Actions</th></tr></thead><tbody>`;
         for (let w of dailyworkData) {
             let profit = (parseFloat(w.income) || 0) - (parseFloat(w.expenses) || 0);
             html += `<tr class="border-b"><td class="p-2">${w.date}</td><td class="p-2">${departmentNames[w.department_id] || w.department_id}</td><td class="p-2">${escapeHtml(w.project_name)}<\/td><td class="p-2 text-green-600">${formatMoney(w.income)}<\/td><td class="p-2 text-red-600">${formatMoney(w.expenses)}<\/td><td class="p-2 ${profit >= 0 ? 'text-green-600' : 'text-red-600'}">${formatMoney(profit)}<\/td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-xs ${w.status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}">${w.status}</span><\/td>
             <td class="p-2"><div class="action-buttons"><button onclick="viewDailyWork(${w.id})" class="action-btn view"><i class="fas fa-eye"></i><\/button><button onclick="editDailyWork(${w.id})" class="action-btn edit"><i class="fas fa-edit"></i><\/button><button onclick="deleteDailyWork(${w.id})" class="action-btn delete"><i class="fas fa-trash"></i><\/button><\/div><\/td><\/tr>`;
         }
         if (dailyworkData.length === 0) html += `<tr><td colspan="8" class="text-center py-8 text-gray-400">No records<\/td><\/tr>`;
-        html += `<\/tbody><\/table><\/div><\/div>`;
+        html += `<\/tbody><\/table><\/div>`;
         document.getElementById('dailyworkPage').innerHTML = html;
-        saveBackup();
-    }
-    
-    function toggleDailyExportDropdown() {
-        const dropdown = document.getElementById('dailyExportDropdown');
-        if (dropdown) dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
     }
     
     function exportDailyWorkToExcel() {
@@ -886,24 +866,20 @@
         XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), 'DailyWork');
         XLSX.writeFile(wb, `dailywork_${new Date().toISOString().slice(0,10)}.xlsx`);
         showToast('Exported to Excel');
-        const dropdown = document.getElementById('dailyExportDropdown');
-        if (dropdown) dropdown.style.display = 'none';
     }
     
     function exportDailyWorkToPDF() {
         let element = document.createElement('div');
-        element.innerHTML = `<div style="padding:20px"><h1>Daily Work Report</h1><p>${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8">${dailyworkData.map(w => `<tr><td class="px-2 py-1">${w.date}<\/td><td class="px-2 py-1">${w.project_name}<\/td><td class="px-2 py-1">${formatMoney(w.income)}<\/td><td class="px-2 py-1">${formatMoney(w.expenses)}<\/td><td class="px-2 py-1">${formatMoney(w.income - w.expenses)}<\/td><td class="px-2 py-1">${w.status}<\/td><\/tr>`).join('')}<\/table><\/div>`;
+        element.innerHTML = `<div style="padding:20px"><h1>Daily Work Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><thead><tr><th>Date</th><th>Project</th><th>Income</th><th>Expenses</th><th>Profit</th><th>Status</th></tr></thead><tbody>${dailyworkData.map(w => `<tr><td class="px-2 py-1">${w.date}</td><td class="px-2 py-1">${w.project_name}</td><td class="px-2 py-1">${formatMoney(w.income)}<\/td><td class="px-2 py-1">${formatMoney(w.expenses)}<\/td><td class="px-2 py-1">${formatMoney(w.income - w.expenses)}<\/td><td class="px-2 py-1">${w.status}<\/td><\/tr>`).join('')}<\/table><\/div>`;
         html2pdf().set({ margin: 0.5, filename: `dailywork_report.pdf` }).from(element).save();
         showToast('Exported to PDF');
-        const dropdown = document.getElementById('dailyExportDropdown');
-        if (dropdown) dropdown.style.display = 'none';
     }
     
     function viewDailyWork(id) {
         const w = dailyworkData.find(w => w.id === id);
         if (w) {
             let profit = (parseFloat(w.income) || 0) - (parseFloat(w.expenses) || 0);
-            document.getElementById('viewDailyworkContent').innerHTML = `<p><strong>Date:</strong> ${w.date}</p><p><strong>Department:</strong> ${departmentNames[w.department_id]}</p><p><strong>Project:</strong> ${escapeHtml(w.project_name)}</p><p><strong>Description:</strong> ${escapeHtml(w.work_description)}</p><p><strong>Income:</strong> ${formatMoney(w.income)}</p><p><strong>Expenses:</strong> ${formatMoney(w.expenses)}</p><p><strong>Profit:</strong> ${formatMoney(profit)}</p><p><strong>Status:</strong> ${w.status}</p>`;
+            document.getElementById('viewDailyworkContent').innerHTML = `<p><strong>Date:</strong> ${w.date}<\/p><p><strong>Department:</strong> ${departmentNames[w.department_id]}<\/p><p><strong>Project:</strong> ${escapeHtml(w.project_name)}<\/p><p><strong>Description:</strong> ${escapeHtml(w.work_description)}<\/p><p><strong>Income:</strong> ${formatMoney(w.income)}<\/p><p><strong>Expenses:</strong> ${formatMoney(w.expenses)}<\/p><p><strong>Profit:</strong> ${formatMoney(profit)}<\/p><p><strong>Status:</strong> ${w.status}<\/p>`;
             openModal('viewDailyworkModal');
         }
     }
@@ -934,49 +910,46 @@
         else { res = await apiCall('add_dailywork.php', 'POST', data); }
         
         if (res.success) { showToast(id ? 'Updated' : 'Added'); closeModal('dailyworkModal'); loadDailyWork(); loadDashboard(); }
-        else { if (id) { const idx = dailyworkData.findIndex(w => w.id == id); if (idx !== -1) dailyworkData[idx] = data; } else { dailyworkData.unshift(data); } loadDailyWork(); showToast(id ? 'Updated locally' : 'Added locally'); }
-        saveBackup();
+        else showToast(res.message || 'Failed', true);
     }
     
     async function deleteDailyWork(id) {
         if (confirm('Delete this record?')) {
             const res = await apiCall('delete_dailywork.php', 'DELETE', { id });
             if (res.success) { showToast('Deleted'); loadDailyWork(); loadDashboard(); }
-            else { dailyworkData = dailyworkData.filter(w => w.id !== id); loadDailyWork(); showToast('Deleted locally'); }
-            saveBackup();
+            else showToast(res.message || 'Failed', true);
         }
     }
     
     // ==================== CASHFLOW ====================
     async function loadCashflow() {
         document.getElementById('cashflowPage').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div><span class="ml-3">Loading cashflow...</span></div>';
+        const res = await apiCall('get_transactions.php');
+        if (res.success) transactionsData = res.data || [];
         
-        const [transactions] = await Promise.all([apiCall('get_transactions.php')]);
-        if (transactions.success) transactionsData = transactions.data || [];
+        let totalIncome = 0, totalExpense = 0;
+        transactionsData.forEach(t => {
+            if (t.type === 'income') totalIncome += parseFloat(t.amount);
+            else totalExpense += parseFloat(t.amount);
+        });
         
-        const totals = updateCashflowTotals();
-        
-        let html = `<div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold"><i class="fas fa-exchange-alt text-blue-600 mr-2"></i>Cashflow Management</h2><div><button onclick="openModal('transModal')" class="btn-primary mr-2"><i class="fas fa-plus mr-1"></i>Add Transaction</button><div class="send-dropdown" style="display:inline-block;"><button class="btn-primary" onclick="toggleCashflowExportDropdown()"><i class="fas fa-download mr-1"></i> Export</button><div id="cashflowExportDropdown" class="send-dropdown-content" style="display:none;"><a onclick="exportCashflowToExcel()">📊 Export to Excel</a><a onclick="exportCashflowToPDF()">📄 Export to PDF</a></div></div></div></div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
-                <div class="bg-green-100 rounded-xl p-3 text-center"><p class="text-[10px] text-gray-500">Total Income</p><p class="text-xl font-bold text-green-600">${formatMoney(totals.totalIncome)}</p></div>
-                <div class="bg-red-100 rounded-xl p-3 text-center"><p class="text-[10px] text-gray-500">Total Expenses</p><p class="text-xl font-bold text-red-600">${formatMoney(totals.totalExpense)}</p></div>
-                <div class="bg-blue-100 rounded-xl p-3 text-center"><p class="text-[10px] text-gray-500">Net Profit</p><p class="text-xl font-bold text-blue-600">${formatMoney(totals.netProfit)}</p></div>
-            </div>
-            <div class="bg-white rounded-xl p-4"><h3 class="font-semibold mb-2">💰 Transactions</h3><div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th>Date</th><th>Type</th><th>Source</th><th>Amount</th><th>Status</th><th>Actions</th></tr></thead><tbody>`;
-        
+        let html = `<div class="flex justify-between items-center mb-4 flex-wrap gap-2">
+            <h2 class="text-xl font-bold"><i class="fas fa-exchange-alt text-blue-600 mr-2"></i>Cashflow Management</h2>
+            <div class="flex gap-2"><button onclick="openModal('transModal')" class="btn-primary"><i class="fas fa-plus mr-1"></i>Add Transaction</button><button onclick="exportCashflowToExcel()" class="btn-success"><i class="fas fa-file-excel mr-1"></i> Excel</button><button onclick="exportCashflowToPDF()" class="btn-danger"><i class="fas fa-file-pdf mr-1"></i> PDF</button></div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+            <div class="bg-green-100 rounded-xl p-3 text-center"><p class="text-[10px] text-gray-500">Total Income</p><p class="text-xl font-bold text-green-600">${formatMoney(totalIncome)}</p></div>
+            <div class="bg-red-100 rounded-xl p-3 text-center"><p class="text-[10px] text-gray-500">Total Expenses</p><p class="text-xl font-bold text-red-600">${formatMoney(totalExpense)}</p></div>
+            <div class="bg-blue-100 rounded-xl p-3 text-center"><p class="text-[10px] text-gray-500">Net Profit</p><p class="text-xl font-bold text-blue-600">${formatMoney(totalIncome - totalExpense)}</p></div>
+        </div>
+        <div class="bg-white rounded-xl p-4 overflow-x-auto"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th>Date</th><th>Type</th><th>Source</th><th>Amount</th><th>Status</th><th>Actions</th></tr></thead><tbody>`;
         for (let t of transactionsData) {
             html += `<tr class="border-b"><td class="p-2">${t.transaction_date}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-xs ${t.type === 'income' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${t.type}</span></td><td class="p-2">${escapeHtml(t.source)}<\/td><td class="p-2 ${t.type === 'income' ? 'text-green-600' : 'text-red-600'}">${formatMoney(t.amount)}<\/td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-xs ${t.status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}">${t.status}</span></td>
-            <td class="p-2"><div class="action-buttons"><button onclick="viewTransaction(${t.id})" class="action-btn view"><i class="fas fa-eye"></i><\/button><button onclick="editTransaction(${t.id})" class="action-btn edit"><i class="fas fa-edit"></i><\/button><button onclick="deleteTransaction(${t.id})" class="action-btn delete"><i class="fas fa-trash"></i><\/button><\/div><\/td><\/tr>`;
+            <td class="p-2"><div class="action-buttons"><button onclick="editTransaction(${t.id})" class="action-btn edit"><i class="fas fa-edit"></i><\/button><button onclick="deleteTransaction(${t.id})" class="action-btn delete"><i class="fas fa-trash"></i><\/button><\/div><\/td><\/tr>`;
         }
         if (transactionsData.length === 0) html += `<tr><td colspan="6" class="text-center py-8 text-gray-400">No transactions<\/td><\/tr>`;
-        html += `<\/tbody><\/table><\/div><\/div>`;
+        html += `<\/tbody><\/table><\/div>`;
         document.getElementById('cashflowPage').innerHTML = html;
-        saveBackup();
-    }
-    
-    function toggleCashflowExportDropdown() {
-        const dropdown = document.getElementById('cashflowExportDropdown');
-        if (dropdown) dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
     }
     
     function exportCashflowToExcel() {
@@ -986,22 +959,13 @@
         XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), 'Cashflow');
         XLSX.writeFile(wb, `cashflow_${new Date().toISOString().slice(0,10)}.xlsx`);
         showToast('Exported to Excel');
-        const dropdown = document.getElementById('cashflowExportDropdown');
-        if (dropdown) dropdown.style.display = 'none';
     }
     
     function exportCashflowToPDF() {
         let element = document.createElement('div');
-        element.innerHTML = `<div style="padding:20px"><h1>Cashflow Report</h1><p>${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8">${transactionsData.map(t => `<tr><td class="px-2 py-1">${t.transaction_date}<\/td><td class="px-2 py-1">${t.type}<\/td><td class="px-2 py-1">${t.source}<\/td><td class="px-2 py-1">${formatMoney(t.amount)}<\/td><\/tr>`).join('')}<\/table><\/div>`;
+        element.innerHTML = `<div style="padding:20px"><h1>Cashflow Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><thead><tr><th>Date</th><th>Type</th><th>Source</th><th>Amount</th></tr></thead><tbody>${transactionsData.map(t => `<tr><td class="px-2 py-1">${t.transaction_date}</td><td class="px-2 py-1">${t.type}</td><td class="px-2 py-1">${t.source}</td><td class="px-2 py-1">${formatMoney(t.amount)}<\/td><\/tr>`).join('')}<\/table><\/div>`;
         html2pdf().set({ margin: 0.5, filename: `cashflow_report.pdf` }).from(element).save();
         showToast('Exported to PDF');
-        const dropdown = document.getElementById('cashflowExportDropdown');
-        if (dropdown) dropdown.style.display = 'none';
-    }
-    
-    function viewTransaction(id) {
-        const t = transactionsData.find(t => t.id === id);
-        if (t) alert(`Transaction:\nDate: ${t.transaction_date}\nType: ${t.type}\nSource: ${t.source}\nAmount: ${formatMoney(t.amount)}\nStatus: ${t.status}\nDescription: ${t.description || '-'}`);
     }
     
     function editTransaction(id) {
@@ -1015,7 +979,6 @@
             document.getElementById('transDate').value = t.transaction_date;
             document.getElementById('transStatus').value = t.status;
             document.getElementById('transDesc').value = t.description || '';
-            document.getElementById('transModalTitle').innerText = 'Edit Transaction';
             openModal('transModal');
         }
     }
@@ -1030,301 +993,122 @@
         else { res = await apiCall('add_transaction.php', 'POST', data); }
         
         if (res.success) { showToast(id ? 'Transaction updated' : 'Transaction added'); closeModal('transModal'); loadCashflow(); loadDashboard(); }
-        else { if (id) { const idx = transactionsData.findIndex(t => t.id == id); if (idx !== -1) transactionsData[idx] = data; } else { transactionsData.unshift(data); } loadCashflow(); showToast(id ? 'Updated locally' : 'Added locally'); }
-        saveBackup();
+        else showToast(res.message || 'Failed', true);
     }
     
     async function deleteTransaction(id) {
         if (confirm('Delete this transaction?')) {
             const res = await apiCall('delete_transaction.php', 'DELETE', { id });
             if (res.success) { showToast('Deleted'); loadCashflow(); loadDashboard(); }
-            else { transactionsData = transactionsData.filter(t => t.id !== id); loadCashflow(); showToast('Deleted locally'); }
-            saveBackup();
+            else showToast(res.message || 'Failed', true);
         }
     }
     
-    // ==================== PENDING PAYMENTS ====================
-    async function loadPendingPayments() {
-        document.getElementById('pendingPage').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div><span class="ml-3">Loading pending payments...</span></div>';
-        const res = await apiCall('get_pending_payments.php');
-        if (res.success) pendingPaymentsData = res.data || [];
-        document.getElementById('pendingBadge').innerText = pendingPaymentsData.length;
-        
-        let totalPendingAmount = pendingPaymentsData.reduce((sum, p) => sum + (p.amount - p.paid_amount), 0);
-        
-        let html = `<div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold"><i class="fas fa-clock text-orange-600 mr-2"></i>Pending Payments (${pendingPaymentsData.length})</h2><button onclick="openModal('pendingModal')" class="btn-primary"><i class="fas fa-plus mr-1"></i> Add Payment</button></div>
-            <div class="bg-white rounded-xl p-3"><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="pendingGrid"></div></div>`;
-        document.getElementById('pendingPage').innerHTML = html;
-        
-        if (pendingPaymentsData.length === 0) {
-            document.getElementById('pendingGrid').innerHTML = '<div class="col-span-3 text-center py-8 text-gray-400">No pending payments</div>';
-            return;
-        }
-        
-        let pendingHtml = '';
-        for (let p of pendingPaymentsData) {
-            let remaining = p.amount - p.paid_amount;
-            let percent = (p.paid_amount / p.amount) * 100;
-            let isOverdue = new Date(p.due_date) < new Date();
-            pendingHtml += `<div class="payment-card ${isOverdue ? 'payment-overdue' : p.status === 'partial' ? 'payment-partial' : 'payment-pending'}"><div class="flex justify-between"><h4 class="font-semibold">${escapeHtml(p.client_name)}</h4><span class="px-2 py-0.5 rounded-full text-xs ${p.status === 'partial' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'}">${p.status}</span></div><p class="text-sm text-gray-500">${escapeHtml(p.project_name || 'No project')}</p><div class="mt-2"><div class="flex justify-between text-xs"><span>Amount:</span><span>${formatMoney(p.amount)}</span></div><div class="flex justify-between text-xs"><span>Paid:</span><span>${formatMoney(p.paid_amount)}</span></div><div class="flex justify-between text-xs font-bold"><span>Remaining:</span><span class="text-orange-600">${formatMoney(remaining)}</span></div><div class="w-full bg-gray-200 rounded-full h-1.5 mt-1"><div class="bg-green-600 h-1.5 rounded-full" style="width:${percent}%"></div></div></div><p class="text-xs text-gray-400 mt-1">Due: ${formatDate(p.due_date)}${isOverdue ? ' <span class="text-red-500">(Overdue)</span>' : ''}</p><div class="action-buttons mt-2"><button onclick="viewPendingPayment(${p.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="editPendingPayment(${p.id})" class="action-btn edit"><i class="fas fa-edit"></i></button><button onclick="recordPendingPayment(${p.id})" class="action-btn send"><i class="fas fa-money-bill-wave"></i> Pay</button><button onclick="deletePendingPayment(${p.id})" class="action-btn delete"><i class="fas fa-trash"></i></button></div></div>`;
-        }
-        document.getElementById('pendingGrid').innerHTML = pendingHtml;
-        saveBackup();
-    }
-    
-    function editPendingPayment(id) {
-        const p = pendingPaymentsData.find(p => p.id === id);
-        if (p) {
-            document.getElementById('pendingId').value = p.id;
-            document.getElementById('pendingClientName').value = p.client_name;
-            document.getElementById('pendingProjectName').value = p.project_name || '';
-            document.getElementById('pendingAmount').value = p.amount;
-            document.getElementById('pendingPaidAmount').value = p.paid_amount;
-            document.getElementById('pendingDueDate').value = p.due_date;
-            document.getElementById('pendingStatus').value = p.status;
-            document.getElementById('pendingNotes').value = p.notes || '';
-            openModal('pendingModal');
-        }
-    }
-    
-    function recordPendingPayment(id) {
-        const p = pendingPaymentsData.find(p => p.id === id);
-        if (p) {
-            document.getElementById('recordPaymentId').value = id;
-            document.getElementById('recordPaymentInfo').innerHTML = `<strong>${escapeHtml(p.client_name)}</strong><br>Remaining: ${formatMoney(p.amount - p.paid_amount)}`;
-            openModal('recordPaymentModal');
-        }
-    }
-    
-    async function savePendingPayment() {
-        let id = document.getElementById('pendingId').value;
-        let amount = parseFloat(document.getElementById('pendingAmount').value) || 0;
-        let paidAmount = parseFloat(document.getElementById('pendingPaidAmount').value) || 0;
-        let status = document.getElementById('pendingStatus').value;
-        if (paidAmount >= amount) status = 'paid';
-        else if (paidAmount > 0) status = 'partial';
-        let data = { client_name: document.getElementById('pendingClientName').value, project_name: document.getElementById('pendingProjectName').value, amount: amount, paid_amount: paidAmount, due_date: document.getElementById('pendingDueDate').value, status: status, notes: document.getElementById('pendingNotes').value, department_id: 1 };
-        if (!data.client_name || amount <= 0) { showToast('Client name and amount required', true); return; }
-        
-        let res;
-        if (id) { data.id = parseInt(id); res = await apiCall('update_pending_payment.php', 'PUT', data); }
-        else { res = await apiCall('add_pending_payment.php', 'POST', data); }
-        
-        if (res.success) { showToast(id ? 'Updated' : 'Added'); closeModal('pendingModal'); loadPendingPayments(); loadDashboard(); }
-        else { if (id) { const idx = pendingPaymentsData.findIndex(p => p.id == id); if (idx !== -1) pendingPaymentsData[idx] = data; } else { pendingPaymentsData.unshift(data); } loadPendingPayments(); showToast(id ? 'Updated locally' : 'Added locally'); }
-        saveBackup();
-    }
-    
-    function recordPaymentSubmit() {
-        let id = document.getElementById('recordPaymentId').value;
-        let payment = parseFloat(document.getElementById('paymentAmount').value) || 0;
-        if (payment <= 0) { showToast('Enter valid amount', true); return; }
-        
-        const p = pendingPaymentsData.find(p => p.id == id);
-        if (p) {
-            let newPaid = p.paid_amount + payment;
-            p.paid_amount = newPaid;
-            
-            if (newPaid >= p.amount) {
-                p.status = 'paid';
-                // Add to income transactions - THIS UPDATES CASHFLOW
-                transactionsData.unshift({
-                    id: Date.now(), type: 'income', department_id: 1, source: p.client_name,
-                    amount: payment, transaction_date: new Date().toISOString().split('T')[0],
-                    status: 'paid', description: `Payment for ${p.project_name}`
-                });
-                showToast(`✅ Payment completed for ${p.client_name}. Added to income.`);
-            } else {
-                p.status = 'partial';
-                transactionsData.unshift({
-                    id: Date.now(), type: 'income', department_id: 1, source: p.client_name,
-                    amount: payment, transaction_date: new Date().toISOString().split('T')[0],
-                    status: 'paid', description: `Partial payment for ${p.project_name}`
-                });
-                showToast(`💰 Partial payment recorded. Remaining: ${formatMoney(p.amount - newPaid)}`);
-            }
-            showToast(`Payment of ${formatMoney(payment)} recorded and added to income`);
-            closeModal('recordPaymentModal');
-            loadCashflow();
-            loadPendingPayments();
-            loadDashboard();
-            document.getElementById('pendingBadge').innerText = pendingPaymentsData.filter(p => p.status !== 'paid').length;
-            saveBackup();
-        }
-    }
-    
-    async function deletePendingPayment(id) {
-        if (confirm('Delete this payment record?')) {
-            const res = await apiCall('delete_pending_payment.php', 'DELETE', { id });
-            if (res.success) { showToast('Deleted'); loadPendingPayments(); loadDashboard(); }
-            else { pendingPaymentsData = pendingPaymentsData.filter(p => p.id !== id); loadPendingPayments(); showToast('Deleted locally'); }
-            saveBackup();
-        }
-    }
-    
-    function viewPendingPayment(id) {
-        const p = pendingPaymentsData.find(p => p.id === id);
-        if (p) alert(`Client: ${p.client_name}\nProject: ${p.project_name}\nAmount: ${formatMoney(p.amount)}\nPaid: ${formatMoney(p.paid_amount)}\nRemaining: ${formatMoney(p.amount - p.paid_amount)}\nDue: ${formatDate(p.due_date)}\nStatus: ${p.status}\nNotes: ${p.notes || '-'}`);
-    }
-    
-    // ==================== MESSAGES ====================
-    async function loadMessages() {
-        document.getElementById('messagesPage').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div><span class="ml-3">Loading messages...</span></div>';
-        const res = await apiCall('get_messages.php');
-        if (res.success) messagesData = res.data || [];
-        
-        let conv = {};
-        messagesData.forEach(m => { let other = m.from_department_id === 1 ? m.to_department_id : m.from_department_id; if (!conv[other]) conv[other] = []; conv[other].push(m); });
-        
-        let html = `<div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold"><i class="fas fa-envelope text-blue-600 mr-2"></i>Messages</h2><button onclick="openModal('msgModal')" class="btn-primary"><i class="fas fa-plus mr-1"></i> New Message</button></div><div id="messagesList"></div>`;
-        document.getElementById('messagesPage').innerHTML = html;
-        
-        let msgsHtml = '';
-        for (let d in conv) {
-            let deptId = parseInt(d);
-            let last = conv[d][conv[d].length - 1];
-            let unread = conv[d].filter(m => m.to_department_id === 1 && !m.is_read).length;
-            let deptName = departmentNames[deptId] || 'Department ' + deptId;
-            msgsHtml += `<div class="message-item ${unread > 0 ? 'message-unread' : ''}" onclick="openChat(${deptId}, '${deptName}')">
-                <div class="message-header"><div><span class="font-semibold">${deptName}</span>${unread > 0 ? `<span class="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full ml-2">${unread}</span>` : ''}</div><span class="text-[10px] text-gray-400">${new Date(last.created_at).toLocaleString()}</span></div>
-                <div class="message-preview">${escapeHtml(last.message.substring(0, 80))}${last.message.length > 80 ? '...' : ''}</div>
-                <div class="message-actions"><button onclick="event.stopPropagation(); deleteConversation(${deptId})" class="text-red-500 text-xs"><i class="fas fa-trash-alt mr-1"></i>Delete</button><button onclick="event.stopPropagation(); openChat(${deptId}, '${deptName}')" class="text-blue-500 text-xs"><i class="fas fa-reply mr-1"></i>Reply</button></div>
-            </div>`;
-        }
-        if (Object.keys(conv).length === 0) msgsHtml = '<div class="bg-white rounded-xl p-8 text-center text-gray-400">No messages. Click "New Message" to start.</div>';
-        document.getElementById('messagesList').innerHTML = msgsHtml;
-        saveBackup();
-    }
-    
-    async function sendNewMessage() {
-        let toDept = document.getElementById('msgTo').value;
-        let msg = document.getElementById('msgContent').value.trim();
-        if (!toDept) { showToast('Select department', true); return; }
-        if (!msg) { showToast('Enter message', true); return; }
-        
-        const res = await apiCall('send_message.php', 'POST', { to_department_id: parseInt(toDept), message: msg });
-        if (res.success) { showToast('Message sent'); closeModal('msgModal'); document.getElementById('msgContent').value = ''; loadMessages(); loadDashboard(); }
-        else { messagesData.push({ id: Date.now(), from_department_id: 1, to_department_id: parseInt(toDept), message: msg, is_read: false, created_at: new Date().toISOString() }); loadMessages(); showToast('Message sent locally'); }
-        saveBackup();
-    }
-    
-    async function openChat(deptId, deptName) {
-        currentChatDept = deptId;
-        currentChatDeptName = deptName;
-        const result = await apiCall(`get_conversation.php?department_id=${deptId}`);
-        const messages = result.success ? (result.data || []) : messagesData.filter(m => (m.from_department_id === 1 && m.to_department_id === deptId) || (m.from_department_id === deptId && m.to_department_id === 1));
-        
-        for (let m of messages) {
-            if (m.to_department_id === 1 && !m.is_read) {
-                await apiCall('mark_message_read.php', 'POST', { message_id: m.id });
-            }
-        }
-        
-        document.getElementById('chatModalTitle').innerHTML = `Chat with ${deptName}`;
-        document.getElementById('deleteConversationBtn').onclick = () => deleteConversation(deptId);
-        
-        let chatHtml = '';
-        if (messages.length === 0) {
-            chatHtml = '<div class="empty-chat-message">No messages. Send a message to start.</div>';
-        } else {
-            for (let m of messages) {
-                let isSent = m.from_department_id === 1;
-                chatHtml += `<div class="chat-message ${isSent ? 'chat-sent' : 'chat-received'}">
-                    <div class="chat-bubble"><div>${escapeHtml(m.message)}</div><div class="chat-time">${new Date(m.created_at).toLocaleString()}</div></div>
-                    <button onclick="deleteMessage(${m.id})" class="chat-delete-btn"><i class="fas fa-trash-alt"></i></button>
-                </div>`;
-            }
-        }
-        document.getElementById('chatMessagesArea').innerHTML = chatHtml;
-        document.getElementById('chatMessagesArea').scrollTop = document.getElementById('chatMessagesArea').scrollHeight;
-        openModal('chatModal');
-        loadMessages();
-        loadDashboard();
-    }
-    
-    async function sendChatMessage() {
-        let reply = document.getElementById('replyMsg').value.trim();
-        if (!reply || !currentChatDept) { showToast('Enter message', true); return; }
-        const res = await apiCall('send_message.php', 'POST', { to_department_id: currentChatDept, message: reply });
-        if (res.success) { document.getElementById('replyMsg').value = ''; await openChat(currentChatDept, currentChatDeptName); loadMessages(); loadDashboard(); }
-        else { messagesData.push({ id: Date.now(), from_department_id: 1, to_department_id: currentChatDept, message: reply, is_read: false, created_at: new Date().toISOString() }); openChat(currentChatDept, currentChatDeptName); showToast('Message sent locally'); }
-        saveBackup();
-    }
-    
-    async function deleteMessage(messageId) {
-        const res = await apiCall('delete_message.php', 'DELETE', { message_id: messageId });
-        if (res.success) { showToast('Message deleted'); await openChat(currentChatDept, currentChatDeptName); loadMessages(); }
-        else { messagesData = messagesData.filter(m => m.id !== messageId); openChat(currentChatDept, currentChatDeptName); showToast('Deleted locally'); }
-        saveBackup();
-    }
-    
-    async function deleteConversation(deptId) {
-        if (!confirm(`Delete conversation with ${departmentNames[deptId]}?`)) return;
-        const res = await apiCall('delete_conversation.php', 'DELETE', { department_id: deptId });
-        if (res.success) { showToast('Conversation deleted'); closeModal('chatModal'); loadMessages(); currentChatDept = null; }
-        else { messagesData = messagesData.filter(m => !((m.from_department_id === 1 && m.to_department_id === deptId) || (m.from_department_id === deptId && m.to_department_id === 1))); loadMessages(); showToast('Deleted locally'); }
-        saveBackup();
-    }
-    
-    // ==================== REPORTS ====================
+    // ==================== REPORTS (with Upload Report Button) ====================
     async function loadReports() {
         document.getElementById('reportsPage').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div><span class="ml-3">Loading reports...</span></div>';
         const res = await apiCall('get_reports.php');
         if (res.success) reportsData = res.data || [];
         unviewedReportsCount = res.unviewed_count || 0;
-        document.getElementById('reportBadge').style.display = unviewedReportsCount > 0 ? 'inline-block' : 'none';
-        if (unviewedReportsCount > 0) document.getElementById('reportBadge').innerText = unviewedReportsCount;
+        updateReportBadge();
         
-        let html = `<div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold"><i class="fas fa-chart-line text-purple-500 mr-2"></i>Reports (${reportsData.length})</h2><button onclick="openModal('reportModal')" class="btn-primary"><i class="fas fa-plus mr-1"></i> Add Report</button></div>
-        <div class="space-y-2" id="reportsList"></div>`;
+        const sortedReports = [...reportsData].sort((a, b) => {
+            if (a.is_viewed_by_admin === b.is_viewed_by_admin) {
+                return new Date(b.created_at) - new Date(a.created_at);
+            }
+            if (a.is_viewed_by_admin === 0) return -1;
+            return 1;
+        });
+        
+        let html = `<div class="flex justify-between items-center mb-4 flex-wrap gap-2">
+            <h2 class="text-xl font-bold"><i class="fas fa-chart-line text-purple-500 mr-2"></i>Reports (${reportsData.length})</h2>
+            <button onclick="openModal('reportModal')" class="btn-primary"><i class="fas fa-upload mr-1"></i> Upload Report</button>
+        </div>
+        <div class="report-grid" id="reportsGrid"><\/div>`;
         document.getElementById('reportsPage').innerHTML = html;
         
-        if (reportsData.length === 0) {
-            document.getElementById('reportsList').innerHTML = '<div class="bg-white rounded-xl p-8 text-center text-gray-400">No reports found</div>';
-        } else {
-            let reportsHtml = '';
-            for (let r of reportsData) {
-                reportsHtml += `<div class="report-sample" onclick="viewReportDetails(${r.id})"><div class="flex justify-between items-start"><div><h4 class="font-semibold">${escapeHtml(r.title)}</h4><p class="text-xs text-gray-500">Period: ${r.period} · Created: ${formatDate(r.created_at)}</p><p class="text-sm text-gray-600 mt-1">${escapeHtml(r.content.substring(0, 100))}...</p></div>
-                <div class="action-buttons"><button onclick="event.stopPropagation(); viewReportDetails(${r.id})" class="action-btn view"><i class="fas fa-eye"></i> View</button><button onclick="event.stopPropagation(); editReport(${r.id})" class="action-btn edit"><i class="fas fa-edit"></i> Edit</button><button onclick="event.stopPropagation(); deleteReport(${r.id})" class="action-btn delete"><i class="fas fa-trash"></i> Delete</button></div></div>`;
-            }
-            document.getElementById('reportsList').innerHTML = reportsHtml;
+        if (sortedReports.length === 0) {
+            document.getElementById('reportsGrid').innerHTML = '<div class="col-span-2 text-center py-8 text-gray-400">No reports found. Click "Upload Report" to add one.<\/div>';
+            return;
         }
-        saveBackup();
+        
+        let reportsHtml = '';
+        for (let r of sortedReports) {
+            const isUnviewed = r.is_viewed_by_admin == 0 && r.department_id != 1;
+            reportsHtml += `<div class="report-card relative" onclick="viewReportDetails(${r.id})">
+                ${isUnviewed ? '<div class="new-badge" onclick="event.stopPropagation(); markReportAsViewed(' + r.id + ')">!</div>' : ''}
+                <div class="flex justify-between items-start"><h4 class="font-semibold">${escapeHtml(r.title)}<\/h4><span class="text-xs ${r.status === 'sent' ? 'text-green-600' : 'text-yellow-600'}">${r.status}</span><\/div>
+                <p class="text-xs text-gray-500 mt-1">Period: ${r.period} · Created: ${formatDate(r.created_at)}</p>
+                <p class="text-sm text-gray-600 mt-2">${escapeHtml(r.content.substring(0, 120))}${r.content.length > 120 ? '...' : ''}</p>
+                <div class="action-buttons mt-3"><button onclick="event.stopPropagation(); viewReportDetails(${r.id})" class="action-btn view"><i class="fas fa-eye"></i> View<\/button><button onclick="event.stopPropagation(); editReport(${r.id})" class="action-btn edit"><i class="fas fa-edit"></i> Edit<\/button><button onclick="event.stopPropagation(); deleteReport(${r.id})" class="action-btn delete"><i class="fas fa-trash"></i> Delete<\/button><\/div>
+            <\/div>`;
+        }
+        document.getElementById('reportsGrid').innerHTML = reportsHtml;
+    }
+    
+    async function markReportAsViewed(reportId) {
+        const res = await apiCall('mark_report_viewed.php', 'POST', { report_id: reportId });
+        if (res.success) { loadReports(); loadDashboard(); }
+        else { const r = reportsData.find(r => r.id === reportId); if (r) r.is_viewed_by_admin = 1; loadReports(); }
     }
     
     function viewReportDetails(id) {
         const r = reportsData.find(r => r.id === id);
         if (r) {
             currentViewReport = r;
-            document.getElementById('reportViewTitle').innerHTML = escapeHtml(r.title);
-            document.getElementById('reportViewContent').innerHTML = `<div class="mb-4"><p><strong>Period:</strong> ${r.period}</p><p><strong>Department:</strong> ${departmentNames[r.department_id]}</p><p><strong>Created:</strong> ${formatDate(r.created_at)}</p></div><div class="whitespace-pre-wrap">${escapeHtml(r.content)}</div>`;
+            if (r.is_viewed_by_admin == 0 && r.department_id != 1) markReportAsViewed(id);
             
-            let buttonsHtml = `
-                <button onclick="exportSingleReport(${r.id})" class="detail-btn excel"><i class="fas fa-file-excel"></i> Export Excel</button>
+            document.getElementById('viewReportContent').innerHTML = `<div class="mb-4"><p><strong>Period:</strong> ${r.period}</p><p><strong>Department:</strong> ${departmentNames[r.department_id]}</p><p><strong>Created:</strong> ${formatDate(r.created_at)}</p></div><div class="whitespace-pre-wrap bg-gray-50 p-4 rounded-lg">${escapeHtml(r.content)}</div>`;
+            
+            let deptOptions = '';
+            departmentsList.forEach(d => {
+                deptOptions += `<a onclick="sendReportToDept(${r.id}, ${d.id})">${escapeHtml(d.name)}</a>`;
+            });
+            
+            document.getElementById('viewReportButtons').innerHTML = `
+                <button onclick="exportSingleReportExcel(${r.id})" class="detail-btn excel"><i class="fas fa-file-excel"></i> Export Excel</button>
                 <button onclick="exportSingleReportPDF(${r.id})" class="detail-btn pdf"><i class="fas fa-file-pdf"></i> Export PDF</button>
                 <div class="send-dropdown" style="display:inline-block;">
-                    <button class="detail-btn send" onclick="toggleReportSendDropdown(${r.id})"><i class="fas fa-paper-plane"></i> Send Report</button>
-                    <div id="reportSendDropdown-${r.id}" class="send-dropdown-content" style="display:none; position:absolute; z-index:1001;">`;
-            for (let d of departmentsList) {
-                if (d.id !== 1) buttonsHtml += `<a onclick="sendReportToDept(${r.id}, ${d.id})">${escapeHtml(d.name)}</a>`;
-            }
-            buttonsHtml += `</div></div>`;
-            document.getElementById('reportViewButtons').innerHTML = buttonsHtml;
-            openModal('reportViewModal');
+                    <button class="detail-btn send" onclick="toggleSendDropdown('reportSendDropdown-${r.id}')"><i class="fas fa-paper-plane"></i> Send to Department</button>
+                    <div id="reportSendDropdown-${r.id}" class="send-dropdown-content" style="display:none;">
+                        ${deptOptions}
+                    </div>
+                </div>
+            `;
+            openModal('viewReportModal');
         }
     }
     
-    function toggleReportSendDropdown(reportId) {
+    function exportSingleReportExcel(reportId) {
+        const r = reportsData.find(r => r.id === reportId);
+        if (r) {
+            let ws = [['Title', 'Period', 'Content', 'Created']];
+            ws.push([r.title, r.period, r.content, r.created_at]);
+            let wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), 'Report');
+            XLSX.writeFile(wb, `report_${r.id}.xlsx`);
+            showToast('Exported to Excel');
+        }
         const dropdown = document.getElementById(`reportSendDropdown-${reportId}`);
-        document.querySelectorAll('[id^="reportSendDropdown-"]').forEach(d => {
-            if (d.id !== `reportSendDropdown-${reportId}`) d.style.display = 'none';
-        });
-        if (dropdown) dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        if (dropdown) dropdown.style.display = 'none';
     }
     
-    function sendReportToDept(reportId, deptId) {
-        apiCall('send_report.php', 'POST', { report_id: reportId, to_department_id: deptId, message: '' });
-        showToast(`Report sent to ${departmentNames[deptId]}`);
+    function exportSingleReportPDF(reportId) {
+        const r = reportsData.find(r => r.id === reportId);
+        if (r) {
+            let element = document.createElement('div');
+            element.innerHTML = `<div style="padding:20px"><h1>${escapeHtml(r.title)}</h1><p><strong>Period:</strong> ${r.period}</p><p><strong>Created:</strong> ${formatDate(r.created_at)}</p><hr/><div style="margin-top:15px; white-space:pre-wrap;">${escapeHtml(r.content)}</div><p>Generated: ${new Date().toLocaleString()}</p></div>`;
+            html2pdf().set({ margin: 0.5, filename: `report_${r.id}.pdf` }).from(element).save();
+            showToast('Exported to PDF');
+        }
+        const dropdown = document.getElementById(`reportSendDropdown-${reportId}`);
+        if (dropdown) dropdown.style.display = 'none';
+    }
+    
+    async function sendReportToDept(reportId, deptId) {
+        const res = await apiCall('send_report.php', 'POST', { report_id: reportId, to_department_id: deptId, message: '' });
+        if (res.success) showToast('Report sent successfully');
+        else showToast('Failed to send', true);
         const dropdown = document.getElementById(`reportSendDropdown-${reportId}`);
         if (dropdown) dropdown.style.display = 'none';
     }
@@ -1350,42 +1134,141 @@
         else { res = await apiCall('add_report.php', 'POST', data); }
         
         if (res.success) { showToast(id ? 'Report updated' : 'Report added'); closeModal('reportModal'); loadReports(); loadDashboard(); }
-        else { if (id) { const idx = reportsData.findIndex(r => r.id == id); if (idx !== -1) reportsData[idx] = data; } else { reportsData.unshift(data); } loadReports(); showToast(id ? 'Updated locally' : 'Added locally'); }
-        saveBackup();
+        else showToast(res.message || 'Failed', true);
     }
     
     async function deleteReport(id) {
         if (confirm('Delete this report?')) {
             const res = await apiCall('delete_report.php', 'DELETE', { id });
             if (res.success) { showToast('Deleted'); loadReports(); loadDashboard(); }
-            else { reportsData = reportsData.filter(r => r.id !== id); loadReports(); showToast('Deleted locally'); }
-            saveBackup();
+            else showToast(res.message || 'Failed', true);
         }
     }
     
-    function exportSingleReport(id) {
-        const r = reportsData.find(r => r.id === id);
-        if (r) {
-            let ws = [['Title', 'Period', 'Content', 'Created']];
-            ws.push([r.title, r.period, r.content, r.created_at]);
-            let wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), 'Report');
-            XLSX.writeFile(wb, `report_${r.id}.xlsx`);
-            showToast('Exported to Excel');
-            const dropdown = document.getElementById(`reportSendDropdown-${id}`);
-            if (dropdown) dropdown.style.display = 'none';
+    // ==================== MESSAGES ====================
+    async function loadMessages() {
+        document.getElementById('messagesPage').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div><span class="ml-3">Loading messages...</span></div>';
+        const res = await apiCall('get_messages.php');
+        if (res.success) messagesData = res.data || [];
+        
+        let conversations = {};
+        for (let m of messagesData) {
+            let deptId = m.from_department_id === 1 ? m.to_department_id : m.from_department_id;
+            if (!conversations[deptId]) conversations[deptId] = [];
+            conversations[deptId].push(m);
+        }
+        
+        let unreadCount = messagesData.filter(m => m.to_department_id === 1 && !m.is_read).length;
+        document.getElementById('msgBadge').innerText = unreadCount;
+        
+        let html = `<div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold"><i class="fas fa-envelope text-blue-600 mr-2"></i>Messages</h2><button onclick="openModal('msgModal')" class="btn-primary"><i class="fas fa-plus mr-1"></i> New Message</button></div>
+        <div class="space-y-2" id="conversationsList"><\/div>`;
+        document.getElementById('messagesPage').innerHTML = html;
+        
+        let convHtml = '';
+        for (let deptId in conversations) {
+            let deptIdNum = parseInt(deptId);
+            let deptName = departmentNames[deptIdNum] || 'Department ' + deptId;
+            let lastMsg = conversations[deptId][conversations[deptId].length - 1];
+            let unread = conversations[deptId].filter(m => m.to_department_id === 1 && !m.is_read).length;
+            
+            convHtml += `<div class="message-item ${unread > 0 ? 'message-unread' : ''}" onclick="openChat(${deptIdNum}, '${deptName}')">
+                <div class="message-header"><div><span class="font-semibold">${deptName}</span>${unread > 0 ? `<span class="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full ml-2">${unread}</span>` : ''}</div><span class="text-[10px] text-gray-400">${new Date(lastMsg.created_at).toLocaleString()}</span></div>
+                <div class="message-preview">${escapeHtml(lastMsg.message.substring(0, 80))}${lastMsg.message.length > 80 ? '...' : ''}</div>
+                <div class="message-actions"><button onclick="event.stopPropagation(); deleteConversation(${deptIdNum})" class="text-red-500 text-xs"><i class="fas fa-trash-alt mr-1"></i>Delete Conversation</button></div>
+            </div>`;
+        }
+        if (Object.keys(conversations).length === 0) convHtml = '<div class="bg-white rounded-xl p-8 text-center text-gray-400">No messages. Click "New Message" to start a conversation.</div>';
+        document.getElementById('conversationsList').innerHTML = convHtml;
+    }
+    
+    async function sendNewMessage() {
+        let toDept = document.getElementById('msgTo').value;
+        let msg = document.getElementById('msgContent').value.trim();
+        if (!toDept) { showToast('Select department', true); return; }
+        if (!msg) { showToast('Enter message', true); return; }
+        
+        const res = await apiCall('send_message.php', 'POST', { to_department_id: parseInt(toDept), message: msg });
+        if (res.success) { showToast('Message sent'); closeModal('msgModal'); document.getElementById('msgContent').value = ''; loadMessages(); loadDashboard(); }
+        else showToast(res.message || 'Failed to send', true);
+    }
+    
+    async function openChat(deptId, deptName) {
+        currentChatDept = deptId;
+        currentChatDeptName = deptName;
+        
+        const convRes = await apiCall(`get_conversation.php?department_id=${deptId}`);
+        const messages = convRes.success ? (convRes.data || []) : [];
+        
+        for (let m of messages) {
+            if (m.to_department_id === 1 && !m.is_read) {
+                await apiCall('mark_message_read.php', 'POST', { message_id: m.id });
+            }
+        }
+        
+        document.getElementById('chatModalTitle').innerHTML = `Chat with ${deptName}`;
+        document.getElementById('deleteConversationBtn').onclick = () => deleteConversation(deptId);
+        
+        let chatHtml = '';
+        if (messages.length === 0) {
+            chatHtml = '<div class="flex justify-center items-center h-32 text-gray-400">No messages yet. Start the conversation!</div>';
+        } else {
+            for (let m of messages) {
+                let isSent = m.from_department_id === 1;
+                chatHtml += `<div class="chat-message ${isSent ? 'chat-sent' : 'chat-received'}">
+                    <div class="chat-bubble">
+                        <div>${escapeHtml(m.message)}</div>
+                        <div class="chat-time">${new Date(m.created_at).toLocaleString()}</div>
+                    </div>
+                    <button onclick="deleteChatMessage(${m.id})" class="chat-delete-btn"><i class="fas fa-trash-alt"></i></button>
+                </div>`;
+            }
+        }
+        document.getElementById('chatMessagesArea').innerHTML = chatHtml;
+        document.getElementById('chatMessagesArea').scrollTop = document.getElementById('chatMessagesArea').scrollHeight;
+        openModal('chatModal');
+        
+        await loadMessages();
+        await loadDashboard();
+    }
+    
+    async function sendChatMessage() {
+        let reply = document.getElementById('replyMsg').value.trim();
+        if (!reply || !currentChatDept) { showToast('Enter message', true); return; }
+        
+        const res = await apiCall('send_message.php', 'POST', { to_department_id: currentChatDept, message: reply });
+        if (res.success) {
+            document.getElementById('replyMsg').value = '';
+            await openChat(currentChatDept, currentChatDeptName);
+            await loadMessages();
+            await loadDashboard();
+        } else {
+            showToast(res.message || 'Failed to send', true);
         }
     }
     
-    function exportSingleReportPDF(id) {
-        const r = reportsData.find(r => r.id === id);
-        if (r) {
-            let element = document.createElement('div');
-            element.innerHTML = `<div style="padding:20px"><h1>${escapeHtml(r.title)}</h1><p>Period: ${r.period}</p><p>Created: ${formatDate(r.created_at)}</p><hr/><div>${escapeHtml(r.content)}</div><p>Generated: ${new Date().toLocaleString()}</p></div>`;
-            html2pdf().set({ margin: 0.5, filename: `report_${r.id}.pdf` }).from(element).save();
-            showToast('Exported to PDF');
-            const dropdown = document.getElementById(`reportSendDropdown-${id}`);
-            if (dropdown) dropdown.style.display = 'none';
+    async function deleteChatMessage(messageId) {
+        const res = await apiCall('delete_message.php', 'DELETE', { message_id: messageId });
+        if (res.success) {
+            showToast('Message deleted');
+            await openChat(currentChatDept, currentChatDeptName);
+            await loadMessages();
+        } else {
+            showToast(res.message || 'Failed to delete', true);
+        }
+    }
+    
+    async function deleteConversation(deptId) {
+        if (!confirm(`Delete entire conversation with ${departmentNames[deptId]}? This cannot be undone.`)) return;
+        
+        const res = await apiCall('delete_conversation.php', 'DELETE', { department_id: deptId });
+        if (res.success) {
+            showToast('Conversation deleted');
+            closeModal('chatModal');
+            await loadMessages();
+            currentChatDept = null;
+        } else {
+            showToast(res.message || 'Failed to delete', true);
         }
     }
     
@@ -1393,10 +1276,9 @@
     function loadSettings() {
         const savedColor = localStorage.getItem('sidebar_color') || '#0f74ba';
         let html = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="bg-white rounded-xl p-4 shadow-sm"><h3 class="font-semibold text-sm mb-2"><i class="fas fa-key text-blue-500 mr-2"></i>Change Password</h3><button onclick="openModal('pwdModal')" class="w-full btn-primary">Change Password</button></div>
-            <div class="bg-white rounded-xl p-4 shadow-sm"><h3 class="font-semibold text-sm mb-2"><i class="fas fa-palette text-purple-500 mr-2"></i>Sidebar Colors</h3><div id="colorOptionsContainer" class="flex flex-wrap gap-2"></div></div>
-            <div class="bg-white rounded-xl p-4 shadow-sm"><h3 class="font-semibold text-sm mb-2"><i class="fas fa-image text-pink-500 mr-2"></i>Profile Picture</h3><div class="flex items-center gap-3"><img id="settingsProfilePic" class="profile-pic-small" src="${currentProfilePicture}"><button onclick="openProfileSettings()" class="btn-primary">Change Picture</button></div></div>
-            <div class="bg-white rounded-xl p-4 shadow-sm"><h3 class="font-semibold text-sm mb-2"><i class="fas fa-database text-green-500 mr-2"></i>Backup & Restore</h3><button onclick="openModal('backupModal')" class="w-full btn-success">Backup/Restore</button></div>
+            <div class="bg-white rounded-xl p-5 shadow-sm"><h3 class="font-semibold mb-3"><i class="fas fa-key text-blue-500 mr-2"></i>Change Password</h3><button onclick="openModal('pwdModal')" class="w-full btn-primary">Change Password</button></div>
+            <div class="bg-white rounded-xl p-5 shadow-sm"><h3 class="font-semibold mb-3"><i class="fas fa-palette text-purple-500 mr-2"></i>Sidebar Colors</h3><div id="colorOptionsContainer" class="flex flex-wrap gap-2"></div></div>
+            <div class="bg-white rounded-xl p-5 shadow-sm"><h3 class="font-semibold mb-3"><i class="fas fa-database text-green-500 mr-2"></i>Backup & Restore</h3><button onclick="openModal('backupModal')" class="w-full btn-success">Backup/Restore</button></div>
         </div>`;
         document.getElementById('settingsPage').innerHTML = html;
         
@@ -1406,7 +1288,6 @@
             const isSelected = savedColor === color;
             container.innerHTML += `<div class="color-option ${isSelected ? 'selected' : ''}" style="background: ${color}" onclick="changeSidebarColor('${color}', this)"></div>`;
         });
-        document.getElementById('settingsProfilePic').src = currentProfilePicture;
     }
     
     function changeSidebarColor(color, element) {
@@ -1421,24 +1302,18 @@
         let oldPwd = document.getElementById('oldPwd').value;
         let newPwd = document.getElementById('newPwd').value;
         let confirmPwd = document.getElementById('confirmPwd').value;
+        
         if (!newPwd) { showToast('Enter new password', true); return; }
+        if (newPwd.length < 4) { showToast('Password must be at least 4 characters', true); return; }
         if (newPwd !== confirmPwd) { showToast('Passwords do not match', true); return; }
+        
         const res = await apiCall('change_password.php', 'POST', { current_password: oldPwd, new_password: newPwd });
-        if (res.success) { showToast('Password changed'); closeModal('pwdModal'); }
-        else showToast('Password changed (demo)', false);
+        if (res && res.success) { showToast('Password changed successfully!'); closeModal('pwdModal'); }
+        else { showToast(res?.message || 'Failed to change password. Check your current password.', true); }
     }
     
-    function saveGeneralSettings() {
-        let settings = {
-            company_name: document.getElementById('companyName').value,
-            company_address: document.getElementById('companyAddress').value,
-            company_email: document.getElementById('companyEmail').value,
-            company_phone: document.getElementById('companyPhone').value
-        };
-        localStorage.setItem('geotraverse_settings', JSON.stringify(settings));
-        showToast('Settings saved');
-        closeModal('generalSettingsModal');
-    }
+    function createBackup() { showToast('Backup feature - Connect to backend'); closeModal('backupModal'); }
+    function restoreBackup() { showToast('Restore feature - Connect to backend'); closeModal('backupModal'); }
     
     // ==================== GLOBAL SEARCH ====================
     function performGlobalSearch() {
@@ -1476,24 +1351,9 @@
         showToast(`Showing "${searchTerm}"`);
     }
     
-    document.addEventListener('click', function(e) {
-        const searchInput = document.getElementById('searchInput');
-        const dropdown = document.getElementById('searchResultsDropdown');
-        if (searchInput && dropdown && !searchInput.contains(e.target) && !dropdown.contains(e.target)) {
-            dropdown.classList.remove('active');
-        }
-        // Close all dropdowns when clicking outside
-        if (!e.target.closest('.send-dropdown')) {
-            document.querySelectorAll('.send-dropdown-content').forEach(d => d.style.display = 'none');
-        }
-    });
-    
     // ==================== INIT ====================
     async function init() {
         await loadDepartmentsForDropdowns();
-        
-        // Load backup first
-        loadBackup();
         
         document.querySelectorAll('.nav-item').forEach(item => {
             item.addEventListener('click', (e) => {
@@ -1507,21 +1367,18 @@
         document.getElementById('logoutBtn').addEventListener('click', logout);
         document.getElementById('darkModeBtn').addEventListener('click', () => { document.body.classList.toggle('dark-mode'); localStorage.setItem('dark_mode', document.body.classList.contains('dark-mode')); const icon = document.getElementById('darkIcon'); if (document.body.classList.contains('dark-mode')) { icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); } else { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); } });
         
-        let savedColor = localStorage.getItem('sidebar_color');
+        const savedColor = localStorage.getItem('sidebar_color');
         if (savedColor) document.getElementById('mainSidebar').style.background = savedColor;
         if (localStorage.getItem('dark_mode') === 'true') document.body.classList.add('dark-mode');
-        
-        currentProfilePicture = localStorage.getItem('profile_picture') || 'upload/profiles/default-avatar.png';
-        updateProfilePictures();
         
         let scrollBtn = document.createElement('div');
         scrollBtn.className = 'scroll-top';
         scrollBtn.innerHTML = '<i class="fas fa-arrow-up"></i>';
+        scrollBtn.style.cssText = 'position:fixed;bottom:20px;right:20px;background:#0f74ba;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:all 0.3s;z-index:99;color:white;';
         document.body.appendChild(scrollBtn);
         scrollBtn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
         window.addEventListener('scroll', () => scrollBtn.classList.toggle('visible', window.scrollY > 200));
         
-        addLog("Super Admin Dashboard initialized");
         showPage('dashboard');
     }
     
@@ -1534,60 +1391,49 @@
     window.editEmployee = editEmployee;
     window.saveEmployee = saveEmployee;
     window.deleteEmployee = deleteEmployee;
-    window.viewProjectDetails = viewProjectDetails;
+    window.exportEmployeesToExcel = exportEmployeesToExcel;
+    window.exportEmployeesToPDF = exportEmployeesToPDF;
     window.openAddProjectModal = openAddProjectModal;
     window.editProject = editProject;
     window.saveProject = saveProject;
     window.deleteProject = deleteProject;
-    window.exportProjectExcel = exportProjectExcel;
-    window.exportProjectPDF = exportProjectPDF;
+    window.viewProjectDetails = viewProjectDetails;
+    window.exportSingleProjectExcel = exportSingleProjectExcel;
+    window.exportSingleProjectPDF = exportSingleProjectPDF;
     window.sendProjectToDept = sendProjectToDept;
-    window.toggleProjectSendDropdown = toggleProjectSendDropdown;
     window.removeProjectImage = removeProjectImage;
     window.viewDailyWork = viewDailyWork;
     window.editDailyWork = editDailyWork;
     window.saveDailyWork = saveDailyWork;
     window.deleteDailyWork = deleteDailyWork;
-    window.toggleDailyExportDropdown = toggleDailyExportDropdown;
     window.exportDailyWorkToExcel = exportDailyWorkToExcel;
     window.exportDailyWorkToPDF = exportDailyWorkToPDF;
-    window.viewTransaction = viewTransaction;
     window.editTransaction = editTransaction;
     window.saveTransaction = saveTransaction;
     window.deleteTransaction = deleteTransaction;
-    window.toggleCashflowExportDropdown = toggleCashflowExportDropdown;
     window.exportCashflowToExcel = exportCashflowToExcel;
     window.exportCashflowToPDF = exportCashflowToPDF;
-    window.editPendingPayment = editPendingPayment;
-    window.recordPendingPayment = recordPendingPayment;
-    window.savePendingPayment = savePendingPayment;
-    window.deletePendingPayment = deletePendingPayment;
-    window.viewPendingPayment = viewPendingPayment;
-    window.recordPaymentSubmit = recordPaymentSubmit;
     window.sendNewMessage = sendNewMessage;
     window.openChat = openChat;
     window.sendChatMessage = sendChatMessage;
-    window.deleteMessage = deleteMessage;
+    window.deleteChatMessage = deleteChatMessage;
     window.deleteConversation = deleteConversation;
     window.viewReportDetails = viewReportDetails;
+    window.exportSingleReportExcel = exportSingleReportExcel;
+    window.exportSingleReportPDF = exportSingleReportPDF;
+    window.sendReportToDept = sendReportToDept;
     window.editReport = editReport;
     window.saveReport = saveReport;
     window.deleteReport = deleteReport;
-    window.exportSingleReport = exportSingleReport;
-    window.exportSingleReportPDF = exportSingleReportPDF;
-    window.sendReportToDept = sendReportToDept;
-    window.toggleReportSendDropdown = toggleReportSendDropdown;
+    window.markReportAsViewed = markReportAsViewed;
     window.changePassword = changePassword;
     window.changeSidebarColor = changeSidebarColor;
     window.createBackup = createBackup;
     window.restoreBackup = restoreBackup;
-    window.saveGeneralSettings = saveGeneralSettings;
-    window.openProfileSettings = openProfileSettings;
-    window.saveProfilePicture = saveProfilePicture;
+    window.toggleSendDropdown = toggleSendDropdown;
     window.showPageAndSearch = showPageAndSearch;
-    window.closeMobileSidebar = closeMobileSidebar;
-    window.goToMainWebsite = goToMainWebsite;
     window.logout = logout;
+    window.closeMobileSidebar = closeMobileSidebar;
     
     init();
 </script>
