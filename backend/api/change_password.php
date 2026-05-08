@@ -1,70 +1,37 @@
 <?php
-header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST, OPTIONS');
+require_once 'db_connection.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
+$data = json_decode(file_get_contents('php://input'), true);
+
+$currentPassword = isset($data['current_password']) ? trim($data['current_password']) : '';
+$newPassword = isset($data['new_password']) ? trim($data['new_password']) : '';
+
+if (!$currentPassword || !$newPassword) {
+    echo json_encode(['success' => false, 'message' => 'Current password and new password required']);
+    exit;
 }
 
-require_once '../config/database.php';
-
-$database = new Database();
-$db = $database->getConnection();
-
-$data = json_decode(file_get_contents("php://input"));
-
-if (!isset($data->email) || !isset($data->current_password) || !isset($data->new_password)) {
-    echo json_encode(['success' => false, 'error' => 'Email, current password and new password required']);
-    exit();
+if (strlen($newPassword) < 4) {
+    echo json_encode(['success' => false, 'message' => 'New password must be at least 4 characters']);
+    exit;
 }
 
-$email = $data->email;
-$current = $data->current_password;
-$new = $data->new_password;
+// Hash passwords with MD5 (same as database)
+$hashedCurrent = md5($currentPassword);
+$hashedNew = md5($newPassword);
 
-// Check in users table for admin
-$query = "SELECT id, password FROM users WHERE email = :email";
-$stmt = $db->prepare($query);
-$stmt->bindParam(':email', $email);
+// Update password for Super Admin (department_id = 1)
+$query = "UPDATE users SET password = ? WHERE department_id = 1 AND password = ?";
+$stmt = $conn->prepare($query);
+$stmt->bind_param("ss", $hashedNew, $hashedCurrent);
 $stmt->execute();
 
-if ($stmt->rowCount() > 0) {
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
-    if (password_verify($current, $user['password'])) {
-        $newHash = password_hash($new, PASSWORD_DEFAULT);
-        $update = "UPDATE users SET password = :newpass WHERE id = :id";
-        $stmt2 = $db->prepare($update);
-        $stmt2->bindParam(':newpass', $newHash);
-        $stmt2->bindParam(':id', $user['id']);
-        if ($stmt2->execute()) {
-            echo json_encode(['success' => true]);
-            exit();
-        }
-    }
+if ($stmt->affected_rows > 0) {
+    echo json_encode(['success' => true, 'message' => 'Password changed successfully']);
+} else {
+    echo json_encode(['success' => false, 'message' => 'Current password is incorrect']);
 }
 
-// Check in departments table
-$query = "SELECT id, password FROM departments WHERE email = :email";
-$stmt = $db->prepare($query);
-$stmt->bindParam(':email', $email);
-$stmt->execute();
-
-if ($stmt->rowCount() > 0) {
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
-    if (password_verify($current, $user['password'])) {
-        $newHash = password_hash($new, PASSWORD_DEFAULT);
-        $update = "UPDATE departments SET password = :newpass WHERE id = :id";
-        $stmt2 = $db->prepare($update);
-        $stmt2->bindParam(':newpass', $newHash);
-        $stmt2->bindParam(':id', $user['id']);
-        if ($stmt2->execute()) {
-            echo json_encode(['success' => true]);
-            exit();
-        }
-    }
-}
-
-echo json_encode(['success' => false, 'error' => 'Current password is incorrect']);
+$stmt->close();
+$conn->close();
 ?>

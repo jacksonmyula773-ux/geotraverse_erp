@@ -1,102 +1,62 @@
 <?php
-// backend/api/update_transaction.php
-session_start();
+error_reporting(0);
+ini_set('display_errors', 0);
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST, PUT');
+header('Access-Control-Allow-Methods: PUT, POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
 
-if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['success' => false, 'message' => 'Not logged in']);
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
     exit();
 }
 
-require_once '../config/database.php';
+require_once 'db_connection.php';
 
-$data = json_decode(file_get_contents('php://input'));
+$data = json_decode(file_get_contents('php://input'), true);
 
-if (!$data || empty($data->id)) {
-    echo json_encode(['success' => false, 'message' => 'Transaction ID required']);
-    exit();
+if (!$data) {
+    echo json_encode(['success' => false, 'message' => 'Invalid input data']);
+    exit;
 }
 
-$database = new Database();
-$db = $database->getConnection();
+$id = isset($data['id']) ? intval($data['id']) : null;
+$type = isset($data['type']) ? $data['type'] : null;
+$source = isset($data['source']) ? trim($data['source']) : null;
+$amount = isset($data['amount']) ? floatval($data['amount']) : 0;
+$transactionDate = isset($data['transaction_date']) ? $data['transaction_date'] : null;
+$status = isset($data['status']) ? $data['status'] : 'pending';
+$description = isset($data['description']) ? trim($data['description']) : '';
+$departmentId = isset($data['department_id']) ? intval($data['department_id']) : 1;
 
-if (!$db) {
-    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
-    exit();
+if (!$id || !$source || $amount <= 0) {
+    echo json_encode(['success' => false, 'message' => 'Invalid transaction data']);
+    exit;
 }
 
-$id = (int)$data->id;
-$user_dept = $_SESSION['department_id'];
-$user_role = $_SESSION['role'];
+// Get the original transaction to check previous status
+$originalQuery = "SELECT type, amount, status FROM transactions WHERE id = ?";
+$stmt = $conn->prepare($originalQuery);
+$stmt->bind_param("i", $id);
+$stmt->execute();
+$original = $stmt->get_result()->fetch_assoc();
 
-// Check if transaction exists and get its department
-$checkQuery = "SELECT department_id, type FROM transactions WHERE id = ?";
-$checkStmt = $db->prepare($checkQuery);
-$checkStmt->execute([$id]);
-$transaction = $checkStmt->fetch(PDO::FETCH_ASSOC);
-
-if (!$transaction) {
+if (!$original) {
     echo json_encode(['success' => false, 'message' => 'Transaction not found']);
-    exit();
+    exit;
 }
 
-// Check permission
-if ($user_dept != 1 && $user_role != 'Super Administrator' && $transaction['department_id'] != $user_dept) {
-    echo json_encode(['success' => false, 'message' => 'Access denied']);
-    exit();
-}
+// Update transaction
+$updateQuery = "UPDATE transactions SET type = ?, source = ?, amount = ?, transaction_date = ?, status = ?, description = ?, department_id = ? WHERE id = ?";
+$stmt = $conn->prepare($updateQuery);
+$stmt->bind_param("ssdsssii", $type, $source, $amount, $transactionDate, $status, $description, $departmentId, $id);
 
-// Build update query
-$updates = [];
-$params = [];
-
-if (isset($data->type)) {
-    $updates[] = "type = ?";
-    $params[] = $data->type;
-}
-if (isset($data->source)) {
-    $updates[] = "source = ?";
-    $params[] = $data->source;
-}
-if (isset($data->amount)) {
-    $updates[] = "amount = ?";
-    $params[] = $data->amount;
-}
-if (isset($data->transaction_date)) {
-    $updates[] = "transaction_date = ?";
-    $params[] = $data->transaction_date;
-}
-if (isset($data->paid_amount)) {
-    $updates[] = "paid_amount = ?";
-    $params[] = $data->paid_amount;
-}
-if (isset($data->status)) {
-    $updates[] = "status = ?";
-    $params[] = $data->status;
-}
-if (isset($data->description)) {
-    $updates[] = "description = ?";
-    $params[] = $data->description;
-}
-if (isset($data->department_id) && ($user_dept == 1 || $user_role == 'Super Administrator')) {
-    $updates[] = "department_id = ?";
-    $params[] = $data->department_id;
-}
-
-if (empty($updates)) {
-    echo json_encode(['success' => false, 'message' => 'No fields to update']);
-    exit();
-}
-
-$params[] = $id;
-$query = "UPDATE transactions SET " . implode(", ", $updates) . " WHERE id = ?";
-$stmt = $db->prepare($query);
-
-if ($stmt->execute($params)) {
+if ($stmt->execute()) {
     echo json_encode(['success' => true, 'message' => 'Transaction updated successfully']);
 } else {
     echo json_encode(['success' => false, 'message' => 'Failed to update transaction']);
 }
+
+$stmt->close();
+$conn->close();
 ?>

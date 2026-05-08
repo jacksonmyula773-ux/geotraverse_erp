@@ -1,50 +1,28 @@
 <?php
-// backend/api/delete_message.php
-session_start();
-header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: DELETE, POST');
+require_once 'db_connection.php';
 
-if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['success' => false, 'message' => 'Not logged in']);
-    exit();
-}
+$data = json_decode(file_get_contents('php://input'), true);
+$messageId = isset($data['message_id']) ? intval($data['message_id']) : null;
 
-require_once '../config/database.php';
-
-$rawInput = file_get_contents('php://input');
-$data = json_decode($rawInput);
-
-if (!$data || empty($data->message_id)) {
+if (!$messageId) {
     echo json_encode(['success' => false, 'message' => 'Message ID required']);
-    exit();
+    exit;
 }
 
-$database = new Database();
-$db = $database->getConnection();
+// First check if message exists
+$checkQuery = "SELECT id FROM messages WHERE id = $messageId";
+$checkResult = $conn->query($checkQuery);
 
-if (!$db) {
-    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
-    exit();
-}
-
-$message_id = (int)$data->message_id;
-$user_dept = $_SESSION['department_id'];
-
-$checkQuery = "SELECT id FROM messages WHERE id = ? AND (from_department_id = ? OR to_department_id = ?)";
-$checkStmt = $db->prepare($checkQuery);
-$checkStmt->execute([$message_id, $user_dept, $user_dept]);
-
-if ($checkStmt->rowCount() == 0) {
-    echo json_encode(['success' => false, 'message' => 'Message not found or access denied']);
-    exit();
-}
-
-$stmt = $db->prepare("DELETE FROM messages WHERE id = ?");
-
-if ($stmt->execute([$message_id])) {
-    echo json_encode(['success' => true, 'message' => 'Message deleted successfully']);
+if ($checkResult && $checkResult->num_rows > 0) {
+    $query = "DELETE FROM messages WHERE id = $messageId";
+    if ($conn->query($query)) {
+        echo json_encode(['success' => true]);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Failed to delete message: ' . $conn->error]);
+    }
 } else {
-    echo json_encode(['success' => false, 'message' => 'Failed to delete message']);
+    echo json_encode(['success' => false, 'message' => 'Message not found']);
 }
+
+$conn->close();
 ?>

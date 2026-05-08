@@ -1,46 +1,52 @@
 <?php
-// backend/api/delete_conversation.php
-session_start();
-header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: DELETE, POST');
+require_once 'db_connection.php';
 
-if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['success' => false, 'message' => 'Not logged in']);
-    exit();
-}
+$data = json_decode(file_get_contents('php://input'), true);
+$departmentId = isset($data['department_id']) ? intval($data['department_id']) : null;
 
-require_once '../config/database.php';
-
-$rawInput = file_get_contents('php://input');
-$data = json_decode($rawInput);
-
-if (!$data || empty($data->department_id)) {
+if (!$departmentId) {
     echo json_encode(['success' => false, 'message' => 'Department ID required']);
-    exit();
+    exit;
 }
 
-$database = new Database();
-$db = $database->getConnection();
+// Get Super Admin user
+$adminQuery = "SELECT id FROM users WHERE department_id = 1 LIMIT 1";
+$adminResult = $conn->query($adminQuery);
+$admin = $adminResult->fetch_assoc();
 
-if (!$db) {
-    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
-    exit();
+if (!$admin) {
+    echo json_encode(['success' => false, 'message' => 'Admin user not found']);
+    exit;
 }
 
-$other_dept = (int)$data->department_id;
-$user_dept = $_SESSION['department_id'];
+// Get target department user
+$targetQuery = "SELECT id FROM users WHERE department_id = $departmentId LIMIT 1";
+$targetResult = $conn->query($targetQuery);
+$target = $targetResult->fetch_assoc();
 
-$query = "DELETE FROM messages WHERE (from_department_id = ? AND to_department_id = ?) OR (from_department_id = ? AND to_department_id = ?)";
-$stmt = $db->prepare($query);
-
-if ($stmt->execute([$user_dept, $other_dept, $other_dept, $user_dept])) {
-    $deleted_count = $stmt->rowCount();
-    echo json_encode([
-        'success' => true, 
-        'message' => "Conversation deleted successfully ($deleted_count messages removed)"
-    ]);
-} else {
-    echo json_encode(['success' => false, 'message' => 'Failed to delete conversation']);
+if (!$target) {
+    echo json_encode(['success' => false, 'message' => 'Department user not found']);
+    exit;
 }
+
+// Find conversation
+$convQuery = "SELECT id FROM conversations WHERE (user_id = {$admin['id']} AND admin_id = {$target['id']}) OR (user_id = {$target['id']} AND admin_id = {$admin['id']})";
+$convResult = $conn->query($convQuery);
+$deleted = false;
+
+if ($convResult && $convResult->num_rows > 0) {
+    $conv = $convResult->fetch_assoc();
+    
+    // Delete messages first (avoid foreign key constraint)
+    $conn->query("DELETE FROM messages WHERE conversation_id = {$conv['id']}");
+    
+    // Delete conversation
+    if ($conn->query("DELETE FROM conversations WHERE id = {$conv['id']}")) {
+        $deleted = true;
+    }
+}
+
+echo json_encode(['success' => true, 'deleted' => $deleted]);
+
+$conn->close();
 ?>

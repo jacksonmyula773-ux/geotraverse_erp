@@ -1,47 +1,53 @@
 <?php
-// backend/api/upload_project_image.php
-session_start();
+require_once 'db_connection.php';
+
 header('Content-Type: application/json');
 
-if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['success' => false, 'message' => 'Not logged in']);
-    exit();
-}
-
-if (!isset($_FILES['image']) || !isset($_POST['project_id'])) {
-    echo json_encode(['success' => false, 'message' => 'Image and project ID required']);
-    exit();
-}
-
-require_once '../config/database.php';
-
-$database = new Database();
-$db = $database->getConnection();
-
-if (!$db) {
-    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
-    exit();
-}
-
-$project_id = (int)$_POST['project_id'];
-$upload_dir = '../../frontend/uploads/projects/';
-
-if (!file_exists($upload_dir)) {
-    mkdir($upload_dir, 0777, true);
-}
-
-$file_extension = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
-$file_name = 'project_' . $project_id . '_' . time() . '.' . $file_extension;
-$file_path = $upload_dir . $file_name;
-
-if (move_uploaded_file($_FILES['image']['tmp_name'], $file_path)) {
-    $db_path = 'uploads/projects/' . $file_name;
-    $updateQuery = "UPDATE projects SET image = ? WHERE id = ?";
-    $updateStmt = $db->prepare($updateQuery);
-    $updateStmt->execute([$db_path, $project_id]);
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $data = json_decode(file_get_contents('php://input'), true);
     
-    echo json_encode(['success' => true, 'message' => 'Image uploaded', 'path' => $db_path]);
+    if ($data && isset($data['image']) && isset($data['project_id'])) {
+        $imageData = $data['image'];
+        $projectId = intval($data['project_id']);
+        
+        // Extract base64 image
+        if (preg_match('/^data:image\/(\w+);base64,/', $imageData, $matches)) {
+            $imageType = $matches[1];
+            $imageData = substr($imageData, strpos($imageData, ',') + 1);
+            $imageData = base64_decode($imageData);
+            
+            // Create upload directory
+            $uploadDir = '../frontend/assets/uploads/projects/';
+            if (!file_exists($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
+            }
+            
+            $fileName = time() . '_' . $projectId . '.' . $imageType;
+            $filePath = $uploadDir . $fileName;
+            
+            if (file_put_contents($filePath, $imageData)) {
+                $imagePath = 'assets/uploads/projects/' . $fileName;
+                $stmt = $conn->prepare("UPDATE projects SET image = ? WHERE id = ?");
+                $stmt->bind_param("si", $imagePath, $projectId);
+                
+                if ($stmt->execute()) {
+                    echo json_encode(['success' => true, 'path' => $imagePath]);
+                } else {
+                    echo json_encode(['success' => false, 'message' => 'Database update failed']);
+                }
+                $stmt->close();
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Failed to save image file']);
+            }
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Invalid image format']);
+        }
+    } else {
+        echo json_encode(['success' => false, 'message' => 'No image data received']);
+    }
 } else {
-    echo json_encode(['success' => false, 'message' => 'Failed to upload image']);
+    echo json_encode(['success' => false, 'message' => 'Invalid request method']);
 }
+
+$conn->close();
 ?>

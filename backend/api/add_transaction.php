@@ -1,90 +1,48 @@
 <?php
-// backend/api/add_transaction.php
-session_start();
+error_reporting(0);
+ini_set('display_errors', 0);
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST');
+header('Access-Control-Allow-Methods: POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
 
-if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['success' => false, 'message' => 'Not logged in']);
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
     exit();
 }
 
-require_once '../config/database.php';
+require_once 'db_connection.php';
 
-$data = json_decode(file_get_contents('php://input'));
+$data = json_decode(file_get_contents('php://input'), true);
 
 if (!$data) {
-    echo json_encode(['success' => false, 'message' => 'Invalid data']);
-    exit();
+    echo json_encode(['success' => false, 'message' => 'Invalid input data']);
+    exit;
 }
 
-// Validate required fields
-if (empty($data->type)) {
-    echo json_encode(['success' => false, 'message' => 'Transaction type is required']);
-    exit();
+$type = isset($data['type']) ? $data['type'] : null;
+$source = isset($data['source']) ? trim($data['source']) : null;
+$amount = isset($data['amount']) ? floatval($data['amount']) : 0;
+$transactionDate = isset($data['transaction_date']) ? $data['transaction_date'] : null;
+$status = isset($data['status']) ? $data['status'] : 'pending';
+$description = isset($data['description']) ? trim($data['description']) : '';
+$departmentId = isset($data['department_id']) ? intval($data['department_id']) : 1;
+
+if (!$source || $amount <= 0) {
+    echo json_encode(['success' => false, 'message' => 'Source and amount required']);
+    exit;
 }
 
-if (empty($data->source)) {
-    echo json_encode(['success' => false, 'message' => 'Source is required']);
-    exit();
-}
+$query = "INSERT INTO transactions (type, source, amount, transaction_date, status, description, department_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
+$stmt = $conn->prepare($query);
+$stmt->bind_param("ssdsssi", $type, $source, $amount, $transactionDate, $status, $description, $departmentId);
 
-if (empty($data->amount) || $data->amount <= 0) {
-    echo json_encode(['success' => false, 'message' => 'Valid amount is required']);
-    exit();
-}
-
-if (empty($data->transaction_date)) {
-    echo json_encode(['success' => false, 'message' => 'Date is required']);
-    exit();
-}
-
-$database = new Database();
-$db = $database->getConnection();
-
-if (!$db) {
-    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
-    exit();
-}
-
-$user_dept = $_SESSION['department_id'];
-$user_role = $_SESSION['role'];
-
-// Determine department_id
-if ($user_dept == 1 || $user_role == 'Super Administrator') {
-    $dept_id = isset($data->department_id) ? $data->department_id : null;
-} else {
-    $dept_id = $user_dept;
-}
-
-$type = $data->type;
-$source = $data->source;
-$amount = $data->amount;
-$transaction_date = $data->transaction_date;
-$paid_amount = $data->paid_amount ?? ($type == 'income' ? $amount : 0);
-$status = $data->status ?? ($type == 'income' ? 'paid' : 'paid');
-$description = $data->description ?? '';
-
-// For income, if status is paid, set paid_amount = amount
-if ($type == 'income' && $status == 'paid') {
-    $paid_amount = $amount;
-}
-
-$query = "INSERT INTO transactions (type, source, amount, transaction_date, paid_amount, status, description, department_id, created_at) 
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())";
-
-$stmt = $db->prepare($query);
-
-if ($stmt->execute([$type, $source, $amount, $transaction_date, $paid_amount, $status, $description, $dept_id])) {
-    $newId = $db->lastInsertId();
-    
-    echo json_encode([
-        'success' => true,
-        'message' => 'Transaction added successfully',
-        'data' => ['id' => $newId]
-    ]);
+if ($stmt->execute()) {
+    echo json_encode(['success' => true, 'message' => 'Transaction added successfully', 'id' => $conn->insert_id]);
 } else {
     echo json_encode(['success' => false, 'message' => 'Failed to add transaction']);
 }
+
+$stmt->close();
+$conn->close();
 ?>
