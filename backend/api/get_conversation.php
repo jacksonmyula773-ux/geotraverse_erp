@@ -1,60 +1,60 @@
 <?php
-require_once 'db_connection.php';
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+header('Access-Control-Allow-Credentials: true');
 
-$departmentId = isset($_GET['department_id']) ? intval($_GET['department_id']) : null;
+require_once '../config/database.php';
+session_start();
 
-if (!$departmentId) {
-    echo json_encode(['success' => false, 'message' => 'Department ID required', 'data' => []]);
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
+
+$department_id = isset($_GET['department_id']) ? intval($_GET['department_id']) : 0;
+$current_dept = isset($_SESSION['department_id']) ? $_SESSION['department_id'] : 1;
+
+if (!$department_id) {
+    echo json_encode(['success' => false, 'message' => 'Department ID required']);
     exit;
+}
+
+$participant_1 = min($current_dept, $department_id);
+$participant_2 = max($current_dept, $department_id);
+
+$stmt = $conn->prepare("
+    SELECT c.id as conversation_id, 
+           m.*,
+           d1.name as sender_name,
+           d2.name as receiver_name
+    FROM conversations c
+    LEFT JOIN messages m ON c.id = m.conversation_id
+    LEFT JOIN departments d1 ON m.sender_dept = d1.id
+    LEFT JOIN departments d2 ON m.receiver_dept = d2.id
+    WHERE c.participant_1 = ? AND c.participant_2 = ?
+    ORDER BY m.created_at ASC
+");
+$stmt->bind_param("ii", $participant_1, $participant_2);
+$stmt->execute();
+$result = $stmt->get_result();
+$messages = [];
+
+while ($row = $result->fetch_assoc()) {
+    $messages[] = $row;
 }
 
 // Get department name
-$deptQuery = "SELECT name FROM departments WHERE id = $departmentId";
-$deptResult = $conn->query($deptQuery);
-$deptName = $deptResult->fetch_assoc();
-$departmentName = $deptName ? $deptName['name'] : 'Department';
+$deptStmt = $conn->prepare("SELECT name FROM departments WHERE id = ?");
+$deptStmt->bind_param("i", $department_id);
+$deptStmt->execute();
+$deptResult = $deptStmt->get_result();
+$deptName = $deptResult->fetch_assoc()['name'] ?? 'Unknown';
 
-// Get Super Admin user
-$adminQuery = "SELECT id FROM users WHERE department_id = 1 LIMIT 1";
-$adminResult = $conn->query($adminQuery);
-$admin = $adminResult->fetch_assoc();
-
-if (!$admin) {
-    echo json_encode(['success' => false, 'message' => 'Super Admin not found', 'data' => [], 'department_name' => $departmentName]);
-    exit;
-}
-
-// Get target department user
-$targetQuery = "SELECT id FROM users WHERE department_id = $departmentId LIMIT 1";
-$targetResult = $conn->query($targetQuery);
-$target = $targetResult->fetch_assoc();
-
-if (!$target) {
-    echo json_encode(['success' => false, 'message' => 'Department user not found', 'data' => [], 'department_name' => $departmentName]);
-    exit;
-}
-
-// Get messages between Super Admin and department
-$query = "SELECT m.*, 
-          u1.name as sender_name, u1.department_id as sender_dept,
-          u2.name as receiver_name, u2.department_id as receiver_dept
-          FROM messages m
-          JOIN users u1 ON m.sender_id = u1.id
-          JOIN users u2 ON m.receiver_id = u2.id
-          WHERE (m.sender_id = {$admin['id']} AND m.receiver_id = {$target['id']}) 
-             OR (m.sender_id = {$target['id']} AND m.receiver_id = {$admin['id']})
-          ORDER BY m.created_at ASC";
-
-$result = $conn->query($query);
-$messages = [];
-
-if ($result) {
-    while ($row = $result->fetch_assoc()) {
-        $messages[] = $row;
-    }
-}
-
-echo json_encode(['success' => true, 'data' => $messages, 'department_name' => $departmentName]);
-
-$conn->close();
+echo json_encode([
+    'success' => true, 
+    'data' => $messages,
+    'department_name' => $deptName
+]);
 ?>

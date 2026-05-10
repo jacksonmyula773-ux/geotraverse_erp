@@ -1,52 +1,33 @@
 <?php
-require_once 'db_connection.php';
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: DELETE, POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+header('Access-Control-Allow-Credentials: true');
+
+require_once '../config/database.php';
+session_start();
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
 
 $data = json_decode(file_get_contents('php://input'), true);
-$departmentId = isset($data['department_id']) ? intval($data['department_id']) : null;
+$department_id = isset($data['department_id']) ? intval($data['department_id']) : 0;
+$current_dept = isset($_SESSION['department_id']) ? $_SESSION['department_id'] : 1;
 
-if (!$departmentId) {
+if (!$department_id) {
     echo json_encode(['success' => false, 'message' => 'Department ID required']);
     exit;
 }
 
-// Get Super Admin user
-$adminQuery = "SELECT id FROM users WHERE department_id = 1 LIMIT 1";
-$adminResult = $conn->query($adminQuery);
-$admin = $adminResult->fetch_assoc();
+$participant_1 = min($current_dept, $department_id);
+$participant_2 = max($current_dept, $department_id);
 
-if (!$admin) {
-    echo json_encode(['success' => false, 'message' => 'Admin user not found']);
-    exit;
-}
+$stmt = $conn->prepare("DELETE FROM conversations WHERE participant_1 = ? AND participant_2 = ?");
+$stmt->bind_param("ii", $participant_1, $participant_2);
+$stmt->execute();
 
-// Get target department user
-$targetQuery = "SELECT id FROM users WHERE department_id = $departmentId LIMIT 1";
-$targetResult = $conn->query($targetQuery);
-$target = $targetResult->fetch_assoc();
-
-if (!$target) {
-    echo json_encode(['success' => false, 'message' => 'Department user not found']);
-    exit;
-}
-
-// Find conversation
-$convQuery = "SELECT id FROM conversations WHERE (user_id = {$admin['id']} AND admin_id = {$target['id']}) OR (user_id = {$target['id']} AND admin_id = {$admin['id']})";
-$convResult = $conn->query($convQuery);
-$deleted = false;
-
-if ($convResult && $convResult->num_rows > 0) {
-    $conv = $convResult->fetch_assoc();
-    
-    // Delete messages first (avoid foreign key constraint)
-    $conn->query("DELETE FROM messages WHERE conversation_id = {$conv['id']}");
-    
-    // Delete conversation
-    if ($conn->query("DELETE FROM conversations WHERE id = {$conv['id']}")) {
-        $deleted = true;
-    }
-}
-
-echo json_encode(['success' => true, 'deleted' => $deleted]);
-
-$conn->close();
+echo json_encode(['success' => true]);
 ?>

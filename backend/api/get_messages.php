@@ -1,38 +1,52 @@
 <?php
-require_once 'db_connection.php';
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+header('Access-Control-Allow-Credentials: true');
 
-// Get all messages for Super Admin with grouping by department
-$query = "SELECT m.*, 
-          u1.name as sender_name, u1.department_id as sender_dept,
-          u2.name as receiver_name, u2.department_id as receiver_dept,
-          d.name as department_name
-          FROM messages m
-          JOIN users u1 ON m.sender_id = u1.id
-          JOIN users u2 ON m.receiver_id = u2.id
-          LEFT JOIN departments d ON (u1.department_id = d.id OR u2.department_id = d.id)
-          WHERE u1.department_id = 1 OR u2.department_id = 1
-          ORDER BY m.created_at DESC";
+require_once '../config/database.php';
+session_start();
 
-$result = $conn->query($query);
-$messages = [];
-
-if ($result) {
-    while ($row = $result->fetch_assoc()) {
-        // Get the other department
-        $otherDept = $row['sender_dept'] == 1 ? $row['receiver_dept'] : $row['sender_dept'];
-        $row['other_department_id'] = $otherDept;
-        $messages[] = $row;
-    }
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
 }
 
-// Count unread messages
-$unreadQuery = "SELECT COUNT(*) as unread FROM messages m 
-                JOIN users u ON m.receiver_id = u.id 
-                WHERE u.department_id = 1 AND m.is_read = 0";
-$unreadResult = $conn->query($unreadQuery);
-$unreadCount = $unreadResult ? $unreadResult->fetch_assoc()['unread'] : 0;
+$current_dept = isset($_SESSION['department_id']) ? $_SESSION['department_id'] : 1;
 
-echo json_encode(['success' => true, 'data' => $messages, 'unread_count' => $unreadCount]);
+$sql = "SELECT DISTINCT 
+            CASE 
+                WHEN c.participant_1 = ? THEN c.participant_2
+                ELSE c.participant_1
+            END as other_dept_id,
+            d.name as other_dept_name,
+            c.last_message,
+            c.last_message_time,
+            (SELECT COUNT(*) FROM messages WHERE conversation_id = c.id AND receiver_dept = ? AND is_read = 0) as unread_count
+        FROM conversations c
+        JOIN departments d ON (CASE WHEN c.participant_1 = ? THEN c.participant_2 ELSE c.participant_1 END) = d.id
+        WHERE c.participant_1 = ? OR c.participant_2 = ?
+        ORDER BY c.last_message_time DESC";
 
-$conn->close();
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("iiiii", $current_dept, $current_dept, $current_dept, $current_dept, $current_dept);
+$stmt->execute();
+$result = $stmt->get_result();
+$conversations = [];
+
+while ($row = $result->fetch_assoc()) {
+    $conversations[] = $row;
+}
+
+$unread_count = 0;
+foreach ($conversations as $conv) {
+    $unread_count += $conv['unread_count'];
+}
+
+echo json_encode([
+    'success' => true,
+    'data' => $conversations,
+    'unread_count' => $unread_count
+]);
 ?>

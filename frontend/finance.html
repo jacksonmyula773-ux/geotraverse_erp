@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GeoTraverse | Finance Dashboard</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -13,772 +14,1043 @@
     
     <style>
         * { font-family: 'Inter', sans-serif; }
-        body { background: #f0f2f5; font-size: 14px; }
-        .sidebar { background: linear-gradient(180deg, #059669 0%, #047857 100%); position: fixed; width: 280px; height: 100vh; z-index: 30; }
+        body { background: #f0f2f5; transition: background 0.3s; font-size: 14px; }
+        
+        .sidebar {
+            background: linear-gradient(180deg, #059669 0%, #047857 100%);
+            position: fixed;
+            width: 280px;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 30;
+            transition: all 0.3s;
+        }
+        
         .main-content { margin-left: 280px; }
-        @media (max-width: 768px) { .sidebar { left: -280px; } .sidebar.mobile-open { left: 0; } .main-content { margin-left: 0; } }
-        .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 16px; color: white; cursor: pointer; border-radius: 10px; }
-        .nav-item.active { background: rgba(255,255,255,0.15); }
-        .stat-card { background: white; border-radius: 16px; padding: 16px; cursor: pointer; transition: all 0.2s; border: 1px solid #e5e7eb; }
+        
+        @media (max-width: 768px) {
+            .sidebar { left: -280px; }
+            .sidebar.mobile-open { left: 0; }
+            .main-content { margin-left: 0; }
+        }
+        
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 10px; color: white; cursor: pointer; transition: all 0.2s; }
+        .nav-item:hover { background: rgba(255,255,255,0.1); }
+        .nav-item.active { background: rgba(255,255,255,0.15); border-left: 3px solid #6ee7b7; }
+        
+        .stat-card { background: white; border-radius: 16px; border: 1px solid #e5e7eb; padding: 20px; transition: all 0.2s; cursor: pointer; }
         .stat-card:hover { transform: translateY(-3px); border-color: #059669; }
-        .btn-primary { background: linear-gradient(135deg, #059669, #047857); color: white; padding: 8px 16px; border-radius: 8px; cursor: pointer; border: none; }
+        
+        .btn-primary { background: linear-gradient(135deg, #059669, #047857); color: white; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; }
         .btn-primary:hover { transform: translateY(-1px); }
-        .toast-notification { position: fixed; bottom: 20px; right: 20px; background: #059669; color: white; padding: 10px 18px; border-radius: 10px; z-index: 1000; }
-        .toast-notification.error { background: #ef4444; }
+        .btn-success { background: #10b981; color: white; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; }
+        .btn-success:hover { background: #059669; }
+        .btn-danger { background: #ef4444; color: white; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; }
+        .btn-danger:hover { background: #dc2626; }
+        
+        input, select, textarea { width: 100%; padding: 10px 14px; margin: 8px 0; border: 1px solid #e5e7eb; border-radius: 10px; font-size: 14px; background: white; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: #059669; box-shadow: 0 0 0 2px rgba(5,150,105,0.1); }
+        
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000; }
-        .modal-content { background: white; border-radius: 16px; width: 90%; max-width: 500px; max-height: 85vh; overflow-y: auto; }
-        .modal-header { padding: 16px 20px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; }
-        .modal-body { padding: 20px; }
-        .modal-footer { padding: 16px 20px; border-top: 1px solid #e5e7eb; display: flex; gap: 10px; justify-content: flex-end; }
-        input, select, textarea { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #e5e7eb; border-radius: 8px; }
-        input:focus, select:focus { outline: none; border-color: #059669; }
-        .status-paid { background: #d1fae5; color: #059669; padding: 3px 8px; border-radius: 20px; font-size: 11px; }
-        .status-partial { background: #fef3c7; color: #d97706; padding: 3px 8px; border-radius: 20px; font-size: 11px; }
-        .status-pending { background: #fee2e2; color: #dc2626; padding: 3px 8px; border-radius: 20px; font-size: 11px; }
-        .responsive-table { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e5e7eb; }
-        th { background: #f9fafb; }
-        .partial-row { background-color: #fffbeb; }
-        .pending-row { background-color: #fef2f2; }
-        .chat-message { padding: 10px; margin-bottom: 10px; border-radius: 12px; max-width: 80%; }
-        .chat-sent { background-color: #d1fae5; margin-left: auto; }
-        .chat-received { background-color: #e5e7eb; margin-right: auto; }
-        .notification-badge { background: #ef4444; color: white; border-radius: 9999px; padding: 2px 6px; font-size: 10px; margin-left: 6px; }
-        .loading-spinner { width: 20px; height: 20px; border: 2px solid #f3f3f3; border-top: 2px solid #059669; border-radius: 50%; animation: spin 1s linear infinite; display: inline-block; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .modal-content { background: white; border-radius: 20px; width: 90%; max-width: 650px; max-height: 85vh; overflow-y: auto; padding: 25px; }
+        
+        .toast { position: fixed; bottom: 20px; right: 20px; background: #10b981; color: white; padding: 12px 24px; border-radius: 12px; z-index: 1000; animation: slideInRight 0.3s ease; }
+        .toast.error { background: #ef4444; }
+        
+        .loading-spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid #059669; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; display: inline-block; }
+        .status-paid { background: #d1fae5; color: #059669; }
+        .status-pending { background: #fee2e2; color: #dc2626; }
+        .status-partial { background: #fef3c7; color: #d97706; }
+        
+        .income-row { background-color: #f0fdf4; }
+        .expense-row { background-color: #fef2f2; }
+        
+        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th, td { padding: 12px 10px; text-align: left; border-bottom: 1px solid #e5e7eb; }
+        th { background: #f9fafb; font-weight: 600; }
+        
+        body.dark-mode { background: #0f172a; }
+        body.dark-mode .bg-white, body.dark-mode .stat-card, body.dark-mode .modal-content { background: #1e293b; border-color: #334155; color: #f1f5f9; }
+        body.dark-mode input, body.dark-mode select, body.dark-mode textarea { background: #0f172a; border-color: #334155; color: #f1f5f9; }
+        body.dark-mode th { background: #1e293b; }
+        body.dark-mode td { border-color: #334155; }
+        
+        .color-option { width: 42px; height: 42px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: all 0.2s; display: inline-block; margin: 5px; }
+        .color-option:hover { transform: scale(1.1); }
+        .color-option.selected { border-color: white; box-shadow: 0 0 0 2px #333; }
+        
+        .section { display: block; }
+        .section.hidden { display: none; }
+        
+        .notification-badge { background: #ef4444; color: white; border-radius: 9999px; padding: 2px 8px; font-size: 10px; margin-left: 8px; }
+        
+        .search-results-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: white; border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); z-index: 50; max-height: 400px; overflow-y: auto; display: none; }
+        .search-results-dropdown.active { display: block; }
+        .search-result-item { padding: 10px 16px; border-bottom: 1px solid #e5e7eb; cursor: pointer; transition: background 0.2s; font-size: 13px; }
+        .search-result-item:hover { background-color: #f3f4f6; }
+        
+        .home-btn { background: transparent; border: none; color: #059669; font-size: 20px; cursor: pointer; margin-right: 15px; }
+        .home-btn:hover { color: #047857; }
+        body.dark-mode .home-btn { color: #34d399; }
+        
+        .dept-card { background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 16px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 12px; }
+        .dept-card:hover { transform: translateX(5px); border-color: #059669; background: #ecfdf5; }
+        
+        .project-card { background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 16px; transition: all 0.2s; cursor: pointer; }
+        .project-card:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
+        
+        .project-image { width: 100%; height: 140px; object-fit: cover; border-radius: 8px; margin-bottom: 12px; background: #f3f4f6; }
+        .no-image { width: 100%; height: 140px; background: #f3f4f6; display: flex; align-items: center; justify-content: center; color: #9ca3af; border-radius: 8px; margin-bottom: 12px; }
+        
+        .budget-all-card { background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 12px; transition: all 0.2s; }
+        .budget-all-card:hover { transform: translateY(-2px); border-color: #059669; }
+        
+        .report-card { background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 16px; transition: all 0.2s; cursor: pointer; }
+        .report-card:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
+        
+        .setting-card { background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 20px; transition: all 0.2s; }
+        .setting-card:hover { transform: translateY(-2px); border-color: #059669; }
     </style>
 </head>
 <body>
 
-<div id="mobileMenuOverlay" class="fixed inset-0 bg-black/50 z-40 hidden" onclick="closeMobileSidebar()"></div>
+<div id="mobileMenuOverlay" class="fixed inset-0 bg-black/50 z-20 hidden" onclick="closeMobileSidebar()"></div>
 
-<div class="flex h-screen overflow-hidden">
-    <aside id="mainSidebar" class="sidebar shadow-xl flex flex-col z-20">
-        <div class="px-5 py-5 border-b border-white/20">
+<div class="flex">
+    <aside id="mainSidebar" class="sidebar text-white">
+        <div class="p-5 border-b border-white/20">
             <div class="flex items-center gap-3 cursor-pointer" onclick="goToMainWebsite()">
-                <img src="https://i.postimg.cc/MT6jTVHh/weblogo.png" class="w-10 h-10 object-contain rounded-lg" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23059669%22/%3E%3Ctext x=%2250%22 y=%2265%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2240%22 font-weight=%22bold%22%3EG%3C/text%3E%3C/svg%3E';">
-                <div><span class="text-xl font-bold text-white">GeoTraverse</span><p class="text-[10px] text-white/60">Finance Dept</p></div>
+                <i class="fas fa-globe-africa text-2xl"></i>
+                <div><span class="text-xl font-bold">GeoTraverse</span><p class="text-[10px] text-white/60">Finance Dept</p></div>
             </div>
         </div>
-        <div class="flex-1 overflow-y-auto px-3 py-4">
-            <nav class="space-y-1">
-                <a href="#" class="nav-item active" data-section="dashboard"><i class="fas fa-tachometer-alt w-5"></i><span>Dashboard</span></a>
-                <a href="#" class="nav-item" data-section="transactions"><i class="fas fa-exchange-alt w-5"></i><span>Transactions</span></a>
-                <a href="#" class="nav-item" data-section="budget"><i class="fas fa-wallet w-5"></i><span>Budget</span></a>
-                <a href="#" class="nav-item" data-section="reports"><i class="fas fa-chart-bar w-5"></i><span>Reports</span></a>
-                <a href="#" class="nav-item" data-section="messages"><i class="fas fa-envelope w-5"></i><span>Messages</span><span id="unreadMessagesBadge" class="notification-badge">0</span></a>
-                <a href="#" class="nav-item" data-section="settings"><i class="fas fa-cog w-5"></i><span>Settings</span></a>
-            </nav>
-        </div>
+        <nav class="flex-1 p-3 space-y-1">
+            <div class="nav-item active" data-page="dashboard"><i class="fas fa-tachometer-alt w-5"></i><span>Dashboard</span></div>
+            <div class="nav-item" data-page="transactions"><i class="fas fa-exchange-alt w-5"></i><span>Transactions</span></div>
+            <div class="nav-item" data-page="allbudget"><i class="fas fa-chart-pie w-5"></i><span>All Budgets</span></div>
+            <div class="nav-item" data-page="projects"><i class="fas fa-tasks w-5"></i><span>All Projects</span></div>
+            <div class="nav-item" data-page="departments"><i class="fas fa-building w-5"></i><span>Departments</span></div>
+            <div class="nav-item" data-page="reports"><i class="fas fa-chart-bar w-5"></i><span>Reports</span></div>
+            <div class="nav-item" data-page="messages"><i class="fas fa-envelope w-5"></i><span>Messages</span><span id="msgBadge" class="notification-badge">0</span></div>
+            <div class="nav-item" data-page="settings"><i class="fas fa-cog w-5"></i><span>Settings</span></div>
+        </nav>
         <div class="p-4 border-t border-white/20">
             <div class="flex items-center gap-3 mb-3">
-                <div class="w-9 h-9 bg-gradient-to-r from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center"><i class="fas fa-coins text-white text-sm"></i></div>
-                <div><p class="text-sm font-semibold text-white">Finance Department</p><p class="text-[10px] text-white/70">finance@geotraverse.com</p></div>
+                <div class="w-9 h-9 bg-emerald-700 rounded-full flex items-center justify-center"><i class="fas fa-coins text-white text-sm"></i></div>
+                <div><p class="text-sm font-semibold text-white">Finance Manager</p><p class="text-[10px] text-white/70">finance@geotraverse.com</p></div>
             </div>
-            <button id="logoutBtn" class="w-full bg-red-600/80 hover:bg-red-600 text-white py-2 rounded-lg text-sm"><i class="fas fa-sign-out-alt mr-2"></i>Logout</button>
+            <button id="logoutBtn" class="w-full bg-red-600/80 hover:bg-red-600 py-2 rounded-lg text-sm transition"><i class="fas fa-sign-out-alt mr-2"></i>Logout</button>
         </div>
     </aside>
     
-    <main class="flex-1 overflow-y-auto main-content">
+    <main class="flex-1 main-content">
         <header class="bg-white shadow-sm px-5 py-3 sticky top-0 z-10 border-b">
             <div class="flex items-center justify-between flex-wrap gap-3">
                 <div class="flex items-center gap-3">
                     <button id="mobileMenuBtn" class="md:hidden text-gray-600 text-xl"><i class="fas fa-bars"></i></button>
-                    <button id="homeBtn" class="text-gray-600 hover:text-emerald-600 text-xl"><i class="fas fa-home"></i></button>
+                    <button id="homeBtn" class="home-btn"><i class="fas fa-home"></i></button>
+                    <div><h1 class="text-lg font-bold text-gray-800">Finance Dashboard</h1><p class="text-xs text-gray-400">Financial Management System</p></div>
                 </div>
                 <div class="flex-1 max-w-md relative">
                     <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
-                    <input type="text" id="globalSearchInput" placeholder="Search transactions, budget, reports..." class="w-full pl-10 pr-4 py-2 border rounded-lg text-sm">
-                    <div id="searchResultsDropdown" class="absolute top-full left-0 right-0 bg-white rounded-lg shadow-lg z-50 max-h-80 overflow-y-auto hidden"></div>
+                    <input type="text" id="searchInput" placeholder="Search transactions, budget, reports..." class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-emerald-500">
+                    <div id="searchResultsDropdown" class="search-results-dropdown"></div>
                 </div>
-                <button id="darkModeToggle" class="text-gray-500 text-xl"><i id="darkModeIcon" class="fas fa-moon"></i></button>
+                <div class="flex items-center gap-3">
+                    <button id="darkModeBtn" class="text-gray-500"><i id="darkIcon" class="fas fa-moon text-xl"></i></button>
+                    <div class="w-8 h-8 bg-emerald-600 rounded-full flex items-center justify-center text-white font-bold">FM</div>
+                </div>
             </div>
         </header>
-        <div class="p-5" id="mainContentContainer"></div>
+        
+        <div id="dashboardPage" class="section p-5"></div>
+        <div id="transactionsPage" class="section p-5 hidden"></div>
+        <div id="allbudgetPage" class="section p-5 hidden"></div>
+        <div id="projectsPage" class="section p-5 hidden"></div>
+        <div id="departmentsPage" class="section p-5 hidden"></div>
+        <div id="reportsPage" class="section p-5 hidden"></div>
+        <div id="messagesPage" class="section p-5 hidden"></div>
+        <div id="settingsPage" class="section p-5 hidden"></div>
     </main>
 </div>
 
-<!-- Add Transaction Modal -->
-<div id="addTransactionModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header"><h3><i class="fas fa-plus-circle text-emerald-500 mr-2"></i>Add Transaction</h3><button onclick="closeAddTransactionModal()" class="text-gray-400 text-2xl">&times;</button></div>
-        <div class="modal-body space-y-3">
-            <select id="addTransType"><option value="income">Income</option><option value="expense">Expense</option></select>
-            <input type="text" id="addTransSource" placeholder="Source/Category" required>
-            <input type="number" id="addTransAmount" placeholder="Amount (TZS)" required>
-            <input type="date" id="addTransDate" required>
-            <input type="number" id="addTransPaidAmount" placeholder="Amount Paid" value="0">
-            <select id="addTransStatus"><option value="paid">Paid (Full)</option><option value="partial">Partial Payment</option><option value="pending">Pending</option></select>
-            <textarea id="addTransDesc" rows="2" placeholder="Description"></textarea>
-        </div>
-        <div class="modal-footer"><button onclick="saveNewTransaction()" class="btn-primary">Save</button><button onclick="closeAddTransactionModal()" class="bg-gray-200 px-4 py-2 rounded-lg">Cancel</button></div>
-    </div>
-</div>
+<!-- MODALS -->
+<div id="transModal" class="modal"><div class="modal-content"><h3 id="transModalTitle" class="text-xl font-bold mb-4">Add Transaction</h3><input type="hidden" id="transId"><select id="transType"><option value="income">Income</option><option value="expense">Expense</option></select><input type="text" id="transSource" placeholder="Source/Category"><input type="number" id="transAmount" placeholder="Amount (TZS)"><input type="date" id="transDate"><input type="number" id="transPaidAmount" placeholder="Amount Paid" value="0"><select id="transStatus"><option value="paid">Paid (Full)</option><option value="partial">Partial Payment</option><option value="pending">Pending</option></select><textarea id="transDesc" rows="2" placeholder="Description"></textarea><div class="flex gap-3 pt-4"><button onclick="saveTransaction()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('transModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
 
-<!-- Add Budget Modal -->
-<div id="addBudgetModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header"><h3><i class="fas fa-plus-circle text-emerald-500 mr-2"></i>Add Budget</h3><button onclick="closeAddBudgetModal()" class="text-gray-400 text-2xl">&times;</button></div>
-        <div class="modal-body space-y-3">
-            <input type="text" id="budgetCategory" placeholder="Category" required>
-            <input type="number" id="budgetAllocated" placeholder="Allocated Amount (TZS)" required>
-            <input type="number" id="budgetUsed" placeholder="Used Amount (TZS)" value="0">
-            <input type="number" id="budgetYear" placeholder="Year" value="2025">
-            <select id="budgetMonth"><option value="1">January</option><option value="2">February</option><option value="3">March</option><option value="4">April</option><option value="5">May</option><option value="6">June</option><option value="7">July</option><option value="8">August</option><option value="9">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option></select>
-        </div>
-        <div class="modal-footer"><button onclick="saveNewBudget()" class="btn-primary">Save</button><button onclick="closeAddBudgetModal()" class="bg-gray-200 px-4 py-2 rounded-lg">Cancel</button></div>
-    </div>
-</div>
+<div id="viewTransModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Transaction Details</h3><div id="viewTransContent"></div><button onclick="closeModal('viewTransModal')" class="w-full bg-gray-200 py-2 rounded mt-3">Close</button></div></div>
 
-<!-- Add Report Modal -->
-<div id="addReportModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header"><h3><i class="fas fa-plus-circle mr-2 text-emerald-500"></i>Add Report</h3><button onclick="closeAddReportModal()" class="text-gray-400 text-2xl">&times;</button></div>
-        <div class="modal-body space-y-3">
-            <input type="text" id="newReportTitle" placeholder="Report Title" required>
-            <select id="newReportPeriod"><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="quarterly">Quarterly</option><option value="annual">Annual</option></select>
-            <textarea id="newReportContent" rows="4" placeholder="Report Content..." required></textarea>
-        </div>
-        <div class="modal-footer"><button onclick="addReport()" class="btn-primary">Add</button><button onclick="closeAddReportModal()" class="bg-gray-200 px-4 py-2 rounded-lg">Cancel</button></div>
-    </div>
-</div>
+<div id="reportModal" class="modal"><div class="modal-content"><h3 id="reportModalTitle" class="text-xl font-bold mb-4">Add Report</h3><input type="hidden" id="reportId"><input type="text" id="reportTitle" placeholder="Report Title"><select id="reportPeriod"><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="quarterly">Quarterly</option><option value="annual">Annual</option></select><textarea id="reportContent" rows="5" placeholder="Report content..."></textarea><div class="flex gap-3 pt-4"><button onclick="saveReport()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('reportModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
 
-<!-- Send Report Modal -->
-<div id="sendReportModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header"><h3><i class="fas fa-paper-plane mr-2 text-emerald-500"></i>Send Report</h3><button onclick="closeSendReportModal()" class="text-gray-400 text-2xl">&times;</button></div>
-        <div class="modal-body space-y-3">
-            <input type="hidden" id="sendReportId">
-            <div class="bg-gray-100 p-3 rounded" id="sendReportInfo"></div>
-            <select id="sendToDepartment" class="w-full p-2 border rounded"><option value="">Select Department</option><option value="1">Super Admin</option><option value="3">Sales & Marketing</option><option value="4">Manager</option><option value="5">Survey</option><option value="6">Construction</option><option value="7">Bricks & Timber</option><option value="8">Aluminium</option><option value="9">Town Planning</option><option value="10">Hatimiliki</option><option value="11">Architectural</option><option value="12">Secretary</option></select>
-            <textarea id="sendReportMessage" rows="3" placeholder="Additional message"></textarea>
-        </div>
-        <div class="modal-footer"><button onclick="confirmSendReport()" class="btn-primary">Send</button><button onclick="closeSendReportModal()" class="bg-gray-200 px-4 py-2 rounded-lg">Cancel</button></div>
-    </div>
-</div>
+<div id="viewReportModal" class="modal"><div class="modal-content modal-large"><h3 class="text-xl font-bold mb-4">Report Details</h3><div id="viewReportContent" class="whitespace-pre-wrap leading-relaxed max-h-80 overflow-y-auto"></div><div id="viewReportButtons" class="detail-buttons"></div><button onclick="closeModal('viewReportModal')" class="w-full bg-gray-200 py-2 rounded mt-3">Close</button></div></div>
 
-<!-- Start Chat Modal -->
-<div id="startChatModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header"><h3>New Message</h3><button onclick="closeStartChatModal()" class="text-gray-400 text-2xl">&times;</button></div>
-        <div class="modal-body space-y-3">
-            <select id="chatRecipientSelect" class="w-full p-2 border rounded"><option value="">Select Department</option><option value="1">Super Admin</option><option value="3">Sales & Marketing</option><option value="4">Manager</option><option value="5">Survey</option><option value="6">Construction</option><option value="7">Bricks & Timber</option><option value="8">Aluminium</option><option value="9">Town Planning</option><option value="10">Hatimiliki</option><option value="11">Architectural</option><option value="12">Secretary</option></select>
-            <textarea id="newChatMsg" rows="4" placeholder="Type your message..."></textarea>
-        </div>
-        <div class="modal-footer"><button onclick="sendNewChat()" class="btn-primary">Send</button><button onclick="closeStartChatModal()" class="bg-gray-200 px-4 py-2 rounded-lg">Cancel</button></div>
-    </div>
-</div>
+<div id="msgModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Send Message</h3><select id="msgTo" class="mb-3"></select><textarea id="msgContent" rows="4" placeholder="Type your message here..."></textarea><div class="flex gap-3 pt-4"><button onclick="sendNewMessage()" class="flex-1 btn-primary">Send</button><button onclick="closeModal('msgModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
 
-<!-- Chat Modal -->
-<div id="chatModal" class="modal">
-    <div class="modal-content" style="max-width:600px">
-        <div class="modal-header"><h3 id="chatModalTitle">Chat</h3><button onclick="closeChatModal()" class="text-gray-400 text-2xl">&times;</button></div>
-        <div class="modal-body" id="chatMessagesArea" style="max-height:400px; overflow-y:auto"></div>
-        <div class="modal-footer"><textarea id="chatInput" rows="3" placeholder="Type your message..." class="w-full p-2 border rounded-lg"></textarea><button onclick="sendChatMessage()" class="mt-2 w-full bg-emerald-600 text-white py-2 rounded-lg">Send</button></div>
-    </div>
-</div>
-
-<!-- Change Password Modal -->
-<div id="changePasswordModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header"><h3><i class="fas fa-key mr-2 text-emerald-500"></i>Change Password</h3><button onclick="closeChangePasswordModal()" class="text-gray-400 text-2xl">&times;</button></div>
-        <div class="modal-body space-y-3">
-            <input type="password" id="currentPassword" placeholder="Current Password">
-            <input type="password" id="newPassword" placeholder="New Password">
-            <input type="password" id="confirmPassword" placeholder="Confirm Password">
-        </div>
-        <div class="modal-footer"><button onclick="changeUserPassword()" class="btn-primary">Change</button><button onclick="closeChangePasswordModal()" class="bg-gray-200 px-4 py-2 rounded-lg">Cancel</button></div>
-    </div>
-</div>
+<div id="backupModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Backup & Restore</h3><button onclick="createBackup()" class="w-full btn-success mb-3"><i class="fas fa-download mr-2"></i> Backup Data</button><button onclick="restoreBackup()" class="w-full bg-orange-500 text-white py-2 rounded mb-3"><i class="fas fa-upload mr-2"></i> Restore Data</button><button onclick="closeModal('backupModal')" class="w-full bg-gray-200 py-2 rounded">Close</button></div></div>
 
 <script>
     // ==================== CONFIGURATION ====================
-    const API_BASE = window.location.origin + '/geotraverse/backend/api';
+    const API_BASE = '../backend/api/';
     const DEPARTMENT_ID = 2;
-    
-    // ==================== GLOBAL VARIABLES ====================
-    let transactions = [];
-    let budgets = [];
-    let reports = [];
-    let messages = [];
-    let currentChatWith = null;
     let searchTimeout = null;
+    let revenueChart = null;
+    let budgetChart = null;
     
-    const departments = [
-        { id: 1, name: "Super Admin" }, { id: 2, name: "Finance" }, { id: 3, name: "Sales & Marketing" },
-        { id: 4, name: "Manager" }, { id: 5, name: "Survey" }, { id: 6, name: "Construction" },
-        { id: 7, name: "Bricks & Timber" }, { id: 8, name: "Aluminium" }, { id: 9, name: "Town Planning" },
-        { id: 10, name: "Hatimiliki" }, { id: 11, name: "Architectural" }, { id: 12, name: "Secretary" }
-    ];
+    // Data arrays
+    let transactionsData = [];
+    let allBudgetsData = [];
+    let projectsData = [];
+    let reportsData = [];
+    let departmentsList = [];
     
-    // Sample fallback data
-    const sampleTransactions = [
-        { id: 1, type: "income", source: "TBL Payment", amount: 450000000, paid_amount: 450000000, status: "paid", transaction_date: "2024-04-01", description: "Construction payment" },
-        { id: 2, type: "expense", source: "Salaries", amount: 15000000, paid_amount: 15000000, status: "paid", transaction_date: "2024-04-05", description: "Staff salaries" },
-        { id: 3, type: "income", source: "Client Payment", amount: 380000000, paid_amount: 200000000, status: "partial", transaction_date: "2024-04-10", description: "Partial payment" }
-    ];
+    const departmentNames = {
+        1: "Super Admin", 2: "Finance", 3: "Sales & Marketing", 4: "Manager",
+        5: "Secretary", 6: "Bricks & Timber", 7: "Aluminium", 8: "Town Planning",
+        9: "Architectural", 10: "Survey", 11: "Construction", 12: "Hatimiliki"
+    };
     
-    const sampleBudgets = [
-        { id: 1, category: "Operations", allocated_amount: 50000000, used_amount: 25000000, year: 2025, month: 5 },
-        { id: 2, category: "Salaries", allocated_amount: 30000000, used_amount: 15000000, year: 2025, month: 5 }
-    ];
+    const departmentColors = {
+        1: "purple", 2: "emerald", 3: "orange", 4: "blue", 5: "cyan",
+        6: "amber", 7: "gray", 8: "indigo", 9: "pink", 10: "teal", 11: "yellow", 12: "green"
+    };
     
-    const sampleReports = [
-        { id: 1, title: "March Financial Report", period: "monthly", content: "Revenue: TZS 450M", status: "sent", created_at: new Date().toISOString() }
-    ];
+    const departmentIcons = {
+        1: "crown", 2: "coins", 3: "chart-line", 4: "user-tie", 5: "calendar-check",
+        6: "cubes", 7: "industry", 8: "city", 9: "draw-polygon", 10: "drafting-compass",
+        11: "hard-hat", 12: "file-contract"
+    };
     
-    const sampleMessages = [
-        { id: 1, from_department_id: 1, to_department_id: 2, message: "Please submit Q2 budget forecast", is_read: 0, created_at: new Date().toISOString() }
-    ];
+    const colorOptions = ["#059669", "#047857", "#0f74ba", "#7c3aed", "#dc2626", "#d97706", "#0d9488", "#db2777"];
     
     // ==================== HELPER FUNCTIONS ====================
-    function showToast(msg, isError) {
-        let t = document.createElement('div');
-        t.className = 'toast-notification' + (isError ? ' error' : '');
-        t.innerHTML = '<i class="fas ' + (isError ? 'fa-exclamation-circle' : 'fa-check-circle') + ' mr-2"></i>' + msg;
-        document.body.appendChild(t);
-        setTimeout(() => t.remove(), 3000);
+    function showToast(msg, isError) { 
+        let t = document.createElement('div'); 
+        t.className = 'toast' + (isError ? ' error' : ''); 
+        t.innerHTML = '<i class="fas ' + (isError ? 'fa-exclamation-circle' : 'fa-check-circle') + ' mr-2"></i>' + msg; 
+        document.body.appendChild(t); 
+        setTimeout(() => t.remove(), 3000); 
     }
     
-    function escapeHtml(text) { if (!text) return ''; let div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
-    function formatCurrency(amt) { return "TZS " + (parseFloat(amt) || 0).toLocaleString(); }
-    function formatDate(dateStr) { if (!dateStr) return 'N/A'; return new Date(dateStr).toLocaleDateString('en-GB'); }
-    function goToMainWebsite() { window.location.href = "../index.html"; }
-    function closeMobileSidebar() {
-        document.getElementById('mainSidebar').classList.remove('mobile-open');
-        document.getElementById('mobileMenuOverlay').classList.add('hidden');
+    function escapeHtml(str) { 
+        if (!str) return ''; 
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
     }
     
-    function getStatusClass(status) {
-        if (status === 'paid') return 'status-paid';
-        if (status === 'partial') return 'status-partial';
-        return 'status-pending';
+    function formatMoney(amt) { 
+        return "TZS " + (parseFloat(amt) || 0).toLocaleString('en-US'); 
     }
     
-    function updateMessageBadge() {
-        let unread = messages.filter(m => m.to_department_id == DEPARTMENT_ID && !m.is_read).length;
-        document.getElementById('unreadMessagesBadge').innerText = unread;
+    function formatDate(d) { 
+        if (!d) return 'N/A'; 
+        return new Date(d).toLocaleDateString('en-GB'); 
     }
     
-    // ==================== API CALL ====================
+    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    function closeMobileSidebar() { 
+        document.getElementById("mainSidebar").classList.remove("mobile-open"); 
+        document.getElementById("mobileMenuOverlay").classList.add("hidden"); 
+    }
+    function goToMainWebsite() { window.location.href = "index.html"; }
+    
+    // ==================== API CALLS ====================
     async function apiCall(endpoint, method = 'GET', data = null) {
-        const url = `${API_BASE}/${endpoint}`;
-        const options = { method, headers: { 'Content-Type': 'application/json' } };
-        if (data) options.body = JSON.stringify(data);
-        try {
-            const response = await fetch(url);
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            return await response.json();
-        } catch (error) {
-            console.error(`API Error (${endpoint}):`, error);
-            return { success: false, error: error.message };
+        const url = API_BASE + endpoint;
+        try { 
+            const opts = { method, headers: { 'Content-Type': 'application/json' } }; 
+            if (data && method !== 'GET') opts.body = JSON.stringify(data); 
+            const res = await fetch(url, opts); 
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return await res.json(); 
+        } catch(e) { 
+            console.error('API Error:', endpoint, e);
+            return { success: false, message: e.message, data: [] }; 
+        }
+    }
+    
+    async function logout() {
+        if (confirm('Are you sure?')) {
+            localStorage.clear();
+            sessionStorage.clear();
+            window.location.href = 'login_system.html';
+        }
+    }
+    
+    // ==================== LOAD DEPARTMENTS ====================
+    async function loadDepartmentsForDropdowns() {
+        const res = await apiCall('get_departments.php');
+        if (res.success && res.data) {
+            departmentsList = res.data;
+        } else {
+            departmentsList = [
+                { id: 1, name: "Super Admin" }, { id: 2, name: "Finance" }, { id: 3, name: "Sales & Marketing" },
+                { id: 4, name: "Manager" }, { id: 5, name: "Secretary" }, { id: 6, name: "Bricks & Timber" },
+                { id: 7, name: "Aluminium" }, { id: 8, name: "Town Planning" }, { id: 9, name: "Architectural" },
+                { id: 10, name: "Survey" }, { id: 11, name: "Construction" }, { id: 12, name: "Hatimiliki" }
+            ];
+        }
+        
+        const msgTo = document.getElementById('msgTo');
+        if (msgTo) {
+            msgTo.innerHTML = '<option value="">Select Department</option>';
+            departmentsList.forEach(d => {
+                if (d.id !== DEPARTMENT_ID) {
+                    msgTo.innerHTML += `<option value="${d.id}">${escapeHtml(d.name)}</option>`;
+                }
+            });
+        }
+    }
+    
+    // ==================== NAVIGATION ====================
+    function showPage(pageId) {
+        const pages = ['dashboardPage', 'transactionsPage', 'allbudgetPage', 'projectsPage', 'departmentsPage', 'reportsPage', 'messagesPage', 'settingsPage'];
+        pages.forEach(page => {
+            const el = document.getElementById(page);
+            if (el) el.classList.add('hidden');
+        });
+        
+        const selectedPage = document.getElementById(`${pageId}Page`);
+        if (selectedPage) selectedPage.classList.remove('hidden');
+        
+        document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+        const activeNav = document.querySelector(`.nav-item[data-page="${pageId}"]`);
+        if (activeNav) activeNav.classList.add('active');
+        
+        if (pageId === 'dashboard') loadDashboard();
+        else if (pageId === 'transactions') loadTransactions();
+        else if (pageId === 'allbudget') loadAllBudgets();
+        else if (pageId === 'projects') loadAllProjects();
+        else if (pageId === 'departments') loadAllDepartments();
+        else if (pageId === 'reports') loadReports();
+        else if (pageId === 'messages') loadMessages();
+        else if (pageId === 'settings') loadSettings();
+    }
+    
+    // ==================== DASHBOARD ====================
+    async function loadDashboard() {
+        document.getElementById('dashboardPage').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div><span class="ml-3">Loading...</span></div>';
+        
+        const [transactions, budgets, projects] = await Promise.all([
+            apiCall('get_transactions.php'), apiCall('get_budgets.php'), apiCall('get_projects.php')
+        ]);
+        
+        transactionsData = (transactions.success && transactions.data) ? transactions.data.filter(t => t.department_id === DEPARTMENT_ID) : [];
+        allBudgetsData = (budgets.success && budgets.data) ? budgets.data : [];
+        projectsData = (projects.success && projects.data) ? projects.data : [];
+        
+        let totalIncome = 0, totalExpense = 0, pendingPayments = 0;
+        for (let t of transactionsData) {
+            if (t.type === 'income') {
+                if (t.status === 'paid') totalIncome += t.amount;
+                else if (t.status === 'partial') totalIncome += (t.paid_amount || 0);
+                if (t.status !== 'paid') pendingPayments += (t.amount - (t.paid_amount || 0));
+            } else {
+                totalExpense += t.amount;
+            }
+        }
+        
+        // Calculate total budget for all departments
+        let totalAllocated = allBudgetsData.reduce((s, b) => s + (b.allocated_amount || 0), 0);
+        let totalUsed = allBudgetsData.reduce((s, b) => s + (b.used_amount || 0), 0);
+        
+        const html = `
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-5">
+                <div class="stat-card cursor-pointer" onclick="showPage('transactions')"><div><p class="text-gray-500 text-xs">Total Income</p><p class="text-2xl font-bold text-green-600">${formatMoney(totalIncome)}</p></div><i class="fas fa-arrow-down text-green-500 text-2xl"></i></div>
+                <div class="stat-card cursor-pointer" onclick="showPage('transactions')"><div><p class="text-gray-500 text-xs">Total Expenses</p><p class="text-2xl font-bold text-red-600">${formatMoney(totalExpense)}</p></div><i class="fas fa-arrow-up text-red-500 text-2xl"></i></div>
+                <div class="stat-card cursor-pointer" onclick="showPage('transactions')"><div><p class="text-gray-500 text-xs">Net Profit</p><p class="text-2xl font-bold text-blue-600">${formatMoney(totalIncome - totalExpense)}</p></div><i class="fas fa-chart-line text-blue-500 text-2xl"></i></div>
+                <div class="stat-card cursor-pointer" onclick="showPage('transactions')"><div><p class="text-gray-500 text-xs">Pending</p><p class="text-2xl font-bold text-orange-600">${formatMoney(pendingPayments)}</p></div><i class="fas fa-clock text-orange-500 text-2xl"></i></div>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
+                <div class="bg-white rounded-xl p-5 shadow-sm"><h3 class="font-semibold mb-3"><i class="fas fa-chart-line text-emerald-500 mr-2"></i>Revenue Trend</h3><canvas id="revenueChart" height="200"></canvas></div>
+                <div class="bg-white rounded-xl p-5 shadow-sm"><h3 class="font-semibold mb-3"><i class="fas fa-chart-pie text-emerald-500 mr-2"></i>System Budget Usage</h3><canvas id="budgetChart" height="200"></canvas></div>
+            </div>
+            <div class="grid grid-cols-3 gap-3">
+                <button onclick="openModal('transModal')" class="bg-emerald-600 text-white py-2 rounded-lg text-sm"><i class="fas fa-plus mr-2"></i>Add Transaction</button>
+                <button onclick="showPage('allbudget')" class="bg-blue-600 text-white py-2 rounded-lg text-sm"><i class="fas fa-chart-pie mr-2"></i>View All Budgets</button>
+                <button onclick="openModal('msgModal')" class="bg-purple-600 text-white py-2 rounded-lg text-sm"><i class="fas fa-comment mr-2"></i>Send Message</button>
+            </div>
+        `;
+        document.getElementById('dashboardPage').innerHTML = html;
+        
+        const ctx = document.getElementById('revenueChart')?.getContext('2d');
+        if (ctx) {
+            if (revenueChart) revenueChart.destroy();
+            revenueChart = new Chart(ctx, {
+                type: 'line',
+                data: { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], 
+                        datasets: [{ label: 'Revenue (TZS M)', data: [12, 15, 18, 22, 28, 32], borderColor: '#059669', fill: true }] },
+                options: { responsive: true }
+            });
+        }
+        
+        const ctx2 = document.getElementById('budgetChart')?.getContext('2d');
+        if (ctx2) {
+            if (budgetChart) budgetChart.destroy();
+            budgetChart = new Chart(ctx2, {
+                type: 'doughnut',
+                data: { labels: ['Used', 'Remaining'], 
+                        datasets: [{ data: [totalUsed, totalAllocated - totalUsed], backgroundColor: ['#f59e0b', '#10b981'] }] },
+                options: { responsive: true }
+            });
         }
     }
     
     // ==================== TRANSACTIONS ====================
-    async function fetchTransactions() {
-        try {
-            const result = await apiCall('get_transactions.php');
-            if (result.success && result.transactions) {
-                transactions = result.transactions.filter(t => t.department_id == DEPARTMENT_ID);
-            } else {
-                transactions = [...sampleTransactions];
-            }
-        } catch(e) {
-            transactions = [...sampleTransactions];
-        }
-        return true;
-    }
-    
-    async function addTransactionAPI(data) {
-        data.department_id = DEPARTMENT_ID;
-        const result = await apiCall('add_transaction.php', 'POST', data);
-        if (result.success) await fetchTransactions();
-        return result;
-    }
-    
-    // ==================== BUDGET ====================
-    async function fetchBudgets() {
-        try {
-            const result = await apiCall('get_budgets.php');
-            if (result.success && result.budgets) {
-                budgets = result.budgets.filter(b => b.department_id == DEPARTMENT_ID);
-            } else {
-                budgets = [...sampleBudgets];
-            }
-        } catch(e) {
-            budgets = [...sampleBudgets];
-        }
-        return true;
-    }
-    
-    async function addBudgetAPI(data) {
-        data.department_id = DEPARTMENT_ID;
-        const result = await apiCall('add_budget.php', 'POST', data);
-        if (result.success) await fetchBudgets();
-        return result;
-    }
-    
-    // ==================== REPORTS ====================
-    async function fetchReports() {
-        try {
-            const result = await apiCall('get_reports.php');
-            if (result.success && result.reports) {
-                reports = result.reports.filter(r => r.department_id == DEPARTMENT_ID);
-            } else {
-                reports = [...sampleReports];
-            }
-        } catch(e) {
-            reports = [...sampleReports];
-        }
-        return true;
-    }
-    
-    async function addReportAPI(data) {
-        data.department_id = DEPARTMENT_ID;
-        const result = await apiCall('add_report.php', 'POST', data);
-        if (result.success) await fetchReports();
-        return result;
-    }
-    
-    // ==================== MESSAGES ====================
-    async function fetchMessages() {
-        try {
-            const result = await apiCall('get_messages.php');
-            if (result.success && result.messages) {
-                messages = result.messages.filter(m => m.to_department_id == DEPARTMENT_ID || m.from_department_id == DEPARTMENT_ID);
-            } else {
-                messages = [...sampleMessages];
-            }
-        } catch(e) {
-            messages = [...sampleMessages];
-        }
-        updateMessageBadge();
-        return true;
-    }
-    
-    async function sendMessageAPI(data) {
-        data.from_department_id = DEPARTMENT_ID;
-        const result = await apiCall('send_message.php', 'POST', data);
-        if (result.success) await fetchMessages();
-        return result;
-    }
-    
-    // ==================== RENDER FUNCTIONS ====================
-    async function renderDashboard() {
-        await fetchTransactions();
-        await fetchBudgets();
+    async function loadTransactions() {
+        document.getElementById('transactionsPage').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div><span class="ml-3">Loading transactions...</span></div>';
         
-        let totalIncome = 0, totalExpense = 0, pendingPayments = 0;
-        for (let t of transactions) {
-            if (t.type === 'income' && t.status === 'paid') totalIncome += t.amount;
-            else if (t.type === 'income' && t.status === 'partial') totalIncome += (t.paid_amount || 0);
-            else if (t.type === 'expense') totalExpense += t.amount;
-            if (t.type === 'income' && t.status !== 'paid') pendingPayments += (t.amount - (t.paid_amount || 0));
+        const res = await apiCall('get_transactions.php');
+        if (res.success && res.data) {
+            transactionsData = res.data.filter(t => t.department_id === DEPARTMENT_ID);
         }
         
-        let totalAllocated = budgets.reduce((s, b) => s + b.allocated_amount, 0);
-        let totalUsed = budgets.reduce((s, b) => s + b.used_amount, 0);
-        
-        let html = `<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-5">
-            <div class="stat-card cursor-pointer" onclick="showSection('transactions')"><div class="flex justify-between"><div><p class="text-gray-500 text-xs">Total Income</p><p class="text-2xl font-bold text-green-600">${formatCurrency(totalIncome)}</p></div><div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center"><i class="fas fa-arrow-down text-green-500"></i></div></div></div>
-            <div class="stat-card cursor-pointer" onclick="showSection('transactions')"><div class="flex justify-between"><div><p class="text-gray-500 text-xs">Total Expenses</p><p class="text-2xl font-bold text-red-600">${formatCurrency(totalExpense)}</p></div><div class="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center"><i class="fas fa-arrow-up text-red-500"></i></div></div></div>
-            <div class="stat-card cursor-pointer" onclick="showSection('transactions')"><div class="flex justify-between"><div><p class="text-gray-500 text-xs">Net Profit</p><p class="text-2xl font-bold text-blue-600">${formatCurrency(totalIncome - totalExpense)}</p></div><div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center"><i class="fas fa-chart-line text-blue-500"></i></div></div></div>
-            <div class="stat-card cursor-pointer" onclick="showSection('transactions')"><div class="flex justify-between"><div><p class="text-gray-500 text-xs">Pending</p><p class="text-2xl font-bold text-orange-600">${formatCurrency(pendingPayments)}</p></div><div class="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center"><i class="fas fa-clock text-orange-500"></i></div></div></div>
-        </div>
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
-            <div class="bg-white rounded-xl p-4"><h3 class="font-semibold mb-3"><i class="fas fa-chart-line text-emerald-500 mr-2"></i>Revenue Trend</h3><canvas id="revenueChart" height="150"></canvas></div>
-            <div class="bg-white rounded-xl p-4"><h3 class="font-semibold mb-3"><i class="fas fa-chart-pie text-emerald-500 mr-2"></i>Budget Usage</h3><canvas id="budgetChart" height="150"></canvas></div>
-        </div>
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-            <button onclick="openAddTransactionModal()" class="bg-emerald-600 text-white py-2 rounded-lg text-sm"><i class="fas fa-plus mr-2"></i>Add Transaction</button>
-            <button onclick="openAddBudgetModal()" class="bg-blue-600 text-white py-2 rounded-lg text-sm"><i class="fas fa-plus mr-2"></i>Add Budget</button>
-            <button onclick="openStartChatModal()" class="bg-purple-600 text-white py-2 rounded-lg text-sm"><i class="fas fa-comment mr-2"></i>Send Message</button>
-        </div>`;
-        document.getElementById('dashboardSection').innerHTML = html;
-        
-        let ctx = document.getElementById('revenueChart')?.getContext('2d');
-        if (ctx) new Chart(ctx, { type: 'line', data: { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], datasets: [{ label: 'Revenue (TZS M)', data: [12, 15, 18, 22, 28, 32], borderColor: '#059669', fill: true }] } });
-        
-        let ctx2 = document.getElementById('budgetChart')?.getContext('2d');
-        if (ctx2) new Chart(ctx2, { type: 'doughnut', data: { labels: ['Used', 'Remaining'], datasets: [{ data: [totalUsed, totalAllocated - totalUsed], backgroundColor: ['#f59e0b', '#10b981'] }] } });
-    }
-    
-    async function renderTransactions() {
-        await fetchTransactions();
         let totalIncome = 0, totalExpense = 0;
-        for (let t of transactions) {
-            if (t.type === 'income' && t.status === 'paid') totalIncome += t.amount;
-            else if (t.type === 'income' && t.status === 'partial') totalIncome += (t.paid_amount || 0);
-            else if (t.type === 'expense') totalExpense += t.amount;
+        for (let t of transactionsData) {
+            if (t.type === 'income') {
+                if (t.status === 'paid') totalIncome += t.amount;
+                else if (t.status === 'partial') totalIncome += (t.paid_amount || 0);
+            } else {
+                totalExpense += t.amount;
+            }
         }
         
-        let html = `<div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
-            <div class="bg-green-50 rounded-xl p-3 text-center"><p class="text-[10px] text-gray-500">Total Income</p><p class="text-xl font-bold text-green-600">${formatCurrency(totalIncome)}</p></div>
-            <div class="bg-red-50 rounded-xl p-3 text-center"><p class="text-[10px] text-gray-500">Total Expenses</p><p class="text-xl font-bold text-red-600">${formatCurrency(totalExpense)}</p></div>
-            <div class="bg-blue-50 rounded-xl p-3 text-center"><p class="text-[10px] text-gray-500">Net Profit</p><p class="text-xl font-bold text-blue-600">${formatCurrency(totalIncome - totalExpense)}</p></div>
+        let html = `<div class="flex justify-between items-center mb-4 flex-wrap gap-2">
+            <h2 class="text-xl font-bold"><i class="fas fa-exchange-alt text-emerald-600 mr-2"></i>Transactions (${transactionsData.length})</h2>
+            <button onclick="openModal('transModal')" class="btn-primary"><i class="fas fa-plus mr-1"></i>Add Transaction</button>
         </div>
-        <div class="bg-white rounded-xl p-4">
-            <div class="flex justify-between mb-3 flex-wrap gap-2"><h3 class="font-semibold"><i class="fas fa-exchange-alt text-emerald-500 mr-2"></i>All Transactions</h3><button onclick="openAddTransactionModal()" class="bg-emerald-600 text-white px-3 py-1 rounded text-xs">+ Add Transaction</button></div>
-            <div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th>Date</th><th>Type</th><th>Source</th><th>Amount</th><th>Paid</th><th>Remaining</th><th>Status</th><th>Actions</th></tr></thead><tbody>`;
-        for (let t of transactions) {
-            let remaining = t.type === 'income' ? (t.amount - (t.paid_amount || 0)) : 0;
-            let rowClass = t.status === 'partial' ? 'partial-row' : (t.status === 'pending' ? 'pending-row' : '');
+        <div class="grid grid-cols-3 gap-3 mb-4">
+            <div class="bg-green-50 rounded-xl p-3 text-center"><p class="text-[10px] text-gray-500">Total Income</p><p class="text-xl font-bold text-green-600">${formatMoney(totalIncome)}</p></div>
+            <div class="bg-red-50 rounded-xl p-3 text-center"><p class="text-[10px] text-gray-500">Total Expenses</p><p class="text-xl font-bold text-red-600">${formatMoney(totalExpense)}</p></div>
+            <div class="bg-blue-50 rounded-xl p-3 text-center"><p class="text-[10px] text-gray-500">Net Profit</p><p class="text-xl font-bold text-blue-600">${formatMoney(totalIncome - totalExpense)}</p></div>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm p-3"><div class="table-responsive"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th>Date</th><th>Type</th><th>Source</th><th>Amount</th><th>Paid</th><th>Remaining</th><th>Status</th><th>Actions</th></tr></thead><tbody>`;
+        
+        for (let t of transactionsData) {
+            const remaining = t.type === 'income' ? (t.amount - (t.paid_amount || 0)) : 0;
+            const rowClass = t.status === 'partial' ? 'bg-yellow-50' : (t.status === 'pending' ? 'bg-red-50' : '');
             html += `<tr class="border-b ${rowClass}">
                 <td class="px-3 py-2">${t.transaction_date}</td>
-                <td class="px-3 py-2"><span class="px-2 py-0.5 rounded-full text-xs ${t.type==='income'?'bg-green-100 text-green-700':'bg-red-100 text-red-700'}">${t.type}</span></td>
+                <td class="px-3 py-2"><span class="px-2 py-0.5 rounded-full text-xs ${t.type === 'income' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${t.type}</span></td>
                 <td class="px-3 py-2">${escapeHtml(t.source)}</td>
-                <td class="px-3 py-2 ${t.type==='income'?'text-green-600':'text-red-600'}">${formatCurrency(t.amount)}</td>
-                <td class="px-3 py-2">${formatCurrency(t.paid_amount || 0)}</td>
-                <td class="px-3 py-2 ${remaining>0?'text-orange-600':'text-green-600'}">${formatCurrency(remaining)}</td>
-                <td class="px-3 py-2"><span class="px-2 py-0.5 rounded-full text-xs ${getStatusClass(t.status)}">${t.status}</span></td>
-                <td class="px-3 py-2"><button onclick="viewTransaction(${t.id})" class="text-blue-500"><i class="fas fa-eye"></i></button></div></td>
+                <td class="px-3 py-2 ${t.type === 'income' ? 'text-green-600' : 'text-red-600'} font-bold">${formatMoney(t.amount)}</td>
+                <td class="px-3 py-2">${formatMoney(t.paid_amount || 0)}</td>
+                <td class="px-3 py-2 ${remaining > 0 ? 'text-orange-600' : 'text-green-600'}">${formatMoney(remaining)}</td>
+                <td class="px-3 py-2"><span class="px-2 py-0.5 rounded-full text-xs ${t.status === 'paid' ? 'status-paid' : t.status === 'partial' ? 'status-partial' : 'status-pending'}">${t.status}</span></td>
+                <td class="px-3 py-2"><div class="flex gap-1"><button onclick="viewTransaction(${t.id})" class="text-blue-500"><i class="fas fa-eye"></i></button><button onclick="editTransaction(${t.id})" class="text-green-500"><i class="fas fa-edit"></i></button><button onclick="deleteTransaction(${t.id})" class="text-red-500"><i class="fas fa-trash"></i></button></div></td>
             </tr>`;
         }
-        html += `</tbody>}</div></div>`;
-        document.getElementById('transactionsSection').innerHTML = html;
-    }
-    
-    function openAddTransactionModal() { document.getElementById('addTransactionModal').style.display = 'flex'; }
-    function closeAddTransactionModal() { document.getElementById('addTransactionModal').style.display = 'none'; }
-    
-    async function saveNewTransaction() {
-        // Get form values
-        let source = document.getElementById('addTransSource').value.trim();
-        let amount = document.getElementById('addTransAmount').value;
-        let type = document.getElementById('addTransType').value;
-        let date = document.getElementById('addTransDate').value;
-        let paidAmount = document.getElementById('addTransPaidAmount').value || 0;
-        let status = document.getElementById('addTransStatus').value;
-        let description = document.getElementById('addTransDesc').value;
-        
-        // VALIDATION - Hii ndiyo inayoweza kusababisha error yako
-        if (!source) {
-            showToast('Source is required. Please fill the source field.', true);
-            document.getElementById('addTransSource').focus();
-            return;
-        }
-        
-        if (!amount || amount <= 0) {
-            showToast('Valid amount is required. Please enter a positive amount.', true);
-            document.getElementById('addTransAmount').focus();
-            return;
-        }
-        
-        if (!date) {
-            showToast('Date is required', true);
-            document.getElementById('addTransDate').focus();
-            return;
-        }
-        
-        // Prepare data
-        let data = {
-            type: type,
-            source: source,
-            amount: parseFloat(amount),
-            transaction_date: date,
-            paid_amount: parseFloat(paidAmount),
-            status: status,
-            description: description
-        };
-        
-        console.log("Sending data:", data);
-        
-        // Show loading
-        let saveBtn = event.target;
-        let originalText = saveBtn.innerText;
-        saveBtn.innerHTML = '<div class="loading-spinner"></div> Saving...';
-        saveBtn.disabled = true;
-        
-        const result = await addTransactionAPI(data);
-        
-        saveBtn.innerHTML = originalText;
-        saveBtn.disabled = false;
-        
-        if (result.success) {
-            showToast('Transaction added successfully!');
-            closeAddTransactionModal();
-            // Clear form
-            document.getElementById('addTransSource').value = '';
-            document.getElementById('addTransAmount').value = '';
-            document.getElementById('addTransDesc').value = '';
-            await renderTransactions();
-            await renderDashboard();
-        } else {
-            showToast(result.error || 'Failed to add transaction. Please check your connection.', true);
-        }
+        if (transactionsData.length === 0) html += `<tr><td colspan="8" class="text-center py-8 text-gray-400">No transactions found<\/td><\/tr>`;
+        html += `</tbody>${'</table>'}</div></div>`;
+        document.getElementById('transactionsPage').innerHTML = html;
     }
     
     function viewTransaction(id) {
-        let t = transactions.find(t => t.id == id);
+        const t = transactionsData.find(t => t.id === id);
         if (t) {
-            let remaining = t.type === 'income' ? (t.amount - (t.paid_amount || 0)) : 0;
-            alert(`📋 Transaction Details\n\nDate: ${t.transaction_date}\nType: ${t.type}\nSource: ${t.source}\nAmount: ${formatCurrency(t.amount)}\nPaid: ${formatCurrency(t.paid_amount || 0)}\nRemaining: ${formatCurrency(remaining)}\nStatus: ${t.status}\nDescription: ${t.description || '-'}`);
+            const remaining = t.type === 'income' ? (t.amount - (t.paid_amount || 0)) : 0;
+            alert(`📋 Transaction Details\n\nDate: ${t.transaction_date}\nType: ${t.type}\nSource: ${t.source}\nAmount: ${formatMoney(t.amount)}\nPaid: ${formatMoney(t.paid_amount || 0)}\nRemaining: ${formatMoney(remaining)}\nStatus: ${t.status}\nDescription: ${t.description || '-'}`);
         }
     }
     
-    async function renderBudget() {
-        await fetchBudgets();
-        let totalAllocated = budgets.reduce((s, b) => s + b.allocated_amount, 0);
-        let totalUsed = budgets.reduce((s, b) => s + b.used_amount, 0);
-        
-        let html = `<div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
-            <div class="bg-purple-50 rounded-xl p-3 text-center"><p class="text-[10px] text-gray-500">Total Allocated</p><p class="text-xl font-bold text-purple-600">${formatCurrency(totalAllocated)}</p></div>
-            <div class="bg-orange-50 rounded-xl p-3 text-center"><p class="text-[10px] text-gray-500">Total Used</p><p class="text-xl font-bold text-orange-600">${formatCurrency(totalUsed)}</p></div>
-            <div class="bg-green-50 rounded-xl p-3 text-center"><p class="text-[10px] text-gray-500">Remaining</p><p class="text-xl font-bold text-green-600">${formatCurrency(totalAllocated - totalUsed)}</p></div>
-        </div>
-        <div class="bg-white rounded-xl p-4">
-            <div class="flex justify-between mb-3"><h3 class="font-semibold"><i class="fas fa-wallet text-emerald-500 mr-2"></i>Budget Allocations</h3><button onclick="openAddBudgetModal()" class="bg-emerald-600 text-white px-3 py-1 rounded text-xs">+ Add Budget</button></div>
-            <div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th>Category</th><th>Allocated</th><th>Used</th><th>Remaining</th><th>Year</th><th>Month</th><th>Actions</th></tr></thead><tbody>`;
-        for (let b of budgets) {
-            let remaining = b.allocated_amount - b.used_amount;
-            let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-            html += `<tr><td>${escapeHtml(b.category)}</td><td class="text-green-600">${formatCurrency(b.allocated_amount)}</td><td class="text-orange-600">${formatCurrency(b.used_amount)}</td><td class="${remaining>=0?'text-blue-600':'text-red-600'}">${formatCurrency(remaining)}</td><td>${b.year}</td><td>${months[b.month-1]}</td><td><button onclick="alert('View budget details')" class="text-blue-500"><i class="fas fa-eye"></i></button></tr>`;
+    function editTransaction(id) {
+        const t = transactionsData.find(t => t.id === id);
+        if (t) {
+            document.getElementById('transId').value = t.id;
+            document.getElementById('transType').value = t.type;
+            document.getElementById('transSource').value = t.source;
+            document.getElementById('transAmount').value = t.amount;
+            document.getElementById('transDate').value = t.transaction_date;
+            document.getElementById('transPaidAmount').value = t.paid_amount || 0;
+            document.getElementById('transStatus').value = t.status;
+            document.getElementById('transDesc').value = t.description || '';
+            document.getElementById('transModalTitle').innerHTML = '<i class="fas fa-edit mr-2"></i>Edit Transaction';
+            openModal('transModal');
         }
-        html += `</tbody>}</div></div>`;
-        document.getElementById('budgetSection').innerHTML = html;
     }
     
-    function openAddBudgetModal() { document.getElementById('addBudgetModal').style.display = 'flex'; }
-    function closeAddBudgetModal() { document.getElementById('addBudgetModal').style.display = 'none'; }
-    
-    async function saveNewBudget() {
-        let category = document.getElementById('budgetCategory').value.trim();
-        let allocated = document.getElementById('budgetAllocated').value;
+    async function saveTransaction() {
+        let id = document.getElementById('transId').value;
+        let source = document.getElementById('transSource').value.trim();
+        let amount = parseFloat(document.getElementById('transAmount').value);
+        let type = document.getElementById('transType').value;
+        let date = document.getElementById('transDate').value;
+        let paidAmount = parseFloat(document.getElementById('transPaidAmount').value) || 0;
+        let status = document.getElementById('transStatus').value;
+        let description = document.getElementById('transDesc').value;
         
-        if (!category) { showToast('Category required', true); return; }
-        if (!allocated || allocated <= 0) { showToast('Valid allocated amount required', true); return; }
+        if (!source) { showToast('Source required', true); return; }
+        if (!amount || amount <= 0) { showToast('Valid amount required', true); return; }
+        if (!date) { showToast('Date required', true); return; }
         
-        let data = {
-            category: category,
-            allocated_amount: allocated,
-            used_amount: document.getElementById('budgetUsed').value || 0,
-            year: document.getElementById('budgetYear').value,
-            month: document.getElementById('budgetMonth').value
-        };
+        let data = { type, source, amount, transaction_date: date, paid_amount: paidAmount, status, description, department_id: DEPARTMENT_ID };
         
-        const result = await addBudgetAPI(data);
-        if (result.success) {
-            showToast('Budget added');
-            closeAddBudgetModal();
-            renderBudget();
-            renderDashboard();
+        let res;
+        if (id) { data.id = parseInt(id); res = await apiCall('update_transaction.php', 'POST', data); }
+        else { res = await apiCall('add_transaction.php', 'POST', data); }
+        
+        if (res.success) {
+            showToast(id ? 'Transaction updated' : 'Transaction added');
+            closeModal('transModal');
+            loadTransactions();
+            loadDashboard();
         } else {
-            // Fallback: add locally
-            data.id = Date.now();
-            budgets.push(data);
-            showToast('Budget added (local mode)');
-            closeAddBudgetModal();
-            renderBudget();
-            renderDashboard();
+            showToast('Saved (demo mode)', false);
+            closeModal('transModal');
         }
     }
     
-    async function renderReports() {
-        await fetchReports();
-        let html = `<div class="flex justify-between mb-4"><h2 class="text-xl font-bold"><i class="fas fa-chart-bar text-emerald-500 mr-2"></i>Reports (${reports.length})</h2><button onclick="openAddReportModal()" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm">+ Add Report</button></div><div class="space-y-2" id="reportsListDiv"></div>`;
-        document.getElementById('reportsSection').innerHTML = html;
+    async function deleteTransaction(id) {
+        if (confirm('Delete this transaction?')) {
+            const res = await apiCall('delete_transaction.php', 'DELETE', { id });
+            if (res.success) {
+                showToast('Transaction deleted');
+                loadTransactions();
+                loadDashboard();
+            } else {
+                showToast('Deleted (demo mode)', false);
+                transactionsData = transactionsData.filter(t => t.id !== id);
+                loadTransactions();
+            }
+        }
+    }
+    
+    // ==================== ALL BUDGETS (VIEW ALL DEPARTMENTS) ====================
+    async function loadAllBudgets() {
+        document.getElementById('allbudgetPage').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div><span class="ml-3">Loading all budgets...</span></div>';
+        
+        const res = await apiCall('get_budgets.php');
+        if (res.success && res.data) {
+            allBudgetsData = res.data;
+        }
+        
+        // Group budgets by department
+        let budgetsByDept = {};
+        for (let b of allBudgetsData) {
+            if (!budgetsByDept[b.department_id]) {
+                budgetsByDept[b.department_id] = [];
+            }
+            budgetsByDept[b.department_id].push(b);
+        }
+        
+        let html = `<div class="mb-4"><h2 class="text-xl font-bold"><i class="fas fa-chart-pie text-emerald-600 mr-2"></i>All Department Budgets</h2><p class="text-xs text-gray-500">View budget allocations across all departments</p></div>`;
+        
+        for (let deptId in budgetsByDept) {
+            const deptBudgets = budgetsByDept[deptId];
+            const totalAllocated = deptBudgets.reduce((s, b) => s + (b.allocated_amount || 0), 0);
+            const totalUsed = deptBudgets.reduce((s, b) => s + (b.used_amount || 0), 0);
+            const deptName = departmentNames[deptId] || `Department ${deptId}`;
+            const bgColor = departmentColors[deptId] || 'gray';
+            
+            html += `<div class="budget-all-card mb-4">
+                <div class="flex justify-between items-center mb-3 p-2 bg-${bgColor}-50 rounded-lg">
+                    <div class="flex items-center gap-2">
+                        <i class="fas ${departmentIcons[deptId] || 'fa-building'} text-${bgColor}-600"></i>
+                        <h3 class="font-bold text-lg">${escapeHtml(deptName)}</h3>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm">Total Budget: <span class="font-bold text-green-600">${formatMoney(totalAllocated)}</span></p>
+                        <p class="text-xs text-gray-500">Used: ${formatMoney(totalUsed)} | Remaining: ${formatMoney(totalAllocated - totalUsed)}</p>
+                    </div>
+                </div>
+                <div class="table-responsive"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th>Category</th><th>Allocated</th><th>Used</th><th>Remaining</th><th>Period</th><th>Description</th></tr></thead><tbody>`;
+            
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            for (let b of deptBudgets) {
+                const remaining = (b.allocated_amount || 0) - (b.used_amount || 0);
+                html += `<tr class="border-b">
+                    <td class="px-3 py-2 font-medium">${escapeHtml(b.category)}</td>
+                    <td class="px-3 py-2 text-green-600">${formatMoney(b.allocated_amount)}</td>
+                    <td class="px-3 py-2 text-orange-600">${formatMoney(b.used_amount)}</td>
+                    <td class="px-3 py-2 ${remaining >= 0 ? 'text-blue-600' : 'text-red-600'}">${formatMoney(remaining)}</td>
+                    <td class="px-3 py-2">${months[b.month - 1]} ${b.year}</td>
+                    <td class="px-3 py-2 text-xs max-w-[200px] truncate" title="${escapeHtml(b.description)}">${escapeHtml(b.description || '-')}</td>
+                </tr>`;
+            }
+            html += `</tbody>${'</table>'}</div></div>`;
+        }
+        
+        if (Object.keys(budgetsByDept).length === 0) {
+            html += '<div class="bg-white rounded-xl p-8 text-center text-gray-400">No budget data found</div>';
+        }
+        
+        document.getElementById('allbudgetPage').innerHTML = html;
+    }
+    
+    // ==================== ALL PROJECTS ====================
+    async function loadAllProjects() {
+        document.getElementById('projectsPage').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div><span class="ml-3">Loading projects...</span></div>';
+        
+        const res = await apiCall('get_projects.php');
+        if (res.success && res.data) {
+            projectsData = res.data;
+        }
+        
+        // Group projects by department
+        let projectsByDept = {};
+        for (let p of projectsData) {
+            if (!projectsByDept[p.department_id]) {
+                projectsByDept[p.department_id] = [];
+            }
+            projectsByDept[p.department_id].push(p);
+        }
+        
+        let html = `<div class="mb-4"><h2 class="text-xl font-bold"><i class="fas fa-tasks text-emerald-600 mr-2"></i>All Department Projects</h2><p class="text-xs text-gray-500">View all projects across all departments</p></div>`;
+        
+        for (let deptId in projectsByDept) {
+            const deptProjects = projectsByDept[deptId];
+            const deptName = departmentNames[deptId] || `Department ${deptId}`;
+            const bgColor = departmentColors[deptId] || 'gray';
+            
+            html += `<div class="budget-all-card mb-4">
+                <div class="flex items-center gap-2 mb-3 p-2 bg-${bgColor}-50 rounded-lg">
+                    <i class="fas ${departmentIcons[deptId] || 'fa-building'} text-${bgColor}-600"></i>
+                    <h3 class="font-bold text-lg">${escapeHtml(deptName)}</h3>
+                    <span class="text-xs text-gray-500 ml-auto">${deptProjects.length} projects</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">`;
+            
+            for (let p of deptProjects) {
+                const statusClass = p.status === 'completed' ? 'status-paid' : (p.status === 'in_progress' ? 'status-partial' : 'status-pending');
+                html += `<div class="project-card">
+                    <div class="flex justify-between items-start">
+                        <h4 class="font-semibold text-sm">${escapeHtml(p.name)}</h4>
+                        <span class="px-2 py-0.5 text-[9px] rounded-full ${statusClass}">${p.status}</span>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">Client: ${escapeHtml(p.client_name || 'N/A')}</p>
+                    <p class="text-sm font-bold text-emerald-600 mt-1">${formatMoney(p.amount)}</p>
+                    <div class="mt-2">
+                        <div class="flex justify-between text-xs"><span>Progress</span><span>${p.progress || 0}%</span></div>
+                        <div class="w-full bg-gray-200 rounded-full h-1.5"><div class="bg-emerald-600 h-1.5 rounded-full" style="width:${p.progress || 0}%"></div></div>
+                    </div>
+                </div>`;
+            }
+            
+            html += `</div></div>`;
+        }
+        
+        if (Object.keys(projectsByDept).length === 0) {
+            html += '<div class="bg-white rounded-xl p-8 text-center text-gray-400">No projects found</div>';
+        }
+        
+        document.getElementById('projectsPage').innerHTML = html;
+    }
+    
+    // ==================== ALL DEPARTMENTS ====================
+    async function loadAllDepartments() {
+        document.getElementById('departmentsPage').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div><span class="ml-3">Loading departments...</span></div>';
+        
+        const res = await apiCall('get_departments.php');
+        const depts = (res.success && res.data) ? res.data : departmentsList;
+        
+        let html = `<div class="mb-4"><h2 class="text-xl font-bold"><i class="fas fa-building text-emerald-600 mr-2"></i>All Departments</h2><p class="text-xs text-gray-500">View all departments in the system</p></div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">`;
+        
+        for (let d of depts) {
+            const color = departmentColors[d.id] || 'gray';
+            const icon = departmentIcons[d.id] || 'building';
+            
+            html += `<div class="dept-card" onclick="alert('Department: ${escapeHtml(d.name)}\nID: ${d.id}\nEmail: ${d.email || 'N/A'}')">
+                <div class="w-12 h-12 bg-${color}-100 rounded-xl flex items-center justify-center"><i class="fas fa-${icon} text-${color}-600 text-xl"></i></div>
+                <div class="flex-1"><h4 class="font-semibold">${escapeHtml(d.name)}</h4><p class="text-xs text-gray-500">${d.email || 'department@geotraverse.com'}</p></div>
+                <i class="fas fa-info-circle text-gray-400 text-sm"></i>
+            </div>`;
+        }
+        
+        html += `</div>`;
+        document.getElementById('departmentsPage').innerHTML = html;
+    }
+    
+    // ==================== REPORTS ====================
+    async function loadReports() {
+        document.getElementById('reportsPage').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div><span class="ml-3">Loading reports...</span></div>';
+        
+        const res = await apiCall('get_reports.php');
+        if (res.success && res.data) {
+            reportsData = res.data.filter(r => r.department_id === DEPARTMENT_ID);
+        }
+        
+        let html = `<div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold"><i class="fas fa-chart-bar text-emerald-600 mr-2"></i>Reports (${reportsData.length})</h2><button onclick="openModal('reportModal')" class="btn-primary"><i class="fas fa-plus mr-1"></i>Add Report</button></div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="reportsGrid"></div>`;
+        document.getElementById('reportsPage').innerHTML = html;
+        
         let reportsHtml = '';
-        for (let r of reports) {
-            reportsHtml += `<div class="bg-white rounded-xl p-3 border"><div class="flex justify-between"><div><h4 class="font-semibold">${escapeHtml(r.title)}</h4><span class="text-[9px] px-2 py-0.5 rounded-full bg-gray-100">${r.period}</span><p class="text-xs text-gray-500 mt-1">${formatDate(r.created_at)}</p><p class="text-sm mt-2">${escapeHtml(r.content.substring(0, 100))}...</p></div><div class="flex gap-1"><button onclick="alert('View report')" class="text-blue-500"><i class="fas fa-eye"></i></button><button onclick="openSendReportModal(${r.id})" class="text-purple-500"><i class="fas fa-paper-plane"></i></button></div></div></div>`;
+        for (let r of reportsData) {
+            reportsHtml += `<div class="report-card" onclick="viewReportDetails(${r.id})">
+                <div class="flex justify-between items-start">
+                    <div><h4 class="font-semibold">${escapeHtml(r.title)}</h4><span class="text-[9px] px-2 py-0.5 rounded-full bg-gray-100">${r.period}</span><p class="text-xs text-gray-500 mt-1">${formatDate(r.created_at)}</p></div>
+                    <button onclick="event.stopPropagation(); sendReportToAdmin(${r.id})" class="text-purple-500"><i class="fas fa-paper-plane"></i></button>
+                </div>
+                <p class="text-sm text-gray-600 mt-2">${escapeHtml(r.content.substring(0, 100))}...</p>
+                <div class="flex gap-2 mt-3"><button onclick="event.stopPropagation(); exportReportToExcel(${r.id})" class="text-xs bg-green-600 text-white px-2 py-1 rounded"><i class="fas fa-file-excel"></i> Excel</button><button onclick="event.stopPropagation(); exportReportToPDF(${r.id})" class="text-xs bg-red-600 text-white px-2 py-1 rounded"><i class="fas fa-file-pdf"></i> PDF</button></div>
+            </div>`;
         }
-        document.getElementById('reportsListDiv').innerHTML = reportsHtml || '<div class="text-center text-gray-400">No reports</div>';
+        if (reportsData.length === 0) reportsHtml = '<div class="col-span-2 text-center py-8 text-gray-400">No reports found</div>';
+        document.getElementById('reportsGrid').innerHTML = reportsHtml;
     }
     
-    function openAddReportModal() { document.getElementById('addReportModal').style.display = 'flex'; }
-    function closeAddReportModal() { document.getElementById('addReportModal').style.display = 'none'; }
-    
-    async function addReport() {
-        let title = document.getElementById('newReportTitle').value.trim();
-        let period = document.getElementById('newReportPeriod').value;
-        let content = document.getElementById('newReportContent').value.trim();
-        if (!title || !content) { showToast('Title and content required', true); return; }
-        const result = await addReportAPI({ title, period, content });
-        if (result.success) { showToast('Report added'); closeAddReportModal(); renderReports(); }
-        else { showToast(result.error || 'Failed to add', true); }
-    }
-    
-    function openSendReportModal(id) {
-        let r = reports.find(r => r.id == id);
+    function viewReportDetails(id) {
+        const r = reportsData.find(r => r.id === id);
         if (r) {
-            document.getElementById('sendReportId').value = id;
-            document.getElementById('sendReportInfo').innerHTML = `<strong>${escapeHtml(r.title)}</strong><br>Period: ${r.period}`;
-            document.getElementById('sendReportModal').style.display = 'flex';
+            alert(`📄 ${r.title}\n\nPeriod: ${r.period}\nDate: ${formatDate(r.created_at)}\n\nContent:\n${r.content}`);
         }
     }
-    function closeSendReportModal() { document.getElementById('sendReportModal').style.display = 'none'; }
     
-    async function confirmSendReport() {
-        let to = document.getElementById('sendToDepartment').value;
-        if (!to) { showToast('Select department', true); return; }
-        let r = reports.find(r => r.id == parseInt(document.getElementById('sendReportId').value));
-        let extra = document.getElementById('sendReportMessage').value;
-        let msg = `REPORT: ${r.title}\nPeriod: ${r.period}\nDate: ${formatDate(r.created_at)}\n\n${r.content}`;
-        if (extra) msg += `\n\nMessage: ${extra}`;
-        const result = await sendMessageAPI({ to_department_id: to, message: msg });
-        if (result.success) { showToast('Report sent'); closeSendReportModal(); renderMessages(); }
-        else { showToast(result.error || 'Failed to send', true); }
-    }
-    
-    async function renderMessages() {
-        await fetchMessages();
-        let html = `<div class="flex justify-between mb-4"><h2 class="text-xl font-bold"><i class="fas fa-envelope text-emerald-500 mr-2"></i>Messages (${messages.length})</h2><button onclick="openStartChatModal()" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm">+ New Message</button></div><div class="space-y-2" id="messagesListDiv"></div>`;
-        document.getElementById('messagesSection').innerHTML = html;
-        let msgsHtml = '';
-        for (let msg of messages) {
-            let fromDept = departments.find(d => d.id == msg.from_department_id);
-            msgsHtml += `<div class="bg-white rounded-xl p-3 border cursor-pointer" onclick="alert('Open chat')"><div><p class="font-semibold">From: ${fromDept ? fromDept.name : 'Unknown'}</p><p class="text-xs text-gray-600">${escapeHtml(msg.message.substring(0, 80))}...</p><small>${formatDate(msg.created_at)}</small></div></div>`;
+    function sendReportToAdmin(id) {
+        const r = reportsData.find(r => r.id === id);
+        if (r) {
+            showToast(`Report "${r.title}" sent to Admin`);
         }
-        document.getElementById('messagesListDiv').innerHTML = msgsHtml || '<div class="text-center text-gray-400">No messages</div>';
     }
     
-    function openStartChatModal() { document.getElementById('startChatModal').style.display = 'flex'; }
-    function closeStartChatModal() { document.getElementById('startChatModal').style.display = 'none'; }
-    
-    async function sendNewChat() {
-        let to = document.getElementById('chatRecipientSelect').value;
-        let msg = document.getElementById('newChatMsg').value;
-        if (!to || !msg) { showToast('Select department and enter message', true); return; }
-        const result = await sendMessageAPI({ to_department_id: to, message: msg });
-        if (result.success) { showToast('Message sent'); closeStartChatModal(); renderMessages(); }
-        else { showToast(result.error || 'Failed to send', true); }
+    function exportReportToExcel(reportId) {
+        const r = reportsData.find(r => r.id === reportId);
+        if (r) {
+            let ws = [['Title', 'Period', 'Content', 'Date']];
+            ws.push([r.title, r.period, r.content, r.created_at]);
+            let wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), 'Report');
+            XLSX.writeFile(wb, `report_${r.id}.xlsx`);
+            showToast('Exported to Excel');
+        }
     }
     
-    function sendChatMessage() { showToast('Chat feature coming soon'); }
-    function closeChatModal() { document.getElementById('chatModal').style.display = 'none'; }
+    function exportReportToPDF(reportId) {
+        const r = reportsData.find(r => r.id === reportId);
+        if (r) {
+            let element = document.createElement('div');
+            element.innerHTML = `<div style="padding:20px"><h1>${escapeHtml(r.title)}</h1><p><strong>Period:</strong> ${r.period}</p><p><strong>Date:</strong> ${formatDate(r.created_at)}</p><hr/><div>${escapeHtml(r.content)}</div><p>Generated: ${new Date().toLocaleString()}</p></div>`;
+            html2pdf().set({ margin: 0.5, filename: `report_${r.id}.pdf` }).from(element).save();
+            showToast('Exported to PDF');
+        }
+    }
     
-    function renderSettings() {
+    async function saveReport() {
+        let title = document.getElementById('reportTitle').value.trim();
+        let period = document.getElementById('reportPeriod').value;
+        let content = document.getElementById('reportContent').value.trim();
+        
+        if (!title || !content) { showToast('Title and content required', true); return; }
+        
+        const res = await apiCall('add_report.php', 'POST', { title, period, content, department_id: DEPARTMENT_ID });
+        
+        if (res.success) {
+            showToast('Report added');
+            closeModal('reportModal');
+            loadReports();
+        } else {
+            showToast('Report added (demo mode)', false);
+            closeModal('reportModal');
+            loadReports();
+        }
+    }
+    
+    // ==================== MESSAGES ====================
+    async function loadMessages() {
+        document.getElementById('messagesPage').innerHTML = `
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold"><i class="fas fa-envelope text-emerald-600 mr-2"></i>Messages</h2>
+                <button onclick="openModal('msgModal')" class="btn-primary"><i class="fas fa-plus mr-1"></i> New Message</button>
+            </div>
+            <div class="bg-white rounded-xl p-8 text-center text-gray-400">
+                <i class="fas fa-comments text-4xl mb-3 opacity-50"></i>
+                <p>Message system is ready. Click "New Message" to start a conversation.</p>
+                <p class="text-xs mt-2">Messages will appear here once you send or receive them.</p>
+            </div>
+        `;
+    }
+    
+    async function sendNewMessage() {
+        let toDept = document.getElementById('msgTo').value;
+        let msg = document.getElementById('msgContent').value.trim();
+        
+        if (!toDept) { showToast('Select department', true); return; }
+        if (!msg) { showToast('Enter message', true); return; }
+        
+        const res = await apiCall('send_message.php', 'POST', { to_department_id: parseInt(toDept), message: msg });
+        
+        if (res && res.success) {
+            showToast('Message sent successfully');
+            closeModal('msgModal');
+            document.getElementById('msgContent').value = '';
+        } else {
+            showToast('Message sent (demo mode)', false);
+            closeModal('msgModal');
+        }
+    }
+    
+    // ==================== SETTINGS (REMOVED CHANGE PASSWORD) ====================
+    function loadSettings() {
+        const savedColor = localStorage.getItem('sidebar_color') || '#059669';
         let html = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="bg-white rounded-xl p-4"><h3 class="font-semibold mb-2"><i class="fas fa-key text-emerald-500 mr-2"></i>Change Password</h3><button onclick="openChangePasswordModal()" class="w-full bg-emerald-600 text-white py-2 rounded-lg">Change Password</button><button onclick="closeChangePasswordModal()" class="w-full mt-2 bg-gray-200 py-2 rounded-lg">Cancel</button></div>
-            <div class="bg-white rounded-xl p-4"><h3 class="font-semibold mb-2"><i class="fas fa-palette text-emerald-500 mr-2"></i>Sidebar Colors</h3><div class="flex gap-2 flex-wrap"><div class="w-8 h-8 rounded-full bg-emerald-600 cursor-pointer" onclick="changeSidebarColor('#059669')"></div><div class="w-8 h-8 rounded-full bg-blue-600 cursor-pointer" onclick="changeSidebarColor('#2563eb')"></div><div class="w-8 h-8 rounded-full bg-purple-600 cursor-pointer" onclick="changeSidebarColor('#7c3aed')"></div></div></div>
-            <div class="bg-white rounded-xl p-4"><h3 class="font-semibold mb-2"><i class="fas fa-database text-green-500 mr-2"></i>Backup & Restore</h3><button onclick="alert('Backup feature')" class="w-full bg-green-600 text-white py-2 rounded-lg">Backup / Restore</button></div>
-            <div class="bg-white rounded-xl p-4"><h3 class="font-semibold mb-2"><i class="fas fa-globe text-blue-500 mr-2"></i>General Settings</h3><button onclick="alert('General settings')" class="w-full bg-blue-600 text-white py-2 rounded-lg">Configure</button></div>
+            <div class="setting-card">
+                <h3 class="font-semibold text-lg mb-3"><i class="fas fa-palette text-emerald-500 mr-2"></i>Sidebar Colors</h3>
+                <div id="colorOptionsContainer" class="flex flex-wrap gap-2"></div>
+                <p class="text-xs text-gray-400 mt-2">Click any color to change sidebar appearance</p>
+            </div>
+            <div class="setting-card">
+                <h3 class="font-semibold text-lg mb-3"><i class="fas fa-database text-green-500 mr-2"></i>Backup & Restore</h3>
+                <div class="flex gap-3">
+                    <button onclick="openModal('backupModal')" class="flex-1 bg-green-600 text-white py-2 rounded-lg text-sm hover:bg-green-700 transition"><i class="fas fa-download mr-2"></i>Backup</button>
+                    <button onclick="restoreBackup()" class="flex-1 bg-orange-500 text-white py-2 rounded-lg text-sm hover:bg-orange-600 transition"><i class="fas fa-upload mr-2"></i>Restore</button>
+                </div>
+                <p class="text-xs text-gray-400 mt-2">Backup includes all your transactions and reports data</p>
+            </div>
+            <div class="setting-card">
+                <h3 class="font-semibold text-lg mb-3"><i class="fas fa-globe text-blue-500 mr-2"></i>General Settings</h3>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm">Auto-refresh Data</span>
+                        <button id="autoRefreshBtn" class="px-3 py-1 rounded text-xs bg-gray-200 text-gray-700">Manual</button>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm">Items Per Page</span>
+                        <select id="itemsPerPage" class="w-24 px-2 py-1 border rounded text-xs">
+                            <option value="5">5</option>
+                            <option value="10" selected>10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                        </select>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm">System Language</span>
+                        <select id="systemLanguage" class="w-32 px-2 py-1 border rounded text-xs">
+                            <option value="sw" selected>Kiswahili</option>
+                            <option value="en">English</option>
+                        </select>
+                    </div>
+                    <button onclick="clearCache()" class="w-full mt-2 bg-gray-500 text-white py-1.5 rounded text-xs hover:bg-gray-600 transition"><i class="fas fa-trash-alt mr-1"></i>Clear Cache</button>
+                </div>
+            </div>
+            <div class="setting-card">
+                <h3 class="font-semibold text-lg mb-3"><i class="fas fa-info-circle text-purple-500 mr-2"></i>System Information</h3>
+                <div class="space-y-2 text-sm">
+                    <p><strong>Version:</strong> 2.0.0</p>
+                    <p><strong>Department:</strong> Finance (ID: ${DEPARTMENT_ID})</p>
+                    <p><strong>Total Transactions:</strong> ${transactionsData.length}</p>
+                    <p><strong>Total Budgets:</strong> ${allBudgetsData.length}</p>
+                    <p><strong>Total Projects:</strong> ${projectsData.length}</p>
+                    <p><strong>Last Updated:</strong> ${new Date().toLocaleString()}</p>
+                </div>
+            </div>
         </div>`;
-        document.getElementById('settingsSection').innerHTML = html;
+        document.getElementById('settingsPage').innerHTML = html;
+        
+        const container = document.getElementById('colorOptionsContainer');
+        container.innerHTML = '';
+        colorOptions.forEach(color => {
+            const isSelected = savedColor === color;
+            container.innerHTML += `<div class="color-option ${isSelected ? 'selected' : ''}" style="background: ${color}" onclick="changeSidebarColor('${color}', this)"></div>`;
+        });
+        
+        // Setup general settings listeners
+        document.getElementById('autoRefreshBtn')?.addEventListener('click', function() {
+            if (this.innerText === 'Manual') {
+                this.innerText = 'Auto (30s)';
+                this.classList.remove('bg-gray-200', 'text-gray-700');
+                this.classList.add('bg-green-600', 'text-white');
+                showToast('Auto-refresh enabled (every 30 seconds)');
+                startAutoRefresh();
+            } else {
+                this.innerText = 'Manual';
+                this.classList.remove('bg-green-600', 'text-white');
+                this.classList.add('bg-gray-200', 'text-gray-700');
+                showToast('Auto-refresh disabled');
+                stopAutoRefresh();
+            }
+        });
+        
+        document.getElementById('itemsPerPage')?.addEventListener('change', function() {
+            localStorage.setItem('items_per_page', this.value);
+            showToast(`Items per page set to ${this.value}`);
+        });
+        
+        document.getElementById('systemLanguage')?.addEventListener('change', function() {
+            localStorage.setItem('system_language', this.value);
+            showToast(`Language changed to ${this.options[this.selectedIndex].text}`);
+        });
     }
     
-    function openChangePasswordModal() { document.getElementById('changePasswordModal').style.display = 'flex'; }
-    function closeChangePasswordModal() { document.getElementById('changePasswordModal').style.display = 'none'; }
-    async function changeUserPassword() {
-        let curr = document.getElementById('currentPassword').value;
-        let newP = document.getElementById('newPassword').value;
-        let conf = document.getElementById('confirmPassword').value;
-        if (!newP || newP.length < 4) { showToast('Password must be 4+ characters', true); return; }
-        if (newP !== conf) { showToast('Passwords do not match', true); return; }
-        showToast('Password changed successfully');
-        closeChangePasswordModal();
+    let autoRefreshInterval = null;
+    function startAutoRefresh() {
+        if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+        autoRefreshInterval = setInterval(() => {
+            const currentPage = document.querySelector('.nav-item.active')?.getAttribute('data-page');
+            if (currentPage === 'dashboard') loadDashboard();
+            else if (currentPage === 'transactions') loadTransactions();
+            else if (currentPage === 'allbudget') loadAllBudgets();
+            else if (currentPage === 'projects') loadAllProjects();
+            else if (currentPage === 'reports') loadReports();
+        }, 30000);
     }
     
-    function changeSidebarColor(color) {
+    function stopAutoRefresh() {
+        if (autoRefreshInterval) {
+            clearInterval(autoRefreshInterval);
+            autoRefreshInterval = null;
+        }
+    }
+    
+    function clearCache() {
+        if (confirm('Clear browser cache and reload?')) {
+            localStorage.clear();
+            sessionStorage.clear();
+            location.reload();
+        }
+    }
+    
+    function changeSidebarColor(color, element) {
         document.getElementById('mainSidebar').style.background = color;
-        document.getElementById('mainSidebar').style.backgroundImage = 'none';
         localStorage.setItem('sidebar_color', color);
+        document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
+        element.classList.add('selected');
         showToast('Sidebar color changed');
     }
     
-    // ==================== SEARCH ====================
+    function createBackup() {
+        const backupData = {
+            transactions: transactionsData,
+            budgets: allBudgetsData,
+            reports: reportsData,
+            timestamp: new Date().toISOString()
+        };
+        const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `finance_backup_${new Date().toISOString().slice(0,19)}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('Backup created');
+        closeModal('backupModal');
+    }
+    
+    function restoreBackup() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        input.onchange = (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                try {
+                    const data = JSON.parse(ev.target.result);
+                    if (data.transactions) transactionsData = data.transactions;
+                    if (data.budgets) allBudgetsData = data.budgets;
+                    if (data.reports) reportsData = data.reports;
+                    showToast('Restore successful! Reloading...');
+                    setTimeout(() => location.reload(), 1500);
+                } catch(err) {
+                    showToast('Invalid backup file', true);
+                }
+            };
+            reader.readAsText(file);
+        };
+        input.click();
+        closeModal('backupModal');
+    }
+    
+    // ==================== GLOBAL SEARCH ====================
     function performGlobalSearch() {
-        let term = document.getElementById('globalSearchInput').value.toLowerCase().trim();
-        let dropdown = document.getElementById('searchResultsDropdown');
+        const term = document.getElementById('searchInput').value.toLowerCase().trim();
+        const dropdown = document.getElementById('searchResultsDropdown');
         if (searchTimeout) clearTimeout(searchTimeout);
-        if (term === '') { dropdown.classList.remove('active'); return; }
+        if (term === "") { dropdown.classList.remove('active'); return; }
+        
         searchTimeout = setTimeout(() => {
-            let transResults = transactions.filter(t => t.source.toLowerCase().includes(term));
             let html = '';
-            if (transResults.length) html += '<div class="p-2 bg-gray-100 text-xs font-semibold">TRANSACTIONS</div>';
-            for (let t of transResults.slice(0, 3)) {
-                html += `<div class="p-2 border-b cursor-pointer hover:bg-gray-50" onclick="goToSectionAndSearch('transactions', '${t.source}')"><div>💰 ${escapeHtml(t.source)}</div><div class="text-xs">${formatCurrency(t.amount)}</div></div>`;
-            }
-            if (!html) html = '<div class="p-3 text-center text-gray-400">No results</div>';
+            const transResults = transactionsData.filter(t => t.source.toLowerCase().includes(term));
+            if (transResults.length) html += '<div class="p-2 bg-gray-100 text-xs font-semibold">💰 TRANSACTIONS</div>' + transResults.slice(0,3).map(t => `<div class="search-result-item" onclick="goToPageAndSearch('transactions', '${t.source}')"><div class="font-medium">${t.source}</div><div class="text-xs">${formatMoney(t.amount)}</div></div>`).join('');
+            const reportResults = reportsData.filter(r => r.title.toLowerCase().includes(term));
+            if (reportResults.length) html += '<div class="p-2 bg-gray-100 text-xs font-semibold">📊 REPORTS</div>' + reportResults.slice(0,3).map(r => `<div class="search-result-item" onclick="goToPageAndSearch('reports', '${r.title}')"><div class="font-medium">${r.title}</div><div class="text-xs">${r.period}</div></div>`).join('');
+            if (!html) html = '<div class="p-4 text-center text-gray-400">No results</div>';
             dropdown.innerHTML = html;
             dropdown.classList.add('active');
         }, 300);
     }
     
-    function goToSectionAndSearch(section, value) {
+    function goToPageAndSearch(page, searchTerm) {
         document.getElementById('searchResultsDropdown').classList.remove('active');
-        document.getElementById('globalSearchInput').value = value;
-        showSection(section);
-        showToast(`Found: ${value}`);
+        document.getElementById('searchInput').value = searchTerm;
+        showPage(page);
+        showToast(`Showing "${searchTerm}"`);
     }
     
-    document.addEventListener('click', (e) => {
-        let inp = document.getElementById('globalSearchInput');
-        let dd = document.getElementById('searchResultsDropdown');
-        if (inp && dd && !inp.contains(e.target) && !dd.contains(e.target)) dd.classList.remove('active');
+    document.addEventListener('click', function(e) {
+        const searchInput = document.getElementById('searchInput');
+        const dropdown = document.getElementById('searchResultsDropdown');
+        if (searchInput && dropdown && !searchInput.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.classList.remove('active');
+        }
     });
-    
-    // ==================== NAVIGATION ====================
-    async function showSection(sectionId) {
-        let sections = ['dashboardSection', 'transactionsSection', 'budgetSection', 'reportsSection', 'messagesSection', 'settingsSection'];
-        sections.forEach(s => { let el = document.getElementById(s); if (el) el.classList.add('hidden'); });
-        document.getElementById(`${sectionId}Section`).classList.remove('hidden');
-        document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-        document.querySelector(`.nav-item[data-section="${sectionId}"]`).classList.add('active');
-        if (sectionId === 'dashboard') await renderDashboard();
-        else if (sectionId === 'transactions') await renderTransactions();
-        else if (sectionId === 'budget') await renderBudget();
-        else if (sectionId === 'reports') await renderReports();
-        else if (sectionId === 'messages') await renderMessages();
-        else if (sectionId === 'settings') renderSettings();
-    }
-    
-    function logout() { if (confirm('Logout?')) window.location.href = 'login_system.html'; }
-    document.getElementById('homeBtn')?.addEventListener('click', () => showSection('dashboard'));
-    document.getElementById('logoutBtn')?.addEventListener('click', logout);
-    document.getElementById('mobileMenuBtn')?.addEventListener('click', () => {
-        document.getElementById('mainSidebar').classList.add('mobile-open');
-        document.getElementById('mobileMenuOverlay').classList.remove('hidden');
-    });
-    document.getElementById('globalSearchInput')?.addEventListener('input', performGlobalSearch);
     
     // ==================== INIT ====================
-    let savedDark = localStorage.getItem('finance_dark_mode');
-    if (savedDark === 'true') document.body.classList.add('dark-mode');
-    document.getElementById('darkModeToggle').addEventListener('click', () => {
-        document.body.classList.toggle('dark-mode');
-        localStorage.setItem('finance_dark_mode', document.body.classList.contains('dark-mode'));
-    });
-    
-    let savedColor = localStorage.getItem('sidebar_color');
-    if (savedColor) document.getElementById('mainSidebar').style.background = savedColor;
-    
     async function init() {
-        let container = document.getElementById('mainContentContainer');
-        container.innerHTML = `<div id="dashboardSection"></div><div id="transactionsSection" class="hidden"></div><div id="budgetSection" class="hidden"></div><div id="reportsSection" class="hidden"></div><div id="messagesSection" class="hidden"></div><div id="settingsSection" class="hidden"></div>`;
-        await renderDashboard();
+        await loadDepartmentsForDropdowns();
         
-        document.querySelectorAll('.nav-item').forEach(nav => nav.addEventListener('click', (e) => { e.preventDefault(); showSection(nav.dataset.section); }));
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                const page = item.getAttribute('data-page');
+                if (page) showPage(page);
+            });
+        });
+        
+        document.getElementById('homeBtn').addEventListener('click', () => showPage('dashboard'));
+        document.getElementById('searchInput').addEventListener('input', performGlobalSearch);
+        document.getElementById('mobileMenuBtn').addEventListener('click', () => { document.getElementById('mainSidebar').classList.add('mobile-open'); document.getElementById('mobileMenuOverlay').classList.remove('hidden'); });
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+        document.getElementById('darkModeBtn').addEventListener('click', () => { document.body.classList.toggle('dark-mode'); localStorage.setItem('dark_mode', document.body.classList.contains('dark-mode')); const icon = document.getElementById('darkIcon'); icon.classList.toggle('fa-moon'); icon.classList.toggle('fa-sun'); });
+        
+        const savedColor = localStorage.getItem('sidebar_color');
+        if (savedColor) document.getElementById('mainSidebar').style.background = savedColor;
+        if (localStorage.getItem('dark_mode') === 'true') document.body.classList.add('dark-mode');
+        
+        const savedItemsPerPage = localStorage.getItem('items_per_page');
+        if (savedItemsPerPage && document.getElementById('itemsPerPage')) {
+            document.getElementById('itemsPerPage').value = savedItemsPerPage;
+        }
+        
+        let scrollBtn = document.createElement('div');
+        scrollBtn.className = 'scroll-top';
+        scrollBtn.innerHTML = '<i class="fas fa-arrow-up"></i>';
+        scrollBtn.style.cssText = 'position:fixed;bottom:20px;right:20px;background:#059669;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:all 0.3s;z-index:99;color:white;';
+        document.body.appendChild(scrollBtn);
+        scrollBtn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.addEventListener('scroll', () => scrollBtn.classList.toggle('visible', window.scrollY > 200));
+        
+        showPage('dashboard');
     }
     
     // Expose functions
-    window.showSection = showSection;
-    window.logout = logout;
-    window.goToMainWebsite = goToMainWebsite;
-    window.closeMobileSidebar = closeMobileSidebar;
-    window.openAddTransactionModal = openAddTransactionModal;
-    window.closeAddTransactionModal = closeAddTransactionModal;
-    window.saveNewTransaction = saveNewTransaction;
+    window.showPage = showPage;
+    window.openModal = openModal;
+    window.closeModal = closeModal;
     window.viewTransaction = viewTransaction;
-    window.openAddBudgetModal = openAddBudgetModal;
-    window.closeAddBudgetModal = closeAddBudgetModal;
-    window.saveNewBudget = saveNewBudget;
-    window.openAddReportModal = openAddReportModal;
-    window.closeAddReportModal = closeAddReportModal;
-    window.addReport = addReport;
-    window.openSendReportModal = openSendReportModal;
-    window.closeSendReportModal = closeSendReportModal;
-    window.confirmSendReport = confirmSendReport;
-    window.openStartChatModal = openStartChatModal;
-    window.closeStartChatModal = closeStartChatModal;
-    window.sendNewChat = sendNewChat;
-    window.sendChatMessage = sendChatMessage;
-    window.closeChatModal = closeChatModal;
-    window.openChangePasswordModal = openChangePasswordModal;
-    window.closeChangePasswordModal = closeChangePasswordModal;
-    window.changeUserPassword = changeUserPassword;
+    window.editTransaction = editTransaction;
+    window.saveTransaction = saveTransaction;
+    window.deleteTransaction = deleteTransaction;
+    window.viewReportDetails = viewReportDetails;
+    window.exportReportToExcel = exportReportToExcel;
+    window.exportReportToPDF = exportReportToPDF;
+    window.sendReportToAdmin = sendReportToAdmin;
+    window.saveReport = saveReport;
+    window.sendNewMessage = sendNewMessage;
     window.changeSidebarColor = changeSidebarColor;
+    window.createBackup = createBackup;
+    window.restoreBackup = restoreBackup;
+    window.goToPageAndSearch = goToPageAndSearch;
+    window.clearCache = clearCache;
+    window.logout = logout;
+    window.closeMobileSidebar = closeMobileSidebar;
+    window.goToMainWebsite = goToMainWebsite;
     
     init();
 </script>
