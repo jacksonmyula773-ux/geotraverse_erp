@@ -1,37 +1,57 @@
 <?php
-require_once 'db_connection.php';
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+header('Access-Control-Allow-Credentials: true');
+
+require_once '../config/database.php');
+session_start();
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
 
 $data = json_decode(file_get_contents('php://input'), true);
 
-$currentPassword = isset($data['current_password']) ? trim($data['current_password']) : '';
-$newPassword = isset($data['new_password']) ? trim($data['new_password']) : '';
+$current_password = $data['current_password'] ?? '';
+$new_password = $data['new_password'] ?? '';
+$user_id = $_SESSION['user_id'] ?? 0;
 
-if (!$currentPassword || !$newPassword) {
-    echo json_encode(['success' => false, 'message' => 'Current password and new password required']);
+if (!$user_id) {
+    echo json_encode(['success' => false, 'message' => 'Not logged in']);
     exit;
 }
 
-if (strlen($newPassword) < 4) {
-    echo json_encode(['success' => false, 'message' => 'New password must be at least 4 characters']);
+if (!$new_password || strlen($new_password) < 4) {
+    echo json_encode(['success' => false, 'message' => 'Password must be at least 4 characters']);
     exit;
 }
 
-// Hash passwords with MD5 (same as database)
-$hashedCurrent = md5($currentPassword);
-$hashedNew = md5($newPassword);
-
-// Update password for Super Admin (department_id = 1)
-$query = "UPDATE users SET password = ? WHERE department_id = 1 AND password = ?";
-$stmt = $conn->prepare($query);
-$stmt->bind_param("ss", $hashedNew, $hashedCurrent);
+// Get current user
+$stmt = $conn->prepare("SELECT password FROM users WHERE id = ?");
+$stmt->bind_param("i", $user_id);
 $stmt->execute();
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
 
-if ($stmt->affected_rows > 0) {
-    echo json_encode(['success' => true, 'message' => 'Password changed successfully']);
-} else {
-    echo json_encode(['success' => false, 'message' => 'Current password is incorrect']);
+if (!$user) {
+    echo json_encode(['success' => false, 'message' => 'User not found']);
+    exit;
 }
 
-$stmt->close();
-$conn->close();
+// Verify current password (MD5)
+if (md5($current_password) !== $user['password']) {
+    echo json_encode(['success' => false, 'message' => 'Current password is incorrect']);
+    exit;
+}
+
+// Update password
+$new_password_md5 = md5($new_password);
+$updateStmt = $conn->prepare("UPDATE users SET password = ? WHERE id = ?");
+$updateStmt->bind_param("si", $new_password_md5, $user_id);
+$updateStmt->execute();
+
+echo json_encode(['success' => true, 'message' => 'Password changed successfully']);
 ?>

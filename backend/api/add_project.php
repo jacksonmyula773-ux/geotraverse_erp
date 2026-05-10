@@ -1,70 +1,60 @@
 <?php
-// backend/api/add_project.php
-session_start();
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST');
-
-if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['success' => false, 'message' => 'Not logged in']);
-    exit();
-}
+header('Access-Control-Allow-Methods: POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+header('Access-Control-Allow-Credentials: true');
 
 require_once '../config/database.php';
+session_start();
 
-$data = json_decode(file_get_contents('php://input'));
-
-if (!$data) {
-    echo json_encode(['success' => false, 'message' => 'Invalid data']);
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
     exit();
 }
 
-if (empty($data->name)) {
+$data = json_decode(file_get_contents('php://input'), true);
+
+$name = $data['name'] ?? '';
+$client_name = $data['client_name'] ?? '';
+$amount = $data['amount'] ?? 0;
+$location = $data['location'] ?? '';
+$description = $data['description'] ?? '';
+$status = $data['status'] ?? 'pending';
+$progress = $data['progress'] ?? 0;
+$department_id = $data['department_id'] ?? 1;
+$image = $data['image'] ?? '';
+$sender_dept = isset($_SESSION['department_id']) ? $_SESSION['department_id'] : 1;
+
+if (!$name) {
     echo json_encode(['success' => false, 'message' => 'Project name required']);
-    exit();
+    exit;
 }
 
-$database = new Database();
-$db = $database->getConnection();
-
-if (!$db) {
-    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
-    exit();
+// Create uploads directory if not exists
+$upload_dir = dirname(__DIR__, 2) . '/frontend/assets/uploads/projects/';
+if (!is_dir($upload_dir)) {
+    mkdir($upload_dir, 0777, true);
 }
 
-$user_dept = $_SESSION['department_id'];
-$user_role = $_SESSION['role'];
-
-if ($user_dept == 1 || $user_role == 'Super Administrator') {
-    $dept_id = isset($data->department_id) ? $data->department_id : null;
-} else {
-    $dept_id = $user_dept;
-}
-
-$name = $data->name;
-$client_name = $data->client_name ?? '';
-$amount = $data->amount ?? 0;
-$location = $data->location ?? '';
-$description = $data->description ?? '';
-$status = $data->status ?? 'pending';
-$progress = $data->progress ?? 0;
-$start_date = $data->start_date ?? date('Y-m-d');
-$end_date = $data->end_date ?? null;
-
-$query = "INSERT INTO projects (name, client_name, amount, location, description, status, progress, start_date, end_date, department_id, created_at) 
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
-
-$stmt = $db->prepare($query);
-
-if ($stmt->execute([$name, $client_name, $amount, $location, $description, $status, $progress, $start_date, $end_date, $dept_id])) {
-    $newId = $db->lastInsertId();
+$image_url = null;
+if ($image && $image != '') {
+    $filename = 'project_' . time() . '_' . rand(1000, 9999) . '.png';
+    $filepath = $upload_dir . $filename;
     
-    echo json_encode([
-        'success' => true,
-        'message' => 'Project added successfully',
-        'data' => ['id' => $newId]
-    ]);
-} else {
-    echo json_encode(['success' => false, 'message' => 'Failed to add project']);
+    $image_data = preg_replace('#^data:image/\w+;base64,#i', '', $image);
+    $image_data = base64_decode($image_data);
+    
+    if (file_put_contents($filepath, $image_data)) {
+        $image_url = 'assets/uploads/projects/' . $filename;
+    }
 }
+
+$stmt = $conn->prepare("INSERT INTO projects (name, client_name, amount, location, description, status, progress, department_id, image, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())");
+$stmt->bind_param("ssdsssiis", $name, $client_name, $amount, $location, $description, $status, $progress, $department_id, $image_url);
+$stmt->execute();
+
+$project_id = $conn->insert_id;
+
+echo json_encode(['success' => true, 'project_id' => $project_id, 'image_url' => $image_url]);
 ?>

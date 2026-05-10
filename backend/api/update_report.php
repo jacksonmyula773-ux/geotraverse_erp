@@ -1,70 +1,33 @@
 <?php
-// backend/api/update_report.php
-session_start();
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST, PUT');
-
-if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['success' => false, 'message' => 'Not logged in']);
-    exit();
-}
+header('Access-Control-Allow-Methods: POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+header('Access-Control-Allow-Credentials: true');
 
 require_once '../config/database.php';
+session_start();
 
-$data = json_decode(file_get_contents('php://input'));
-
-if (!$data || empty($data->id)) {
-    echo json_encode(['success' => false, 'message' => 'Report ID required']);
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
     exit();
 }
 
-$database = new Database();
-$db = $database->getConnection();
+$data = json_decode(file_get_contents('php://input'), true);
 
-if (!$db) {
-    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
-    exit();
+$id = $data['id'] ?? 0;
+$title = $data['title'] ?? '';
+$period = $data['period'] ?? 'monthly';
+$content = $data['content'] ?? '';
+
+if (!$id || !$title) {
+    echo json_encode(['success' => false, 'message' => 'ID and title required']);
+    exit;
 }
 
-$id = (int)$data->id;
-$user_dept = $_SESSION['department_id'];
+$stmt = $conn->prepare("UPDATE reports SET title = ?, period = ?, content = ? WHERE id = ?");
+$stmt->bind_param("sssi", $title, $period, $content, $id);
+$stmt->execute();
 
-$checkQuery = "SELECT department_id FROM reports WHERE id = ?";
-$checkStmt = $db->prepare($checkQuery);
-$checkStmt->execute([$id]);
-$report = $checkStmt->fetch(PDO::FETCH_ASSOC);
-
-if (!$report) {
-    echo json_encode(['success' => false, 'message' => 'Report not found']);
-    exit();
-}
-
-if ($report['department_id'] != $user_dept && $_SESSION['department_id'] != 1) {
-    echo json_encode(['success' => false, 'message' => 'Access denied']);
-    exit();
-}
-
-$updates = [];
-$params = [];
-
-if (isset($data->title)) { $updates[] = "title = ?"; $params[] = $data->title; }
-if (isset($data->period)) { $updates[] = "period = ?"; $params[] = $data->period; }
-if (isset($data->content)) { $updates[] = "content = ?"; $params[] = $data->content; }
-if (isset($data->status)) { $updates[] = "status = ?"; $params[] = $data->status; }
-
-if (empty($updates)) {
-    echo json_encode(['success' => false, 'message' => 'No fields to update']);
-    exit();
-}
-
-$params[] = $id;
-$query = "UPDATE reports SET " . implode(", ", $updates) . " WHERE id = ?";
-$stmt = $db->prepare($query);
-
-if ($stmt->execute($params)) {
-    echo json_encode(['success' => true, 'message' => 'Report updated successfully']);
-} else {
-    echo json_encode(['success' => false, 'message' => 'Failed to update report']);
-}
+echo json_encode(['success' => true]);
 ?>

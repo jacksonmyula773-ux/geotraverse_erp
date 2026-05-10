@@ -1,82 +1,35 @@
 <?php
-// backend/api/get_transactions.php
-session_start();
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET');
-
-if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['success' => false, 'message' => 'Not logged in']);
-    exit();
-}
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+header('Access-Control-Allow-Credentials: true');
 
 require_once '../config/database.php';
+session_start();
 
-$database = new Database();
-$db = $database->getConnection();
-
-if (!$db) {
-    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
     exit();
 }
 
-$user_dept = $_SESSION['department_id'];
-$user_role = $_SESSION['role'];
+$current_dept = isset($_SESSION['department_id']) ? $_SESSION['department_id'] : 1;
 
-// Build query based on user role
-if ($user_dept == 1 || $user_role == 'Super Administrator') {
-    // Super admin sees all transactions
-    $query = "SELECT t.*, d.name as department_name 
-              FROM transactions t 
-              LEFT JOIN departments d ON t.department_id = d.id 
-              ORDER BY t.transaction_date DESC, t.id DESC";
-    $stmt = $db->prepare($query);
+if ($current_dept == 1) {
+    $stmt = $conn->prepare("SELECT t.*, d.name as department_name FROM transactions t LEFT JOIN departments d ON t.department_id = d.id ORDER BY t.transaction_date DESC");
     $stmt->execute();
 } else {
-    // Other departments see only their transactions
-    $query = "SELECT t.*, d.name as department_name 
-              FROM transactions t 
-              LEFT JOIN departments d ON t.department_id = d.id 
-              WHERE t.department_id = ? 
-              ORDER BY t.transaction_date DESC, t.id DESC";
-    $stmt = $db->prepare($query);
-    $stmt->execute([$user_dept]);
+    $stmt = $conn->prepare("SELECT t.*, d.name as department_name FROM transactions t LEFT JOIN departments d ON t.department_id = d.id WHERE t.department_id = ? ORDER BY t.transaction_date DESC");
+    $stmt->bind_param("i", $current_dept);
+    $stmt->execute();
 }
 
+$result = $stmt->get_result();
 $transactions = [];
-while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+
+while ($row = $result->fetch_assoc()) {
     $transactions[] = $row;
 }
 
-// Calculate financial summary
-$total_income = 0;
-$total_expenses = 0;
-$total_paid = 0;
-$total_pending = 0;
-
-foreach ($transactions as $t) {
-    if ($t['type'] == 'income') {
-        $total_income += $t['amount'];
-        if ($t['status'] == 'paid') {
-            $total_paid += $t['amount'];
-        } else {
-            $total_pending += $t['amount'];
-        }
-    } else {
-        $total_expenses += $t['amount'];
-    }
-}
-
-echo json_encode([
-    'success' => true,
-    'count' => count($transactions),
-    'summary' => [
-        'total_income' => $total_income,
-        'total_expenses' => $total_expenses,
-        'net_profit' => $total_income - $total_expenses,
-        'total_paid' => $total_paid,
-        'total_pending' => $total_pending
-    ],
-    'data' => $transactions
-]);
+echo json_encode(['success' => true, 'data' => $transactions]);
 ?>

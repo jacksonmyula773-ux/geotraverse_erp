@@ -1,58 +1,33 @@
 <?php
-// backend/api/add_report.php
-session_start();
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST');
-
-if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['success' => false, 'message' => 'Not logged in']);
-    exit();
-}
+header('Access-Control-Allow-Methods: POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+header('Access-Control-Allow-Credentials: true');
 
 require_once '../config/database.php';
+session_start();
 
-$data = json_decode(file_get_contents('php://input'));
-
-if (!$data) {
-    echo json_encode(['success' => false, 'message' => 'Invalid data']);
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
     exit();
 }
 
-if (empty($data->title)) {
-    echo json_encode(['success' => false, 'message' => 'Title required']);
-    exit();
+$data = json_decode(file_get_contents('php://input'), true);
+
+$title = $data['title'] ?? '';
+$period = $data['period'] ?? 'monthly';
+$content = $data['content'] ?? '';
+$department_id = $data['department_id'] ?? ($_SESSION['department_id'] ?? 1);
+
+if (!$title || !$content) {
+    echo json_encode(['success' => false, 'message' => 'Title and content required']);
+    exit;
 }
 
-if (empty($data->content)) {
-    echo json_encode(['success' => false, 'message' => 'Content required']);
-    exit();
-}
+$stmt = $conn->prepare("INSERT INTO reports (title, period, content, department_id, status, created_at) VALUES (?, ?, ?, ?, 'draft', NOW())");
+$stmt->bind_param("sssi", $title, $period, $content, $department_id);
+$stmt->execute();
 
-$database = new Database();
-$db = $database->getConnection();
-
-if (!$db) {
-    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
-    exit();
-}
-
-$title = $data->title;
-$period = $data->period ?? 'monthly';
-$content = $data->content;
-$department_id = $_SESSION['department_id'];
-$status = $data->status ?? 'draft';
-
-$query = "INSERT INTO reports (title, period, content, department_id, status, created_at) VALUES (?, ?, ?, ?, ?, NOW())";
-$stmt = $db->prepare($query);
-
-if ($stmt->execute([$title, $period, $content, $department_id, $status])) {
-    echo json_encode([
-        'success' => true,
-        'message' => 'Report added successfully',
-        'data' => ['id' => $db->lastInsertId()]
-    ]);
-} else {
-    echo json_encode(['success' => false, 'message' => 'Failed to add report']);
-}
+echo json_encode(['success' => true, 'id' => $conn->insert_id]);
 ?>

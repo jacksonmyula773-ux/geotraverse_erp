@@ -1,29 +1,26 @@
 <?php
-// backend/api/get_departments.php
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+header('Access-Control-Allow-Credentials: true');
 
 require_once '../config/database.php';
+session_start();
 
-$database = new Database();
-$db = $database->getConnection();
-
-if (!$db) {
-    echo '{"success":false,"message":"Database connection failed"}';
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
     exit();
 }
 
-$query = "SELECT id, name, email FROM departments ORDER BY name";
-$result = $db->query($query);
+$stmt = $conn->prepare("SELECT id, name, email, phone, description FROM departments ORDER BY id");
+$stmt->execute();
+$result = $stmt->get_result();
 $departments = [];
 
-while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+while ($row = $result->fetch_assoc()) {
     $departments[] = $row;
 }
 
-echo json_encode([
-    'success' => true,
-    'data' => $departments
-]);
+echo json_encode(['success' => true, 'data' => $departments]);
 ?>

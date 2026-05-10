@@ -1,85 +1,48 @@
 <?php
-// backend/api/get_projects.php
-session_start();
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET');
-
-if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['success' => false, 'message' => 'Not logged in']);
-    exit();
-}
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+header('Access-Control-Allow-Credentials: true');
 
 require_once '../config/database.php';
+session_start();
 
-$database = new Database();
-$db = $database->getConnection();
-
-if (!$db) {
-    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
     exit();
 }
 
-$user_dept = $_SESSION['department_id'];
-$user_role = $_SESSION['role'];
+$current_dept = isset($_SESSION['department_id']) ? $_SESSION['department_id'] : 1;
 
-// Check if column exists first
-$checkColumn = $db->query("SHOW COLUMNS FROM projects LIKE 'is_viewed_by_admin'");
-$hasViewedColumn = $checkColumn->rowCount() > 0;
-
-if ($user_dept == 1 || $user_role == 'Super Administrator') {
-    if ($hasViewedColumn) {
-        $query = "SELECT p.*, d.name as department_name 
-                  FROM projects p 
-                  LEFT JOIN departments d ON p.department_id = d.id 
-                  ORDER BY p.id DESC";
-    } else {
-        $query = "SELECT p.*, d.name as department_name, 0 as is_viewed_by_admin
-                  FROM projects p 
-                  LEFT JOIN departments d ON p.department_id = d.id 
-                  ORDER BY p.id DESC";
-    }
-    $stmt = $db->prepare($query);
+if ($current_dept == 1) {
+    $stmt = $conn->prepare("SELECT p.*, d.name as department_name FROM projects p LEFT JOIN departments d ON p.department_id = d.id ORDER BY p.created_at DESC");
     $stmt->execute();
 } else {
-    if ($hasViewedColumn) {
-        $query = "SELECT p.*, d.name as department_name 
-                  FROM projects p 
-                  LEFT JOIN departments d ON p.department_id = d.id 
-                  WHERE p.department_id = ? 
-                  ORDER BY p.id DESC";
-    } else {
-        $query = "SELECT p.*, d.name as department_name, 0 as is_viewed_by_admin
-                  FROM projects p 
-                  LEFT JOIN departments d ON p.department_id = d.id 
-                  WHERE p.department_id = ? 
-                  ORDER BY p.id DESC";
-    }
-    $stmt = $db->prepare($query);
-    $stmt->execute([$user_dept]);
+    $stmt = $conn->prepare("SELECT p.*, d.name as department_name FROM projects p LEFT JOIN departments d ON p.department_id = d.id WHERE p.department_id = ? ORDER BY p.created_at DESC");
+    $stmt->bind_param("i", $current_dept);
+    $stmt->execute();
 }
 
+$result = $stmt->get_result();
 $projects = [];
-while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-    if (!isset($row['is_viewed_by_admin'])) {
-        $row['is_viewed_by_admin'] = 0;
-    }
+
+while ($row = $result->fetch_assoc()) {
     $projects[] = $row;
 }
 
-// Count unviewed projects (only if column exists)
-$unviewedCount = 0;
-if ($hasViewedColumn && ($user_dept == 1 || $user_role == 'Super Administrator')) {
-    $unviewedQuery = "SELECT COUNT(*) as count FROM projects WHERE is_viewed_by_admin = 0 AND department_id != 1";
-    $unviewedStmt = $db->prepare($unviewedQuery);
+// Count unviewed projects for admin
+$unviewed_count = 0;
+if ($current_dept == 1) {
+    $unviewedStmt = $conn->prepare("SELECT COUNT(*) as count FROM projects WHERE is_viewed_by_admin = 0 AND department_id != 1");
     $unviewedStmt->execute();
-    $unviewedCount = $unviewedStmt->fetch(PDO::FETCH_ASSOC)['count'];
+    $unviewedResult = $unviewedStmt->get_result();
+    $unviewed_count = $unviewedResult->fetch_assoc()['count'];
 }
 
 echo json_encode([
-    'success' => true,
-    'count' => count($projects),
-    'unviewed_count' => $unviewedCount,
-    'data' => $projects
+    'success' => true, 
+    'data' => $projects,
+    'unviewed_count' => $unviewed_count
 ]);
 ?>

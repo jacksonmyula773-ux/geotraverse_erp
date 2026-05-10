@@ -1,21 +1,29 @@
 <?php
-require_once 'db_connection.php';
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+header('Access-Control-Allow-Credentials: true');
+
+require_once '../config/database.php');
+session_start();
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
 
 $data = json_decode(file_get_contents('php://input'), true);
-$messageId = isset($data['message_id']) ? intval($data['message_id']) : null;
+$project_id = isset($data['project_id']) ? intval($data['project_id']) : 0;
 
-if (!$messageId) {
-    echo json_encode(['success' => false, 'message' => 'Message ID required']);
+if (!$project_id) {
+    echo json_encode(['success' => false, 'message' => 'Project ID required']);
     exit;
 }
 
-$query = "UPDATE messages SET is_read = 1, read_at = NOW() WHERE id = $messageId";
+$stmt = $conn->prepare("UPDATE projects SET is_viewed_by_admin = 1 WHERE id = ?");
+$stmt->bind_param("i", $project_id);
+$stmt->execute();
 
-if ($conn->query($query)) {
-    echo json_encode(['success' => true]);
-} else {
-    echo json_encode(['success' => false, 'message' => 'Failed to mark message as read: ' . $conn->error]);
-}
-
-$conn->close();
+echo json_encode(['success' => true]);
 ?>

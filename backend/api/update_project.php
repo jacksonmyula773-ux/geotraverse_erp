@@ -1,76 +1,62 @@
 <?php
-// backend/api/update_project.php
-session_start();
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST, PUT');
-
-if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['success' => false, 'message' => 'Not logged in']);
-    exit();
-}
+header('Access-Control-Allow-Methods: POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+header('Access-Control-Allow-Credentials: true');
 
 require_once '../config/database.php';
+session_start();
 
-$data = json_decode(file_get_contents('php://input'));
-
-if (!$data || empty($data->id)) {
-    echo json_encode(['success' => false, 'message' => 'Project ID required']);
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
     exit();
 }
 
-$database = new Database();
-$db = $database->getConnection();
+$data = json_decode(file_get_contents('php://input'), true);
 
-if (!$db) {
-    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
-    exit();
+$id = $data['id'] ?? 0;
+$name = $data['name'] ?? '';
+$client_name = $data['client_name'] ?? '';
+$amount = $data['amount'] ?? 0;
+$location = $data['location'] ?? '';
+$description = $data['description'] ?? '';
+$status = $data['status'] ?? 'pending';
+$progress = $data['progress'] ?? 0;
+$department_id = $data['department_id'] ?? 1;
+$image = $data['image'] ?? '';
+
+if (!$id || !$name) {
+    echo json_encode(['success' => false, 'message' => 'Project ID and name required']);
+    exit;
 }
 
-$id = (int)$data->id;
-$user_dept = $_SESSION['department_id'];
-$user_role = $_SESSION['role'];
-
-$checkQuery = "SELECT department_id FROM projects WHERE id = ?";
-$checkStmt = $db->prepare($checkQuery);
-$checkStmt->execute([$id]);
-$project = $checkStmt->fetch(PDO::FETCH_ASSOC);
-
-if (!$project) {
-    echo json_encode(['success' => false, 'message' => 'Project not found']);
-    exit();
+$upload_dir = dirname(__DIR__, 2) . '/frontend/assets/uploads/projects/';
+if (!is_dir($upload_dir)) {
+    mkdir($upload_dir, 0777, true);
 }
 
-if ($user_dept != 1 && $user_role != 'Super Administrator' && $project['department_id'] != $user_dept) {
-    echo json_encode(['success' => false, 'message' => 'Access denied']);
-    exit();
+$image_url = null;
+if ($image && $image != '') {
+    $filename = 'project_' . time() . '_' . rand(1000, 9999) . '.png';
+    $filepath = $upload_dir . $filename;
+    
+    $image_data = preg_replace('#^data:image/\w+;base64,#i', '', $image);
+    $image_data = base64_decode($image_data);
+    
+    if (file_put_contents($filepath, $image_data)) {
+        $image_url = 'assets/uploads/projects/' . $filename;
+    }
 }
 
-$updates = [];
-$params = [];
-
-if (isset($data->name)) { $updates[] = "name = ?"; $params[] = $data->name; }
-if (isset($data->client_name)) { $updates[] = "client_name = ?"; $params[] = $data->client_name; }
-if (isset($data->amount)) { $updates[] = "amount = ?"; $params[] = $data->amount; }
-if (isset($data->location)) { $updates[] = "location = ?"; $params[] = $data->location; }
-if (isset($data->description)) { $updates[] = "description = ?"; $params[] = $data->description; }
-if (isset($data->status)) { $updates[] = "status = ?"; $params[] = $data->status; }
-if (isset($data->progress)) { $updates[] = "progress = ?"; $params[] = $data->progress; }
-if (isset($data->start_date)) { $updates[] = "start_date = ?"; $params[] = $data->start_date; }
-if (isset($data->end_date)) { $updates[] = "end_date = ?"; $params[] = $data->end_date; }
-
-if (empty($updates)) {
-    echo json_encode(['success' => false, 'message' => 'No fields to update']);
-    exit();
-}
-
-$params[] = $id;
-$query = "UPDATE projects SET " . implode(", ", $updates) . " WHERE id = ?";
-$stmt = $db->prepare($query);
-
-if ($stmt->execute($params)) {
-    echo json_encode(['success' => true, 'message' => 'Project updated successfully']);
+if ($image_url) {
+    $stmt = $conn->prepare("UPDATE projects SET name = ?, client_name = ?, amount = ?, location = ?, description = ?, status = ?, progress = ?, department_id = ?, image = ? WHERE id = ?");
+    $stmt->bind_param("ssdsssiisi", $name, $client_name, $amount, $location, $description, $status, $progress, $department_id, $image_url, $id);
 } else {
-    echo json_encode(['success' => false, 'message' => 'Failed to update project']);
+    $stmt = $conn->prepare("UPDATE projects SET name = ?, client_name = ?, amount = ?, location = ?, description = ?, status = ?, progress = ?, department_id = ? WHERE id = ?");
+    $stmt->bind_param("ssdsssiii", $name, $client_name, $amount, $location, $description, $status, $progress, $department_id, $id);
 }
+$stmt->execute();
+
+echo json_encode(['success' => true]);
 ?>

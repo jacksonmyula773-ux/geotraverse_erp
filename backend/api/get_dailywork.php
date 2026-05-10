@@ -1,60 +1,35 @@
 <?php
-// backend/api/get_dailywork.php
-session_start();
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET');
-
-if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['success' => false, 'message' => 'Not logged in']);
-    exit();
-}
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+header('Access-Control-Allow-Credentials: true');
 
 require_once '../config/database.php';
+session_start();
 
-$database = new Database();
-$db = $database->getConnection();
-
-if (!$db) {
-    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
     exit();
 }
 
-$user_dept = $_SESSION['department_id'];
-$user_role = $_SESSION['role'];
+$current_dept = isset($_SESSION['department_id']) ? $_SESSION['department_id'] : 1;
 
-// Build query based on user role
-if ($user_dept == 1 || $user_role == 'Super Administrator') {
-    // Super admin sees all daily work
-    $query = "SELECT dw.*, d.name as department_name 
-              FROM daily_work dw 
-              LEFT JOIN departments d ON dw.department_id = d.id 
-              ORDER BY dw.date DESC, dw.id DESC";
-    $stmt = $db->prepare($query);
+if ($current_dept == 1) {
+    $stmt = $conn->prepare("SELECT d.*, dept.name as department_name FROM daily_work d LEFT JOIN departments dept ON d.department_id = dept.id ORDER BY d.date DESC");
     $stmt->execute();
 } else {
-    // Other departments see only their daily work
-    $query = "SELECT dw.*, d.name as department_name 
-              FROM daily_work dw 
-              LEFT JOIN departments d ON dw.department_id = d.id 
-              WHERE dw.department_id = ? 
-              ORDER BY dw.date DESC, dw.id DESC";
-    $stmt = $db->prepare($query);
-    $stmt->execute([$user_dept]);
+    $stmt = $conn->prepare("SELECT d.*, dept.name as department_name FROM daily_work d LEFT JOIN departments dept ON d.department_id = dept.id WHERE d.department_id = ? ORDER BY d.date DESC");
+    $stmt->bind_param("i", $current_dept);
+    $stmt->execute();
 }
 
+$result = $stmt->get_result();
 $dailywork = [];
-while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-    // Calculate profit if not stored
-    if (!isset($row['profit'])) {
-        $row['profit'] = $row['income'] - $row['expenses'];
-    }
+
+while ($row = $result->fetch_assoc()) {
     $dailywork[] = $row;
 }
 
-echo json_encode([
-    'success' => true,
-    'count' => count($dailywork),
-    'data' => $dailywork
-]);
+echo json_encode(['success' => true, 'data' => $dailywork]);
 ?>

@@ -1,55 +1,29 @@
 <?php
-// backend/api/delete_dailywork.php
-session_start();
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: DELETE, POST');
-
-if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['success' => false, 'message' => 'Not logged in']);
-    exit();
-}
+header('Access-Control-Allow-Methods: DELETE, POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+header('Access-Control-Allow-Credentials: true');
 
 require_once '../config/database.php';
+session_start();
 
-$data = json_decode(file_get_contents('php://input'));
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
 
-if (!$data || empty($data->id)) {
+$data = json_decode(file_get_contents('php://input'), true);
+$id = isset($data['id']) ? intval($data['id']) : 0;
+
+if (!$id) {
     echo json_encode(['success' => false, 'message' => 'Daily work ID required']);
-    exit();
+    exit;
 }
 
-$database = new Database();
-$db = $database->getConnection();
+$stmt = $conn->prepare("DELETE FROM daily_work WHERE id = ?");
+$stmt->bind_param("i", $id);
+$stmt->execute();
 
-if (!$db) {
-    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
-    exit();
-}
-
-$id = (int)$data->id;
-$user_dept = $_SESSION['department_id'];
-$user_role = $_SESSION['role'];
-
-// Check permission (only admin or same department can delete)
-if ($user_dept != 1 && $user_role != 'Super Administrator') {
-    // Check if belongs to same department
-    $checkQuery = "SELECT department_id FROM daily_work WHERE id = ?";
-    $checkStmt = $db->prepare($checkQuery);
-    $checkStmt->execute([$id]);
-    $dailywork = $checkStmt->fetch(PDO::FETCH_ASSOC);
-    
-    if (!$dailywork || $dailywork['department_id'] != $user_dept) {
-        echo json_encode(['success' => false, 'message' => 'Access denied']);
-        exit();
-    }
-}
-
-$stmt = $db->prepare("DELETE FROM daily_work WHERE id = ?");
-
-if ($stmt->execute([$id])) {
-    echo json_encode(['success' => true, 'message' => 'Daily work record deleted successfully']);
-} else {
-    echo json_encode(['success' => false, 'message' => 'Failed to delete daily work']);
-}
+echo json_encode(['success' => true]);
 ?>

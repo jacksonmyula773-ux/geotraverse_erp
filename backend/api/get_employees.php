@@ -1,68 +1,38 @@
 <?php
-// backend/api/get_employees.php
-session_start();
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET');
-
-if (!isset($_SESSION['user_id'])) {
-    echo '{"success":false,"message":"Not logged in"}';
-    exit();
-}
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+header('Access-Control-Allow-Credentials: true');
 
 require_once '../config/database.php';
+session_start();
 
-$database = new Database();
-$db = $database->getConnection();
-
-if (!$db) {
-    echo '{"success":false,"message":"Database connection failed"}';
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
     exit();
 }
 
-// Get filter parameters
-$role = isset($_GET['role']) ? $_GET['role'] : '';
-$department_id = isset($_GET['department_id']) ? (int)$_GET['department_id'] : 0;
+// For super admin, get all employees, otherwise get department employees
+$current_dept = isset($_SESSION['department_id']) ? $_SESSION['department_id'] : 1;
 
-$query = "SELECT u.id, u.name, u.email, u.phone, u.role, u.salary, u.join_date, 
-                 u.department_id, d.name as department_name,
-                 CASE 
-                    WHEN u.is_active = 1 THEN 'Active' 
-                    ELSE 'Inactive' 
-                 END as status
-          FROM users u 
-          LEFT JOIN departments d ON u.department_id = d.id 
-          WHERE 1=1";
-
-$params = [];
-
-if ($role != '') {
-    $query .= " AND u.role = ?";
-    $params[] = $role;
+if ($current_dept == 1) {
+    $stmt = $conn->prepare("SELECT u.*, d.name as department_name FROM users u LEFT JOIN departments d ON u.department_id = d.id ORDER BY u.id DESC");
+    $stmt->execute();
+} else {
+    $stmt = $conn->prepare("SELECT u.*, d.name as department_name FROM users u LEFT JOIN departments d ON u.department_id = d.id WHERE u.department_id = ? ORDER BY u.id DESC");
+    $stmt->bind_param("i", $current_dept);
+    $stmt->execute();
 }
 
-if ($department_id > 0) {
-    $query .= " AND u.department_id = ?";
-    $params[] = $department_id;
-}
-
-$query .= " ORDER BY u.id DESC";
-
-$stmt = $db->prepare($query);
-$stmt->execute($params);
-
+$result = $stmt->get_result();
 $employees = [];
-while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-    // Super admin can see everything
-    if ($_SESSION['department_id'] != 1 && $_SESSION['role'] != 'Super Administrator') {
-        unset($row['salary']);
-    }
+
+while ($row = $result->fetch_assoc()) {
+    // Remove password for security
+    unset($row['password']);
     $employees[] = $row;
 }
 
-echo json_encode([
-    'success' => true,
-    'count' => count($employees),
-    'data' => $employees
-]);
+echo json_encode(['success' => true, 'data' => $employees]);
 ?>
