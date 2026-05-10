@@ -75,7 +75,8 @@
         .search-results-dropdown.active { display: block; }
         .search-result-item { padding: 10px 16px; border-bottom: 1px solid #e5e7eb; cursor: pointer; transition: background 0.2s; font-size: 13px; }
         .search-result-item:hover { background-color: #f3f4f6; }
-        .search-highlight { background-color: #fef3c7; border-left: 3px solid #f59e0b; }
+        .search-highlight { background-color: #fef3c7 !important; border-left: 3px solid #f59e0b !important; animation: highlightPulse 0.3s ease; }
+        @keyframes highlightPulse { 0% { background-color: #fef3c7; } 100% { background-color: #fef3c7; } }
         
         .notification-badge { background: #ef4444; color: white; border-radius: 9999px; padding: 2px 8px; font-size: 10px; margin-left: 8px; display: inline-block; }
         
@@ -150,6 +151,18 @@
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e5e7eb; }
         th { background: #f9fafb; font-weight: 600; }
         body.dark-mode th { background: #1e293b; }
+        
+        .project-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        @media (max-width: 1024px) { .project-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 640px) { .project-grid { grid-template-columns: 1fr; } }
+        
+        .settings-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; }
+        .setting-card { background: white; border-radius: 16px; border: 1px solid #e5e7eb; overflow: hidden; }
+        .setting-header { background: #f8fafc; padding: 15px 20px; border-bottom: 1px solid #e5e7eb; font-weight: 600; }
+        .setting-body { padding: 20px; }
+        .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #e5e7eb; }
+        .setting-row:last-child { border-bottom: none; }
+        body.dark-mode .setting-header { background: #1e293b; }
     </style>
 </head>
 <body>
@@ -211,15 +224,15 @@
 </div>
 
 <!-- MODALS -->
-<div id="empModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Add Employee</h3><input type="hidden" id="empId"><input type="text" id="empName" placeholder="Full Name"><input type="email" id="empEmail" placeholder="Email"><input type="text" id="empPhone" placeholder="Phone"><select id="empDept"></select><select id="empRole"><option>Super Administrator</option><option>Administrator</option><option>Manager</option><option>Finance Manager</option><option>Staff</option></select><input type="text" id="empSalary" placeholder="Salary"><div class="password-wrapper"><input type="password" id="empPassword" placeholder="Password" value="1234"><i class="fas fa-eye toggle-password" onclick="togglePassword('empPassword')"></i></div><div class="flex gap-3 pt-4"><button onclick="saveEmployee()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('empModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
+<div id="empModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Add Employee</h3><input type="hidden" id="empId"><input type="text" id="empName" placeholder="Full Name"><input type="email" id="empEmail" placeholder="Email"><input type="text" id="empPhone" placeholder="Phone"><select id="empDept"></select><select id="empRole"><option>Super Administrator</option><option>Administrator</option><option>Manager</option><option>Finance Manager</option><option>Staff</option></select><input type="text" id="empSalary" placeholder="Salary" class="amount-input"><div class="password-wrapper"><input type="password" id="empPassword" placeholder="Password" value="1234"><i class="fas fa-eye toggle-password" onclick="togglePassword('empPassword')"></i></div><div class="flex gap-3 pt-4"><button onclick="saveEmployee()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('empModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
 
 <div id="viewEmpModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Employee Details</h3><div id="viewEmpContent"></div><button onclick="closeModal('viewEmpModal')" class="w-full bg-gray-200 py-2 rounded">Close</button></div></div>
 
-<div id="projModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Add Project</h3><input type="hidden" id="projId"><input type="text" id="projName" placeholder="Project Name"><input type="text" id="projClient" placeholder="Client"><input type="text" id="projAmount" placeholder="Amount"><input type="text" id="projLocation" placeholder="Location"><textarea id="projDesc" rows="2" placeholder="Description"></textarea><select id="projStatus"><option value="pending">Pending</option><option value="in_progress">In Progress</option><option value="completed">Completed</option></select><input type="number" id="projProgress" placeholder="Progress 0-100"><select id="projDept"></select><div id="projImageUploadArea" class="image-upload-area text-sm" onclick="document.getElementById('projImageFile').click()"><i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i><p>Click to upload project image</p></div><input type="file" id="projImageFile" accept="image/*" class="hidden"><div id="projImagePreviewContainer" class="hidden mt-2"><img id="projImagePreview" class="w-full h-32 object-cover rounded"><button type="button" onclick="removeProjectImage()" class="mt-2 text-red-500 text-sm w-full py-1 bg-red-50 rounded">Remove Image</button></div><div class="flex gap-3 pt-4"><button onclick="saveProject()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('projModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
+<div id="projModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Add Project</h3><input type="hidden" id="projId"><input type="text" id="projName" placeholder="Project Name"><input type="text" id="projClient" placeholder="Client"><input type="text" id="projAmount" placeholder="Amount (TZS)" class="amount-input"><input type="text" id="projLocation" placeholder="Location"><textarea id="projDesc" rows="2" placeholder="Description"></textarea><select id="projStatus"><option value="pending">Pending</option><option value="in_progress">In Progress</option><option value="completed">Completed</option></select><input type="number" id="projProgress" placeholder="Progress 0-100"><select id="projDept"></select><div id="projImageUploadArea" class="image-upload-area text-sm" onclick="document.getElementById('projImageFile').click()"><i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i><p>Click to upload project image</p></div><input type="file" id="projImageFile" accept="image/*" class="hidden"><div id="projImagePreviewContainer" class="hidden mt-2"><img id="projImagePreview" class="w-full h-32 object-cover rounded"><button type="button" onclick="removeProjectImage()" class="mt-2 text-red-500 text-sm w-full py-1 bg-red-50 rounded">Remove Image</button></div><div class="flex gap-3 pt-4"><button onclick="saveProject()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('projModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
 
 <div id="viewProjModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Project Details</h3><div id="viewProjContent"></div><div id="viewProjButtons" class="detail-buttons"></div><button onclick="closeModal('viewProjModal')" class="w-full bg-gray-200 py-2 rounded mt-3">Close</button></div></div>
 
-<div id="dailyworkModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Add Daily Work</h3><input type="hidden" id="dailyworkId"><input type="date" id="dailyworkDate"><input type="text" id="dailyworkProject" placeholder="Project"><textarea id="dailyworkDesc" rows="2" placeholder="Description"></textarea><input type="text" id="dailyworkIncome" placeholder="Income"><input type="text" id="dailyworkExpenses" placeholder="Expenses"><input type="text" id="dailyworkPaid" placeholder="Paid"><select id="dailyworkStatus"><option value="pending">Pending</option><option value="paid">Paid</option><option value="partial">Partial</option></select><select id="dailyworkDept"></select><div class="flex gap-3 pt-4"><button onclick="saveDailyWork()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('dailyworkModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
+<div id="dailyworkModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Add Daily Work</h3><input type="hidden" id="dailyworkId"><input type="date" id="dailyworkDate"><input type="text" id="dailyworkProject" placeholder="Project"><textarea id="dailyworkDesc" rows="2" placeholder="Description"></textarea><input type="text" id="dailyworkIncome" placeholder="Income" class="amount-input"><input type="text" id="dailyworkExpenses" placeholder="Expenses" class="amount-input"><input type="text" id="dailyworkPaid" placeholder="Paid" class="amount-input"><select id="dailyworkStatus"><option value="pending">Pending</option><option value="paid">Paid</option><option value="partial">Partial</option></select><select id="dailyworkDept"></select><div class="flex gap-3 pt-4"><button onclick="saveDailyWork()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('dailyworkModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
 
 <div id="viewDailyworkModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Daily Work Details</h3><div id="viewDailyworkContent"></div><button onclick="closeModal('viewDailyworkModal')" class="w-full bg-gray-200 py-2 rounded">Close</button></div></div>
 
@@ -248,6 +261,8 @@
     let employeesData = [], projectsData = [], dailyworkData = [], transactionsData = [], reportsData = [], messagesData = [], departmentsList = [];
     let unviewedProjectsCount = 0, unviewedReportsCount = 0;
     let currentProjectImageFile = null;
+    let currentHighlightId = null;
+    let currentHighlightPage = null;
     
     const departmentNames = {
         1: "Super Admin", 2: "Finance", 3: "Sales & Marketing", 4: "Manager",
@@ -358,10 +373,12 @@
         }
     }
     
+    document.getElementById('projAmount')?.addEventListener('input', function(e) { formatAmountInput(this); });
     document.getElementById('transAmount')?.addEventListener('input', function(e) { formatAmountInput(this); });
     document.getElementById('dailyworkIncome')?.addEventListener('input', function(e) { formatAmountInput(this); });
     document.getElementById('dailyworkExpenses')?.addEventListener('input', function(e) { formatAmountInput(this); });
     document.getElementById('dailyworkPaid')?.addEventListener('input', function(e) { formatAmountInput(this); });
+    document.getElementById('empSalary')?.addEventListener('input', function(e) { formatAmountInput(this); });
     
     async function apiCall(endpoint, method = 'GET', data = null) {
         try { 
@@ -410,6 +427,9 @@
     }
     
     function showPage(pageId, highlightId = null) {
+        currentHighlightId = highlightId;
+        currentHighlightPage = pageId;
+        
         document.querySelectorAll('.section').forEach(s => s.classList.add('hidden'));
         document.getElementById(`${pageId}Page`).classList.remove('hidden');
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -443,14 +463,14 @@
         
         updateProjectBadge();
         
-        let totalInc = 0, totalExp = 0;
+        let totalIncome = 0, totalExpense = 0;
         transactionsData.forEach(t => { 
-            if (t.status === 'paid' || t.status === 'partial') {
-                if (t.type === 'income') totalInc += parseFloat(t.amount);
-                else totalExp += parseFloat(t.amount);
+            if (t.status === 'paid') {
+                if (t.type === 'income') totalIncome += parseFloat(t.amount);
+                else totalExpense += parseFloat(t.amount);
             }
         });
-        let netProfit = totalInc - totalExp;
+        let netProfit = totalIncome - totalExpense;
         let pending = projectsData.filter(p => p.status === 'pending').length;
         let inProgress = projectsData.filter(p => p.status === 'in_progress').length;
         let completed = projectsData.filter(p => p.status === 'completed').length;
@@ -472,17 +492,21 @@
         if (ctx) { if (statusChart) statusChart.destroy(); statusChart = new Chart(ctx, { type: 'doughnut', data: { labels: ['Pending', 'In Progress', 'Completed'], datasets: [{ data: [pending, inProgress, completed], backgroundColor: ['#f59e0b', '#3b82f6', '#10b981'] }] }, options: { responsive: true } }); }
     }
     
-    // ==================== EMPLOYEES ====================
+    // ==================== EMPLOYEES (Sorted Newest First) ====================
     async function loadEmployees(highlightId = null) {
         const res = await apiCall('get_employees.php');
-        employeesData = res.success ? res.data : [];
+        if (res.success && res.data) employeesData = res.data.sort((a,b) => b.id - a.id);
+        else employeesData = [];
+        
         if (employeesData.length === 0) {
             document.getElementById('employeesPage').innerHTML = '<div class="text-center py-12 text-gray-400">No employees found</div>';
             return;
         }
-        let html = `<div class="flex justify-between mb-4"><h2 class="text-xl font-bold"><i class="fas fa-users text-blue-600 mr-2"></i>Employees (${employeesData.length})</h2><div class="flex gap-2"><button onclick="openModal('empModal')" class="btn-primary">+ Add</button><button onclick="exportEmployeesToExcel()" class="btn-success"><i class="fas fa-file-excel mr-1"></i> Excel</button><button onclick="exportEmployeesToPDF()" class="btn-danger"><i class="fas fa-file-pdf mr-1"></i> PDF</button></div></div>
+        let html = `<div class="flex justify-between mb-4"><h2 class="text-xl font-bold"><i class="fas fa-users text-blue-600 mr-2"></i>Employees (${employeesData.length})</h2><div class="flex gap-2"><button onclick="openModal('empModal')" class="btn-primary">+ Add</button><button onclick="exportEmployeesToExcel()" class="btn-success">Excel</button><button onclick="exportEmployeesToPDF()" class="btn-danger">PDF</button></div></div>
         <div class="bg-white rounded-xl overflow-x-auto"><table><thead class="bg-gray-50"><tr><th>ID</th><th>Name</th><th>Email</th><th>Dept</th><th>Role</th><th>Salary</th><th>Actions</th></tr></thead><tbody>`;
-        employeesData.forEach(e => { html += `<tr class="border-b" id="emp-row-${e.id}"><td class="p-2">${e.id}<\/td><td class="p-2 font-medium">${escapeHtml(e.name)}<\/td><td class="p-2">${escapeHtml(e.email)}<\/td><td class="p-2">${departmentNames[e.department_id] || e.department_id}<\/td><td class="p-2"><span class="role-badge ${getRoleBadgeClass(e.role)}">${e.role || 'Staff'}</span><\/td><td class="p-2 text-green-600">${formatMoney(e.salary)}<\/td>
+        employeesData.forEach(e => { 
+            const isHighlighted = highlightId && e.id === highlightId;
+            html += `<tr class="border-b ${isHighlighted ? 'search-highlight' : ''}" id="emp-row-${e.id}"><td class="p-2">${e.id}<\/td><td class="p-2 font-medium">${escapeHtml(e.name)}<\/td><td class="p-2">${escapeHtml(e.email)}<\/td><td class="p-2">${departmentNames[e.department_id] || e.department_id}<\/td><td class="p-2"><span class="role-badge ${getRoleBadgeClass(e.role)}">${e.role || 'Staff'}</span><\/td><td class="p-2 text-green-600">${formatMoney(e.salary)}<\/td>
         <td class="p-2"><button onclick="viewEmployee(${e.id})" class="action-btn view"><i class="fas fa-eye"></i><\/button><button onclick="editEmployee(${e.id})" class="action-btn edit"><i class="fas fa-edit"></i><\/button><button onclick="deleteEmployee(${e.id})" class="action-btn delete"><i class="fas fa-trash"></i><\/button><\/td><\/tr>`; });
         document.getElementById('employeesPage').innerHTML = html + '</tbody>}</div>';
         if (highlightId) document.getElementById(`emp-row-${highlightId}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -491,22 +515,20 @@
     function exportEmployeesToExcel() {
         let ws = [['ID', 'Name', 'Email', 'Phone', 'Department', 'Role', 'Salary']];
         employeesData.forEach(e => ws.push([e.id, e.name, e.email, e.phone || '-', departmentNames[e.department_id], e.role || 'Staff', e.salary]));
-        let wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), 'Employees');
-        XLSX.writeFile(wb, `employees_${new Date().toISOString().slice(0,10)}.xlsx`);
+        let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), 'Employees'); XLSX.writeFile(wb, `employees_${new Date().toISOString().slice(0,10)}.xlsx`);
         showToast('Exported to Excel');
     }
     
     function exportEmployeesToPDF() {
         let element = document.createElement('div');
-        element.innerHTML = `<div style="padding:20px"><h1>Employees Report</h1><p>${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><tr><th>Name</th><th>Email</th><th>Department</th><th>Role</th><th>Salary</th></tr>${employeesData.map(e => `<tr><td>${e.name}</td><td>${e.email}</td><td>${departmentNames[e.department_id]}</td><td>${e.role || 'Staff'}</td><td>${formatMoney(e.salary)}</td></tr>`).join('')}</table></div>`;
+        element.innerHTML = `<div style="padding:20px"><h1>Employees Report</h1><p>${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8">${employeesData.map(e => `<tr><td class="px-2 py-1">${e.name}<\/td><td class="px-2 py-1">${e.email}<\/td><td class="px-2 py-1">${departmentNames[e.department_id]}<\/td><td class="px-2 py-1">${e.role || 'Staff'}<\/td><td class="px-2 py-1">${formatMoney(e.salary)}<\/td><\/tr>`).join('')}<\/table><\/div>`;
         html2pdf().set({ margin: 0.5, filename: `employees_report.pdf` }).from(element).save();
         showToast('Exported to PDF');
     }
     
     function viewEmployee(id) { const e = employeesData.find(e => e.id === id); if(e) { document.getElementById('viewEmpContent').innerHTML = `<p><strong>Name:</strong> ${e.name}<br><strong>Email:</strong> ${e.email}<br><strong>Phone:</strong> ${e.phone || '-'}<br><strong>Department:</strong> ${departmentNames[e.department_id]}<br><strong>Role:</strong> ${e.role}<br><strong>Salary:</strong> ${formatMoney(e.salary)}</p>`; openModal('viewEmpModal'); } }
     function editEmployee(id) { const e = employeesData.find(e => e.id === id); if(e) { document.getElementById('empId').value = e.id; document.getElementById('empName').value = e.name; document.getElementById('empEmail').value = e.email; document.getElementById('empPhone').value = e.phone || ''; document.getElementById('empDept').value = e.department_id; document.getElementById('empRole').value = e.role; document.getElementById('empSalary').value = e.salary; document.getElementById('empPassword').value = ''; openModal('empModal'); } }
-    async function saveEmployee() { let id = document.getElementById('empId').value; let data = { name: document.getElementById('empName').value, email: document.getElementById('empEmail').value, phone: document.getElementById('empPhone').value, department_id: parseInt(document.getElementById('empDept').value||1), role: document.getElementById('empRole').value, salary: parseFloat(document.getElementById('empSalary').value)||0, password: document.getElementById('empPassword').value }; if(!data.name||!data.email) { showToast('Name and email required',true); return; } let res = id ? await apiCall('update_employee.php','POST',{...data,id:parseInt(id)}) : await apiCall('add_employee.php','POST',data); if(res.success) { showToast(id ? 'Updated' : 'Added'); closeModal('empModal'); loadEmployees(); loadDashboard(); } else showToast(res.message || 'Failed', true); }
+    async function saveEmployee() { let id = document.getElementById('empId').value; let data = { name: document.getElementById('empName').value, email: document.getElementById('empEmail').value, phone: document.getElementById('empPhone').value, department_id: parseInt(document.getElementById('empDept').value||1), role: document.getElementById('empRole').value, salary: parseAmount(document.getElementById('empSalary').value), password: document.getElementById('empPassword').value }; if(!data.name||!data.email) { showToast('Name and email required',true); return; } let res = id ? await apiCall('update_employee.php','POST',{...data,id:parseInt(id)}) : await apiCall('add_employee.php','POST',data); if(res.success) { showToast(id ? 'Updated' : 'Added'); closeModal('empModal'); loadEmployees(); loadDashboard(); } else showToast(res.message || 'Failed', true); }
     async function deleteEmployee(id) { if(confirm('Delete?')) { let res = await apiCall('delete_employee.php','DELETE',{id}); if(res.success) { showToast('Deleted'); loadEmployees(); loadDashboard(); } else showToast(res.message || 'Failed', true); } }
     
     // ==================== DEPARTMENTS ====================
@@ -523,7 +545,8 @@
     // ==================== PROJECTS ====================
     async function loadProjects(highlightId = null) {
         const res = await apiCall('get_projects.php');
-        projectsData = res.success ? res.data : [];
+        if (res.success && res.data) projectsData = res.data.sort((a,b) => b.id - a.id);
+        else projectsData = [];
         unviewedProjectsCount = res.unviewed_count || 0;
         updateProjectBadge();
         
@@ -633,18 +656,21 @@
     document.getElementById('projImageFile')?.addEventListener('change', function(e) { if(e.target.files && e.target.files[0]) { currentProjectImageFile = e.target.files[0]; let reader = new FileReader(); reader.onload = ev => { document.getElementById('projImagePreview').src = ev.target.result; document.getElementById('projImagePreviewContainer').classList.remove('hidden'); document.getElementById('projImageUploadArea').classList.add('hidden'); }; reader.readAsDataURL(e.target.files[0]); } });
     function removeProjectImage() { currentProjectImageFile = null; document.getElementById('projImageFile').value = ''; document.getElementById('projImagePreviewContainer').classList.add('hidden'); document.getElementById('projImageUploadArea').classList.remove('hidden'); }
     function getImageAsBase64(file) { return new Promise((resolve) => { if(!file) resolve(''); let reader = new FileReader(); reader.onload = () => resolve(reader.result); reader.readAsDataURL(file); }); }
-    async function saveProject() { let id = document.getElementById('projId').value; let name = document.getElementById('projName').value.trim(); if(!name) { showToast('Project name required',true); return; } let img = await getImageAsBase64(currentProjectImageFile); let data = { name: name, client_name: document.getElementById('projClient').value, amount: parseFloat(document.getElementById('projAmount').value)||0, location: document.getElementById('projLocation').value, description: document.getElementById('projDesc').value, status: document.getElementById('projStatus').value, progress: parseInt(document.getElementById('projProgress').value)||0, department_id: parseInt(document.getElementById('projDept').value)||1, image: img }; let res = id ? await apiCall('update_project.php','POST',{...data,id:parseInt(id)}) : await apiCall('add_project.php','POST',data); if(res.success) { showToast(id ? 'Updated' : 'Added'); closeModal('projModal'); loadProjects(); loadDashboard(); } else showToast(res.message || 'Failed', true); }
+    async function saveProject() { let id = document.getElementById('projId').value; let name = document.getElementById('projName').value.trim(); if(!name) { showToast('Project name required',true); return; } let img = await getImageAsBase64(currentProjectImageFile); let data = { name: name, client_name: document.getElementById('projClient').value, amount: parseAmount(document.getElementById('projAmount').value), location: document.getElementById('projLocation').value, description: document.getElementById('projDesc').value, status: document.getElementById('projStatus').value, progress: parseInt(document.getElementById('projProgress').value)||0, department_id: parseInt(document.getElementById('projDept').value)||1, image: img }; let res = id ? await apiCall('update_project.php','POST',{...data,id:parseInt(id)}) : await apiCall('add_project.php','POST',data); if(res.success) { showToast(id ? 'Updated' : 'Added'); closeModal('projModal'); loadProjects(); loadDashboard(); } else showToast(res.message || 'Failed', true); }
     async function deleteProject(id) { if(confirm('Delete?')) { projectsData = projectsData.filter(p => p.id !== id); showToast('Deleted'); loadProjects(); loadDashboard(); } }
     
     // ==================== DAILY WORK ====================
     async function loadDailyWork(highlightId = null) {
         const res = await apiCall('get_dailywork.php');
-        dailyworkData = res.success ? res.data : [];
+        if (res.success && res.data) dailyworkData = res.data.sort((a,b) => b.id - a.id);
+        else dailyworkData = [];
         if (dailyworkData.length === 0) { document.getElementById('dailyworkPage').innerHTML = '<div class="text-center py-12 text-gray-400">No daily work records</div>'; return; }
         let html = `<div class="flex justify-between mb-4"><h2 class="text-xl font-bold"><i class="fas fa-calendar-day text-purple-600 mr-2"></i>Daily Work (${dailyworkData.length})</h2><div class="flex gap-2"><button onclick="openModal('dailyworkModal')" class="btn-primary">+ Add</button><button onclick="exportDailyWorkToExcel()" class="btn-success">Excel</button><button onclick="exportDailyWorkToPDF()" class="btn-danger">PDF</button></div></div>
-        <div class="bg-white rounded-xl overflow-x-auto"><table><thead class="bg-gray-50"><tr><th>Date</th><th>Dept</th><th>Project</th><th>Income</th><th>Expenses</th><th>Profit</th><th>Status</th><th>Actions</th></tr></thead><tbody>`;
-        dailyworkData.forEach(w => { let profit = (w.income||0) - (w.expenses||0);
-            html += `<tr class="border-b" id="daily-row-${w.id}"><td class="p-2">${w.date}<\/td><td class="p-2">${departmentNames[w.department_id]||w.department_id}<\/td><td class="p-2">${escapeHtml(w.project_name)}<\/td><td class="p-2 text-green-600">${formatMoney(w.income)}<\/td><td class="p-2 text-red-600">${formatMoney(w.expenses)}<\/td><td class="p-2 ${profit>=0?'text-green-600':'text-red-600'}">${formatMoney(profit)}<\/td>
+        <div class="bg-white rounded-xl overflow-x-auto"></table><thead class="bg-gray-50"><tr><th>Date</th><th>Dept</th><th>Project</th><th>Income</th><th>Expenses</th><th>Profit</th><th>Status</th><th>Actions</th></tr></thead><tbody>`;
+        dailyworkData.forEach(w => { 
+            const isHighlighted = highlightId && w.id === highlightId;
+            let profit = (w.income||0) - (w.expenses||0);
+            html += `<tr class="border-b ${isHighlighted ? 'search-highlight' : ''}" id="daily-row-${w.id}"><td class="p-2">${w.date}<\/td><td class="p-2">${departmentNames[w.department_id]||w.department_id}<\/td><td class="p-2">${escapeHtml(w.project_name)}<\/td><td class="p-2 text-green-600">${formatMoney(w.income)}<\/td><td class="p-2 text-red-600">${formatMoney(w.expenses)}<\/td><td class="p-2 ${profit>=0?'text-green-600':'text-red-600'}">${formatMoney(profit)}<\/td>
             <td class="p-2"><span class="status-badge ${w.status==='paid'?'status-paid':'status-partial'}">${w.status}</span><\/td>
             <td class="p-2"><button onclick="viewDailyWork(${w.id})" class="action-btn view"><i class="fas fa-eye"></i><\/button><button onclick="editDailyWork(${w.id})" class="action-btn edit"><i class="fas fa-edit"></i><\/button><button onclick="deleteDailyWork(${w.id})" class="action-btn delete"><i class="fas fa-trash"></i><\/button><\/td><\/tr>`;
         });
@@ -671,20 +697,40 @@
     async function saveDailyWork() { let id = document.getElementById('dailyworkId').value; let data = { date: document.getElementById('dailyworkDate').value || new Date().toISOString().split('T')[0], project_name: document.getElementById('dailyworkProject').value, work_description: document.getElementById('dailyworkDesc').value, income: parseAmount(document.getElementById('dailyworkIncome').value), expenses: parseAmount(document.getElementById('dailyworkExpenses').value), paid_amount: parseAmount(document.getElementById('dailyworkPaid').value), status: document.getElementById('dailyworkStatus').value, department_id: parseInt(document.getElementById('dailyworkDept').value)||1 }; if(!data.project_name) { showToast('Project name required',true); return; } let res = id ? await apiCall('update_dailywork.php','POST',{...data,id:parseInt(id)}) : await apiCall('add_dailywork.php','POST',data); if(res.success) { showToast(id ? 'Updated' : 'Added'); closeModal('dailyworkModal'); loadDailyWork(); loadDashboard(); } else showToast(res.message || 'Failed', true); }
     async function deleteDailyWork(id) { if(confirm('Delete?')) { dailyworkData = dailyworkData.filter(d => d.id !== id); showToast('Deleted'); loadDailyWork(); loadDashboard(); } }
     
-    // ==================== CASHFLOW ====================
+    // ==================== CASHFLOW (With API Call) ====================
     async function loadCashflow(highlightId = null) {
         const res = await apiCall('get_transactions.php');
-        transactionsData = res.success ? res.data : [];
+        if (res.success && res.data) transactionsData = res.data.sort((a,b) => b.id - a.id);
+        else transactionsData = [];
         if (transactionsData.length === 0) { document.getElementById('cashflowPage').innerHTML = '<div class="text-center py-12 text-gray-400">No transactions found</div>'; return; }
-        let totalInc = 0, totalExp = 0;
-        transactionsData.forEach(t => { if(t.status==='paid'||t.status==='partial'){ if(t.type==='income')totalInc+=t.amount; else totalExp+=t.amount; } });
-        let html = `<div class="flex justify-between mb-4"><h2 class="text-xl font-bold"><i class="fas fa-exchange-alt text-blue-600 mr-2"></i>Cashflow</h2><div class="flex gap-2"><button onclick="openModal('transModal')" class="btn-primary">+ Add</button><button onclick="exportCashflowToExcel()" class="btn-success">Excel</button><button onclick="exportCashflowToPDF()" class="btn-danger">PDF</button></div></div>
-        <div class="grid grid-cols-3 gap-3 mb-4"><div class="bg-green-100 p-3 text-center"><p class="text-[10px]">Total Income</p><p class="text-xl font-bold text-green-600">${formatMoney(totalInc)}</p></div>
-        <div class="bg-red-100 p-3 text-center"><p class="text-[10px]">Total Expenses</p><p class="text-xl font-bold text-red-600">${formatMoney(totalExp)}</p></div>
-        <div class="bg-blue-100 p-3 text-center"><p class="text-[10px]">Net Profit</p><p class="text-xl font-bold text-blue-600">${formatMoney(totalInc-totalExp)}</p></div></div>
+        
+        let totalIncome = 0, totalExpense = 0;
+        transactionsData.forEach(t => { 
+            if (t.status === 'paid') {
+                if (t.type === 'income') totalIncome += parseFloat(t.amount);
+                else totalExpense += parseFloat(t.amount);
+            }
+        });
+        let netProfit = totalIncome - totalExpense;
+        
+        let html = `<div class="flex justify-between mb-4"><h2 class="text-xl font-bold"><i class="fas fa-exchange-alt text-blue-600 mr-2"></i>Cashflow (${transactionsData.length})</h2><div class="flex gap-2"><button onclick="openModal('transModal')" class="btn-primary">+ Add</button><button onclick="exportCashflowToExcel()" class="btn-success">Excel</button><button onclick="exportCashflowToPDF()" class="btn-danger">PDF</button></div></div>
+        <div class="grid grid-cols-3 gap-3 mb-4">
+            <div class="bg-green-100 p-3 text-center"><p class="text-[10px]">Total Income</p><p class="text-xl font-bold text-green-600">${formatMoney(totalIncome)}</p></div>
+            <div class="bg-red-100 p-3 text-center"><p class="text-[10px]">Total Expenses</p><p class="text-xl font-bold text-red-600">${formatMoney(totalExpense)}</p></div>
+            <div class="bg-blue-100 p-3 text-center"><p class="text-[10px]">Net Profit</p><p class="text-xl font-bold text-blue-600">${formatMoney(netProfit)}</p></div>
+        </div>
         <div class="bg-white rounded-xl overflow-x-auto"><table><thead class="bg-gray-50"><tr><th>Date</th><th>Type</th><th>Source</th><th>Amount</th><th>Status</th><th>Actions</th></tr></thead><tbody>`;
-        transactionsData.forEach(t => { html += `<tr class="${t.type==='income'?'income-row':'expense-row'}" id="trans-row-${t.id}"><td class="p-2">${t.transaction_date}<\/td><td class="p-2"><span class="status-badge ${t.type==='income'?'status-paid':'status-partial'}">${t.type}</span><\/td><td class="p-2">${escapeHtml(t.source)}<\/td><td class="p-2 ${t.type==='income'?'text-green-600':'text-red-600'} font-bold">${formatMoney(t.amount)}<\/td><td class="p-2"><span class="status-badge ${t.status==='paid'?'status-paid':'status-partial'}">${t.status}</span><\/td>
-        <td class="p-2"><button onclick="viewTransaction(${t.id})" class="action-btn view"><i class="fas fa-eye"></i><\/button><button onclick="editTransaction(${t.id})" class="action-btn edit"><i class="fas fa-edit"></i><\/button><button onclick="deleteTransaction(${t.id})" class="action-btn delete"><i class="fas fa-trash"></i><\/button><\/td><\/tr>`; });
+        transactionsData.forEach(t => { 
+            const isHighlighted = highlightId && t.id === highlightId;
+            html += `<tr class="${t.type==='income'?'income-row':'expense-row'} ${isHighlighted ? 'search-highlight' : ''}" id="trans-row-${t.id}">
+                <td class="p-2">${t.transaction_date}<\/td>
+                <td class="p-2"><span class="status-badge ${t.type==='income'?'status-paid':'status-partial'}">${t.type}</span><\/td>
+                <td class="p-2">${escapeHtml(t.source)}<\/td>
+                <td class="p-2 ${t.type==='income'?'text-green-600':'text-red-600'} font-bold">${formatMoney(t.amount)}<\/td>
+                <td class="p-2"><span class="status-badge ${t.status==='paid'?'status-paid':'status-partial'}">${t.status}</span><\/td>
+                <td class="p-2"><button onclick="viewTransaction(${t.id})" class="action-btn view"><i class="fas fa-eye"></i><\/button><button onclick="editTransaction(${t.id})" class="action-btn edit"><i class="fas fa-edit"></i><\/button><button onclick="deleteTransaction(${t.id})" class="action-btn delete"><i class="fas fa-trash"></i><\/button><\/td>
+            <\/tr>`;
+        });
         document.getElementById('cashflowPage').innerHTML = html + '</tbody>}</div>';
         if (highlightId) document.getElementById(`trans-row-${highlightId}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
@@ -711,7 +757,8 @@
     // ==================== REPORTS ====================
     async function loadReports(highlightId = null) {
         const res = await apiCall('get_reports.php');
-        reportsData = res.success ? res.data : [];
+        if (res.success && res.data) reportsData = res.data.sort((a,b) => b.id - a.id);
+        else reportsData = [];
         unviewedReportsCount = res.unviewed_count || 0;
         updateReportBadge();
         
@@ -798,51 +845,107 @@
     async function saveReport() { let id = document.getElementById('reportId').value; let data = { title: document.getElementById('reportTitle').value, period: document.getElementById('reportPeriod').value, content: document.getElementById('reportContent').value }; if(!data.title||!data.content) { showToast('Title and content required',true); return; } if(id) { let idx = reportsData.findIndex(r=>r.id==id); if(idx!==-1) reportsData[idx]={...reportsData[idx],...data}; showToast('Updated'); } else { data.id=Date.now(); data.created_at=new Date().toISOString(); data.status='draft'; data.is_viewed_by_admin=1; data.department_id=1; reportsData.unshift(data); showToast('Added'); } closeModal('reportModal'); loadReports(); loadDashboard(); }
     async function deleteReport(id) { if(confirm('Delete?')) { reportsData = reportsData.filter(r=>r.id!==id); showToast('Deleted'); loadReports(); loadDashboard(); } }
     
-    // ==================== MESSAGES ====================
+    // ==================== MESSAGES (With API Call) ====================
     async function loadMessages(highlightId = null) {
         const res = await apiCall('get_messages.php');
-        messagesData = res.success && res.data ? res.data : [];
+        if (res.success && res.data) messagesData = res.data;
+        else messagesData = [];
         updateMessageBadge();
         
         const convMap = new Map();
-        messagesData.forEach(m => { const otherDept = m.from_dept === 1 ? m.to_dept : m.from_dept; if(otherDept && otherDept !== 1) { if(!convMap.has(otherDept)) convMap.set(otherDept, { other_dept_id: otherDept, other_dept_name: departmentNames[otherDept] || 'Department', last_message: m.message, last_message_time: m.created_at, unread_count: m.to_dept===1 && !m.is_read ? 1 : 0 }); else if(m.to_dept===1 && !m.is_read) convMap.get(otherDept).unread_count++; } });
+        messagesData.forEach(m => { 
+            const otherDept = m.from_dept === 1 ? m.to_dept : m.from_dept; 
+            if(otherDept && otherDept !== 1) { 
+                if(!convMap.has(otherDept)) convMap.set(otherDept, { 
+                    other_dept_id: otherDept, 
+                    other_dept_name: departmentNames[otherDept] || 'Department', 
+                    last_message: m.message, 
+                    last_message_time: m.created_at, 
+                    unread_count: m.to_dept === 1 && !m.is_read ? 1 : 0 
+                }); 
+                else if(m.to_dept === 1 && !m.is_read) convMap.get(otherDept).unread_count++; 
+            } 
+        });
         let conversations = Array.from(convMap.values());
+        conversations.sort((a, b) => new Date(b.last_message_time) - new Date(a.last_message_time));
         
-        document.getElementById('messagesPage').innerHTML = `<div class="flex justify-between mb-4"><h2 class="text-xl font-bold"><i class="fas fa-envelope text-blue-600 mr-2"></i>Messages</h2><button onclick="openModal('msgModal')" class="btn-primary">+ New Message</button></div><div class="space-y-2" id="messagesList"></div>`;
+        document.getElementById('messagesPage').innerHTML = `<div class="flex justify-between mb-4"><h2 class="text-xl font-bold"><i class="fas fa-envelope text-blue-600 mr-2"></i>Messages (${conversations.length})</h2><button onclick="openModal('msgModal')" class="btn-primary">+ New Message</button></div><div class="space-y-2" id="messagesList"></div>`;
         
-        if (conversations.length === 0) { document.getElementById('messagesList').innerHTML = '<div class="bg-white rounded-xl p-8 text-center text-gray-400">No messages</div>'; return; }
+        if (conversations.length === 0) { document.getElementById('messagesList').innerHTML = '<div class="bg-white rounded-xl p-8 text-center text-gray-400">No messages found</div>'; return; }
         
         let msgsHtml = '';
-        conversations.forEach(c => { msgsHtml += `<div class="message-item ${c.unread_count>0?'message-unread':''}" onclick="openChat(${c.other_dept_id}, '${c.other_dept_name}')"><div class="message-header"><div><span class="font-semibold">${c.other_dept_name}</span>${c.unread_count>0?`<span class="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full ml-2">${c.unread_count}</span>`:''}</div><span class="text-[10px] text-gray-400">${new Date(c.last_message_time).toLocaleString()}</span></div><div class="message-preview">${escapeHtml(c.last_message.substring(0,80))}${c.last_message.length>80?'...':''}</div></div>`; });
+        for (let conv of conversations) {
+            const isUnread = conv.unread_count > 0;
+            const preview = conv.last_message ? (conv.last_message.substring(0, 80) + (conv.last_message.length > 80 ? '...' : '')) : 'No messages';
+            const isHighlighted = highlightId && conv.other_dept_id === highlightId;
+            msgsHtml += `<div class="message-item ${isUnread ? 'message-unread' : ''} ${isHighlighted ? 'search-highlight' : ''}" onclick="openChat(${conv.other_dept_id}, '${escapeHtml(conv.other_dept_name)}')">
+                <div class="message-header">
+                    <div><span class="font-semibold">${escapeHtml(conv.other_dept_name)}</span>${isUnread ? `<span class="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full ml-2">${conv.unread_count}</span>` : ''}</div>
+                    <span class="text-[10px] text-gray-400">${new Date(conv.last_message_time).toLocaleString()}</span>
+                </div>
+                <div class="message-preview">${escapeHtml(preview)}</div>
+            </div>`;
+        }
         document.getElementById('messagesList').innerHTML = msgsHtml;
         if (highlightId) { const msgDiv = document.querySelector(`.message-item:has([onclick="openChat(${highlightId},"])`); if(msgDiv) msgDiv.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
     }
     
     async function sendNewMessage() { let to = document.getElementById('msgTo').value; let msg = document.getElementById('msgContent').value; if(!to||!msg) { showToast('Select department and enter message',true); return; } let res = await apiCall('send_message.php','POST',{ to_department_id: parseInt(to), message: msg }); if(res.success) { showToast('Message sent'); closeModal('msgModal'); loadMessages(); loadDashboard(); } else showToast(res.message || 'Failed', true); }
-    function openChat(deptId, deptName) { document.getElementById('chatModalTitle').innerHTML = `Chat with ${deptName}`; document.getElementById('chatMessagesArea').innerHTML = `<div class="text-center text-gray-400 py-8">Select a conversation from messages</div>`; openModal('chatModal'); }
+    function openChat(deptId, deptName) { document.getElementById('chatModalTitle').innerHTML = `Chat with ${deptName}`; document.getElementById('chatMessagesArea').innerHTML = `<div class="text-center text-gray-400 py-8">Select a conversation from messages to chat</div>`; openModal('chatModal'); }
     function sendChatMessage() { showToast('Message sent'); document.getElementById('replyMsg').value = ''; }
     
     // ==================== SETTINGS ====================
     function loadSettings() {
         const savedColor = localStorage.getItem('sidebar_color') || '#0f74ba';
         const darkMode = document.body.classList.contains('dark-mode');
-        let html = `<div class="settings-grid">
-            <div class="setting-card"><h3 class="font-semibold mb-3"><i class="fas fa-palette text-purple-500 mr-2"></i>Sidebar Colors</h3><div class="flex flex-wrap gap-2" id="colorOptions"></div></div>
-            <div class="setting-card"><h3 class="font-semibold mb-3"><i class="fas fa-key text-blue-500 mr-2"></i>Change Password</h3><button onclick="openModal('pwdModal')" class="btn-primary w-full">Change Password</button></div>
-            <div class="setting-card"><h3 class="font-semibold mb-3"><i class="fas fa-database text-green-500 mr-2"></i>Backup & Restore</h3><button onclick="openModal('backupModal')" class="btn-success w-full mb-2">Backup/Restore</button></div>
-            <div class="setting-card"><h3 class="font-semibold mb-3"><i class="fas fa-info-circle text-indigo-500 mr-2"></i>System Info</h3>
-                <div class="setting-row"><span>Employees</span><span>${employeesData.length}</span></div>
-                <div class="setting-row"><span>Projects</span><span>${projectsData.length}</span></div>
-                <div class="setting-row"><span>Transactions</span><span>${transactionsData.length}</span></div>
-                <div class="setting-row"><span>Reports</span><span>${reportsData.length}</span></div>
-                <div class="setting-row"><span>Version</span><span>2.0.0</span></div>
+        
+        let html = `<div class="settings-container">
+            <div class="setting-card">
+                <div class="setting-header"><i class="fas fa-palette text-purple-500 mr-2"></i> Appearance</div>
+                <div class="setting-body">
+                    <div class="setting-row"><span><i class="fas fa-moon mr-2 text-purple-500"></i> Dark Mode</span><label class="switch"><input type="checkbox" id="darkModeToggle" ${darkMode ? 'checked' : ''}><span class="slider round"></span></label></div>
+                    <div class="setting-row"><span><i class="fas fa-palette mr-2 text-green-500"></i> Sidebar Color</span><div class="flex flex-wrap gap-2" id="colorOptionsContainer"></div></div>
+                </div>
             </div>
-            <div class="setting-card"><h3 class="font-semibold mb-3"><i class="fas fa-moon text-purple-500 mr-2"></i>Dark Mode</h3><label class="switch"><input type="checkbox" id="darkModeToggle" ${darkMode ? 'checked' : ''}><span class="slider round"></span></label></div>
+            <div class="setting-card">
+                <div class="setting-header"><i class="fas fa-shield-alt text-red-500 mr-2"></i> Security</div>
+                <div class="setting-body">
+                    <div class="setting-row"><span><i class="fas fa-key mr-2 text-blue-500"></i> Change Password</span><button onclick="openModal('pwdModal')" class="bg-blue-600 text-white px-3 py-1 rounded text-sm">Change</button></div>
+                </div>
+            </div>
+            <div class="setting-card">
+                <div class="setting-header"><i class="fas fa-database text-green-500 mr-2"></i> Data Management</div>
+                <div class="setting-body">
+                    <div class="setting-row"><span><i class="fas fa-download mr-2"></i> Backup Database</span><button onclick="createBackup()" class="bg-green-600 text-white px-3 py-1 rounded text-sm">Backup</button></div>
+                    <div class="setting-row"><span><i class="fas fa-upload mr-2"></i> Restore Database</span><button onclick="restoreBackup()" class="bg-orange-500 text-white px-3 py-1 rounded text-sm">Restore</button></div>
+                </div>
+            </div>
+            <div class="setting-card">
+                <div class="setting-header"><i class="fas fa-info-circle text-indigo-500 mr-2"></i> System Information</div>
+                <div class="setting-body">
+                    <div class="setting-row"><span>Total Employees</span><span class="font-semibold">${employeesData.length}</span></div>
+                    <div class="setting-row"><span>Total Projects</span><span class="font-semibold">${projectsData.length}</span></div>
+                    <div class="setting-row"><span>Daily Work Records</span><span class="font-semibold">${dailyworkData.length}</span></div>
+                    <div class="setting-row"><span>Transactions</span><span class="font-semibold">${transactionsData.length}</span></div>
+                    <div class="setting-row"><span>Reports</span><span class="font-semibold">${reportsData.length}</span></div>
+                    <div class="setting-row"><span>Messages</span><span class="font-semibold">${messagesData.length}</span></div>
+                    <div class="setting-row"><span>System Version</span><span class="font-semibold">2.0.0</span></div>
+                </div>
+            </div>
         </div>
-        <style>.switch { position: relative; display: inline-block; width: 50px; height: 24px; } .switch input { opacity: 0; width: 0; height: 0; } .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 24px; } .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; } input:checked + .slider { background-color: #0f74ba; } input:checked + .slider:before { transform: translateX(26px); }</style>`;
+        <style>
+            .switch { position: relative; display: inline-block; width: 50px; height: 24px; }
+            .switch input { opacity: 0; width: 0; height: 0; }
+            .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 24px; }
+            .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+            input:checked + .slider { background-color: #0f74ba; }
+            input:checked + .slider:before { transform: translateX(26px); }
+        </style>`;
         document.getElementById('settingsPage').innerHTML = html;
-        const container = document.getElementById('colorOptions');
+        
+        const container = document.getElementById('colorOptionsContainer');
         if(container) { container.innerHTML = ''; colorOptions.forEach(c => { const isSelected = localStorage.getItem('sidebar_color') === c; container.innerHTML += `<div class="color-option ${isSelected ? 'selected' : ''}" style="background:${c}" onclick="changeSidebarColor('${c}', this)"></div>`; }); }
+        
         document.getElementById('darkModeToggle')?.addEventListener('change', e => { document.body.classList.toggle('dark-mode', e.target.checked); localStorage.setItem('dark_mode', e.target.checked); const icon = document.getElementById('darkIcon'); if(icon) { if(e.target.checked) { icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); } else { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); } } });
     }
     
@@ -931,6 +1034,7 @@
     window.showFullImage = showFullImage; window.closeFullImage = closeFullImage;
     window.toggleSendDropdown = toggleSendDropdown;
     window.sendProjectToDept = sendProjectToDept; window.sendReportToDept = sendReportToDept;
+    window.showPageAndHighlight = showPageAndHighlight;
     
     init();
 </script>
