@@ -1,28 +1,32 @@
 <?php
-require_once 'db_connection.php';
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: DELETE, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
 
-$data = json_decode(file_get_contents('php://input'), true);
-$messageId = isset($data['message_id']) ? intval($data['message_id']) : null;
-
-if (!$messageId) {
-    echo json_encode(['success' => false, 'message' => 'Message ID required']);
-    exit;
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
 }
 
-// First check if message exists
-$checkQuery = "SELECT id FROM messages WHERE id = $messageId";
-$checkResult = $conn->query($checkQuery);
+require_once '../config/database.php';
 
-if ($checkResult && $checkResult->num_rows > 0) {
-    $query = "DELETE FROM messages WHERE id = $messageId";
-    if ($conn->query($query)) {
-        echo json_encode(['success' => true]);
-    } else {
-        echo json_encode(['success' => false, 'message' => 'Failed to delete message: ' . $conn->error]);
-    }
+$data = json_decode(file_get_contents("php://input"), true);
+
+if (!$data || !isset($data['message_id'])) {
+    sendResponse(false, null, "Message ID required");
+}
+
+$database = new Database();
+$db = $database->getConnection();
+
+$query = "DELETE FROM messages WHERE id = :id";
+$stmt = $db->prepare($query);
+$stmt->bindParam(':id', $data['message_id']);
+
+if ($stmt->execute()) {
+    sendResponse(true, null, "Message deleted");
 } else {
-    echo json_encode(['success' => false, 'message' => 'Message not found']);
+    sendResponse(false, null, "Failed to delete message");
 }
-
-$conn->close();
 ?>

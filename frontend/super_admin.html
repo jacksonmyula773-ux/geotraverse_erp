@@ -50,15 +50,14 @@
         
         .project-card, .report-card { background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 16px; transition: all 0.2s; position: relative; cursor: pointer; }
         .project-card:hover, .report-card:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
-        .new-badge { position: absolute; top: -8px; right: -8px; background: #ef4444; color: white; border-radius: 50%; width: 24px; height: 24px; font-size: 11px; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; z-index: 10; animation: pulse 1s infinite; }
-        @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        .new-badge { position: absolute; top: -8px; right: -8px; background: #ef4444; color: white; border-radius: 50%; width: 24px; height: 24px; font-size: 11px; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; z-index: 10; }
         
         .btn-primary { background: #0f74ba; color: white; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; transition: all 0.2s; }
         .btn-primary:hover { background: #0a5a8e; transform: translateY(-1px); }
         .btn-success { background: #10b981; color: white; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; }
         .btn-success:hover { background: #059669; transform: translateY(-1px); }
         .btn-danger { background: #ef4444; color: white; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; }
-        .btn-danger:hover { background: #dc2626; transform: translateY(-1px); }
+        .btn-warning { background: #f59e0b; color: white; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; }
         
         .action-btn { padding: 5px 10px; font-size: 11px; border-radius: 5px; cursor: pointer; transition: all 0.2s; border: none; }
         .action-btn.view { background: #3b82f6; color: white; }
@@ -67,105 +66,68 @@
         
         body.dark-mode { background: #0f172a; }
         body.dark-mode .bg-white, body.dark-mode .stat-card, body.dark-mode .project-card, 
-        body.dark-mode .report-card, body.dark-mode .modal-content { background: #1e293b; border-color: #334155; color: #f1f5f9; }
+        body.dark-mode .report-card, body.dark-mode .modal-content, body.dark-mode .message-item { background: #1e293b; border-color: #334155; color: #f1f5f9; }
         body.dark-mode input, body.dark-mode select, body.dark-mode textarea { background: #0f172a; border-color: #334155; color: #f1f5f9; }
-        body.dark-mode th { background: #1e293b; }
         
-        .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 1rem; }
         .project-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
-        @media (max-width: 768px) { .project-grid { grid-template-columns: 1fr; } }
+        .messages-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        @media (max-width: 1024px) { .messages-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 640px) { .messages-grid { grid-template-columns: 1fr; } }
         
-        .search-results-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: white; border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); z-index: 50; max-height: 350px; overflow-y: auto; display: none; }
-        .search-results-dropdown.active { display: block; }
-        .search-result-item { padding: 10px 16px; border-bottom: 1px solid #e5e7eb; cursor: pointer; transition: background 0.2s; }
-        .search-result-item:hover { background-color: #f3f4f6; }
-        .search-highlight { background: #fef3c7 !important; border-left: 3px solid #f59e0b !important; }
-        
-        .notification-badge { background: #ef4444; color: white; border-radius: 9999px; padding: 2px 8px; font-size: 10px; margin-left: 8px; display: inline-block; }
-        
-        .section { display: block; }
-        .section.hidden { display: none; }
-        
-        .scroll-top { position: fixed; bottom: 20px; right: 20px; background: #0f74ba; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: all 0.3s; z-index: 99; color: white; }
-        .scroll-top.visible { opacity: 1; }
-        
-        .color-option { width: 42px; height: 42px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: all 0.2s; display: inline-block; margin: 5px; }
-        .color-option:hover { transform: scale(1.1); }
-        .color-option.selected { border-color: white; box-shadow: 0 0 0 2px #333; }
-        
-        .password-wrapper { position: relative; }
-        .password-wrapper input { padding-right: 40px !important; }
-        .toggle-password { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #9ca3af; }
-        
-        .send-dropdown { position: relative; display: inline-block; }
-        .send-dropdown-content { display: none; position: absolute; right: 0; top: 100%; background: white; min-width: 180px; border-radius: 8px; z-index: 100; border: 1px solid #e5e7eb; max-height: 300px; overflow-y: auto; margin-top: 5px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-        .send-dropdown-content a { display: block; padding: 8px 12px; text-decoration: none; color: #333; font-size: 13px; cursor: pointer; }
-        .send-dropdown-content a:hover { background: #f3f4f6; }
-        body.dark-mode .send-dropdown-content { background: #1e293b; border-color: #334155; }
-        body.dark-mode .send-dropdown-content a { color: #f1f5f9; }
-        body.dark-mode .send-dropdown-content a:hover { background: #334155; }
-        
-        .income-row { background-color: #f0fdf4; }
-        .expense-row { background-color: #fef2f2; }
-        body.dark-mode .income-row { background-color: #064e3b20; }
-        body.dark-mode .expense-row { background-color: #7f1d1d20; }
-        
-        .project-image { width: 100%; height: 180px; object-fit: cover; border-radius: 8px; margin-bottom: 12px; background: #f3f4f6; cursor: pointer; }
-        .no-image { width: 100%; height: 180px; background: #f3f4f6; display: flex; align-items: center; justify-content: center; color: #9ca3af; border-radius: 8px; margin-bottom: 12px; }
-        
-        .image-upload-area { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s; }
-        .image-upload-area:hover { border-color: #0f74ba; background-color: #f0f9ff; }
-        
-        .fullscreen-img { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 2000; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        .fullscreen-img img { max-width: 90%; max-height: 90%; object-fit: contain; }
-        
-        .cashflow-table { width: 100%; border-collapse: collapse; }
-        .cashflow-table th, .cashflow-table td { padding: 12px; text-align: left; border-bottom: 1px solid #e5e7eb; }
-        .cashflow-table th { background: #f9fafb; font-weight: 600; position: sticky; top: 0; }
-        
-        .detail-buttons { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 15px; padding-top: 15px; border-top: 1px solid #e5e7eb; }
-        .detail-btn { padding: 8px 16px; border-radius: 6px; font-size: 12px; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; border: none; }
-        .detail-btn.excel { background: #10b981; color: white; }
-        .detail-btn.pdf { background: #ef4444; color: white; }
-        .detail-btn.send { background: #8b5cf6; color: white; }
-        .detail-btn.image { background: #0f74ba; color: white; }
-        
-        .role-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; }
-        .role-super-admin { background: #8b5cf6; color: white; }
-        .role-admin { background: #3b82f6; color: white; }
-        .role-manager { background: #f59e0b; color: white; }
-        .role-finance-manager { background: #10b981; color: white; }
-        .role-staff { background: #6b7280; color: white; }
-        
-        .dept-card { background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 16px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 12px; }
-        .dept-card:hover { transform: translateX(5px); border-color: #0f74ba; background: #f0f9ff; }
-        
-        .message-item { background: white; border-radius: 12px; border: 1px solid #e5e7eb; margin-bottom: 12px; overflow: hidden; cursor: pointer; transition: all 0.2s; }
-        .message-item:hover { transform: translateX(3px); background: #f9fafb; }
+        .message-item { background: white; border-radius: 16px; border: 1px solid #e5e7eb; overflow: hidden; cursor: pointer; transition: all 0.2s; position: relative; }
+        .message-item:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
         .message-unread { background: #eff6ff; border-left: 4px solid #3b82f6; }
         .message-header { padding: 14px 16px 8px 16px; display: flex; justify-content: space-between; align-items: center; }
         .message-preview { padding: 0 16px 12px 16px; font-size: 13px; color: #6b7280; }
+        .delete-conv-btn { position: absolute; top: 10px; right: 10px; background: #ef4444; color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: opacity 0.2s; z-index: 15; }
+        .message-item:hover .delete-conv-btn { opacity: 1; }
+        .delete-conv-btn:hover { background: #dc2626; transform: scale(1.05); }
         
         .chat-container { display: flex; flex-direction: column; height: 500px; }
         .chat-messages { flex: 1; overflow-y: auto; padding: 16px; background: #f9fafb; border-radius: 12px; margin-bottom: 12px; }
-        .chat-message { display: flex; margin-bottom: 12px; }
+        .chat-message { display: flex; margin-bottom: 12px; position: relative; }
         .chat-sent { justify-content: flex-end; }
         .chat-received { justify-content: flex-start; }
-        .chat-bubble { max-width: 70%; padding: 10px 15px; border-radius: 18px; word-wrap: break-word; }
+        .chat-bubble { max-width: 70%; padding: 10px 15px; border-radius: 18px; word-wrap: break-word; position: relative; }
         .chat-sent .chat-bubble { background: #0f74ba; color: white; border-bottom-right-radius: 4px; }
-        .chat-received .chat-bubble { background: white; color: #333; border: 1px solid #e5e7eb; border-bottom-left-radius: 4px; }
+        .chat-received .chat-bubble { background: #e5e7eb; color: #333; border-bottom-left-radius: 4px; }
+        body.dark-mode .chat-received .chat-bubble { background: #334155; color: #f1f5f9; }
         .chat-time { font-size: 10px; opacity: 0.7; margin-top: 4px; display: block; }
+        .delete-msg-btn { position: absolute; bottom: 5px; right: -30px; background: #ef4444; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 10px; opacity: 0; transition: opacity 0.2s; }
+        .chat-message:hover .delete-msg-btn { opacity: 1; }
+        .chat-sent .delete-msg-btn { right: auto; left: -30px; }
+        
         .chat-input-area { display: flex; gap: 10px; margin-top: 12px; }
         .chat-input-area textarea { flex: 1; margin: 0; resize: none; }
         
         .connection-status { position: fixed; bottom: 10px; right: 10px; background: #1f2937; color: #10b981; padding: 6px 12px; border-radius: 8px; font-size: 10px; font-family: monospace; z-index: 9999; display: flex; align-items: center; gap: 8px; }
         .connection-status.error { color: #ef4444; }
+        
+        .project-image { width: 100%; height: 180px; object-fit: cover; border-radius: 8px; margin-bottom: 12px; background: #f3f4f6; cursor: pointer; }
+        .no-image { width: 100%; height: 180px; background: #f3f4f6; display: flex; align-items: center; justify-content: center; color: #9ca3af; border-radius: 8px; margin-bottom: 12px; }
+        
+        .search-results-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: white; border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); z-index: 50; max-height: 350px; overflow-y: auto; display: none; }
+        .search-results-dropdown.active { display: block; }
+        .search-highlight { background: #fef3c7 !important; border-left: 3px solid #f59e0b !important; }
+        
+        .scroll-top { position: fixed; bottom: 20px; right: 20px; background: #0f74ba; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: all 0.3s; z-index: 99; color: white; }
+        .scroll-top.visible { opacity: 1; }
+        
+        .section { display: block; }
+        .section.hidden { display: none; }
+        
+        .income-row { background-color: #f0fdf4; }
+        .expense-row { background-color: #fef2f2; }
+        body.dark-mode .income-row { background-color: #064e3b20; }
+        body.dark-mode .expense-row { background-color: #7f1d1d20; }
     </style>
 </head>
 <body>
 
 <div id="mobileMenuOverlay" class="fixed inset-0 bg-black/50 z-20 hidden" onclick="closeMobileSidebar()"></div>
-<div id="fullImageModal" class="fullscreen-img" style="display:none;" onclick="closeFullImage()"><img id="fullImage" src=""></div>
+<div id="fullImageModal" class="fixed inset-0 bg-black/90 z-[2000] flex items-center justify-center cursor-pointer hidden" onclick="closeFullImage()">
+    <img id="fullImage" class="max-w-[90%] max-h-[90%] object-contain" src="">
+</div>
 <div id="connectionStatus" class="connection-status"><i class="fas fa-spinner fa-spin"></i> Connecting...</div>
 
 <div class="flex">
@@ -187,11 +149,11 @@
             <div class="nav-item active" data-page="dashboard"><i class="fas fa-tachometer-alt w-5"></i><span>Dashboard</span></div>
             <div class="nav-item" data-page="employees"><i class="fas fa-users w-5"></i><span>Employees</span></div>
             <div class="nav-item" data-page="departments"><i class="fas fa-building w-5"></i><span>Departments</span></div>
-            <div class="nav-item" data-page="projects"><i class="fas fa-tasks w-5"></i><span>Projects</span><span id="projectBadge" class="notification-badge">0</span></div>
+            <div class="nav-item" data-page="projects"><i class="fas fa-tasks w-5"></i><span>Projects</span><span id="projectBadge" class="bg-red-500 text-white text-[10px] rounded-full px-2 py-0.5 ml-2 hidden">0</span></div>
             <div class="nav-item" data-page="dailywork"><i class="fas fa-calendar-day w-5"></i><span>Daily Work</span></div>
             <div class="nav-item" data-page="cashflow"><i class="fas fa-exchange-alt w-5"></i><span>Cashflow</span></div>
-            <div class="nav-item" data-page="messages"><i class="fas fa-envelope w-5"></i><span>Messages</span><span id="msgBadge" class="notification-badge">0</span></div>
-            <div class="nav-item" data-page="reports"><i class="fas fa-chart-line w-5"></i><span>Reports</span><span id="reportBadge" class="notification-badge">0</span></div>
+            <div class="nav-item" data-page="messages"><i class="fas fa-envelope w-5"></i><span>Messages</span><span id="msgBadge" class="bg-red-500 text-white text-[10px] rounded-full px-2 py-0.5 ml-2 hidden">0</span></div>
+            <div class="nav-item" data-page="reports"><i class="fas fa-chart-line w-5"></i><span>Reports</span><span id="reportBadge" class="bg-red-500 text-white text-[10px] rounded-full px-2 py-0.5 ml-2 hidden">0</span></div>
             <div class="nav-item" data-page="settings"><i class="fas fa-cog w-5"></i><span>Settings</span></div>
         </nav>
         <div class="p-4 border-t border-white/20">
@@ -230,31 +192,31 @@
 </div>
 
 <!-- MODALS -->
-<div id="empModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-user-plus text-blue-500 mr-2"></i>Add Employee</h3><input type="hidden" id="empId"><input type="text" id="empName" placeholder="Full Name" required><input type="email" id="empEmail" placeholder="Email" required><input type="text" id="empPhone" placeholder="Phone"><select id="empDept"></select><select id="empRole"><option>Super Administrator</option><option>Administrator</option><option>Manager</option><option>Finance Manager</option><option>Staff</option></select><input type="text" id="empSalary" placeholder="Salary" class="amount-input"><div class="password-wrapper"><input type="password" id="empPassword" placeholder="Password" value="1234"><i class="fas fa-eye toggle-password" onclick="togglePassword('empPassword')"></i></div><div class="flex gap-3 pt-4"><button onclick="saveEmployee()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('empModal')" class="flex-1 bg-gray-200 py-2 rounded hover:bg-gray-300 transition">Cancel</button></div></div></div>
+<div id="empModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-user-plus text-blue-500 mr-2"></i>Add Employee</h3><input type="hidden" id="empId"><input type="text" id="empName" placeholder="Full Name" required><input type="email" id="empEmail" placeholder="Email" required><input type="text" id="empPhone" placeholder="Phone"><select id="empDept"></select><select id="empRole"><option>Super Administrator</option><option>Administrator</option><option>Manager</option><option>Finance Manager</option><option>Staff</option></select><input type="text" id="empSalary" placeholder="Salary" class="amount-input"><div class="relative"><input type="password" id="empPassword" placeholder="Password" value="1234" class="w-full"><i class="fas fa-eye absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400" onclick="togglePassword('empPassword')"></i></div><div class="flex gap-3 pt-4"><button onclick="saveEmployee()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('empModal')" class="flex-1 bg-gray-200 py-2 rounded hover:bg-gray-300 transition">Cancel</button></div></div></div>
 
 <div id="viewEmpModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-user text-blue-500 mr-2"></i>Employee Details</h3><div id="viewEmpContent"></div><button onclick="closeModal('viewEmpModal')" class="w-full bg-gray-200 py-2 rounded mt-3 hover:bg-gray-300 transition">Close</button></div></div>
 
-<div id="projModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-tasks text-green-500 mr-2"></i>Add/Edit Project</h3><input type="hidden" id="projId"><input type="text" id="projName" placeholder="Project Name" required><input type="text" id="projClient" placeholder="Client"><input type="text" id="projAmount" placeholder="Amount (TZS)" class="amount-input"><input type="text" id="projLocation" placeholder="Location"><textarea id="projDesc" rows="2" placeholder="Description"></textarea><select id="projStatus"><option value="pending">Pending</option><option value="in_progress">In Progress</option><option value="completed">Completed</option></select><input type="number" id="projProgress" placeholder="Progress 0-100"><select id="projDept"></select><div class="mb-2"><label class="text-sm font-semibold">Project Image</label></div><div id="projImageUploadArea" class="image-upload-area" onclick="document.getElementById('projImageFile').click()"><i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i><p>Click to upload project image</p><p class="text-xs text-gray-400 mt-1">Supported: JPG, PNG, GIF (Max 2MB)</p></div><input type="file" id="projImageFile" accept="image/*" class="hidden"><div id="projImagePreviewContainer" class="hidden mt-2"><img id="projImagePreview" class="w-full h-32 object-cover rounded border"><button type="button" onclick="removeProjectImage()" class="mt-2 text-red-500 text-sm w-full py-1 bg-red-50 rounded hover:bg-red-100 transition">Remove Image</button></div><div class="flex gap-3 pt-4"><button onclick="saveProject()" class="flex-1 btn-primary">Save Project</button><button onclick="closeModal('projModal')" class="flex-1 bg-gray-200 py-2 rounded hover:bg-gray-300 transition">Cancel</button></div></div></div>
+<div id="projModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-tasks text-green-500 mr-2"></i>Add/Edit Project</h3><input type="hidden" id="projId"><input type="text" id="projName" placeholder="Project Name" required><input type="text" id="projClient" placeholder="Client"><input type="text" id="projAmount" placeholder="Amount (TZS)" class="amount-input"><input type="text" id="projLocation" placeholder="Location"><textarea id="projDesc" rows="2" placeholder="Description"></textarea><select id="projStatus"><option value="pending">Pending</option><option value="in_progress">In Progress</option><option value="completed">Completed</option></select><input type="number" id="projProgress" placeholder="Progress 0-100"><select id="projDept"></select><div class="mb-2"><label class="text-sm font-semibold">Project Image</label></div><div id="projImageUploadArea" class="border-2 border-dashed border-gray-300 rounded-xl p-5 text-center cursor-pointer hover:border-blue-500 transition" onclick="document.getElementById('projImageFile').click()"><i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i><p>Click to upload project image</p><p class="text-xs text-gray-400 mt-1">Supported: JPG, PNG, GIF (Max 2MB)</p></div><input type="file" id="projImageFile" accept="image/*" class="hidden"><div id="projImagePreviewContainer" class="hidden mt-2"><img id="projImagePreview" class="w-full h-32 object-cover rounded border"><button type="button" onclick="removeProjectImage()" class="mt-2 text-red-500 text-sm w-full py-1 bg-red-50 rounded hover:bg-red-100 transition">Remove Image</button></div><div class="flex gap-3 pt-4"><button onclick="saveProject()" class="flex-1 btn-primary">Save Project</button><button onclick="closeModal('projModal')" class="flex-1 bg-gray-200 py-2 rounded hover:bg-gray-300 transition">Cancel</button></div></div></div>
 
-<div id="viewProjModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-folder-open text-green-500 mr-2"></i>Project Details</h3><div id="viewProjContent"></div><div id="viewProjButtons" class="detail-buttons"></div><button onclick="closeModal('viewProjModal')" class="w-full bg-gray-200 py-2 rounded mt-3 hover:bg-gray-300 transition">Close</button></div></div>
+<div id="viewProjModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-folder-open text-green-500 mr-2"></i>Project Details</h3><div id="viewProjContent"></div><div id="viewProjButtons" class="flex flex-wrap gap-2 justify-center mt-4 pt-3 border-t"></div><button onclick="closeModal('viewProjModal')" class="w-full bg-gray-200 py-2 rounded mt-3 hover:bg-gray-300 transition">Close</button></div></div>
 
 <div id="dailyworkModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-calendar-plus text-purple-500 mr-2"></i>Add Daily Work</h3><input type="hidden" id="dailyworkId"><input type="date" id="dailyworkDate"><input type="text" id="dailyworkProject" placeholder="Project" required><textarea id="dailyworkDesc" rows="2" placeholder="Description"></textarea><input type="text" id="dailyworkIncome" placeholder="Income" class="amount-input"><input type="text" id="dailyworkExpenses" placeholder="Expenses" class="amount-input"><input type="text" id="dailyworkPaid" placeholder="Paid" class="amount-input"><select id="dailyworkStatus"><option value="pending">Pending</option><option value="paid">Paid</option><option value="partial">Partial</option></select><select id="dailyworkDept"></select><div class="flex gap-3 pt-4"><button onclick="saveDailyWork()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('dailyworkModal')" class="flex-1 bg-gray-200 py-2 rounded hover:bg-gray-300 transition">Cancel</button></div></div></div>
 
 <div id="viewDailyworkModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-calendar-day text-purple-500 mr-2"></i>Daily Work Details</h3><div id="viewDailyworkContent"></div><button onclick="closeModal('viewDailyworkModal')" class="w-full bg-gray-200 py-2 rounded mt-3 hover:bg-gray-300 transition">Close</button></div></div>
 
-<div id="transModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-exchange-alt text-orange-500 mr-2"></i>Add Transaction</h3><input type="hidden" id="transId"><select id="transType"><option value="income">Income</option><option value="expense">Expense</option></select><select id="transDept"></select><input type="text" id="transSource" placeholder="Source" required><input type="text" id="transAmount" placeholder="Amount" class="amount-input" required><input type="date" id="transDate"><select id="transStatus"><option value="paid">Paid</option><option value="pending">Pending</option><option value="partial">Partial</option></select><textarea id="transDesc" rows="2" placeholder="Description"></textarea><div class="flex gap-3 pt-4"><button onclick="saveTransaction()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('transModal')" class="flex-1 bg-gray-200 py-2 rounded hover:bg-gray-300 transition">Cancel</button></div></div></div>
+<div id="transModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-exchange-alt text-orange-500 mr-2"></i>Add Transaction</h3><input type="hidden" id="transId"><select id="transType"><option value="income">Income</option><option value="expense">Expense</option></select><select id="transDept"></select><input type="text" id="transSource" placeholder="Source" required><input type="text" id="transAmount" placeholder="Amount" class="amount-input" required><input type="date" id="transDate"><select id="transStatus"><option value="paid">Paid</option><option value="pending">Pending</option><option value="partial">Partial</option></select><input type="text" id="transPaidAmount" placeholder="Paid Amount (for partial)" class="amount-input hidden"><textarea id="transDesc" rows="2" placeholder="Description"></textarea><div class="flex gap-3 pt-4"><button onclick="saveTransaction()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('transModal')" class="flex-1 bg-gray-200 py-2 rounded hover:bg-gray-300 transition">Cancel</button></div></div></div>
 
 <div id="viewTransModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-receipt text-orange-500 mr-2"></i>Transaction Details</h3><div id="viewTransContent"></div><button onclick="closeModal('viewTransModal')" class="w-full bg-gray-200 py-2 rounded mt-3 hover:bg-gray-300 transition">Close</button></div></div>
 
 <div id="reportModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-chart-line text-purple-500 mr-2"></i>Add Report</h3><input type="hidden" id="reportId"><input type="text" id="reportTitle" placeholder="Title" required><select id="reportPeriod"><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="quarterly">Quarterly</option><option value="annual">Annual</option></select><textarea id="reportContent" rows="5" placeholder="Content" required></textarea><div class="flex gap-3 pt-4"><button onclick="saveReport()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('reportModal')" class="flex-1 bg-gray-200 py-2 rounded hover:bg-gray-300 transition">Cancel</button></div></div></div>
 
-<div id="viewReportModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-file-alt text-purple-500 mr-2"></i>Report Details</h3><div id="viewReportContent" class="report-content"></div><div id="viewReportButtons" class="detail-buttons"></div><button onclick="closeModal('viewReportModal')" class="w-full bg-gray-200 py-2 rounded mt-3 hover:bg-gray-300 transition">Close</button></div></div>
+<div id="viewReportModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-file-alt text-purple-500 mr-2"></i>Report Details</h3><div id="viewReportContent" class="report-content"></div><div id="viewReportButtons" class="flex flex-wrap gap-2 justify-center mt-4 pt-3 border-t"></div><button onclick="closeModal('viewReportModal')" class="w-full bg-gray-200 py-2 rounded mt-3 hover:bg-gray-300 transition">Close</button></div></div>
 
 <div id="msgModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-paper-plane text-blue-500 mr-2"></i>Send Message</h3><select id="msgTo"></select><textarea id="msgContent" rows="4" placeholder="Type your message..." required></textarea><div class="flex gap-3 pt-4"><button onclick="sendNewMessage()" class="flex-1 btn-primary">Send</button><button onclick="closeModal('msgModal')" class="flex-1 bg-gray-200 py-2 rounded hover:bg-gray-300 transition">Cancel</button></div></div></div>
 
-<div id="chatModal" class="modal"><div class="modal-content" style="max-width:700px;"><div class="flex justify-between items-center mb-4"><h3 id="chatModalTitle" class="text-xl font-bold"><i class="fas fa-comments text-blue-500 mr-2"></i>Chat</h3><button onclick="closeModal('chatModal')" class="text-gray-400 text-2xl hover:text-gray-600">&times;</button></div><div class="chat-container"><div id="chatMessagesArea" class="chat-messages"><div class="text-center text-gray-400 py-8">Select a conversation to start chatting</div></div><div class="chat-input-area"><textarea id="replyMsg" rows="2" placeholder="Type your message..."></textarea><button onclick="sendChatMessage()" class="btn-primary">Send</button></div></div></div></div>
+<div id="chatModal" class="modal"><div class="modal-content" style="max-width:750px;"><div class="flex justify-between items-center mb-4"><h3 id="chatModalTitle" class="text-xl font-bold"><i class="fas fa-comments text-blue-500 mr-2"></i>Chat</h3><button onclick="closeModal('chatModal')" class="text-gray-400 text-2xl hover:text-gray-600">&times;</button></div><div class="chat-container"><div id="chatMessagesArea" class="chat-messages bg-gray-50 dark:bg-gray-800 rounded-xl"><div class="text-center text-gray-400 py-8">Select a conversation to start chatting</div></div><div class="chat-input-area"><textarea id="replyMsg" rows="2" placeholder="Type your message..." class="border rounded-lg p-2"></textarea><button onclick="sendChatMessage()" class="btn-primary">Send</button></div></div></div></div>
 
-<div id="pwdModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-key text-blue-500 mr-2"></i>Change Password</h3><div class="password-wrapper"><input type="password" id="oldPwd" placeholder="Current Password"><i class="fas fa-eye toggle-password" onclick="togglePassword('oldPwd')"></i></div><div class="password-wrapper mt-2"><input type="password" id="newPwd" placeholder="New Password (min 4 characters)"><i class="fas fa-eye toggle-password" onclick="togglePassword('newPwd')"></i></div><div class="password-wrapper mt-2"><input type="password" id="confirmPwd" placeholder="Confirm Password"><i class="fas fa-eye toggle-password" onclick="togglePassword('confirmPwd')"></i></div><div class="flex gap-3 pt-4"><button onclick="changePassword()" class="flex-1 btn-primary">Change</button><button onclick="closeModal('pwdModal')" class="flex-1 bg-gray-200 py-2 rounded hover:bg-gray-300 transition">Cancel</button></div></div></div>
+<div id="pwdModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-key text-blue-500 mr-2"></i>Change Password</h3><div class="relative"><input type="password" id="oldPwd" placeholder="Current Password" class="w-full"><i class="fas fa-eye absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400" onclick="togglePassword('oldPwd')"></i></div><div class="relative mt-2"><input type="password" id="newPwd" placeholder="New Password (min 4 characters)" class="w-full"><i class="fas fa-eye absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400" onclick="togglePassword('newPwd')"></i></div><div class="relative mt-2"><input type="password" id="confirmPwd" placeholder="Confirm Password" class="w-full"><i class="fas fa-eye absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400" onclick="togglePassword('confirmPwd')"></i></div><div class="flex gap-3 pt-4"><button onclick="changePassword()" class="flex-1 btn-primary">Change</button><button onclick="closeModal('pwdModal')" class="flex-1 bg-gray-200 py-2 rounded hover:bg-gray-300 transition">Cancel</button></div></div></div>
 
 <div id="backupModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-database text-green-500 mr-2"></i>Backup & Restore</h3><button onclick="createBackup()" class="w-full btn-success mb-3 py-2 rounded-lg"><i class="fas fa-download mr-2"></i> Backup Database</button><button onclick="restoreBackup()" class="w-full bg-orange-500 text-white py-2 rounded-lg mb-3 hover:bg-orange-600 transition"><i class="fas fa-upload mr-2"></i> Restore Database</button><button onclick="closeModal('backupModal')" class="w-full bg-gray-200 py-2 rounded-lg hover:bg-gray-300 transition">Close</button></div></div>
 
@@ -264,33 +226,18 @@
     let searchTimeout = null;
     let statusChart = null;
     
-    let employeesData = [], projectsData = [], dailyworkData = [], transactionsData = [], reportsData = [], messagesData = [], departmentsList = [];
+    let employeesData = [], projectsData = [], dailyworkData = [], transactionsData = [], reportsData = [], messagesData = [], departmentsList = [], departmentUsersList = [];
     let unviewedProjectsCount = 0, unviewedReportsCount = 0;
     let currentProjectImageFile = null;
     let currentHighlightId = null;
+    let currentConversationId = null;
+    let currentReceiverId = null;
     
     const departmentNames = {
         1: "Super Admin", 2: "Finance", 3: "Sales & Marketing", 4: "Manager",
         5: "Secretary", 6: "Bricks & Timber", 7: "Aluminium", 8: "Town Planning",
         9: "Architectural", 10: "Survey", 11: "Construction", 12: "Hatimiliki"
     };
-    
-    const departmentIcons = {
-        2: "fa-coins", 3: "fa-chart-line", 4: "fa-user-tie", 5: "fa-calendar-check",
-        6: "fa-cubes", 7: "fa-industry", 8: "fa-city", 9: "fa-draw-polygon",
-        10: "fa-drafting-compass", 11: "fa-hard-hat", 12: "fa-file-contract"
-    };
-    
-    const departmentColors = {
-        2: "bg-emerald-100 text-emerald-600", 3: "bg-orange-100 text-orange-600",
-        4: "bg-blue-100 text-blue-600", 5: "bg-cyan-100 text-cyan-600",
-        6: "bg-amber-100 text-amber-600", 7: "bg-gray-100 text-gray-600",
-        8: "bg-indigo-100 text-indigo-600", 9: "bg-pink-100 text-pink-600",
-        10: "bg-teal-100 text-teal-600", 11: "bg-yellow-100 text-yellow-600",
-        12: "bg-green-100 text-green-600"
-    };
-    
-    const colorOptions = ["#0f74ba", "#1e3a5f", "#7c3aed", "#059669", "#dc2626", "#d97706", "#0d9488", "#db2777", "#4f46e5", "#10b981"];
     
     // ==================== HELPER FUNCTIONS ====================
     function showToast(msg, isError) { 
@@ -313,7 +260,7 @@
     
     function parseAmount(str) {
         if (!str) return 0;
-        return parseFloat(str.replace(/,/g, '')) || 0;
+        return parseFloat(String(str).replace(/,/g, '')) || 0;
     }
     
     function formatDate(d) { 
@@ -356,11 +303,6 @@
         }
     }
     
-    function getRoleBadgeClass(role) {
-        const map = { 'Super Administrator': 'role-super-admin', 'Administrator': 'role-admin', 'Manager': 'role-manager', 'Finance Manager': 'role-finance-manager', 'Staff': 'role-staff' };
-        return map[role] || 'role-staff';
-    }
-    
     function formatAmountInput(input) {
         let value = input.value.replace(/,/g, '');
         if (!isNaN(value) && value !== '') {
@@ -371,17 +313,22 @@
     
     // Attach amount formatting
     document.addEventListener('DOMContentLoaded', function() {
-        ['projAmount', 'transAmount', 'dailyworkIncome', 'dailyworkExpenses', 'dailyworkPaid', 'empSalary'].forEach(id => {
+        ['projAmount', 'transAmount', 'dailyworkIncome', 'dailyworkExpenses', 'dailyworkPaid', 'empSalary', 'transPaidAmount'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.addEventListener('input', function() { formatAmountInput(this); });
         });
-    });
-    
-    document.addEventListener('click', function(e) {
-        const searchInput = document.getElementById('searchInput');
-        const dropdown = document.getElementById('searchResultsDropdown');
-        if (searchInput && dropdown && !searchInput.contains(e.target) && !dropdown.contains(e.target)) {
-            dropdown.classList.remove('active');
+        
+        // Show/hide paid amount field based on status
+        const statusSelect = document.getElementById('transStatus');
+        if (statusSelect) {
+            statusSelect.addEventListener('change', function() {
+                const paidField = document.getElementById('transPaidAmount');
+                if (this.value === 'partial') {
+                    paidField.classList.remove('hidden');
+                } else {
+                    paidField.classList.add('hidden');
+                }
+            });
         }
     });
     
@@ -414,7 +361,7 @@
             const response = await fetch(API_BASE + 'get_departments.php');
             const data = await response.json();
             if (data.success && data.data) {
-                statusDiv.innerHTML = `<i class="fas fa-check-circle"></i> DB Connected | ${data.data.length} Departments`;
+                statusDiv.innerHTML = `<i class="fas fa-check-circle"></i> DB Connected`;
                 statusDiv.classList.remove('error');
             } else {
                 statusDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> API Error`;
@@ -426,47 +373,51 @@
         }
     }
     
-async function loadDepartmentsForDropdowns() {
-    const res = await apiCall('get_departments.php');
-    if (res.success && res.data) {
-        if (res.data.departments) {
-            departmentsList = res.data.departments;
+    async function loadDepartmentsForDropdowns() {
+        const res = await apiCall('get_departments.php');
+        if (res.success && res.data) {
+            if (res.data.departments) {
+                departmentsList = res.data.departments;
+                departmentUsersList = res.data.users || [];
+            } else {
+                departmentsList = res.data.filter(d => d.id !== 1);
+            }
         } else {
-            departmentsList = res.data.filter(d => d.id !== 1);
+            departmentsList = Object.entries(departmentNames).filter(([id]) => id != 1).map(([id, name]) => ({ id: parseInt(id), name }));
         }
         
-        // Populate department dropdowns
         ['empDept', 'projDept', 'dailyworkDept', 'transDept'].forEach(id => {
             const s = document.getElementById(id);
             if (s) s.innerHTML = '<option value="">Select Department</option>' + departmentsList.map(d => `<option value="${d.id}">${escapeHtml(d.name)}</option>`).join('');
         });
         
-        // Populate message recipient dropdown (users)
-        if (res.data.users) {
-            const msgTo = document.getElementById('msgTo');
-            if (msgTo) {
-                msgTo.innerHTML = '<option value="">Select Recipient</option>' + 
-                    res.data.users.map(u => `<option value="${u.id}">${escapeHtml(u.name)} (${escapeHtml(u.department_name)})</option>`).join('');
-            }
+        // Populate message recipient dropdown
+        const msgTo = document.getElementById('msgTo');
+        if (msgTo && departmentUsersList.length > 0) {
+            msgTo.innerHTML = '<option value="">Select Recipient</option>' + 
+                departmentUsersList.map(u => `<option value="${u.id}">${escapeHtml(u.name)} (${escapeHtml(u.department_name)})</option>`).join('');
+        } else if (msgTo) {
+            msgTo.innerHTML = '<option value="">Select Department User</option>';
         }
     }
-}
     
     function updateProjectBadge() {
         const badge = document.getElementById('projectBadge');
-        if (unviewedProjectsCount > 0) { badge.style.display = 'inline-block'; badge.innerText = unviewedProjectsCount; }
-        else badge.style.display = 'none';
+        if (unviewedProjectsCount > 0) { badge.classList.remove('hidden'); badge.innerText = unviewedProjectsCount; }
+        else badge.classList.add('hidden');
     }
     
     function updateReportBadge() {
         const badge = document.getElementById('reportBadge');
-        if (unviewedReportsCount > 0) { badge.style.display = 'inline-block'; badge.innerText = unviewedReportsCount; }
-        else badge.style.display = 'none';
+        if (unviewedReportsCount > 0) { badge.classList.remove('hidden'); badge.innerText = unviewedReportsCount; }
+        else badge.classList.add('hidden');
     }
     
     function updateMessageBadge() {
-        const unreadCount = messagesData.filter(m => m.receiver_dept === 1 && !m.is_read).length;
-        document.getElementById('msgBadge').innerText = unreadCount;
+        const unreadCount = messagesData.reduce((sum, conv) => sum + (conv.unread_count || 0), 0);
+        const badge = document.getElementById('msgBadge');
+        if (unreadCount > 0) { badge.classList.remove('hidden'); badge.innerText = unreadCount; }
+        else badge.classList.add('hidden');
     }
     
     function openDepartmentDashboard(deptId) {
@@ -474,12 +425,6 @@ async function loadDepartmentsForDropdowns() {
         const file = files[deptId];
         if (file) window.open(file, '_blank');
         else showToast('Dashboard not available', true);
-    }
-    
-    function toggleSendDropdown(dropdownId) {
-        const dropdown = document.getElementById(dropdownId);
-        document.querySelectorAll('.send-dropdown-content').forEach(d => { if (d.id !== dropdownId) d.style.display = 'none'; });
-        if (dropdown) dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
     }
     
     // ==================== PAGE NAVIGATION ====================
@@ -543,7 +488,7 @@ async function loadDepartmentsForDropdowns() {
                     <div class="flex justify-between items-center"><div><p class="text-gray-500 text-xs uppercase tracking-wider">Net Profit</p><p class="text-2xl font-bold ${netProfit >= 0 ? 'text-green-600' : 'text-red-600'}">${formatMoney(netProfit)}</p></div><i class="fas fa-chart-line text-blue-500 text-2xl"></i></div>
                 </div>
                 <div class="stat-card cursor-pointer" onclick="showPage('messages')">
-                    <div class="flex justify-between items-center"><div><p class="text-gray-500 text-xs uppercase tracking-wider">Unread</p><p class="text-2xl font-bold text-red-600">${messagesData.filter(m => m.receiver_dept === 1 && !m.is_read).length}</p></div><i class="fas fa-envelope text-red-500 text-2xl"></i></div>
+                    <div class="flex justify-between items-center"><div><p class="text-gray-500 text-xs uppercase tracking-wider">Messages</p><p class="text-2xl font-bold text-blue-600">${messagesData.length}</p></div><i class="fas fa-envelope text-blue-500 text-2xl"></i></div>
                 </div>
             </div>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
@@ -584,21 +529,21 @@ async function loadDepartmentsForDropdowns() {
             <h2 class="text-xl font-bold"><i class="fas fa-users text-blue-600 mr-2"></i>Employees (${employeesData.length})</h2>
             <div class="flex gap-2"><button onclick="openModal('empModal')" class="btn-primary"><i class="fas fa-plus mr-1"></i> Add Employee</button><button onclick="exportEmployeesToExcel()" class="btn-success"><i class="fas fa-file-excel mr-1"></i> Excel</button><button onclick="exportEmployeesToPDF()" class="btn-danger"><i class="fas fa-file-pdf mr-1"></i> PDF</button></div>
         </div>
-        <div class="bg-white rounded-xl overflow-x-auto shadow-sm border border-gray-100"><table class="min-w-full"><thead class="bg-gray-50"><tr class="border-b"><th class="p-3">ID</th><th class="p-3">Name</th><th class="p-3">Email</th><th class="p-3">Dept</th><th class="p-3">Role</th><th class="p-3">Salary</th><th class="p-3">Actions</th></td></thead><tbody>`;
+        <div class="bg-white rounded-xl overflow-x-auto shadow-sm border border-gray-100"><table class="min-w-full"><thead class="bg-gray-50"><tr class="border-b"><th class="p-3 text-left">ID</th><th class="p-3 text-left">Name</th><th class="p-3 text-left">Email</th><th class="p-3 text-left">Dept</th><th class="p-3 text-left">Role</th><th class="p-3 text-left">Salary</th><th class="p-3 text-left">Actions</th></tr></thead><tbody>`;
         
         employeesData.forEach(e => { 
             const isHighlighted = highlightId && e.id === highlightId;
             html += `<tr class="border-b hover:bg-gray-50 transition ${isHighlighted ? 'search-highlight' : ''}" id="emp-row-${e.id}">
-                <td class="p-3">${e.id}<\/td>
-                <td class="p-3 font-medium">${escapeHtml(e.name)}<\/td>
-                <td class="p-3">${escapeHtml(e.email)}<\/td>
-                <td class="p-3">${departmentNames[e.department_id] || e.department_id}<\/td>
-                <td class="p-3"><span class="role-badge ${getRoleBadgeClass(e.role)}">${e.role || 'Staff'}</span><\/td>
-                <td class="p-3 text-green-600 font-semibold">${formatMoney(e.salary)}<\/td>
-                <td class="p-3"><div class="flex gap-2"><button onclick="viewEmployee(${e.id})" class="action-btn view"><i class="fas fa-eye"></i><\/button><button onclick="editEmployee(${e.id})" class="action-btn edit"><i class="fas fa-edit"></i><\/button><button onclick="deleteEmployee(${e.id})" class="action-btn delete"><i class="fas fa-trash"></i><\/button><\/div><\/td>
-            <\/tr>`; 
+                <td class="p-3">${e.id}</td>
+                <td class="p-3 font-medium">${escapeHtml(e.name)}</td>
+                <td class="p-3">${escapeHtml(e.email)}</td>
+                <td class="p-3">${departmentNames[e.department_id] || e.department_id}</td>
+                <td class="p-3"><span class="status-badge bg-blue-100 text-blue-600">${e.role || 'Staff'}</span></td>
+                <td class="p-3 text-green-600 font-semibold">${formatMoney(e.salary)}</td>
+                <td class="p-3"><div class="flex gap-2"><button onclick="viewEmployee(${e.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="editEmployee(${e.id})" class="action-btn edit"><i class="fas fa-edit"></i></button><button onclick="deleteEmployee(${e.id})" class="action-btn delete"><i class="fas fa-trash"></i></button></div></td>
+            </tr>`; 
         });
-        html += `</tbody>}</div>`;
+        html += `</tbody></table></div>`;
         document.getElementById('employeesPage').innerHTML = html;
         if (highlightId) document.getElementById(`emp-row-${highlightId}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
@@ -612,7 +557,7 @@ async function loadDepartmentsForDropdowns() {
     
     function exportEmployeesToPDF() {
         let element = document.createElement('div');
-        element.innerHTML = `<div style="padding:20px"><h1>Employees Report</h1><p>${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8">${employeesData.map(e => `<tr><td class="px-2 py-1">${e.name}<\/td><td class="px-2 py-1">${e.email}<\/td><td class="px-2 py-1">${departmentNames[e.department_id]}<\/td><td class="px-2 py-1">${e.role || 'Staff'}<\/td><td class="px-2 py-1">${formatMoney(e.salary)}<\/td><\/tr>`).join('')}<\/table><\/div>`;
+        element.innerHTML = `<div style="padding:20px"><h1>Employees Report</h1><p>${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><tr><th>Name</th><th>Email</th><th>Department</th><th>Role</th><th>Salary</th></tr>${employeesData.map(e => `<tr><td>${e.name}</td><td>${e.email}</td><td>${departmentNames[e.department_id]}</td><td>${e.role || 'Staff'}</td><td>${formatMoney(e.salary)}</td></tr>`).join('')}</table></div>`;
         html2pdf().set({ margin: 0.5, filename: `employees_report.pdf` }).from(element).save();
         showToast('Exported to PDF');
     }
@@ -665,15 +610,13 @@ async function loadDepartmentsForDropdowns() {
     // ==================== DEPARTMENTS ====================
     async function loadDepartmentsPage() {
         const res = await apiCall('get_departments.php');
-        const depts = res.success ? res.data : [];
+        const depts = res.success ? (res.data.departments || res.data) : [];
         if (depts.length === 0) { document.getElementById('departmentsPage').innerHTML = '<div class="text-center py-12 text-gray-400">No departments found</div>'; return; }
         let html = `<h2 class="text-xl font-bold mb-4"><i class="fas fa-building text-blue-500 mr-2"></i>Departments (${depts.length})</h2><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">`;
         depts.forEach(d => { 
             if(d.id !== 1) { 
-                const iconClass = departmentColors[d.id] || 'bg-gray-100 text-gray-600';
-                const icon = departmentIcons[d.id] || 'fa-building';
-                html += `<div class="dept-card" onclick="openDepartmentDashboard(${d.id})">
-                    <div class="w-12 h-12 ${iconClass} rounded-xl flex items-center justify-center"><i class="fas ${icon} text-xl"></i></div>
+                html += `<div class="bg-white rounded-xl p-4 border border-gray-200 cursor-pointer hover:border-blue-500 hover:shadow-md transition flex items-center gap-3" onclick="openDepartmentDashboard(${d.id})">
+                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center"><i class="fas fa-building text-blue-600 text-xl"></i></div>
                     <div class="flex-1"><h4 class="font-semibold">${escapeHtml(d.name)}</h4><p class="text-xs text-gray-500">Click to open dashboard</p></div>
                     <i class="fas fa-arrow-right text-gray-400"></i>
                 </div>`; 
@@ -682,7 +625,7 @@ async function loadDepartmentsForDropdowns() {
         document.getElementById('departmentsPage').innerHTML = html + '</div>';
     }
     
-    // ==================== PROJECTS WITH IMAGE UPLOAD ====================
+    // ==================== PROJECTS ====================
     async function loadProjects(highlightId = null) {
         const res = await apiCall('get_projects.php');
         if (res.success && res.data) projectsData = res.data.sort((a,b) => b.id - a.id);
@@ -719,36 +662,18 @@ async function loadDepartmentsForDropdowns() {
         if (highlightId) document.getElementById(`proj-card-${highlightId}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
     
-async function markProjectAsViewed(projectId) {
-    try {
+    async function markProjectAsViewed(projectId) {
         const res = await apiCall('mark_project_viewed.php', 'POST', { project_id: projectId });
         if (res.success) {
-            // Update local data
             const project = projectsData.find(p => p.id === projectId);
             if (project) project.is_viewed_by_admin = 1;
-            
-            // Update count from server response
-            if (res.unviewed_count !== undefined) {
-                unviewedProjectsCount = res.unviewed_count;
-            } else {
-                unviewedProjectsCount = Math.max(0, unviewedProjectsCount - 1);
-            }
-            
+            unviewedProjectsCount = Math.max(0, unviewedProjectsCount - 1);
             updateProjectBadge();
-            await loadProjects();
-            await loadDashboard();
+            loadProjects();
+            loadDashboard();
             showToast('Project marked as viewed');
         }
-    } catch (error) {
-        console.error('Error marking project:', error);
-        const project = projectsData.find(p => p.id === projectId);
-        if (project) project.is_viewed_by_admin = 1;
-        unviewedProjectsCount = Math.max(0, unviewedProjectsCount - 1);
-        updateProjectBadge();
-        loadProjects();
     }
-}
-
     
     function viewProjectDetails(id) {
         const p = projectsData.find(p => p.id === id);
@@ -762,28 +687,11 @@ async function markProjectAsViewed(projectId) {
             }
             const imageHtml = imageUrl ? `<img src="${imageUrl}?t=${new Date().getTime()}" class="w-full h-48 object-cover rounded-lg mb-3 cursor-pointer" onclick="showFullImage('${imageUrl}')">` : '<div class="no-image w-full h-48 mb-3"><i class="fas fa-image text-3xl"></i></div>';
             document.getElementById('viewProjContent').innerHTML = `${imageHtml}<div class="space-y-1"><p><strong>Name:</strong> ${escapeHtml(p.name)}</p><p><strong>Client:</strong> ${escapeHtml(p.client_name || 'N/A')}</p><p><strong>Amount:</strong> ${formatMoney(p.amount)}</p><p><strong>Status:</strong> ${p.status}</p><p><strong>Progress:</strong> ${p.progress}%</p><p><strong>Location:</strong> ${escapeHtml(p.location || 'N/A')}</p><p><strong>Description:</strong> ${escapeHtml(p.description || 'N/A')}</p></div>`;
-            
-            let deptOptions = '';
-            departmentsList.forEach(d => { deptOptions += `<a onclick="sendProjectToDept(${p.id}, ${d.id})">${escapeHtml(d.name)}</a>`; });
-            
             document.getElementById('viewProjButtons').innerHTML = `
-                <button onclick="exportSingleProjectExcel(${p.id})" class="detail-btn excel"><i class="fas fa-file-excel"></i> Excel</button>
-                <button onclick="exportSingleProjectPDF(${p.id})" class="detail-btn pdf"><i class="fas fa-file-pdf"></i> PDF</button>
-                ${imageUrl ? `<button onclick="showFullImage('${imageUrl}')" class="detail-btn image"><i class="fas fa-image"></i> View Full Image</button>` : ''}
-                <div class="send-dropdown"><button class="detail-btn send" onclick="toggleSendDropdown('projectSendDropdown-${p.id}')"><i class="fas fa-paper-plane"></i> Send to Department</button>
-                    <div id="projectSendDropdown-${p.id}" class="send-dropdown-content">${deptOptions}</div></div>
-            `;
+                <button onclick="exportSingleProjectExcel(${p.id})" class="detail-btn excel btn-success text-white px-3 py-1.5 rounded text-sm"><i class="fas fa-file-excel"></i> Excel</button>
+                <button onclick="exportSingleProjectPDF(${p.id})" class="detail-btn pdf btn-danger text-white px-3 py-1.5 rounded text-sm"><i class="fas fa-file-pdf"></i> PDF</button>
+                ${imageUrl ? `<button onclick="showFullImage('${imageUrl}')" class="detail-btn image btn-primary text-white px-3 py-1.5 rounded text-sm"><i class="fas fa-image"></i> View Full Image</button>` : ''}`;
             openModal('viewProjModal');
-        }
-    }
-    
-    async function sendProjectToDept(projectId, deptId) {
-        const p = projectsData.find(p => p.id === projectId);
-        if (p) {
-            const res = await apiCall('send_project.php', 'POST', { project_id: projectId, to_department_id: deptId });
-            if (res.success) showToast(`Project "${p.name}" sent to ${departmentNames[deptId]}`);
-            else showToast(`Project sent to ${departmentNames[deptId]}`, false);
-            toggleSendDropdown(`projectSendDropdown-${projectId}`);
         }
     }
     
@@ -800,14 +708,8 @@ async function markProjectAsViewed(projectId) {
     function exportSingleProjectPDF(projectId) {
         const p = projectsData.find(p => p.id === projectId);
         if (p) {
-            let imageHtml = '';
-            if (p.image && p.image !== '') {
-                let imgUrl = p.image;
-                if (!imgUrl.startsWith('http')) imgUrl = '/geotraverse/frontend/assets/uploads/projects/' + imgUrl;
-                imageHtml = `<img src="${imgUrl}" style="max-width:100%; max-height:200px; object-fit:cover; margin-bottom:15px;">`;
-            }
             let element = document.createElement('div');
-            element.innerHTML = `<div style="padding:20px"><h1 style="color:#0f74ba;">${escapeHtml(p.name)}</h1>${imageHtml}<p><strong>Client:</strong> ${p.client_name}</p><p><strong>Amount:</strong> ${formatMoney(p.amount)}</p><p><strong>Status:</strong> ${p.status}</p><p><strong>Progress:</strong> ${p.progress}%</p><p><strong>Location:</strong> ${p.location}</p><p><strong>Description:</strong> ${p.description || 'N/A'}</p><p>Generated: ${new Date().toLocaleString()}</p></div>`;
+            element.innerHTML = `<div style="padding:20px"><h1 style="color:#0f74ba;">${escapeHtml(p.name)}</h1><p><strong>Client:</strong> ${p.client_name}</p><p><strong>Amount:</strong> ${formatMoney(p.amount)}</p><p><strong>Status:</strong> ${p.status}</p><p><strong>Progress:</strong> ${p.progress}%</p><p><strong>Location:</strong> ${p.location}</p><p><strong>Description:</strong> ${p.description || 'N/A'}</p><p>Generated: ${new Date().toLocaleString()}</p></div>`;
             html2pdf().set({ margin: 0.5, filename: `project_${p.id}.pdf` }).from(element).save();
             showToast('Exported to PDF');
         }
@@ -934,20 +836,20 @@ async function markProjectAsViewed(projectId) {
         }
         
         let html = `<div class="flex justify-between flex-wrap gap-3 mb-4"><h2 class="text-xl font-bold"><i class="fas fa-calendar-day text-purple-600 mr-2"></i>Daily Work (${dailyworkData.length})</h2><div class="flex gap-2"><button onclick="openModal('dailyworkModal')" class="btn-primary"><i class="fas fa-plus mr-1"></i> Add</button><button onclick="exportDailyWorkToExcel()" class="btn-success"><i class="fas fa-file-excel mr-1"></i> Excel</button><button onclick="exportDailyWorkToPDF()" class="btn-danger"><i class="fas fa-file-pdf mr-1"></i> PDF</button></div></div>
-        <div class="bg-white rounded-xl overflow-x-auto shadow-sm border border-gray-100"><table class="min-w-full"><thead class="bg-gray-50"><tr class="border-b"><th class="p-3">Date</th><th class="p-3">Dept</th><th class="p-3">Project</th><th class="p-3">Income</th><th class="p-3">Expenses</th><th class="p-3">Profit</th><th class="p-3">Status</th><th class="p-3">Actions</th></tr></thead><tbody>`;
+        <div class="bg-white rounded-xl overflow-x-auto shadow-sm border border-gray-100"><table class="min-w-full"><thead class="bg-gray-50"><tr class="border-b"><th class="p-3 text-left">Date</th><th class="p-3 text-left">Dept</th><th class="p-3 text-left">Project</th><th class="p-3 text-left">Income</th><th class="p-3 text-left">Expenses</th><th class="p-3 text-left">Profit</th><th class="p-3 text-left">Status</th><th class="p-3 text-left">Actions</th></tr></thead><tbody>`;
         dailyworkData.forEach(w => { 
             const isHighlighted = highlightId && w.id === highlightId;
             let profit = (w.income||0) - (w.expenses||0);
             html += `<tr class="border-b hover:bg-gray-50 transition ${isHighlighted ? 'search-highlight' : ''}" id="daily-row-${w.id}">
-                <td class="p-3">${w.date}<\/td>
-                <td class="p-3">${departmentNames[w.department_id]||w.department_id}<\/td>
-                <td class="p-3 font-medium">${escapeHtml(w.project_name)}<\/td>
-                <td class="p-3 text-green-600 font-semibold">${formatMoney(w.income)}<\/td>
-                <td class="p-3 text-red-600">${formatMoney(w.expenses)}<\/td>
-                <td class="p-3 ${profit>=0?'text-green-600':'text-red-600'} font-semibold">${formatMoney(profit)}<\/td>
-                <td class="p-3"><span class="status-badge ${w.status==='paid'?'status-paid':'status-partial'}">${w.status}</span><\/td>
-                <td class="p-3"><div class="flex gap-2"><button onclick="viewDailyWork(${w.id})" class="action-btn view"><i class="fas fa-eye"></i><\/button><button onclick="editDailyWork(${w.id})" class="action-btn edit"><i class="fas fa-edit"></i><\/button><button onclick="deleteDailyWork(${w.id})" class="action-btn delete"><i class="fas fa-trash"></i><\/button><\/div><\/td>
-            <\/tr>`; 
+                <td class="p-3">${w.date}</td>
+                <td class="p-3">${departmentNames[w.department_id]||w.department_id}</td>
+                <td class="p-3 font-medium">${escapeHtml(w.project_name)}</td>
+                <td class="p-3 text-green-600 font-semibold">${formatMoney(w.income)}</td>
+                <td class="p-3 text-red-600">${formatMoney(w.expenses)}</td>
+                <td class="p-3 ${profit>=0?'text-green-600':'text-red-600'} font-semibold">${formatMoney(profit)}</td>
+                <td class="p-3"><span class="status-badge ${w.status==='paid'?'status-paid':'status-partial'}">${w.status}</span></td>
+                <td class="p-3"><div class="flex gap-2"><button onclick="viewDailyWork(${w.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="editDailyWork(${w.id})" class="action-btn edit"><i class="fas fa-edit"></i></button><button onclick="deleteDailyWork(${w.id})" class="action-btn delete"><i class="fas fa-trash"></i></button></div></td>
+             </tr>`; 
         });
         html += `</tbody>}</div>`;
         document.getElementById('dailyworkPage').innerHTML = html;
@@ -963,7 +865,7 @@ async function markProjectAsViewed(projectId) {
     
     function exportDailyWorkToPDF() {
         let element = document.createElement('div');
-        element.innerHTML = `<div style="padding:20px"><h1>Daily Work Report</h1><p>${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8">${dailyworkData.map(w => `<tr><td class="px-2 py-1">${w.date}<\/td><td class="px-2 py-1">${w.project_name}<\/td><td class="px-2 py-1">${formatMoney(w.income)}<\/td><td class="px-2 py-1">${formatMoney(w.expenses)}<\/td><td class="px-2 py-1">${formatMoney(w.income - w.expenses)}<\/td><\/tr>`).join('')}<\/table><\/div>`;
+        element.innerHTML = `<div style="padding:20px"><h1>Daily Work Report</h1><p>${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><tr><th>Date</th><th>Project</th><th>Income</th><th>Expenses</th><th>Profit</th></tr>${dailyworkData.map(w => `<tr><td>${w.date}</td><td>${w.project_name}</td><td>${formatMoney(w.income)}</td><td>${formatMoney(w.expenses)}</td><td>${formatMoney(w.income - w.expenses)}</td></tr>`).join('')}</table></div>`;
         html2pdf().set({ margin: 0.5, filename: `dailywork_report.pdf` }).from(element).save();
         showToast('Exported to PDF');
     }
@@ -1019,7 +921,7 @@ async function markProjectAsViewed(projectId) {
         } 
     }
     
-    // ==================== CASHFLOW (WORKING) ====================
+    // ==================== CASHFLOW ====================
     async function loadCashflow(highlightId = null) {
         const res = await apiCall('get_transactions.php');
         
@@ -1029,7 +931,6 @@ async function markProjectAsViewed(projectId) {
             transactionsData = [];
         }
         
-        // Calculate totals
         let totalIncome = 0, totalExpense = 0, totalPending = 0;
         for (let t of transactionsData) {
             let amount = parseFloat(t.amount) || 0;
@@ -1064,20 +965,19 @@ async function markProjectAsViewed(projectId) {
             <div class="bg-gradient-to-r from-orange-50 to-orange-100 rounded-xl p-3 text-center"><p class="text-xs text-gray-500 uppercase">Pending</p><p class="text-xl font-bold text-orange-600">${formatMoney(totalPending)}</p></div>
         </div>
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="table-responsive">
-                <table class="cashflow-table min-w-full">
-                    <thead><tr class="bg-gray-50 border-b"><th class="p-3">Date</th><th class="p-3">Type</th><th class="p-3">Source</th><th class="p-3 text-right">Amount</th><th class="p-3">Status</th><th class="p-3 text-center">Actions</th></td></thead><tbody>`;
+            <div class="overflow-x-auto">
+                <table class="min-w-full"><thead><tr class="bg-gray-50 border-b"><th class="p-3 text-left">Date</th><th class="p-3 text-left">Type</th><th class="p-3 text-left">Source</th><th class="p-3 text-right">Amount</th><th class="p-3 text-left">Status</th><th class="p-3 text-center">Actions</th></tr></thead><tbody>`;
         
         for (let t of transactionsData) { 
             const isHighlighted = highlightId && t.id === highlightId;
             html += `<tr class="${t.type==='income' ? 'income-row' : 'expense-row'} border-b hover:bg-gray-50 transition ${isHighlighted ? 'search-highlight' : ''}" id="trans-row-${t.id}">
-                <td class="p-3">${t.transaction_date}<\/td>
-                <td class="p-3"><span class="status-badge ${t.type==='income' ? 'status-paid' : 'status-partial'}"><i class="fas ${t.type==='income' ? 'fa-arrow-up' : 'fa-arrow-down'} mr-1"></i>${t.type}</span><\/td>
-                <td class="p-3 font-medium">${escapeHtml(t.source)}<\/td>
-                <td class="p-3 text-right ${t.type==='income' ? 'text-green-600' : 'text-red-600'} font-bold">${formatMoney(t.amount)}<\/td>
-                <td class="p-3"><span class="status-badge ${t.status==='paid' ? 'status-paid' : t.status==='partial' ? 'status-partial' : 'status-pending'}">${t.status}</span><\/td>
-                <td class="p-3 text-center"><div class="flex gap-2 justify-center"><button onclick="viewTransaction(${t.id})" class="action-btn view"><i class="fas fa-eye"></i><\/button><button onclick="editTransaction(${t.id})" class="action-btn edit"><i class="fas fa-edit"></i><\/button><button onclick="deleteTransaction(${t.id})" class="action-btn delete"><i class="fas fa-trash"></i><\/button><\/div><\/td>
-            <\/tr>`; 
+                <td class="p-3">${t.transaction_date}</td>
+                <td class="p-3"><span class="status-badge ${t.type==='income' ? 'status-paid' : 'status-partial'}"><i class="fas ${t.type==='income' ? 'fa-arrow-up' : 'fa-arrow-down'} mr-1"></i>${t.type}</span></td>
+                <td class="p-3 font-medium">${escapeHtml(t.source)}</td>
+                <td class="p-3 text-right ${t.type==='income' ? 'text-green-600' : 'text-red-600'} font-bold">${formatMoney(t.amount)}</td>
+                <td class="p-3"><span class="status-badge ${t.status==='paid' ? 'status-paid' : t.status==='partial' ? 'status-partial' : 'status-pending'}">${t.status}</span></td>
+                <td class="p-3 text-center"><div class="flex gap-2 justify-center"><button onclick="viewTransaction(${t.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="editTransaction(${t.id})" class="action-btn edit"><i class="fas fa-edit"></i></button><button onclick="deleteTransaction(${t.id})" class="action-btn delete"><i class="fas fa-trash"></i></button></div></td>
+             </tr>`; 
         }
         html += `</tbody>}</div></div>`;
         document.getElementById('cashflowPage').innerHTML = html;
@@ -1093,7 +993,7 @@ async function markProjectAsViewed(projectId) {
     
     function exportCashflowToPDF() {
         let element = document.createElement('div');
-        element.innerHTML = `<div style="padding:20px"><h1>Cashflow Report</h1><p>${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8">${transactionsData.map(t => `<tr><td class="px-2 py-1">${t.transaction_date}<\/td><td class="px-2 py-1">${t.type}<\/td><td class="px-2 py-1">${t.source}<\/td><td class="px-2 py-1">${formatMoney(t.amount)}<\/td><\/tr>`).join('')}<\/table><\/div>`;
+        element.innerHTML = `<div style="padding:20px"><h1>Cashflow Report</h1><p>${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><tr><th>Date</th><th>Type</th><th>Source</th><th>Amount</th></tr>${transactionsData.map(t => `<tr><td>${t.transaction_date}</td><td>${t.type}</td><td>${t.source}</td><td>${formatMoney(t.amount)}</td></tr>`).join('')}</table></div>`;
         html2pdf().set({ margin: 0.5, filename: `cashflow_report.pdf` }).from(element).save();
         showToast('Exported to PDF');
     }
@@ -1107,73 +1007,67 @@ async function markProjectAsViewed(projectId) {
         } 
     }
     
-function editTransaction(id) { 
-    const t = transactionsData.find(t => t.id === parseInt(id)); 
-    if(t) { 
-        document.getElementById('transId').value = t.id; 
-        document.getElementById('transType').value = t.type; 
-        document.getElementById('transDept').value = t.department_id; 
-        document.getElementById('transSource').value = t.source; 
-        document.getElementById('transAmount').value = t.amount; 
-        document.getElementById('transDate').value = t.transaction_date; 
-        document.getElementById('transStatus').value = t.status; 
-        document.getElementById('transDesc').value = t.description || ''; 
+    function editTransaction(id) { 
+        const t = transactionsData.find(t => t.id === parseInt(id)); 
+        if(t) { 
+            document.getElementById('transId').value = t.id; 
+            document.getElementById('transType').value = t.type; 
+            document.getElementById('transDept').value = t.department_id; 
+            document.getElementById('transSource').value = t.source; 
+            document.getElementById('transAmount').value = t.amount; 
+            document.getElementById('transDate').value = t.transaction_date; 
+            document.getElementById('transStatus').value = t.status; 
+            document.getElementById('transDesc').value = t.description || ''; 
+            if (t.status === 'partial') {
+                document.getElementById('transPaidAmount').classList.remove('hidden');
+                document.getElementById('transPaidAmount').value = t.paid_amount || 0;
+            } else {
+                document.getElementById('transPaidAmount').classList.add('hidden');
+            }
+            openModal('transModal'); 
+        } else {
+            showToast('Transaction not found', true);
+        }
+    }
+    
+    async function saveTransaction() { 
+        let id = document.getElementById('transId').value; 
+        let data = { 
+            type: document.getElementById('transType').value, 
+            source: document.getElementById('transSource').value, 
+            amount: parseAmount(document.getElementById('transAmount').value), 
+            transaction_date: document.getElementById('transDate').value || new Date().toISOString().split('T')[0], 
+            status: document.getElementById('transStatus').value, 
+            description: document.getElementById('transDesc').value, 
+            department_id: parseInt(document.getElementById('transDept').value) || 1 
+        }; 
         
-        // Also set paid_amount if needed
-        if (document.getElementById('transPaidAmount')) {
-            document.getElementById('transPaidAmount').value = t.paid_amount || 0;
+        if (data.status === 'partial') {
+            data.paid_amount = parseAmount(document.getElementById('transPaidAmount').value);
         }
         
-        openModal('transModal'); 
-    } else {
-        showToast('Transaction not found', true);
-    }
-}
-    
-// Badilisha saveTransaction function
-async function saveTransaction() { 
-    let id = document.getElementById('transId').value; 
-    let data = { 
-        type: document.getElementById('transType').value, 
-        source: document.getElementById('transSource').value, 
-        amount: parseAmount(document.getElementById('transAmount').value), 
-        transaction_date: document.getElementById('transDate').value || new Date().toISOString().split('T')[0], 
-        status: document.getElementById('transStatus').value, 
-        description: document.getElementById('transDesc').value, 
-        department_id: parseInt(document.getElementById('transDept').value) || 1 
-    }; 
-    
-    // Add paid_amount if partial
-    if (data.status === 'partial' && document.getElementById('transPaidAmount')) {
-        data.paid_amount = parseAmount(document.getElementById('transPaidAmount').value);
-    }
-    
-    if(!data.source || data.amount <= 0) { 
-        showToast('Source and valid amount required', true); 
-        return; 
-    }
-    
-    let url = id ? 'update_transaction.php' : 'add_transaction.php';
-    let res = await apiCall(url, 'POST', data);
-    
-    console.log('Transaction save response:', res);
-    
-    if(res && res.success) { 
-        showToast(id ? 'Transaction updated' : 'Transaction added'); 
-        closeModal('transModal'); 
+        if(!data.source || data.amount <= 0) { 
+            showToast('Source and valid amount required', true); 
+            return; 
+        }
         
-        // Clear form
-        document.getElementById('transId').value = '';
-        document.getElementById('transSource').value = '';
-        document.getElementById('transAmount').value = '';
-        document.getElementById('transDesc').value = '';
+        let url = id ? 'update_transaction.php' : 'add_transaction.php';
+        let res = await apiCall(url, 'POST', data);
         
-        await loadCashflow(); 
-        await loadDashboard(); 
-    } else { 
-        showToast((res && res.message) || 'Failed to save transaction', true); 
+        if(res && res.success) { 
+            showToast(id ? 'Transaction updated' : 'Transaction added'); 
+            closeModal('transModal'); 
+            document.getElementById('transId').value = '';
+            document.getElementById('transSource').value = '';
+            document.getElementById('transAmount').value = '';
+            document.getElementById('transDesc').value = '';
+            document.getElementById('transPaidAmount').value = '';
+            await loadCashflow(); 
+            await loadDashboard(); 
+        } else { 
+            showToast((res && res.message) || 'Failed to save transaction', true); 
+        }
     }
-}
     
     async function deleteTransaction(id) { 
         if(confirm('Delete this transaction?')) { 
@@ -1181,6 +1075,176 @@ async function saveTransaction() {
             if(res.success) { showToast('Transaction deleted'); loadCashflow(); loadDashboard(); } 
             else showToast(res.message || 'Failed', true); 
         } 
+    }
+    
+    // ==================== MESSAGES ====================
+    async function loadMessages(highlightId = null) {
+        const res = await apiCall('get_messages.php');
+        
+        if (res.success && res.data) {
+            messagesData = res.data.sort((a,b) => {
+                // Sort by unread first, then by last message time
+                if (a.unread_count > 0 && b.unread_count === 0) return -1;
+                if (a.unread_count === 0 && b.unread_count > 0) return 1;
+                return new Date(b.last_message_time) - new Date(a.last_message_time);
+            });
+        } else {
+            messagesData = [];
+        }
+        updateMessageBadge();
+        
+        let html = `<div class="flex justify-between flex-wrap gap-3 mb-4">
+            <h2 class="text-xl font-bold"><i class="fas fa-envelope text-blue-600 mr-2"></i>Messages (${messagesData.length})</h2>
+            <button onclick="openModal('msgModal')" class="btn-primary"><i class="fas fa-paper-plane mr-1"></i> New Message</button>
+        </div>
+        <div class="messages-grid" id="messagesGridContainer"></div>`;
+        
+        document.getElementById('messagesPage').innerHTML = html;
+        
+        if (messagesData.length === 0) { 
+            document.getElementById('messagesGridContainer').innerHTML = '<div class="col-span-3 text-center py-12 text-gray-400 bg-white rounded-xl">No messages found. Start a conversation!</div>'; 
+            return; 
+        }
+        
+        let msgsHtml = '';
+        for (let conv of messagesData) {
+            const isUnread = conv.unread_count > 0;
+            const preview = conv.last_message ? (conv.last_message.substring(0, 80) + (conv.last_message.length > 80 ? '...' : '')) : 'No messages';
+            const isHighlighted = highlightId && conv.conversation_id === highlightId;
+            msgsHtml += `<div class="message-item ${isUnread ? 'message-unread' : ''} ${isHighlighted ? 'search-highlight' : ''}" onclick="openChat(${conv.conversation_id}, '${escapeHtml(conv.department_name)}')">
+                <div class="delete-conv-btn" onclick="event.stopPropagation(); deleteConversation(${conv.conversation_id})" title="Delete conversation"><i class="fas fa-trash-alt text-xs"></i></div>
+                <div class="message-header">
+                    <div><span class="font-semibold">${escapeHtml(conv.department_name)}</span>${isUnread ? `<span class="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full ml-2">${conv.unread_count}</span>` : ''}</div>
+                    <span class="text-[10px] text-gray-400">${conv.last_message_time ? new Date(conv.last_message_time).toLocaleString() : ''}</span>
+                </div>
+                <div class="message-preview">${escapeHtml(preview)}</div>
+            </div>`;
+        }
+        document.getElementById('messagesGridContainer').innerHTML = msgsHtml;
+        if (highlightId) {
+            const msgDiv = Array.from(document.querySelectorAll('.message-item')).find(el => el.textContent.includes(highlightId));
+            if (msgDiv) msgDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+    
+    async function deleteConversation(conversationId) {
+        if (confirm('Are you sure you want to delete this entire conversation? This action cannot be undone.')) {
+            const res = await apiCall('delete_conversation.php', 'DELETE', { conversation_id: conversationId });
+            if (res && res.success) {
+                showToast('Conversation deleted');
+                loadMessages();
+                if (currentConversationId === conversationId) {
+                    closeModal('chatModal');
+                }
+            } else {
+                showToast((res && res.message) || 'Failed to delete conversation', true);
+            }
+        }
+    }
+    
+    async function deleteMessage(messageId) {
+        if (confirm('Delete this message?')) {
+            const res = await apiCall('delete_message.php', 'DELETE', { message_id: messageId });
+            if (res && res.success) {
+                showToast('Message deleted');
+                if (currentConversationId) {
+                    openChat(currentConversationId, '');
+                }
+                loadMessages();
+            } else {
+                showToast((res && res.message) || 'Failed to delete message', true);
+            }
+        }
+    }
+    
+    async function sendNewMessage() { 
+        let departmentUserId = document.getElementById('msgTo').value; 
+        let msg = document.getElementById('msgContent').value; 
+        if (!departmentUserId || !msg) { showToast('Select recipient and enter message', true); return; } 
+        
+        let res = await apiCall('send_message.php', 'POST', { 
+            department_user_id: parseInt(departmentUserId), 
+            message: msg,
+            subject: 'New Message'
+        }); 
+        
+        if (res && res.success) { 
+            showToast('Message sent'); 
+            closeModal('msgModal'); 
+            document.getElementById('msgContent').value = '';
+            await loadMessages(); 
+            if (res.data && res.data.conversation_id) {
+                setTimeout(() => openChat(res.data.conversation_id, ''), 500);
+            }
+        } else { 
+            showToast((res && res.message) || 'Failed to send message', true); 
+        }
+    }
+    
+    async function openChat(conversationId, deptName) { 
+        currentConversationId = conversationId;
+        document.getElementById('chatModalTitle').innerHTML = `<i class="fas fa-comments text-blue-500 mr-2"></i>Chat with ${deptName}`;
+        
+        const res = await apiCall(`get_conversation.php?conversation_id=${conversationId}`);
+        
+        if (res.success && res.data) {
+            const conversation = res.data;
+            currentReceiverId = conversation.department_user_id;
+            const msgs = conversation.messages || [];
+            
+            let chatHtml = '';
+            if (msgs.length === 0) { 
+                chatHtml = '<div class="text-center text-gray-400 py-8">No messages yet. Start the conversation!</div>'; 
+            } else {
+                for (let m of msgs) {
+                    const isSent = (m.sender_type === 'admin');
+                    chatHtml += `<div class="chat-message ${isSent ? 'chat-sent' : 'chat-received'}">
+                        <div class="chat-bubble">
+                            <div>${escapeHtml(m.message)}</div>
+                            <span class="chat-time">${new Date(m.created_at).toLocaleString()}</span>
+                        </div>
+                        <div class="delete-msg-btn" onclick="event.stopPropagation(); deleteMessage(${m.id})" title="Delete message"><i class="fas fa-trash-alt text-[8px]"></i></div>
+                    </div>`;
+                }
+            }
+            document.getElementById('chatMessagesArea').innerHTML = chatHtml;
+            const chatArea = document.getElementById('chatMessagesArea');
+            chatArea.scrollTop = chatArea.scrollHeight;
+            openModal('chatModal');
+            
+            // Refresh message list to update unread count
+            loadMessages();
+        } else {
+            showToast('Error loading conversation', true);
+            openModal('chatModal');
+        }
+    }
+    
+    async function sendChatMessage() { 
+        let msg = document.getElementById('replyMsg').value;
+        if (!msg.trim()) {
+            showToast('Enter a message', true);
+            return;
+        }
+        
+        if (!currentConversationId) {
+            showToast('No active conversation', true);
+            return;
+        }
+        
+        let res = await apiCall('send_message.php', 'POST', { 
+            conversation_id: currentConversationId,
+            message: msg 
+        });
+        
+        if (res && res.success) {
+            document.getElementById('replyMsg').value = '';
+            openChat(currentConversationId, '');
+            loadMessages();
+            showToast('Message sent');
+        } else {
+            showToast((res && res.message) || 'Failed to send message', true);
+        }
     }
     
     // ==================== REPORTS ====================
@@ -1212,23 +1276,15 @@ async function saveTransaction() {
     }
     
     async function markReportAsViewed(reportId) {
-        try {
-            const res = await apiCall('mark_report_viewed.php', 'POST', { report_id: reportId });
-            if (res.success) {
-                const report = reportsData.find(r => r.id === reportId);
-                if (report) report.is_viewed_by_admin = 1;
-                unviewedReportsCount = Math.max(0, unviewedReportsCount - 1);
-                updateReportBadge();
-                await loadReports();
-                await loadDashboard();
-                showToast('Report marked as viewed');
-            }
-        } catch (error) {
+        const res = await apiCall('mark_report_viewed.php', 'POST', { report_id: reportId });
+        if (res.success) {
             const report = reportsData.find(r => r.id === reportId);
             if (report) report.is_viewed_by_admin = 1;
             unviewedReportsCount = Math.max(0, unviewedReportsCount - 1);
             updateReportBadge();
             loadReports();
+            loadDashboard();
+            showToast('Report marked as viewed');
         }
     }
     
@@ -1237,27 +1293,10 @@ async function saveTransaction() {
         if (r) {
             if (r.is_viewed_by_admin === 0 && r.department_id !== 1) markReportAsViewed(id);
             document.getElementById('viewReportContent').innerHTML = `<p><strong>Department:</strong> ${departmentNames[r.department_id] || 'Admin'}</p><p><strong>Period:</strong> ${r.period}</p><p><strong>Created:</strong> ${formatDate(r.created_at)}</p><div class="bg-gray-100 p-4 rounded-lg mt-3 whitespace-pre-wrap">${escapeHtml(r.content)}</div>`;
-            
-            let deptOptions = '';
-            departmentsList.forEach(d => { deptOptions += `<a onclick="sendReportToDept(${r.id}, ${d.id})">${escapeHtml(d.name)}</a>`; });
-            
             document.getElementById('viewReportButtons').innerHTML = `
-                <button onclick="exportSingleReportExcel(${r.id})" class="detail-btn excel"><i class="fas fa-file-excel"></i> Excel</button>
-                <button onclick="exportSingleReportPDF(${r.id})" class="detail-btn pdf"><i class="fas fa-file-pdf"></i> PDF</button>
-                <div class="send-dropdown"><button class="detail-btn send" onclick="toggleSendDropdown('reportSendDropdown-${r.id}')"><i class="fas fa-paper-plane"></i> Send to Department</button>
-                    <div id="reportSendDropdown-${r.id}" class="send-dropdown-content">${deptOptions}</div></div>
-            `;
+                <button onclick="exportSingleReportExcel(${r.id})" class="btn-success text-white px-3 py-1.5 rounded text-sm"><i class="fas fa-file-excel"></i> Excel</button>
+                <button onclick="exportSingleReportPDF(${r.id})" class="btn-danger text-white px-3 py-1.5 rounded text-sm"><i class="fas fa-file-pdf"></i> PDF</button>`;
             openModal('viewReportModal');
-        }
-    }
-    
-    async function sendReportToDept(reportId, deptId) {
-        const r = reportsData.find(r => r.id === reportId);
-        if (r) {
-            const res = await apiCall('send_report.php', 'POST', { report_id: reportId, to_department_id: deptId });
-            if (res.success) showToast(`Report "${r.title}" sent to ${departmentNames[deptId]}`);
-            else showToast(`Report sent to ${departmentNames[deptId]}`, false);
-            toggleSendDropdown(`reportSendDropdown-${reportId}`);
         }
     }
     
@@ -1309,139 +1348,8 @@ async function saveTransaction() {
         } 
     }
     
-    // ==================== MESSAGES ====================
-async function loadMessages(highlightId = null) {
-    const res = await apiCall('get_messages.php');
-    
-    if (res.success && res.data) {
-        messagesData = res.data;
-    } else {
-        messagesData = [];
-    }
-    updateMessageBadge();
-    
-    let conversations = messagesData;
-    
-    let html = `<div class="flex justify-between flex-wrap gap-3 mb-4">
-        <h2 class="text-xl font-bold"><i class="fas fa-envelope text-blue-600 mr-2"></i>Messages (${conversations.length})</h2>
-        <button onclick="openModal('msgModal')" class="btn-primary"><i class="fas fa-paper-plane mr-1"></i> New Message</button>
-    </div>
-    <div class="space-y-2" id="messagesListContainer"></div>`;
-    
-    document.getElementById('messagesPage').innerHTML = html;
-    
-    if (conversations.length === 0) { 
-        document.getElementById('messagesListContainer').innerHTML = '<div class="bg-white rounded-xl p-8 text-center text-gray-400">No messages found</div>'; 
-        return; 
-    }
-    
-    let msgsHtml = '';
-    for (let conv of conversations) {
-        const isUnread = conv.unread_count > 0;
-        const preview = conv.last_message ? (conv.last_message.substring(0, 80) + (conv.last_message.length > 80 ? '...' : '')) : 'No messages';
-        msgsHtml += `<div class="message-item ${isUnread ? 'message-unread' : ''}" onclick="openChat(${conv.conversation_id}, '${escapeHtml(conv.department_name)}')">
-            <div class="message-header">
-                <div><span class="font-semibold">${escapeHtml(conv.department_name)}</span>${isUnread ? `<span class="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full ml-2">${conv.unread_count}</span>` : ''}</div>
-                <span class="text-[10px] text-gray-400">${conv.last_message_time ? new Date(conv.last_message_time).toLocaleString() : ''}</span>
-            </div>
-            <div class="message-preview">${escapeHtml(preview)}</div>
-        </div>`;
-    }
-    document.getElementById('messagesListContainer').innerHTML = msgsHtml;
-}
-    
-async function sendNewMessage() { 
-    let departmentUserId = document.getElementById('msgTo').value; 
-    let msg = document.getElementById('msgContent').value; 
-    if (!departmentUserId || !msg) { showToast('Select department user and enter message', true); return; } 
-    
-    let res = await apiCall('send_message.php', 'POST', { 
-        department_user_id: parseInt(departmentUserId), 
-        message: msg 
-    }); 
-    
-    if (res && res.success) { 
-        showToast('Message sent'); 
-        closeModal('msgModal'); 
-        document.getElementById('msgContent').value = '';
-        await loadMessages(); 
-    } else { 
-        showToast((res && res.message) || 'Failed to send message', true); 
-    }
-}
-    
-function openChat(conversationId, deptName) { 
-    document.getElementById('chatModalTitle').innerHTML = `Chat with ${deptName}`; 
-    
-    fetch(API_BASE + `get_conversation.php?conversation_id=${conversationId}`)
-        .then(res => res.json())
-        .then(data => {
-            let msgs = [];
-            if (data.success && data.data && data.data.messages) {
-                msgs = data.data.messages;
-                document.currentConversationId = conversationId;
-                document.currentReceiverId = data.data.department_id;
-            }
-            
-            let chatHtml = '';
-            if (!msgs || msgs.length === 0) { 
-                chatHtml = '<div class="text-center text-gray-400 py-8">No messages yet. Start the conversation!</div>'; 
-            } else {
-                for (let m of msgs) {
-                    const isSent = (m.sender_type === 'admin');
-                    chatHtml += `<div class="chat-message ${isSent ? 'chat-sent' : 'chat-received'}">
-                        <div class="chat-bubble">
-                            <div>${escapeHtml(m.message)}</div>
-                            <span class="chat-time">${new Date(m.created_at).toLocaleString()}</span>
-                        </div>
-                    </div>`;
-                }
-            }
-            document.getElementById('chatMessagesArea').innerHTML = chatHtml;
-            if (msgs.length > 0) {
-                const chatArea = document.getElementById('chatMessagesArea');
-                chatArea.scrollTop = chatArea.scrollHeight;
-            }
-            openModal('chatModal'); 
-        })
-        .catch(error => {
-            console.error('Error fetching conversation:', error);
-            document.getElementById('chatMessagesArea').innerHTML = '<div class="text-center text-gray-400 py-8">Error loading messages</div>';
-            openModal('chatModal');
-        });
-}
-    
-async function sendChatMessage() { 
-    let msg = document.getElementById('replyMsg').value;
-    if (!msg.trim()) {
-        showToast('Enter a message', true);
-        return;
-    }
-    
-    let conversationId = document.currentConversationId;
-    if (!conversationId) {
-        showToast('No active conversation', true);
-        return;
-    }
-    
-    let res = await apiCall('send_message.php', 'POST', { 
-        conversation_id: conversationId,
-        message: msg 
-    });
-    
-    if (res && res.success) {
-        document.getElementById('replyMsg').value = '';
-        // Reload chat
-        openChat(conversationId, document.getElementById('chatModalTitle').innerHTML.replace('Chat with ', ''));
-        showToast('Message sent');
-        loadMessages(); // Refresh message list
-    } else {
-        showToast((res && res.message) || 'Failed to send message', true);
-    }
-}
     // ==================== SETTINGS ====================
     function loadSettings() {
-        const savedColor = localStorage.getItem('sidebar_color') || '#0f74ba';
         const darkMode = document.body.classList.contains('dark-mode');
         
         document.getElementById('settingsPage').innerHTML = `
@@ -1449,8 +1357,7 @@ async function sendChatMessage() {
                 <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
                     <h3 class="font-semibold mb-4 flex items-center"><i class="fas fa-palette text-purple-500 mr-2"></i>Appearance</h3>
                     <div class="space-y-4">
-                        <div class="flex justify-between items-center"><span><i class="fas fa-moon mr-2 text-blue-500"></i> Dark Mode</span><label class="switch"><input type="checkbox" id="darkModeToggle" ${darkMode ? 'checked' : ''}><span class="slider round"></span></label></div>
-                        <div><span><i class="fas fa-palette mr-2 text-green-500"></i> Sidebar Color</span><div class="flex flex-wrap gap-2 mt-2" id="colorOptionsContainer"></div></div>
+                        <div class="flex justify-between items-center"><span><i class="fas fa-moon mr-2 text-blue-500"></i> Dark Mode</span><label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" id="darkModeToggle" class="sr-only peer" ${darkMode ? 'checked' : ''}><div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div></label></div>
                     </div>
                 </div>
                 <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
@@ -1470,24 +1377,7 @@ async function sendChatMessage() {
                     </div>
                 </div>
             </div>
-            <style>
-                .switch { position: relative; display: inline-block; width: 50px; height: 24px; }
-                .switch input { opacity: 0; width: 0; height: 0; }
-                .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 24px; }
-                .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-                input:checked + .slider { background-color: #0f74ba; }
-                input:checked + .slider:before { transform: translateX(26px); }
-            </style>
         `;
-        
-        const container = document.getElementById('colorOptionsContainer');
-        if (container) { 
-            container.innerHTML = ''; 
-            colorOptions.forEach(c => { 
-                const isSelected = localStorage.getItem('sidebar_color') === c; 
-                container.innerHTML += `<div class="color-option ${isSelected ? 'selected' : ''}" style="background:${c}" onclick="changeSidebarColor('${c}', this)"></div>`; 
-            }); 
-        }
         
         document.getElementById('darkModeToggle')?.addEventListener('change', e => { 
             document.body.classList.toggle('dark-mode', e.target.checked); 
@@ -1498,14 +1388,6 @@ async function sendChatMessage() {
                 else { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); } 
             } 
         });
-    }
-    
-    function changeSidebarColor(color, el) { 
-        document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected')); 
-        el.classList.add('selected'); 
-        document.getElementById('mainSidebar').style.background = color; 
-        localStorage.setItem('sidebar_color', color); 
-        showToast('Sidebar color changed'); 
     }
     
     async function changePassword() { 
@@ -1546,57 +1428,22 @@ async function sendChatMessage() {
         searchTimeout = setTimeout(() => {
             let html = '';
             
-            // Search Employees
             const empResults = employeesData.filter(e => e.name.toLowerCase().includes(term));
             if (empResults.length) {
                 html += '<div class="p-2 bg-gray-100 text-xs font-semibold"><i class="fas fa-users mr-1"></i> EMPLOYEES</div>';
                 empResults.slice(0,3).forEach(e => { 
-                    html += `<div class="search-result-item" onclick="showPageAndHighlight('employees', ${e.id}, 'emp-row-${e.id}')">
+                    html += `<div class="search-result-item p-3 border-b hover:bg-gray-50 cursor-pointer" onclick="showPageAndHighlight('employees', ${e.id}, 'emp-row-${e.id}')">
                         <div class="font-medium">${escapeHtml(e.name)}</div><div class="text-xs text-gray-500">${e.email}</div>
                     </div>`; 
                 });
             }
             
-            // Search Projects
             const projResults = projectsData.filter(p => p.name.toLowerCase().includes(term));
             if (projResults.length) {
                 html += '<div class="p-2 bg-gray-100 text-xs font-semibold"><i class="fas fa-tasks mr-1"></i> PROJECTS</div>';
                 projResults.slice(0,3).forEach(p => { 
-                    html += `<div class="search-result-item" onclick="showPageAndHighlight('projects', ${p.id}, 'proj-card-${p.id}')">
+                    html += `<div class="search-result-item p-3 border-b hover:bg-gray-50 cursor-pointer" onclick="showPageAndHighlight('projects', ${p.id}, 'proj-card-${p.id}')">
                         <div class="font-medium">${escapeHtml(p.name)}</div><div class="text-xs text-gray-500">${formatMoney(p.amount)}</div>
-                    </div>`; 
-                });
-            }
-            
-            // Search Daily Work
-            const dailyResults = dailyworkData.filter(d => d.project_name.toLowerCase().includes(term));
-            if (dailyResults.length) {
-                html += '<div class="p-2 bg-gray-100 text-xs font-semibold"><i class="fas fa-calendar-day mr-1"></i> DAILY WORK</div>';
-                dailyResults.slice(0,3).forEach(d => { 
-                    html += `<div class="search-result-item" onclick="showPageAndHighlight('dailywork', ${d.id}, 'daily-row-${d.id}')">
-                        <div class="font-medium">${escapeHtml(d.project_name)}</div><div class="text-xs text-gray-500">${formatDate(d.date)}</div>
-                    </div>`; 
-                });
-            }
-            
-            // Search Transactions
-            const transResults = transactionsData.filter(t => t.source.toLowerCase().includes(term));
-            if (transResults.length) {
-                html += '<div class="p-2 bg-gray-100 text-xs font-semibold"><i class="fas fa-exchange-alt mr-1"></i> CASHFLOW</div>';
-                transResults.slice(0,3).forEach(t => { 
-                    html += `<div class="search-result-item" onclick="showPageAndHighlight('cashflow', ${t.id}, 'trans-row-${t.id}')">
-                        <div class="font-medium">${escapeHtml(t.source)}</div><div class="text-xs text-gray-500">${formatMoney(t.amount)}</div>
-                    </div>`; 
-                });
-            }
-            
-            // Search Reports
-            const reportResults = reportsData.filter(r => r.title.toLowerCase().includes(term));
-            if (reportResults.length) {
-                html += '<div class="p-2 bg-gray-100 text-xs font-semibold"><i class="fas fa-chart-line mr-1"></i> REPORTS</div>';
-                reportResults.slice(0,3).forEach(r => { 
-                    html += `<div class="search-result-item" onclick="showPageAndHighlight('reports', ${r.id}, 'report-card-${r.id}')">
-                        <div class="font-medium">${escapeHtml(r.title)}</div><div class="text-xs text-gray-500">${r.period}</div>
                     </div>`; 
                 });
             }
@@ -1619,7 +1466,6 @@ async function sendChatMessage() {
                 setTimeout(() => element.classList.remove('search-highlight'), 2000);
             }
         }, 500);
-        showToast('Item found');
     }
     
     // ==================== SCROLL TO TOP ====================
@@ -1634,7 +1480,7 @@ async function sendChatMessage() {
     
     // ==================== INITIALIZATION ====================
     async function init() {
-        console.log('🚀 Initializing Super Admin Dashboard...');
+        console.log('Initializing Super Admin Dashboard...');
         
         await loadDepartmentsForDropdowns();
         
@@ -1649,24 +1495,17 @@ async function sendChatMessage() {
             document.getElementById('mobileMenuOverlay').classList.remove('hidden'); 
         });
         document.getElementById('logoutBtn')?.addEventListener('click', logout);
-        document.getElementById('darkModeBtn')?.addEventListener('click', () => { 
-            document.body.classList.toggle('dark-mode'); 
-            localStorage.setItem('dark_mode', document.body.classList.contains('dark-mode')); 
-            const icon = document.getElementById('darkIcon'); 
-            if (icon) { icon.classList.toggle('fa-moon'); icon.classList.toggle('fa-sun'); } 
-        });
         
-        const savedColor = localStorage.getItem('sidebar_color'); 
-        if (savedColor) document.getElementById('mainSidebar').style.background = savedColor;
-        if (localStorage.getItem('dark_mode') === 'true') document.body.classList.add('dark-mode');
+        if (localStorage.getItem('dark_mode') === 'true') {
+            document.body.classList.add('dark-mode');
+            const icon = document.getElementById('darkIcon');
+            if (icon) { icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); }
+        }
         
         initScrollTop();
         showPage('dashboard');
-        
         updateConnectionStatus();
         setInterval(updateConnectionStatus, 30000);
-        
-        console.log('✅ Dashboard initialized successfully');
     }
     
     // Expose functions globally
@@ -1688,6 +1527,7 @@ async function sendChatMessage() {
     window.exportSingleProjectExcel = exportSingleProjectExcel;
     window.exportSingleProjectPDF = exportSingleProjectPDF;
     window.removeProjectImage = removeProjectImage;
+    window.markProjectAsViewed = markProjectAsViewed;
     window.viewDailyWork = viewDailyWork;
     window.editDailyWork = editDailyWork;
     window.saveDailyWork = saveDailyWork;
@@ -1703,14 +1543,16 @@ async function sendChatMessage() {
     window.sendNewMessage = sendNewMessage;
     window.openChat = openChat;
     window.sendChatMessage = sendChatMessage;
+    window.deleteConversation = deleteConversation;
+    window.deleteMessage = deleteMessage;
     window.viewReportDetails = viewReportDetails;
     window.exportSingleReportExcel = exportSingleReportExcel;
     window.exportSingleReportPDF = exportSingleReportPDF;
     window.editReport = editReport;
     window.saveReport = saveReport;
     window.deleteReport = deleteReport;
+    window.markReportAsViewed = markReportAsViewed;
     window.changePassword = changePassword;
-    window.changeSidebarColor = changeSidebarColor;
     window.createBackup = createBackup;
     window.restoreBackup = restoreBackup;
     window.logout = logout;
@@ -1718,7 +1560,6 @@ async function sendChatMessage() {
     window.openDepartmentDashboard = openDepartmentDashboard;
     window.showFullImage = showFullImage;
     window.closeFullImage = closeFullImage;
-    window.toggleSendDropdown = toggleSendDropdown;
     
     init();
 </script>
