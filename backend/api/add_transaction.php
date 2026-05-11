@@ -1,10 +1,21 @@
 <?php
 // backend/api/add_transaction.php
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
+
 require_once '../config/database.php';
 
-error_log("=== add_transaction.php called ===");
+error_log("=== ADD TRANSACTION API CALLED ===");
 
-$data = json_decode(file_get_contents("php://input"), true);
+$inputJSON = file_get_contents("php://input");
+$data = json_decode($inputJSON, true);
 
 if (!$data) {
     $data = $_POST;
@@ -53,7 +64,9 @@ $stmt->bindParam(':description', $description);
 $stmt->bindParam(':department_id', $department_id);
 
 if ($stmt->execute()) {
-    sendResponse(true, array('id' => $db->lastInsertId()), "Transaction added successfully");
+    $newId = $db->lastInsertId();
+    error_log("Transaction added with ID: " . $newId);
+    sendResponse(true, array('id' => $newId), "Transaction added successfully");
 } else {
     $error = $stmt->errorInfo();
     error_log("Add transaction error: " . print_r($error, true));

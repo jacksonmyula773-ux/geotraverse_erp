@@ -57,7 +57,6 @@
         .btn-success { background: #10b981; color: white; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; }
         .btn-success:hover { background: #059669; transform: translateY(-1px); }
         .btn-danger { background: #ef4444; color: white; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; }
-        .btn-warning { background: #f59e0b; color: white; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; }
         
         .action-btn { padding: 5px 10px; font-size: 11px; border-radius: 5px; cursor: pointer; transition: all 0.2s; border: none; }
         .action-btn.view { background: #3b82f6; color: white; }
@@ -74,17 +73,36 @@
         @media (max-width: 1024px) { .messages-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 640px) { .messages-grid { grid-template-columns: 1fr; } }
         
-        .message-item { background: white; border-radius: 16px; border: 1px solid #e5e7eb; overflow: hidden; cursor: pointer; transition: all 0.2s; position: relative; }
-        .message-item:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
-        .message-unread { background: #eff6ff; border-left: 4px solid #3b82f6; }
-        .message-header { padding: 14px 16px 8px 16px; display: flex; justify-content: space-between; align-items: center; }
-        .message-preview { padding: 0 16px 12px 16px; font-size: 13px; color: #6b7280; }
-        .delete-conv-btn { position: absolute; top: 10px; right: 10px; background: #ef4444; color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: opacity 0.2s; z-index: 15; }
-        .message-item:hover .delete-conv-btn { opacity: 1; }
-        .delete-conv-btn:hover { background: #dc2626; transform: scale(1.05); }
+        /* Messages Section - White Background */
+        .messages-section .message-item { 
+            background: white; 
+            border: 1px solid #e5e7eb; 
+            border-radius: 16px; 
+            overflow: hidden; 
+            cursor: pointer; 
+            transition: all 0.2s; 
+            position: relative; 
+            color: #1f2937;
+        }
+        body.dark-mode .messages-section .message-item {
+            background: #1e293b;
+            border-color: #334155;
+            color: #f1f5f9;
+        }
+        .messages-section .message-item:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); border-color: #0f74ba; }
+        .messages-section .message-unread { background: #eff6ff; border-left: 4px solid #3b82f6; }
+        body.dark-mode .messages-section .message-unread { background: #0f74ba20; border-left-color: #60a5fa; }
+        .messages-section .message-header { padding: 14px 16px 8px 16px; display: flex; justify-content: space-between; align-items: center; }
+        .messages-section .message-preview { padding: 0 16px 12px 16px; font-size: 13px; color: #6b7280; }
+        body.dark-mode .messages-section .message-preview { color: #94a3b8; }
+        .messages-section .delete-conv-btn { position: absolute; top: 10px; right: 10px; background: #ef4444; color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: opacity 0.2s; z-index: 15; }
+        .messages-section .message-item:hover .delete-conv-btn { opacity: 1; }
+        .messages-section .delete-conv-btn:hover { background: #dc2626; transform: scale(1.05); }
+        .dept-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
         
         .chat-container { display: flex; flex-direction: column; height: 500px; }
         .chat-messages { flex: 1; overflow-y: auto; padding: 16px; background: #f9fafb; border-radius: 12px; margin-bottom: 12px; }
+        body.dark-mode .chat-messages { background: #1e293b; }
         .chat-message { display: flex; margin-bottom: 12px; position: relative; }
         .chat-sent { justify-content: flex-end; }
         .chat-received { justify-content: flex-start; }
@@ -93,9 +111,10 @@
         .chat-received .chat-bubble { background: #e5e7eb; color: #333; border-bottom-left-radius: 4px; }
         body.dark-mode .chat-received .chat-bubble { background: #334155; color: #f1f5f9; }
         .chat-time { font-size: 10px; opacity: 0.7; margin-top: 4px; display: block; }
-        .delete-msg-btn { position: absolute; bottom: 5px; right: -30px; background: #ef4444; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 10px; opacity: 0; transition: opacity 0.2s; }
+        .delete-msg-btn { position: absolute; bottom: 5px; right: -35px; background: #ef4444; color: white; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 10px; opacity: 0; transition: opacity 0.2s; z-index: 20; }
         .chat-message:hover .delete-msg-btn { opacity: 1; }
-        .chat-sent .delete-msg-btn { right: auto; left: -30px; }
+        .chat-sent .delete-msg-btn { right: auto; left: -35px; }
+        .delete-msg-btn:hover { background: #dc2626; transform: scale(1.05); }
         
         .chat-input-area { display: flex; gap: 10px; margin-top: 12px; }
         .chat-input-area textarea { flex: 1; margin: 0; resize: none; }
@@ -120,6 +139,34 @@
         .expense-row { background-color: #fef2f2; }
         body.dark-mode .income-row { background-color: #064e3b20; }
         body.dark-mode .expense-row { background-color: #7f1d1d20; }
+        
+        .dept-card { background: white; border-radius: 16px; padding: 16px; transition: all 0.2s; cursor: pointer; border: 1px solid #e5e7eb; }
+        .dept-card:hover { transform: translateX(5px); border-color: #0f74ba; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        body.dark-mode .dept-card { background: #1e293b; border-color: #334155; }
+        
+        .dailywork-table-container { overflow-x: auto; border-radius: 12px; }
+        .dailywork-table { width: 100%; border-collapse: collapse; }
+        .dailywork-table th, .dailywork-table td { padding: 12px; text-align: left; border-bottom: 1px solid #e5e7eb; }
+        .dailywork-table th { background: #f8fafc; font-weight: 600; position: sticky; top: 0; }
+        body.dark-mode .dailywork-table th { background: #1e293b; }
+        
+        /* Color options for sidebar */
+        .color-option { width: 42px; height: 42px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: all 0.2s; display: inline-block; margin: 5px; }
+        .color-option:hover { transform: scale(1.1); }
+        .color-option.selected { border-color: white; box-shadow: 0 0 0 2px #333; }
+        
+        /* Department Colors */
+        .dept-bg-2 { background: #10b98120; border-left: 3px solid #10b981; }
+        .dept-bg-3 { background: #f59e0b20; border-left: 3px solid #f59e0b; }
+        .dept-bg-4 { background: #3b82f620; border-left: 3px solid #3b82f6; }
+        .dept-bg-5 { background: #06b6d420; border-left: 3px solid #06b6d4; }
+        .dept-bg-6 { background: #8b5cf620; border-left: 3px solid #8b5cf6; }
+        .dept-bg-7 { background: #6b728020; border-left: 3px solid #6b7280; }
+        .dept-bg-8 { background: #ec489920; border-left: 3px solid #ec4899; }
+        .dept-bg-9 { background: #14b8a620; border-left: 3px solid #14b8a6; }
+        .dept-bg-10 { background: #f9731620; border-left: 3px solid #f97316; }
+        .dept-bg-11 { background: #ef444420; border-left: 3px solid #ef4444; }
+        .dept-bg-12 { background: #84cc1620; border-left: 3px solid #84cc16; }
     </style>
 </head>
 <body>
@@ -185,7 +232,7 @@
         <div id="projectsPage" class="section p-5 hidden mb-20"></div>
         <div id="dailyworkPage" class="section p-5 hidden mb-20"></div>
         <div id="cashflowPage" class="section p-5 hidden mb-20"></div>
-        <div id="messagesPage" class="section p-5 hidden mb-20"></div>
+        <div id="messagesPage" class="section p-5 hidden mb-20 messages-section"></div>
         <div id="reportsPage" class="section p-5 hidden mb-20"></div>
         <div id="settingsPage" class="section p-5 hidden mb-20"></div>
     </main>
@@ -204,7 +251,7 @@
 
 <div id="viewDailyworkModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-calendar-day text-purple-500 mr-2"></i>Daily Work Details</h3><div id="viewDailyworkContent"></div><button onclick="closeModal('viewDailyworkModal')" class="w-full bg-gray-200 py-2 rounded mt-3 hover:bg-gray-300 transition">Close</button></div></div>
 
-<div id="transModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-exchange-alt text-orange-500 mr-2"></i>Add Transaction</h3><input type="hidden" id="transId"><select id="transType"><option value="income">Income</option><option value="expense">Expense</option></select><select id="transDept"></select><input type="text" id="transSource" placeholder="Source" required><input type="text" id="transAmount" placeholder="Amount" class="amount-input" required><input type="date" id="transDate"><select id="transStatus"><option value="paid">Paid</option><option value="pending">Pending</option><option value="partial">Partial</option></select><input type="text" id="transPaidAmount" placeholder="Paid Amount (for partial)" class="amount-input hidden"><textarea id="transDesc" rows="2" placeholder="Description"></textarea><div class="flex gap-3 pt-4"><button onclick="saveTransaction()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('transModal')" class="flex-1 bg-gray-200 py-2 rounded hover:bg-gray-300 transition">Cancel</button></div></div></div>
+<div id="transModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-exchange-alt text-orange-500 mr-2"></i>Add/Edit Transaction</h3><input type="hidden" id="transId"><select id="transType"><option value="income">Income</option><option value="expense">Expense</option></select><select id="transDept"></select><input type="text" id="transSource" placeholder="Source" required><input type="text" id="transAmount" placeholder="Amount" class="amount-input" required><input type="date" id="transDate"><select id="transStatus"><option value="paid">Paid</option><option value="pending">Pending</option><option value="partial">Partial</option></select><input type="text" id="transPaidAmount" placeholder="Paid Amount (for partial)" class="amount-input hidden"><textarea id="transDesc" rows="2" placeholder="Description"></textarea><div class="flex gap-3 pt-4"><button onclick="saveTransaction()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('transModal')" class="flex-1 bg-gray-200 py-2 rounded hover:bg-gray-300 transition">Cancel</button></div></div></div>
 
 <div id="viewTransModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-receipt text-orange-500 mr-2"></i>Transaction Details</h3><div id="viewTransContent"></div><button onclick="closeModal('viewTransModal')" class="w-full bg-gray-200 py-2 rounded mt-3 hover:bg-gray-300 transition">Close</button></div></div>
 
@@ -214,7 +261,7 @@
 
 <div id="msgModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-paper-plane text-blue-500 mr-2"></i>Send Message</h3><select id="msgTo"></select><textarea id="msgContent" rows="4" placeholder="Type your message..." required></textarea><div class="flex gap-3 pt-4"><button onclick="sendNewMessage()" class="flex-1 btn-primary">Send</button><button onclick="closeModal('msgModal')" class="flex-1 bg-gray-200 py-2 rounded hover:bg-gray-300 transition">Cancel</button></div></div></div>
 
-<div id="chatModal" class="modal"><div class="modal-content" style="max-width:750px;"><div class="flex justify-between items-center mb-4"><h3 id="chatModalTitle" class="text-xl font-bold"><i class="fas fa-comments text-blue-500 mr-2"></i>Chat</h3><button onclick="closeModal('chatModal')" class="text-gray-400 text-2xl hover:text-gray-600">&times;</button></div><div class="chat-container"><div id="chatMessagesArea" class="chat-messages bg-gray-50 dark:bg-gray-800 rounded-xl"><div class="text-center text-gray-400 py-8">Select a conversation to start chatting</div></div><div class="chat-input-area"><textarea id="replyMsg" rows="2" placeholder="Type your message..." class="border rounded-lg p-2"></textarea><button onclick="sendChatMessage()" class="btn-primary">Send</button></div></div></div></div>
+<div id="chatModal" class="modal"><div class="modal-content" style="max-width:750px;"><div class="flex justify-between items-center mb-4"><h3 id="chatModalTitle" class="text-xl font-bold"><i class="fas fa-comments text-blue-500 mr-2"></i>Chat</h3><button onclick="closeModal('chatModal')" class="text-gray-400 text-2xl hover:text-gray-600">&times;</button></div><div class="chat-container"><div id="chatMessagesArea" class="chat-messages"><div class="text-center text-gray-400 py-8">Select a conversation to start chatting</div></div><div class="chat-input-area"><textarea id="replyMsg" rows="2" placeholder="Type your message..." class="border rounded-lg p-2"></textarea><button onclick="sendChatMessage()" class="btn-primary">Send</button></div></div></div></div>
 
 <div id="pwdModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-key text-blue-500 mr-2"></i>Change Password</h3><div class="relative"><input type="password" id="oldPwd" placeholder="Current Password" class="w-full"><i class="fas fa-eye absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400" onclick="togglePassword('oldPwd')"></i></div><div class="relative mt-2"><input type="password" id="newPwd" placeholder="New Password (min 4 characters)" class="w-full"><i class="fas fa-eye absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400" onclick="togglePassword('newPwd')"></i></div><div class="relative mt-2"><input type="password" id="confirmPwd" placeholder="Confirm Password" class="w-full"><i class="fas fa-eye absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400" onclick="togglePassword('confirmPwd')"></i></div><div class="flex gap-3 pt-4"><button onclick="changePassword()" class="flex-1 btn-primary">Change</button><button onclick="closeModal('pwdModal')" class="flex-1 bg-gray-200 py-2 rounded hover:bg-gray-300 transition">Cancel</button></div></div></div>
 
@@ -226,18 +273,32 @@
     let searchTimeout = null;
     let statusChart = null;
     
-    let employeesData = [], projectsData = [], dailyworkData = [], transactionsData = [], reportsData = [], messagesData = [], departmentsList = [], departmentUsersList = [];
+    let employeesData = [], projectsData = [], dailyworkData = [], transactionsData = [], reportsData = [], messagesData = [], departmentsList = [];
     let unviewedProjectsCount = 0, unviewedReportsCount = 0;
     let currentProjectImageFile = null;
     let currentHighlightId = null;
     let currentConversationId = null;
-    let currentReceiverId = null;
+    let currentDepartmentId = null;
     
     const departmentNames = {
         1: "Super Admin", 2: "Finance", 3: "Sales & Marketing", 4: "Manager",
         5: "Secretary", 6: "Bricks & Timber", 7: "Aluminium", 8: "Town Planning",
         9: "Architectural", 10: "Survey", 11: "Construction", 12: "Hatimiliki"
     };
+    
+    const departmentIcons = {
+        2: "fa-coins", 3: "fa-chart-line", 4: "fa-user-tie", 5: "fa-calendar-check",
+        6: "fa-cubes", 7: "fa-industry", 8: "fa-city", 9: "fa-draw-polygon",
+        10: "fa-drafting-compass", 11: "fa-hard-hat", 12: "fa-file-contract"
+    };
+    
+    const departmentColors = {
+        2: "#10b981", 3: "#f59e0b", 4: "#3b82f6", 5: "#06b6d4",
+        6: "#8b5cf6", 7: "#6b7280", 8: "#ec4899", 9: "#14b8a6",
+        10: "#f97316", 11: "#ef4444", 12: "#84cc16"
+    };
+    
+    const sidebarColorOptions = ["#0f74ba", "#1e3a5f", "#7c3aed", "#059669", "#dc2626", "#d97706", "#0d9488", "#db2777", "#4f46e5", "#10b981"];
     
     // ==================== HELPER FUNCTIONS ====================
     function showToast(msg, isError) { 
@@ -311,14 +372,12 @@
         }
     }
     
-    // Attach amount formatting
     document.addEventListener('DOMContentLoaded', function() {
         ['projAmount', 'transAmount', 'dailyworkIncome', 'dailyworkExpenses', 'dailyworkPaid', 'empSalary', 'transPaidAmount'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.addEventListener('input', function() { formatAmountInput(this); });
         });
         
-        // Show/hide paid amount field based on status
         const statusSelect = document.getElementById('transStatus');
         if (statusSelect) {
             statusSelect.addEventListener('change', function() {
@@ -339,7 +398,11 @@
             const opts = { method, headers: { 'Content-Type': 'application/json' }, credentials: 'include' }; 
             if (data && method !== 'GET') opts.body = JSON.stringify(data); 
             const res = await fetch(url, opts); 
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            if (!res.ok) {
+                const text = await res.text();
+                console.error('API Error Response:', text);
+                throw new Error(`HTTP ${res.status}`);
+            }
             return await res.json(); 
         } catch(e) { 
             console.error('API Error:', endpoint, e);
@@ -360,7 +423,7 @@
         try {
             const response = await fetch(API_BASE + 'get_departments.php');
             const data = await response.json();
-            if (data.success && data.data) {
+            if (data.success) {
                 statusDiv.innerHTML = `<i class="fas fa-check-circle"></i> DB Connected`;
                 statusDiv.classList.remove('error');
             } else {
@@ -378,7 +441,6 @@
         if (res.success && res.data) {
             if (res.data.departments) {
                 departmentsList = res.data.departments;
-                departmentUsersList = res.data.users || [];
             } else {
                 departmentsList = res.data.filter(d => d.id !== 1);
             }
@@ -391,13 +453,10 @@
             if (s) s.innerHTML = '<option value="">Select Department</option>' + departmentsList.map(d => `<option value="${d.id}">${escapeHtml(d.name)}</option>`).join('');
         });
         
-        // Populate message recipient dropdown
         const msgTo = document.getElementById('msgTo');
-        if (msgTo && departmentUsersList.length > 0) {
-            msgTo.innerHTML = '<option value="">Select Recipient</option>' + 
-                departmentUsersList.map(u => `<option value="${u.id}">${escapeHtml(u.name)} (${escapeHtml(u.department_name)})</option>`).join('');
-        } else if (msgTo) {
-            msgTo.innerHTML = '<option value="">Select Department User</option>';
+        if (msgTo) {
+            msgTo.innerHTML = '<option value="">Select Department</option>' + 
+                departmentsList.map(d => `<option value="${d.id}">${escapeHtml(d.name)}</option>`).join('');
         }
     }
     
@@ -427,7 +486,6 @@
         else showToast('Dashboard not available', true);
     }
     
-    // ==================== PAGE NAVIGATION ====================
     function showPage(pageId, highlightId = null) {
         currentHighlightId = highlightId;
         
@@ -543,7 +601,7 @@
                 <td class="p-3"><div class="flex gap-2"><button onclick="viewEmployee(${e.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="editEmployee(${e.id})" class="action-btn edit"><i class="fas fa-edit"></i></button><button onclick="deleteEmployee(${e.id})" class="action-btn delete"><i class="fas fa-trash"></i></button></div></td>
             </tr>`; 
         });
-        html += `</tbody></table></div>`;
+        html += `</tbody>}</div>`;
         document.getElementById('employeesPage').innerHTML = html;
         if (highlightId) document.getElementById(`emp-row-${highlightId}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
@@ -557,7 +615,7 @@
     
     function exportEmployeesToPDF() {
         let element = document.createElement('div');
-        element.innerHTML = `<div style="padding:20px"><h1>Employees Report</h1><p>${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><tr><th>Name</th><th>Email</th><th>Department</th><th>Role</th><th>Salary</th></tr>${employeesData.map(e => `<tr><td>${e.name}</td><td>${e.email}</td><td>${departmentNames[e.department_id]}</td><td>${e.role || 'Staff'}</td><td>${formatMoney(e.salary)}</td></tr>`).join('')}</table></div>`;
+        element.innerHTML = `<div style="padding:20px"><h1>Employees Report</h1><p>${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><tr><th>Name</th><th>Email</th><th>Department</th><th>Role</th><th>Salary</th></tr>${employeesData.map(e => `<tr><td class="px-2 py-1">${e.name}</td><td class="px-2 py-1">${e.email}</td><td class="px-2 py-1">${departmentNames[e.department_id]}</td><td class="px-2 py-1">${e.role || 'Staff'}</td><td class="px-2 py-1">${formatMoney(e.salary)}</td></tr>`).join('')}</table></div>`;
         html2pdf().set({ margin: 0.5, filename: `employees_report.pdf` }).from(element).save();
         showToast('Exported to PDF');
     }
@@ -611,13 +669,21 @@
     async function loadDepartmentsPage() {
         const res = await apiCall('get_departments.php');
         const depts = res.success ? (res.data.departments || res.data) : [];
-        if (depts.length === 0) { document.getElementById('departmentsPage').innerHTML = '<div class="text-center py-12 text-gray-400">No departments found</div>'; return; }
-        let html = `<h2 class="text-xl font-bold mb-4"><i class="fas fa-building text-blue-500 mr-2"></i>Departments (${depts.length})</h2><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">`;
+        if (depts.length === 0) { 
+            document.getElementById('departmentsPage').innerHTML = '<div class="text-center py-12 text-gray-400">No departments found</div>'; 
+            return; 
+        }
+        
+        let html = `<h2 class="text-xl font-bold mb-4"><i class="fas fa-building text-blue-500 mr-2"></i>Departments (${depts.length})</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">`;
+        
         depts.forEach(d => { 
             if(d.id !== 1) { 
-                html += `<div class="bg-white rounded-xl p-4 border border-gray-200 cursor-pointer hover:border-blue-500 hover:shadow-md transition flex items-center gap-3" onclick="openDepartmentDashboard(${d.id})">
-                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center"><i class="fas fa-building text-blue-600 text-xl"></i></div>
-                    <div class="flex-1"><h4 class="font-semibold">${escapeHtml(d.name)}</h4><p class="text-xs text-gray-500">Click to open dashboard</p></div>
+                const icon = departmentIcons[d.id] || 'fa-building';
+                const color = departmentColors[d.id] || '#0f74ba';
+                html += `<div class="dept-card flex items-center gap-3" onclick="openDepartmentDashboard(${d.id})">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center text-white" style="background: ${color}"><i class="fas ${icon} text-xl"></i></div>
+                    <div class="flex-1"><h4 class="font-semibold">${escapeHtml(d.name)}</h4><p class="text-xs text-gray-500 mt-1">Click to open dashboard</p></div>
                     <i class="fas fa-arrow-right text-gray-400"></i>
                 </div>`; 
             } 
@@ -688,9 +754,9 @@
             const imageHtml = imageUrl ? `<img src="${imageUrl}?t=${new Date().getTime()}" class="w-full h-48 object-cover rounded-lg mb-3 cursor-pointer" onclick="showFullImage('${imageUrl}')">` : '<div class="no-image w-full h-48 mb-3"><i class="fas fa-image text-3xl"></i></div>';
             document.getElementById('viewProjContent').innerHTML = `${imageHtml}<div class="space-y-1"><p><strong>Name:</strong> ${escapeHtml(p.name)}</p><p><strong>Client:</strong> ${escapeHtml(p.client_name || 'N/A')}</p><p><strong>Amount:</strong> ${formatMoney(p.amount)}</p><p><strong>Status:</strong> ${p.status}</p><p><strong>Progress:</strong> ${p.progress}%</p><p><strong>Location:</strong> ${escapeHtml(p.location || 'N/A')}</p><p><strong>Description:</strong> ${escapeHtml(p.description || 'N/A')}</p></div>`;
             document.getElementById('viewProjButtons').innerHTML = `
-                <button onclick="exportSingleProjectExcel(${p.id})" class="detail-btn excel btn-success text-white px-3 py-1.5 rounded text-sm"><i class="fas fa-file-excel"></i> Excel</button>
-                <button onclick="exportSingleProjectPDF(${p.id})" class="detail-btn pdf btn-danger text-white px-3 py-1.5 rounded text-sm"><i class="fas fa-file-pdf"></i> PDF</button>
-                ${imageUrl ? `<button onclick="showFullImage('${imageUrl}')" class="detail-btn image btn-primary text-white px-3 py-1.5 rounded text-sm"><i class="fas fa-image"></i> View Full Image</button>` : ''}`;
+                <button onclick="exportSingleProjectExcel(${p.id})" class="btn-success text-white px-3 py-1.5 rounded text-sm"><i class="fas fa-file-excel"></i> Excel</button>
+                <button onclick="exportSingleProjectPDF(${p.id})" class="btn-danger text-white px-3 py-1.5 rounded text-sm"><i class="fas fa-file-pdf"></i> PDF</button>
+                ${imageUrl ? `<button onclick="showFullImage('${imageUrl}')" class="btn-primary text-white px-3 py-1.5 rounded text-sm"><i class="fas fa-image"></i> View Full Image</button>` : ''}`;
             openModal('viewProjModal');
         }
     }
@@ -835,8 +901,26 @@
             return; 
         }
         
-        let html = `<div class="flex justify-between flex-wrap gap-3 mb-4"><h2 class="text-xl font-bold"><i class="fas fa-calendar-day text-purple-600 mr-2"></i>Daily Work (${dailyworkData.length})</h2><div class="flex gap-2"><button onclick="openModal('dailyworkModal')" class="btn-primary"><i class="fas fa-plus mr-1"></i> Add</button><button onclick="exportDailyWorkToExcel()" class="btn-success"><i class="fas fa-file-excel mr-1"></i> Excel</button><button onclick="exportDailyWorkToPDF()" class="btn-danger"><i class="fas fa-file-pdf mr-1"></i> PDF</button></div></div>
-        <div class="bg-white rounded-xl overflow-x-auto shadow-sm border border-gray-100"><table class="min-w-full"><thead class="bg-gray-50"><tr class="border-b"><th class="p-3 text-left">Date</th><th class="p-3 text-left">Dept</th><th class="p-3 text-left">Project</th><th class="p-3 text-left">Income</th><th class="p-3 text-left">Expenses</th><th class="p-3 text-left">Profit</th><th class="p-3 text-left">Status</th><th class="p-3 text-left">Actions</th></tr></thead><tbody>`;
+        let html = `<div class="flex justify-between flex-wrap gap-3 mb-4">
+            <h2 class="text-xl font-bold"><i class="fas fa-calendar-day text-purple-600 mr-2"></i>Daily Work (${dailyworkData.length})</h2>
+            <div class="flex gap-2"><button onclick="openModal('dailyworkModal')" class="btn-primary"><i class="fas fa-plus mr-1"></i> Add</button><button onclick="exportDailyWorkToExcel()" class="btn-success"><i class="fas fa-file-excel mr-1"></i> Excel</button><button onclick="exportDailyWorkToPDF()" class="btn-danger"><i class="fas fa-file-pdf mr-1"></i> PDF</button></div>
+        </div>
+        <div class="dailywork-table-container bg-white rounded-xl shadow-sm border border-gray-100">
+            <table class="dailywork-table">
+                <thead>
+                    <tr class="border-b">
+                        <th class="p-3">Date</th>
+                        <th class="p-3">Department</th>
+                        <th class="p-3">Project</th>
+                        <th class="p-3 text-right">Income</th>
+                        <th class="p-3 text-right">Expenses</th>
+                        <th class="p-3 text-right">Profit</th>
+                        <th class="p-3">Status</th>
+                        <th class="p-3 text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+        
         dailyworkData.forEach(w => { 
             const isHighlighted = highlightId && w.id === highlightId;
             let profit = (w.income||0) - (w.expenses||0);
@@ -844,12 +928,12 @@
                 <td class="p-3">${w.date}</td>
                 <td class="p-3">${departmentNames[w.department_id]||w.department_id}</td>
                 <td class="p-3 font-medium">${escapeHtml(w.project_name)}</td>
-                <td class="p-3 text-green-600 font-semibold">${formatMoney(w.income)}</td>
-                <td class="p-3 text-red-600">${formatMoney(w.expenses)}</td>
-                <td class="p-3 ${profit>=0?'text-green-600':'text-red-600'} font-semibold">${formatMoney(profit)}</td>
+                <td class="p-3 text-right text-green-600 font-semibold">${formatMoney(w.income)}</td>
+                <td class="p-3 text-right text-red-600">${formatMoney(w.expenses)}</td>
+                <td class="p-3 text-right ${profit>=0?'text-green-600':'text-red-600'} font-semibold">${formatMoney(profit)}</td>
                 <td class="p-3"><span class="status-badge ${w.status==='paid'?'status-paid':'status-partial'}">${w.status}</span></td>
-                <td class="p-3"><div class="flex gap-2"><button onclick="viewDailyWork(${w.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="editDailyWork(${w.id})" class="action-btn edit"><i class="fas fa-edit"></i></button><button onclick="deleteDailyWork(${w.id})" class="action-btn delete"><i class="fas fa-trash"></i></button></div></td>
-             </tr>`; 
+                <td class="p-3 text-center"><div class="flex gap-2 justify-center"><button onclick="viewDailyWork(${w.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="editDailyWork(${w.id})" class="action-btn edit"><i class="fas fa-edit"></i></button><button onclick="deleteDailyWork(${w.id})" class="action-btn delete"><i class="fas fa-trash"></i></button></div></td>
+            </tr>`; 
         });
         html += `</tbody>}</div>`;
         document.getElementById('dailyworkPage').innerHTML = html;
@@ -865,7 +949,7 @@
     
     function exportDailyWorkToPDF() {
         let element = document.createElement('div');
-        element.innerHTML = `<div style="padding:20px"><h1>Daily Work Report</h1><p>${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><tr><th>Date</th><th>Project</th><th>Income</th><th>Expenses</th><th>Profit</th></tr>${dailyworkData.map(w => `<tr><td>${w.date}</td><td>${w.project_name}</td><td>${formatMoney(w.income)}</td><td>${formatMoney(w.expenses)}</td><td>${formatMoney(w.income - w.expenses)}</td></tr>`).join('')}</table></div>`;
+        element.innerHTML = `<div style="padding:20px"><h1>Daily Work Report</h1><p>${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><tr><th>Date</th><th>Project</th><th>Income</th><th>Expenses</th><th>Profit</th></tr>${dailyworkData.map(w => `<tr><td class="px-2 py-1">${w.date}</td><td class="px-2 py-1">${w.project_name}</td><td class="px-2 py-1">${formatMoney(w.income)}</td><td class="px-2 py-1">${formatMoney(w.expenses)}</td><td class="px-2 py-1">${formatMoney(w.income - w.expenses)}</td></tr>`).join('')}</table></div>`;
         html2pdf().set({ margin: 0.5, filename: `dailywork_report.pdf` }).from(element).save();
         showToast('Exported to PDF');
     }
@@ -977,7 +1061,7 @@
                 <td class="p-3 text-right ${t.type==='income' ? 'text-green-600' : 'text-red-600'} font-bold">${formatMoney(t.amount)}</td>
                 <td class="p-3"><span class="status-badge ${t.status==='paid' ? 'status-paid' : t.status==='partial' ? 'status-partial' : 'status-pending'}">${t.status}</span></td>
                 <td class="p-3 text-center"><div class="flex gap-2 justify-center"><button onclick="viewTransaction(${t.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="editTransaction(${t.id})" class="action-btn edit"><i class="fas fa-edit"></i></button><button onclick="deleteTransaction(${t.id})" class="action-btn delete"><i class="fas fa-trash"></i></button></div></td>
-             </tr>`; 
+              </tr>`; 
         }
         html += `</tbody>}</div></div>`;
         document.getElementById('cashflowPage').innerHTML = html;
@@ -993,7 +1077,7 @@
     
     function exportCashflowToPDF() {
         let element = document.createElement('div');
-        element.innerHTML = `<div style="padding:20px"><h1>Cashflow Report</h1><p>${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><tr><th>Date</th><th>Type</th><th>Source</th><th>Amount</th></tr>${transactionsData.map(t => `<tr><td>${t.transaction_date}</td><td>${t.type}</td><td>${t.source}</td><td>${formatMoney(t.amount)}</td></tr>`).join('')}</table></div>`;
+        element.innerHTML = `<div style="padding:20px"><h1>Cashflow Report</h1><p>${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><tr><th>Date</th><th>Type</th><th>Source</th><th>Amount</th></tr>${transactionsData.map(t => `<tr><td class="px-2 py-1">${t.transaction_date}</td><td class="px-2 py-1">${t.type}</td><td class="px-2 py-1">${t.source}</td><td class="px-2 py-1">${formatMoney(t.amount)}</td></tr>`).join('')}</table></div>`;
         html2pdf().set({ margin: 0.5, filename: `cashflow_report.pdf` }).from(element).save();
         showToast('Exported to PDF');
     }
@@ -1008,16 +1092,22 @@
     }
     
     function editTransaction(id) { 
-        const t = transactionsData.find(t => t.id === parseInt(id)); 
+        // Make sure we get the ID correctly
+        const transactionId = parseInt(id);
+        console.log('Editing transaction with ID:', transactionId);
+        
+        const t = transactionsData.find(t => t.id === transactionId); 
+        
         if(t) { 
             document.getElementById('transId').value = t.id; 
             document.getElementById('transType').value = t.type; 
-            document.getElementById('transDept').value = t.department_id; 
+            document.getElementById('transDept').value = t.department_id || 1; 
             document.getElementById('transSource').value = t.source; 
             document.getElementById('transAmount').value = t.amount; 
             document.getElementById('transDate').value = t.transaction_date; 
             document.getElementById('transStatus').value = t.status; 
             document.getElementById('transDesc').value = t.description || ''; 
+            
             if (t.status === 'partial') {
                 document.getElementById('transPaidAmount').classList.remove('hidden');
                 document.getElementById('transPaidAmount').value = t.paid_amount || 0;
@@ -1026,15 +1116,18 @@
             }
             openModal('transModal'); 
         } else {
+            console.error('Transaction not found with ID:', transactionId);
             showToast('Transaction not found', true);
         }
     }
     
     async function saveTransaction() { 
         let id = document.getElementById('transId').value; 
+        let isUpdate = id && id !== '';
+        
         let data = { 
             type: document.getElementById('transType').value, 
-            source: document.getElementById('transSource').value, 
+            source: document.getElementById('transSource').value.trim(), 
             amount: parseAmount(document.getElementById('transAmount').value), 
             transaction_date: document.getElementById('transDate').value || new Date().toISOString().split('T')[0], 
             status: document.getElementById('transStatus').value, 
@@ -1051,12 +1144,20 @@
             return; 
         }
         
-        let url = id ? 'update_transaction.php' : 'add_transaction.php';
+        let url = 'add_transaction.php';
+        if (isUpdate) {
+            data.id = parseInt(id);
+            url = 'update_transaction.php';
+            console.log('Updating transaction with ID:', data.id);
+        }
+        
+        console.log('Sending data:', data);
         let res = await apiCall(url, 'POST', data);
         
         if(res && res.success) { 
-            showToast(id ? 'Transaction updated' : 'Transaction added'); 
+            showToast(isUpdate ? 'Transaction updated' : 'Transaction added'); 
             closeModal('transModal'); 
+            // Clear form
             document.getElementById('transId').value = '';
             document.getElementById('transSource').value = '';
             document.getElementById('transAmount').value = '';
@@ -1065,13 +1166,15 @@
             await loadCashflow(); 
             await loadDashboard(); 
         } else { 
-            showToast((res && res.message) || 'Failed to save transaction', true); 
+            const errorMsg = (res && res.message) || 'Failed to save transaction';
+            console.error('Save error:', errorMsg);
+            showToast(errorMsg, true); 
         }
     }
     
     async function deleteTransaction(id) { 
         if(confirm('Delete this transaction?')) { 
-            let res = await apiCall('delete_transaction.php','DELETE',{id}); 
+            let res = await apiCall('delete_transaction.php','DELETE',{id: parseInt(id)}); 
             if(res.success) { showToast('Transaction deleted'); loadCashflow(); loadDashboard(); } 
             else showToast(res.message || 'Failed', true); 
         } 
@@ -1083,7 +1186,6 @@
         
         if (res.success && res.data) {
             messagesData = res.data.sort((a,b) => {
-                // Sort by unread first, then by last message time
                 if (a.unread_count > 0 && b.unread_count === 0) return -1;
                 if (a.unread_count === 0 && b.unread_count > 0) return 1;
                 return new Date(b.last_message_time) - new Date(a.last_message_time);
@@ -1094,7 +1196,7 @@
         updateMessageBadge();
         
         let html = `<div class="flex justify-between flex-wrap gap-3 mb-4">
-            <h2 class="text-xl font-bold"><i class="fas fa-envelope text-blue-600 mr-2"></i>Messages (${messagesData.length})</h2>
+            <h2 class="text-xl font-bold text-gray-800"><i class="fas fa-envelope text-blue-600 mr-2"></i>Messages (${messagesData.length})</h2>
             <button onclick="openModal('msgModal')" class="btn-primary"><i class="fas fa-paper-plane mr-1"></i> New Message</button>
         </div>
         <div class="messages-grid" id="messagesGridContainer"></div>`;
@@ -1111,10 +1213,22 @@
             const isUnread = conv.unread_count > 0;
             const preview = conv.last_message ? (conv.last_message.substring(0, 80) + (conv.last_message.length > 80 ? '...' : '')) : 'No messages';
             const isHighlighted = highlightId && conv.conversation_id === highlightId;
-            msgsHtml += `<div class="message-item ${isUnread ? 'message-unread' : ''} ${isHighlighted ? 'search-highlight' : ''}" onclick="openChat(${conv.conversation_id}, '${escapeHtml(conv.department_name)}')">
+            const deptId = conv.department_id;
+            const icon = departmentIcons[deptId] || 'fa-building';
+            const color = departmentColors[deptId] || '#0f74ba';
+            
+            msgsHtml += `<div class="message-item ${isUnread ? 'message-unread' : ''} ${isHighlighted ? 'search-highlight' : ''}" onclick="openChat(${conv.conversation_id}, ${deptId}, '${escapeHtml(conv.department_name)}')">
                 <div class="delete-conv-btn" onclick="event.stopPropagation(); deleteConversation(${conv.conversation_id})" title="Delete conversation"><i class="fas fa-trash-alt text-xs"></i></div>
                 <div class="message-header">
-                    <div><span class="font-semibold">${escapeHtml(conv.department_name)}</span>${isUnread ? `<span class="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full ml-2">${conv.unread_count}</span>` : ''}</div>
+                    <div class="flex items-center gap-3">
+                        <div class="dept-icon" style="background: ${color}20; color: ${color}; border: 1px solid ${color}40">
+                            <i class="fas ${icon}"></i>
+                        </div>
+                        <div>
+                            <span class="font-semibold">${escapeHtml(conv.department_name)}</span>
+                            ${isUnread ? `<span class="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full ml-2">${conv.unread_count}</span>` : ''}
+                        </div>
+                    </div>
                     <span class="text-[10px] text-gray-400">${conv.last_message_time ? new Date(conv.last_message_time).toLocaleString() : ''}</span>
                 </div>
                 <div class="message-preview">${escapeHtml(preview)}</div>
@@ -1148,7 +1262,7 @@
             if (res && res.success) {
                 showToast('Message deleted');
                 if (currentConversationId) {
-                    openChat(currentConversationId, '');
+                    openChat(currentConversationId, currentDepartmentId, '');
                 }
                 loadMessages();
             } else {
@@ -1158,12 +1272,12 @@
     }
     
     async function sendNewMessage() { 
-        let departmentUserId = document.getElementById('msgTo').value; 
+        let departmentId = document.getElementById('msgTo').value; 
         let msg = document.getElementById('msgContent').value; 
-        if (!departmentUserId || !msg) { showToast('Select recipient and enter message', true); return; } 
+        if (!departmentId || !msg) { showToast('Select department and enter message', true); return; } 
         
         let res = await apiCall('send_message.php', 'POST', { 
-            department_user_id: parseInt(departmentUserId), 
+            department_id: parseInt(departmentId), 
             message: msg,
             subject: 'New Message'
         }); 
@@ -1174,22 +1288,22 @@
             document.getElementById('msgContent').value = '';
             await loadMessages(); 
             if (res.data && res.data.conversation_id) {
-                setTimeout(() => openChat(res.data.conversation_id, ''), 500);
+                setTimeout(() => openChat(res.data.conversation_id, departmentId, ''), 500);
             }
         } else { 
             showToast((res && res.message) || 'Failed to send message', true); 
         }
     }
     
-    async function openChat(conversationId, deptName) { 
+    async function openChat(conversationId, departmentId, deptName) { 
         currentConversationId = conversationId;
+        currentDepartmentId = departmentId;
         document.getElementById('chatModalTitle').innerHTML = `<i class="fas fa-comments text-blue-500 mr-2"></i>Chat with ${deptName}`;
         
         const res = await apiCall(`get_conversation.php?conversation_id=${conversationId}`);
         
         if (res.success && res.data) {
             const conversation = res.data;
-            currentReceiverId = conversation.department_user_id;
             const msgs = conversation.messages || [];
             
             let chatHtml = '';
@@ -1203,7 +1317,7 @@
                             <div>${escapeHtml(m.message)}</div>
                             <span class="chat-time">${new Date(m.created_at).toLocaleString()}</span>
                         </div>
-                        <div class="delete-msg-btn" onclick="event.stopPropagation(); deleteMessage(${m.id})" title="Delete message"><i class="fas fa-trash-alt text-[8px]"></i></div>
+                        ${!isSent ? `<div class="delete-msg-btn" onclick="event.stopPropagation(); deleteMessage(${m.id})" title="Delete message"><i class="fas fa-trash-alt text-[10px]"></i></div>` : ''}
                     </div>`;
                 }
             }
@@ -1212,7 +1326,6 @@
             chatArea.scrollTop = chatArea.scrollHeight;
             openModal('chatModal');
             
-            // Refresh message list to update unread count
             loadMessages();
         } else {
             showToast('Error loading conversation', true);
@@ -1239,7 +1352,7 @@
         
         if (res && res.success) {
             document.getElementById('replyMsg').value = '';
-            openChat(currentConversationId, '');
+            openChat(currentConversationId, currentDepartmentId, '');
             loadMessages();
             showToast('Message sent');
         } else {
@@ -1351,6 +1464,7 @@
     // ==================== SETTINGS ====================
     function loadSettings() {
         const darkMode = document.body.classList.contains('dark-mode');
+        const savedColor = localStorage.getItem('sidebar_color') || '#0f74ba';
         
         document.getElementById('settingsPage').innerHTML = `
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -1358,6 +1472,10 @@
                     <h3 class="font-semibold mb-4 flex items-center"><i class="fas fa-palette text-purple-500 mr-2"></i>Appearance</h3>
                     <div class="space-y-4">
                         <div class="flex justify-between items-center"><span><i class="fas fa-moon mr-2 text-blue-500"></i> Dark Mode</span><label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" id="darkModeToggle" class="sr-only peer" ${darkMode ? 'checked' : ''}><div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div></label></div>
+                        <div>
+                            <span class="text-sm font-medium"><i class="fas fa-palette mr-2 text-green-500"></i> Sidebar Color</span>
+                            <div class="flex flex-wrap gap-2 mt-2" id="colorOptionsContainer"></div>
+                        </div>
                     </div>
                 </div>
                 <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
@@ -1379,6 +1497,16 @@
             </div>
         `;
         
+        // Add color options
+        const container = document.getElementById('colorOptionsContainer');
+        if (container) {
+            container.innerHTML = '';
+            sidebarColorOptions.forEach(c => {
+                const isSelected = localStorage.getItem('sidebar_color') === c;
+                container.innerHTML += `<div class="color-option ${isSelected ? 'selected' : ''}" style="background: ${c}" onclick="changeSidebarColor('${c}', this)"></div>`;
+            });
+        }
+        
         document.getElementById('darkModeToggle')?.addEventListener('change', e => { 
             document.body.classList.toggle('dark-mode', e.target.checked); 
             localStorage.setItem('dark_mode', e.target.checked); 
@@ -1388,6 +1516,14 @@
                 else { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); } 
             } 
         });
+    }
+    
+    function changeSidebarColor(color, el) {
+        document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
+        el.classList.add('selected');
+        document.getElementById('mainSidebar').style.background = `linear-gradient(180deg, ${color} 0%, ${color}cc 100%)`;
+        localStorage.setItem('sidebar_color', color);
+        showToast('Sidebar color changed');
     }
     
     async function changePassword() { 
@@ -1496,6 +1632,12 @@
         });
         document.getElementById('logoutBtn')?.addEventListener('click', logout);
         
+        // Load saved settings
+        const savedColor = localStorage.getItem('sidebar_color');
+        if (savedColor) {
+            document.getElementById('mainSidebar').style.background = `linear-gradient(180deg, ${savedColor} 0%, ${savedColor}cc 100%)`;
+        }
+        
         if (localStorage.getItem('dark_mode') === 'true') {
             document.body.classList.add('dark-mode');
             const icon = document.getElementById('darkIcon');
@@ -1553,6 +1695,7 @@
     window.deleteReport = deleteReport;
     window.markReportAsViewed = markReportAsViewed;
     window.changePassword = changePassword;
+    window.changeSidebarColor = changeSidebarColor;
     window.createBackup = createBackup;
     window.restoreBackup = restoreBackup;
     window.logout = logout;

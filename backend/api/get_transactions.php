@@ -1,18 +1,28 @@
 <?php
 // backend/api/get_transactions.php
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
+
 require_once '../config/database.php';
 
-error_log("=== get_transactions.php called ===");
+error_log("=== GET TRANSACTIONS API CALLED ===");
 
 $database = new Database();
 $db = $database->getConnection();
 
-// Check if transactions table has data
+// Check if table has data
 $checkQuery = "SELECT COUNT(*) as cnt FROM transactions";
 $checkStmt = $db->prepare($checkQuery);
 $checkStmt->execute();
-$checkResult = $checkStmt->fetch(PDO::FETCH_ASSOC);
-error_log("Transactions count: " . $checkResult['cnt']);
+$count = $checkStmt->fetch(PDO::FETCH_ASSOC);
+error_log("Total transactions in DB: " . $count['cnt']);
 
 $query = "SELECT 
     t.id, 
@@ -50,6 +60,6 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     );
 }
 
-error_log("Transactions returned: " . count($transactions));
+error_log("Returning " . count($transactions) . " transactions");
 sendResponse(true, $transactions);
 ?>
