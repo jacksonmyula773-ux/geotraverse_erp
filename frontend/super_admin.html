@@ -96,9 +96,31 @@
         .messages-section .message-header { padding: 14px 16px 8px 16px; display: flex; justify-content: space-between; align-items: center; }
         .messages-section .message-preview { padding: 0 16px 12px 16px; font-size: 13px; color: #6b7280; }
         body.dark-mode .messages-section .message-preview { color: #94a3b8; }
-        .messages-section .delete-conv-btn { position: absolute; top: 10px; right: 10px; background: #ef4444; color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: opacity 0.2s; z-index: 15; }
+        
+        /* Delete Conversation Button - Opacity 60% normal, 100% on hover */
+        .messages-section .delete-conv-btn { 
+            position: absolute; 
+            top: 10px; 
+            right: 10px; 
+            background: #ef4444; 
+            color: white; 
+            border-radius: 50%; 
+            width: 28px; 
+            height: 28px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            opacity: 0.6;
+            transition: all 0.2s; 
+            z-index: 15; 
+        }
         .messages-section .message-item:hover .delete-conv-btn { opacity: 1; }
-        .messages-section .delete-conv-btn:hover { background: #dc2626; transform: scale(1.05); }
+        .messages-section .delete-conv-btn:hover { 
+            background: #dc2626; 
+            transform: scale(1.05);
+            opacity: 1;
+        }
         .dept-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
         
         /* Send Dropdown */
@@ -110,10 +132,11 @@
         body.dark-mode .send-dropdown-content a { color: #f1f5f9; }
         body.dark-mode .send-dropdown-content a:hover { background: #334155; }
         
+        /* Chat Styles */
         .chat-container { display: flex; flex-direction: column; height: 500px; }
         .chat-messages { flex: 1; overflow-y: auto; padding: 16px; background: #f9fafb; border-radius: 12px; margin-bottom: 12px; }
         body.dark-mode .chat-messages { background: #1e293b; }
-        .chat-message { display: flex; margin-bottom: 12px; position: relative; }
+        .chat-message { display: flex; margin-bottom: 12px; position: relative; align-items: flex-end; }
         .chat-sent { justify-content: flex-end; }
         .chat-received { justify-content: flex-start; }
         .chat-bubble { max-width: 70%; padding: 10px 15px; border-radius: 18px; word-wrap: break-word; position: relative; }
@@ -121,10 +144,34 @@
         .chat-received .chat-bubble { background: #e5e7eb; color: #333; border-bottom-left-radius: 4px; }
         body.dark-mode .chat-received .chat-bubble { background: #334155; color: #f1f5f9; }
         .chat-time { font-size: 10px; opacity: 0.7; margin-top: 4px; display: block; }
-        .delete-msg-btn { position: absolute; bottom: 5px; right: -35px; background: #ef4444; color: white; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 10px; opacity: 0; transition: opacity 0.2s; z-index: 20; }
-        .chat-message:hover .delete-msg-btn { opacity: 1; }
-        .chat-sent .delete-msg-btn { right: auto; left: -35px; }
-        .delete-msg-btn:hover { background: #dc2626; transform: scale(1.05); }
+        
+        /* Delete Message Button - Opacity 60% normal, 100% on hover */
+        .delete-msg-btn { 
+            background: #ef4444; 
+            color: white; 
+            border-radius: 50%; 
+            width: 28px; 
+            height: 28px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            font-size: 11px; 
+            transition: all 0.2s; 
+            z-index: 20; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            margin-left: 8px;
+            margin-right: 8px;
+            flex-shrink: 0;
+            opacity: 0.6;
+        }
+        .chat-sent .delete-msg-btn { order: -1; margin-left: 0; margin-right: 8px; }
+        .chat-received .delete-msg-btn { margin-left: 8px; margin-right: 0; }
+        .delete-msg-btn:hover { 
+            background: #dc2626; 
+            transform: scale(1.05);
+            opacity: 1;
+        }
         
         .chat-input-area { display: flex; gap: 10px; margin-top: 12px; }
         .chat-input-area textarea { flex: 1; margin: 0; resize: none; }
@@ -154,11 +201,60 @@
         .dept-card:hover { transform: translateX(5px); border-color: #0f74ba; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         body.dark-mode .dept-card { background: #1e293b; border-color: #334155; }
         
-        .dailywork-table-container { overflow-x: auto; border-radius: 12px; }
-        .dailywork-table { width: 100%; border-collapse: collapse; }
-        .dailywork-table th, .dailywork-table td { padding: 12px; text-align: left; border-bottom: 1px solid #e5e7eb; }
-        .dailywork-table th { background: #f8fafc; font-weight: 600; position: sticky; top: 0; }
-        body.dark-mode .dailywork-table th { background: #1e293b; }
+        /* Daily Work Table Styles - Improved */
+        .dailywork-table-container { 
+            overflow-x: auto; 
+            border-radius: 12px; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .dailywork-table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            min-width: 800px;
+        }
+        .dailywork-table th, 
+        .dailywork-table td { 
+            padding: 14px 16px; 
+            vertical-align: middle;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .dailywork-table th { 
+            background: #f8fafc; 
+            font-weight: 600; 
+            font-size: 13px;
+            position: sticky; 
+            top: 0; 
+            color: #4b5563;
+        }
+        .dailywork-table tbody tr:hover {
+            background-color: #f9fafb;
+        }
+        body.dark-mode .dailywork-table th { 
+            background: #1e293b; 
+            border-bottom-color: #334155;
+            color: #94a3b8;
+        }
+        body.dark-mode .dailywork-table tbody tr:hover {
+            background-color: #334155;
+        }
+        .dept-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        .dept-badge-2 { background: #10b98120; color: #10b981; }
+        .dept-badge-3 { background: #f59e0b20; color: #f59e0b; }
+        .dept-badge-4 { background: #3b82f620; color: #3b82f6; }
+        .dept-badge-5 { background: #06b6d420; color: #06b6d4; }
+        .dept-badge-6 { background: #8b5cf620; color: #8b5cf6; }
+        .dept-badge-7 { background: #6b728020; color: #6b7280; }
+        .dept-badge-8 { background: #ec489920; color: #ec4899; }
+        .dept-badge-9 { background: #14b8a620; color: #14b8a6; }
+        .dept-badge-10 { background: #f9731620; color: #f97316; }
+        .dept-badge-11 { background: #ef444420; color: #ef4444; }
+        .dept-badge-12 { background: #84cc1620; color: #84cc16; }
         
         .color-option { width: 42px; height: 42px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: all 0.2s; display: inline-block; margin: 5px; }
         .color-option:hover { transform: scale(1.1); }
@@ -166,6 +262,18 @@
         
         .detail-buttons { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 15px; padding-top: 15px; border-top: 1px solid #e5e7eb; }
         .detail-btn { padding: 8px 16px; border-radius: 6px; font-size: 12px; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; border: none; }
+        
+        /* Role Badges */
+        .role-super-admin { background: #8b5cf6; color: white; }
+        .role-admin { background: #3b82f6; color: white; }
+        .role-manager { background: #f59e0b; color: white; }
+        .role-finance-manager { background: #10b981; color: white; }
+        .role-accountant { background: #14b8a6; color: white; }
+        .role-hr-manager { background: #ec4899; color: white; }
+        .role-dept-head { background: #06b6d4; color: white; }
+        .role-team-leader { background: #84cc16; color: white; }
+        .role-staff { background: #6b7280; color: white; }
+        .role-intern { background: #9ca3af; color: white; }
     </style>
 </head>
 <body>
@@ -238,7 +346,18 @@
 </div>
 
 <!-- MODALS -->
-<div id="empModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-user-plus text-blue-500 mr-2"></i>Add Employee</h3><input type="hidden" id="empId"><input type="text" id="empName" placeholder="Full Name" required><input type="email" id="empEmail" placeholder="Email" required><input type="text" id="empPhone" placeholder="Phone"><select id="empDept"></select><select id="empRole"><option>Super Administrator</option><option>Administrator</option><option>Manager</option><option>Finance Manager</option><option>Staff</option></select><input type="text" id="empSalary" placeholder="Salary" class="amount-input"><div class="relative"><input type="password" id="empPassword" placeholder="Password" value="1234" class="w-full"><i class="fas fa-eye absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400" onclick="togglePassword('empPassword')"></i></div><div class="flex gap-3 pt-4"><button onclick="saveEmployee()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('empModal')" class="flex-1 bg-gray-200 py-2 rounded hover:bg-gray-300 transition">Cancel</button></div></div></div>
+<div id="empModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-user-plus text-blue-500 mr-2"></i>Add Employee</h3><input type="hidden" id="empId"><input type="text" id="empName" placeholder="Full Name" required><input type="email" id="empEmail" placeholder="Email" required><input type="text" id="empPhone" placeholder="Phone"><select id="empDept"></select><select id="empRole">
+    <option value="Super Administrator">Super Administrator</option>
+    <option value="Administrator">Administrator</option>
+    <option value="Manager">Manager</option>
+    <option value="Finance Manager">Finance Manager</option>
+    <option value="Accountant">Accountant</option>
+    <option value="HR Manager">HR Manager</option>
+    <option value="Department Head">Department Head</option>
+    <option value="Team Leader">Team Leader</option>
+    <option value="Staff">Staff</option>
+    <option value="Intern">Intern</option>
+</select><input type="text" id="empSalary" placeholder="Salary" class="amount-input"><div class="relative"><input type="password" id="empPassword" placeholder="Password" value="1234" class="w-full"><i class="fas fa-eye absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400" onclick="togglePassword('empPassword')"></i></div><div class="flex gap-3 pt-4"><button onclick="saveEmployee()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('empModal')" class="flex-1 bg-gray-200 py-2 rounded hover:bg-gray-300 transition">Cancel</button></div></div></div>
 
 <div id="viewEmpModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-user text-blue-500 mr-2"></i>Employee Details</h3><div id="viewEmpContent"></div><button onclick="closeModal('viewEmpModal')" class="w-full bg-gray-200 py-2 rounded mt-3 hover:bg-gray-300 transition">Close</button></div></div>
 
@@ -298,6 +417,26 @@
     };
     
     const sidebarColorOptions = ["#0f74ba", "#1e3a5f", "#7c3aed", "#059669", "#dc2626", "#d97706", "#0d9488", "#db2777", "#4f46e5", "#10b981"];
+    
+    function getRoleBadgeClass(role) {
+        const map = {
+            'Super Administrator': 'role-super-admin',
+            'Administrator': 'role-admin',
+            'Manager': 'role-manager',
+            'Finance Manager': 'role-finance-manager',
+            'Accountant': 'role-accountant',
+            'HR Manager': 'role-hr-manager',
+            'Department Head': 'role-dept-head',
+            'Team Leader': 'role-team-leader',
+            'Staff': 'role-staff',
+            'Intern': 'role-intern'
+        };
+        return map[role] || 'role-staff';
+    }
+    
+    function getDeptBadgeClass(deptId) {
+        return `dept-badge-${deptId}`;
+    }
     
     // ==================== HELPER FUNCTIONS ====================
     function showToast(msg, isError) { 
@@ -406,8 +545,6 @@
             if (data && method !== 'GET') opts.body = JSON.stringify(data); 
             const res = await fetch(url, opts); 
             if (!res.ok) {
-                const text = await res.text();
-                console.error('API Error Response:', text);
                 throw new Error(`HTTP ${res.status}`);
             }
             return await res.json(); 
@@ -594,7 +731,7 @@
             <h2 class="text-xl font-bold"><i class="fas fa-users text-blue-600 mr-2"></i>Employees (${employeesData.length})</h2>
             <div class="flex gap-2"><button onclick="openModal('empModal')" class="btn-primary"><i class="fas fa-plus mr-1"></i> Add Employee</button><button onclick="exportEmployeesToExcel()" class="btn-success"><i class="fas fa-file-excel mr-1"></i> Excel</button><button onclick="exportEmployeesToPDF()" class="btn-danger"><i class="fas fa-file-pdf mr-1"></i> PDF</button></div>
         </div>
-        <div class="bg-white rounded-xl overflow-x-auto shadow-sm border border-gray-100"><table class="min-w-full"><thead class="bg-gray-50"><tr class="border-b"><th class="p-3 text-left">ID</th><th class="p-3 text-left">Name</th><th class="p-3 text-left">Email</th><th class="p-3 text-left">Dept</th><th class="p-3 text-left">Role</th><th class="p-3 text-left">Salary</th><th class="p-3 text-left">Actions</th></td></thead><tbody>`;
+        <div class="bg-white rounded-xl overflow-x-auto shadow-sm border border-gray-100"><table class="min-w-full"><thead class="bg-gray-50"><tr class="border-b"><th class="p-3 text-left">ID</th><th class="p-3 text-left">Name</th><th class="p-3 text-left">Email</th><th class="p-3 text-left">Dept</th><th class="p-3 text-left">Role</th><th class="p-3 text-left">Salary</th><th class="p-3 text-left">Actions</th></tr></thead><tbody>`;
         
         employeesData.forEach(e => { 
             const isHighlighted = highlightId && e.id === highlightId;
@@ -603,7 +740,7 @@
                 <td class="p-3 font-medium">${escapeHtml(e.name)}</td>
                 <td class="p-3">${escapeHtml(e.email)}</td>
                 <td class="p-3">${departmentNames[e.department_id] || e.department_id}</td>
-                <td class="p-3"><span class="status-badge bg-blue-100 text-blue-600">${e.role || 'Staff'}</span></td>
+                <td class="p-3"><span class="status-badge ${getRoleBadgeClass(e.role)}">${e.role || 'Staff'}</span></td>
                 <td class="p-3 text-green-600 font-semibold">${formatMoney(e.salary)}</td>
                 <td class="p-3"><div class="flex gap-2"><button onclick="viewEmployee(${e.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="editEmployee(${e.id})" class="action-btn edit"><i class="fas fa-edit"></i></button><button onclick="deleteEmployee(${e.id})" class="action-btn delete"><i class="fas fa-trash"></i></button></div></td>
             </tr>`; 
@@ -761,7 +898,6 @@
             const imageHtml = imageUrl ? `<img src="${imageUrl}?t=${new Date().getTime()}" class="w-full h-48 object-cover rounded-lg mb-3 cursor-pointer" onclick="showFullImage('${imageUrl}')">` : '<div class="no-image w-full h-48 mb-3"><i class="fas fa-image text-3xl"></i></div>';
             document.getElementById('viewProjContent').innerHTML = `${imageHtml}<div class="space-y-1"><p><strong>Name:</strong> ${escapeHtml(p.name)}</p><p><strong>Client:</strong> ${escapeHtml(p.client_name || 'N/A')}</p><p><strong>Amount:</strong> ${formatMoney(p.amount)}</p><p><strong>Status:</strong> ${p.status}</p><p><strong>Progress:</strong> ${p.progress}%</p><p><strong>Location:</strong> ${escapeHtml(p.location || 'N/A')}</p><p><strong>Description:</strong> ${escapeHtml(p.description || 'N/A')}</p></div>`;
             
-            // Build send dropdown options
             let deptOptions = '';
             departmentsList.forEach(d => { 
                 deptOptions += `<a onclick="sendProjectToDept(${p.id}, ${d.id})">${escapeHtml(d.name)}</a>`; 
@@ -918,7 +1054,7 @@
         } 
     }
     
-    // ==================== DAILY WORK ====================
+    // ==================== DAILY WORK - IMPROVED TABLE ====================
     async function loadDailyWork(highlightId = null) {
         const res = await apiCall('get_dailywork.php');
         if (res.success && res.data) dailyworkData = res.data.sort((a,b) => b.id - a.id);
@@ -929,43 +1065,65 @@
             return; 
         }
         
-        let html = `<div class="flex justify-between flex-wrap gap-3 mb-4">
+        let html = `<div class="flex flex-wrap justify-between items-center gap-3 mb-4">
             <h2 class="text-xl font-bold"><i class="fas fa-calendar-day text-purple-600 mr-2"></i>Daily Work (${dailyworkData.length})</h2>
-            <div class="flex gap-2"><button onclick="openModal('dailyworkModal')" class="btn-primary"><i class="fas fa-plus mr-1"></i> Add</button><button onclick="exportDailyWorkToExcel()" class="btn-success"><i class="fas fa-file-excel mr-1"></i> Excel</button><button onclick="exportDailyWorkToPDF()" class="btn-danger"><i class="fas fa-file-pdf mr-1"></i> PDF</button></div>
+            <div class="flex gap-2">
+                <button onclick="openModal('dailyworkModal')" class="btn-primary"><i class="fas fa-plus mr-1"></i> Add</button>
+                <button onclick="exportDailyWorkToExcel()" class="btn-success"><i class="fas fa-file-excel mr-1"></i> Excel</button>
+                <button onclick="exportDailyWorkToPDF()" class="btn-danger"><i class="fas fa-file-pdf mr-1"></i> PDF</button>
+            </div>
         </div>
         <div class="dailywork-table-container bg-white rounded-xl shadow-sm border border-gray-100">
             <table class="dailywork-table">
                 <thead>
-                    <tr class="border-b">
-                        <th class="p-3">Date</th>
-                        <th class="p-3">Department</th>
-                        <th class="p-3">Project</th>
-                        <th class="p-3 text-right">Income</th>
-                        <th class="p-3 text-right">Expenses</th>
-                        <th class="p-3 text-right">Profit</th>
-                        <th class="p-3">Status</th>
-                        <th class="p-3 text-center">Actions</th>
-                    </td>
+                    <tr>
+                        <th class="text-left">Date</th>
+                        <th class="text-left">Department</th>
+                        <th class="text-left">Project</th>
+                        <th class="text-right">Income</th>
+                        <th class="text-right">Expenses</th>
+                        <th class="text-right">Profit</th>
+                        <th class="text-center">Status</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
                 </thead>
                 <tbody>`;
         
         dailyworkData.forEach(w => { 
             const isHighlighted = highlightId && w.id === highlightId;
-            let profit = (w.income||0) - (w.expenses||0);
-            html += `<tr class="border-b hover:bg-gray-50 transition ${isHighlighted ? 'search-highlight' : ''}" id="daily-row-${w.id}">
-                <td class="p-3">${w.date}</td>
-                <td class="p-3">${departmentNames[w.department_id]||w.department_id}</td>
-                <td class="p-3 font-medium">${escapeHtml(w.project_name)}</td>
-                <td class="p-3 text-right text-green-600 font-semibold">${formatMoney(w.income)}</td>
-                <td class="p-3 text-right text-red-600">${formatMoney(w.expenses)}</td>
-                <td class="p-3 text-right ${profit>=0?'text-green-600':'text-red-600'} font-semibold">${formatMoney(profit)}</td>
-                <td class="p-3"><span class="status-badge ${w.status==='paid'?'status-paid':'status-partial'}">${w.status}</span></td>
-                <td class="p-3 text-center"><div class="flex gap-2 justify-center"><button onclick="viewDailyWork(${w.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="editDailyWork(${w.id})" class="action-btn edit"><i class="fas fa-edit"></i></button><button onclick="deleteDailyWork(${w.id})" class="action-btn delete"><i class="fas fa-trash"></i></button></div></td>
+            let profit = (parseFloat(w.income) || 0) - (parseFloat(w.expenses) || 0);
+            let statusClass = w.status === 'paid' ? 'status-paid' : (w.status === 'partial' ? 'status-partial' : 'status-pending');
+            let statusText = w.status === 'paid' ? 'Paid' : (w.status === 'partial' ? 'Partial' : 'Pending');
+            let deptId = w.department_id || 1;
+            
+            html += `<tr class="${isHighlighted ? 'search-highlight' : ''}">
+                <td class="text-sm font-medium">${w.date}</td>
+                <td><span class="dept-badge ${getDeptBadgeClass(deptId)}">${departmentNames[deptId] || deptId}</span></td>
+                <td class="text-sm font-semibold text-gray-800">${escapeHtml(w.project_name)}</td>
+                <td class="text-right text-sm text-green-600 font-semibold">${formatMoney(w.income)}</td>
+                <td class="text-right text-sm text-red-600">${formatMoney(w.expenses)}</td>
+                <td class="text-right text-sm ${profit >= 0 ? 'text-green-600' : 'text-red-600'} font-semibold">${formatMoney(profit)}</td>
+                <td class="text-center"><span class="status-badge ${statusClass}">${statusText}</span></td>
+                <td class="text-center">
+                    <div class="flex gap-1 justify-center">
+                        <button onclick="viewDailyWork(${w.id})" class="action-btn view px-2 py-1 rounded text-xs" title="View"><i class="fas fa-eye"></i></button>
+                        <button onclick="editDailyWork(${w.id})" class="action-btn edit px-2 py-1 rounded text-xs" title="Edit"><i class="fas fa-edit"></i></button>
+                        <button onclick="deleteDailyWork(${w.id})" class="action-btn delete px-2 py-1 rounded text-xs" title="Delete"><i class="fas fa-trash"></i></button>
+                    </div>
+                </td>
             </tr>`; 
         });
-        html += `</tbody>}</div>`;
+        
+        html += `</tbody>
+            </table>
+        </div>`;
+        
         document.getElementById('dailyworkPage').innerHTML = html;
-        if (highlightId) document.getElementById(`daily-row-${highlightId}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        if (highlightId) {
+            const element = document.getElementById(`daily-row-${highlightId}`);
+            if (element) element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
     }
     
     function exportDailyWorkToExcel() {
@@ -977,7 +1135,7 @@
     
     function exportDailyWorkToPDF() {
         let element = document.createElement('div');
-        element.innerHTML = `<div style="padding:20px"><h1>Daily Work Report</h1><p>${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><tr><th>Date</th><th>Project</th><th>Income</th><th>Expenses</th><th>Profit</th></table>${dailyworkData.map(w => `<tr><td class="px-2 py-1">${w.date}</td><td class="px-2 py-1">${w.project_name}</td><td class="px-2 py-1">${formatMoney(w.income)}</td><td class="px-2 py-1">${formatMoney(w.expenses)}</td><td class="px-2 py-1">${formatMoney(w.income - w.expenses)}</td></tr>`).join('')}</table></div>`;
+        element.innerHTML = `<div style="padding:20px"><h1>Daily Work Report</h1><p>${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><tr><th>Date</th><th>Project</th><th>Income</th><th>Expenses</th><th>Profit</th></tr>${dailyworkData.map(w => `<tr><td class="px-2 py-1">${w.date}</td><td class="px-2 py-1">${w.project_name}</td><td class="px-2 py-1">${formatMoney(w.income)}</td><td class="px-2 py-1">${formatMoney(w.expenses)}</td><td class="px-2 py-1">${formatMoney(w.income - w.expenses)}</td></tr>`).join('')}</table></div>`;
         html2pdf().set({ margin: 0.5, filename: `dailywork_report.pdf` }).from(element).save();
         showToast('Exported to PDF');
     }
@@ -1121,8 +1279,6 @@
     
     function editTransaction(id) { 
         const transactionId = parseInt(id);
-        console.log('Editing transaction with ID:', transactionId);
-        
         const t = transactionsData.find(t => t.id === transactionId); 
         
         if(t) { 
@@ -1143,7 +1299,6 @@
             }
             openModal('transModal'); 
         } else {
-            console.error('Transaction not found with ID:', transactionId);
             showToast('Transaction not found', true);
         }
     }
@@ -1175,10 +1330,8 @@
         if (isUpdate) {
             data.id = parseInt(id);
             url = 'update_transaction.php';
-            console.log('Updating transaction with ID:', data.id);
         }
         
-        console.log('Sending data:', data);
         let res = await apiCall(url, 'POST', data);
         
         if(res && res.success) { 
@@ -1193,7 +1346,6 @@
             await loadDashboard(); 
         } else { 
             const errorMsg = (res && res.message) || 'Failed to save transaction';
-            console.error('Save error:', errorMsg);
             showToast(errorMsg, true); 
         }
     }
@@ -1221,7 +1373,7 @@
         }
         updateMessageBadge();
         
-        let html = `<div class="flex justify-between flex-wrap gap-3 mb-4">
+        let html = `<div class="flex flex-wrap justify-between items-center gap-3 mb-4">
             <h2 class="text-xl font-bold text-gray-800 dark:text-white"><i class="fas fa-envelope text-blue-600 mr-2"></i>Messages (${messagesData.length})</h2>
             <button onclick="openModal('msgModal')" class="btn-primary"><i class="fas fa-paper-plane mr-1"></i> New Message</button>
         </div>
@@ -1244,7 +1396,7 @@
             const color = departmentColors[deptId] || '#0f74ba';
             
             msgsHtml += `<div class="message-item ${isUnread ? 'message-unread' : ''} ${isHighlighted ? 'search-highlight' : ''}" onclick="openChat(${conv.conversation_id}, ${deptId}, '${escapeHtml(conv.department_name)}')">
-                <div class="delete-conv-btn" onclick="event.stopPropagation(); deleteConversation(${conv.conversation_id})" title="Delete conversation"><i class="fas fa-trash-alt text-xs"></i></div>
+                <div class="delete-conv-btn" onclick="event.stopPropagation(); deleteConversation(${conv.conversation_id})" title="Delete conversation"><i class="fas fa-trash-alt"></i></div>
                 <div class="message-header">
                     <div class="flex items-center gap-3">
                         <div class="dept-icon" style="background: ${color}20; color: ${color}; border: 1px solid ${color}40">
@@ -1269,12 +1421,13 @@
     
     async function deleteConversation(conversationId) {
         if (confirm('Are you sure you want to delete this entire conversation? This action cannot be undone.')) {
-            const res = await apiCall('delete_conversation.php', 'DELETE', { conversation_id: conversationId });
+            const res = await apiCall('delete_conversation.php', 'POST', { conversation_id: conversationId });
             if (res && res.success) {
-                showToast('Conversation deleted');
-                loadMessages();
+                showToast('Conversation deleted successfully');
+                await loadMessages();
                 if (currentConversationId === conversationId) {
                     closeModal('chatModal');
+                    currentConversationId = null;
                 }
             } else {
                 showToast((res && res.message) || 'Failed to delete conversation', true);
@@ -1284,13 +1437,13 @@
     
     async function deleteMessage(messageId) {
         if (confirm('Delete this message?')) {
-            const res = await apiCall('delete_message.php', 'DELETE', { message_id: messageId });
+            const res = await apiCall('delete_message.php', 'POST', { message_id: messageId });
             if (res && res.success) {
-                showToast('Message deleted');
+                showToast('Message deleted successfully');
                 if (currentConversationId) {
-                    openChat(currentConversationId, currentDepartmentId, '');
+                    await openChat(currentConversationId, currentDepartmentId, '');
                 }
-                loadMessages();
+                await loadMessages();
             } else {
                 showToast((res && res.message) || 'Failed to delete message', true);
             }
@@ -1309,7 +1462,7 @@
         }); 
         
         if (res && res.success) { 
-            showToast('Message sent'); 
+            showToast('Message sent successfully'); 
             closeModal('msgModal'); 
             document.getElementById('msgContent').value = '';
             await loadMessages(); 
@@ -1343,7 +1496,7 @@
                             <div>${escapeHtml(m.message)}</div>
                             <span class="chat-time">${new Date(m.created_at).toLocaleString()}</span>
                         </div>
-                        ${!isSent ? `<div class="delete-msg-btn" onclick="event.stopPropagation(); deleteMessage(${m.id})" title="Delete message"><i class="fas fa-trash-alt text-[10px]"></i></div>` : ''}
+                        <div class="delete-msg-btn" onclick="event.stopPropagation(); deleteMessage(${m.id})" title="Delete message"><i class="fas fa-trash-alt"></i></div>
                     </div>`;
                 }
             }
@@ -1352,7 +1505,7 @@
             chatArea.scrollTop = chatArea.scrollHeight;
             openModal('chatModal');
             
-            loadMessages();
+            await loadMessages();
         } else {
             showToast('Error loading conversation', true);
             openModal('chatModal');
@@ -1378,8 +1531,8 @@
         
         if (res && res.success) {
             document.getElementById('replyMsg').value = '';
-            openChat(currentConversationId, currentDepartmentId, '');
-            loadMessages();
+            await openChat(currentConversationId, currentDepartmentId, '');
+            await loadMessages();
             showToast('Message sent');
         } else {
             showToast((res && res.message) || 'Failed to send message', true);
@@ -1431,9 +1584,8 @@
         const r = reportsData.find(r => r.id === id);
         if (r) {
             if (r.is_viewed_by_admin === 0 && r.department_id !== 1) markReportAsViewed(id);
-            document.getElementById('viewReportContent').innerHTML = `<p><strong>Department:</strong> ${departmentNames[r.department_id] || 'Admin'}</p><p><strong>Period:</strong> ${r.period}</p><p><strong>Created:</strong> ${formatDate(r.created_at)}</p><div class="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg mt-3 whitespace-pre-wrap">${escapeHtml(r.content)}</div>`;
+            document.getElementById('viewReportContent').innerHTML = `<p><strong>Department:</strong> ${departmentNames[r.department_id] || 'Admin'}</p><p><strong>Period:</strong> ${r.period}</p><p><strong>Created:</strong> ${formatDate(r.created_at)}</p><div class="bg-white dark:bg-gray-800 p-4 rounded-lg mt-3 whitespace-pre-wrap border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200">${escapeHtml(r.content)}</div>`;
             
-            // Build send dropdown options
             let deptOptions = '';
             departmentsList.forEach(d => { 
                 deptOptions += `<a onclick="sendReportToDept(${r.id}, ${d.id})">${escapeHtml(d.name)}</a>`; 
@@ -1474,7 +1626,7 @@
         const r = reportsData.find(r => r.id === reportId);
         if (r) {
             let element = document.createElement('div');
-            element.innerHTML = `<div style="padding:20px"><h1>${escapeHtml(r.title)}</h1><p><strong>Period:</strong> ${r.period}</p><p><strong>Created:</strong> ${formatDate(r.created_at)}</p><hr/><div class="whitespace-pre-wrap">${escapeHtml(r.content)}</div><p>Generated: ${new Date().toLocaleString()}</p></div>`;
+            element.innerHTML = `<div style="padding:20px"><h1>${escapeHtml(r.title)}</h1><p><strong>Period:</strong> ${r.period}</p><p><strong>Created:</strong> ${formatDate(r.created_at)}</p><hr/><div class="bg-white p-3 rounded whitespace-pre-wrap">${escapeHtml(r.content)}</div><p>Generated: ${new Date().toLocaleString()}</p></div>`;
             html2pdf().set({ margin: 0.5, filename: `report_${r.id}.pdf` }).from(element).save();
             showToast('Exported to PDF');
         }
@@ -1511,7 +1663,6 @@
     // ==================== SETTINGS ====================
     function loadSettings() {
         const darkMode = document.body.classList.contains('dark-mode');
-        const savedColor = localStorage.getItem('sidebar_color') || '#0f74ba';
         
         document.getElementById('settingsPage').innerHTML = `
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
