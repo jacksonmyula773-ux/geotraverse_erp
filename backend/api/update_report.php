@@ -1,33 +1,37 @@
 <?php
-header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
-header('Access-Control-Allow-Credentials: true');
-
+// backend/api/update_report.php
 require_once '../config/database.php';
-session_start();
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
+$data = json_decode(file_get_contents("php://input"), true);
+
+if (!isset($data['id'])) {
+    sendResponse(false, null, "Report ID required");
 }
 
-$data = json_decode(file_get_contents('php://input'), true);
+$database = new Database();
+$db = $database->getConnection();
 
-$id = $data['id'] ?? 0;
-$title = $data['title'] ?? '';
-$period = $data['period'] ?? 'monthly';
-$content = $data['content'] ?? '';
+$fields = [];
+$params = [':id' => $data['id']];
 
-if (!$id || !$title) {
-    echo json_encode(['success' => false, 'message' => 'ID and title required']);
-    exit;
+$allowed_fields = ['title', 'period', 'content', 'status', 'department_id'];
+foreach ($allowed_fields as $field) {
+    if (isset($data[$field])) {
+        $fields[] = "$field = :$field";
+        $params[":$field"] = $data[$field];
+    }
 }
 
-$stmt = $conn->prepare("UPDATE reports SET title = ?, period = ?, content = ? WHERE id = ?");
-$stmt->bind_param("sssi", $title, $period, $content, $id);
-$stmt->execute();
+if (empty($fields)) {
+    sendResponse(false, null, "No fields to update");
+}
 
-echo json_encode(['success' => true]);
+$query = "UPDATE reports SET " . implode(", ", $fields) . " WHERE id = :id";
+$stmt = $db->prepare($query);
+
+if ($stmt->execute($params)) {
+    sendResponse(true, null, "Report updated successfully");
+} else {
+    sendResponse(false, null, "Failed to update report");
+}
 ?>

@@ -1,42 +1,58 @@
 <?php
-header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
-header('Access-Control-Allow-Credentials: true');
-
+// backend/api/update_employee.php
 require_once '../config/database.php';
-session_start();
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
+$data = json_decode(file_get_contents("php://input"), true);
+
+if (!isset($data['id'])) {
+    sendResponse(false, null, "Employee ID required");
 }
 
-$data = json_decode(file_get_contents('php://input'), true);
+$database = new Database();
+$db = $database->getConnection();
 
-$id = $data['id'] ?? 0;
-$name = $data['name'] ?? '';
-$email = $data['email'] ?? '';
-$phone = $data['phone'] ?? '';
-$department_id = $data['department_id'] ?? 1;
-$role = $data['role'] ?? 'Staff';
-$salary = $data['salary'] ?? 0;
-$password = isset($data['password']) && !empty($data['password']) ? md5($data['password']) : null;
+$fields = [];
+$params = [':id' => $data['id']];
 
-if (!$id || !$name || !$email) {
-    echo json_encode(['success' => false, 'message' => 'ID, name and email required']);
-    exit;
+if (isset($data['name'])) {
+    $fields[] = "name = :name";
+    $params[':name'] = $data['name'];
+}
+if (isset($data['email'])) {
+    $fields[] = "email = :email";
+    $params[':email'] = $data['email'];
+}
+if (isset($data['phone'])) {
+    $fields[] = "phone = :phone";
+    $params[':phone'] = $data['phone'];
+}
+if (isset($data['department_id'])) {
+    $fields[] = "department_id = :department_id";
+    $params[':department_id'] = $data['department_id'];
+}
+if (isset($data['role'])) {
+    $fields[] = "role = :role";
+    $params[':role'] = $data['role'];
+}
+if (isset($data['salary'])) {
+    $fields[] = "salary = :salary";
+    $params[':salary'] = $data['salary'];
+}
+if (isset($data['password']) && !empty($data['password'])) {
+    $fields[] = "password = :password";
+    $params[':password'] = password_hash($data['password'], PASSWORD_DEFAULT);
 }
 
-if ($password) {
-    $stmt = $conn->prepare("UPDATE users SET name = ?, email = ?, phone = ?, department_id = ?, role = ?, salary = ?, password = ? WHERE id = ?");
-    $stmt->bind_param("sssisisi", $name, $email, $phone, $department_id, $role, $salary, $password, $id);
+if (empty($fields)) {
+    sendResponse(false, null, "No fields to update");
+}
+
+$query = "UPDATE users SET " . implode(", ", $fields) . " WHERE id = :id";
+$stmt = $db->prepare($query);
+
+if ($stmt->execute($params)) {
+    sendResponse(true, null, "Employee updated successfully");
 } else {
-    $stmt = $conn->prepare("UPDATE users SET name = ?, email = ?, phone = ?, department_id = ?, role = ?, salary = ? WHERE id = ?");
-    $stmt->bind_param("sssisii", $name, $email, $phone, $department_id, $role, $salary, $id);
+    sendResponse(false, null, "Failed to update employee");
 }
-$stmt->execute();
-
-echo json_encode(['success' => true]);
 ?>

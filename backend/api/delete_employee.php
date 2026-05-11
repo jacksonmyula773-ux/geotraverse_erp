@@ -1,35 +1,28 @@
 <?php
-header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: DELETE, POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
-header('Access-Control-Allow-Credentials: true');
-
+// backend/api/delete_employee.php
 require_once '../config/database.php';
-session_start();
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
+$data = json_decode(file_get_contents("php://input"), true);
+
+if (!isset($data['id'])) {
+    sendResponse(false, null, "Employee ID required");
 }
 
-$data = json_decode(file_get_contents('php://input'), true);
-$id = isset($data['id']) ? intval($data['id']) : 0;
+$database = new Database();
+$db = $database->getConnection();
 
-if (!$id) {
-    echo json_encode(['success' => false, 'message' => 'Employee ID required']);
-    exit;
+// Don't allow deleting admin user (id=1)
+if ($data['id'] == 1) {
+    sendResponse(false, null, "Cannot delete super admin");
 }
 
-// Don't allow deleting super admin
-if ($id == 1) {
-    echo json_encode(['success' => false, 'message' => 'Cannot delete super admin']);
-    exit;
+$query = "DELETE FROM users WHERE id = :id";
+$stmt = $db->prepare($query);
+$stmt->bindParam(':id', $data['id']);
+
+if ($stmt->execute()) {
+    sendResponse(true, null, "Employee deleted successfully");
+} else {
+    sendResponse(false, null, "Failed to delete employee");
 }
-
-$stmt = $conn->prepare("DELETE FROM users WHERE id = ?");
-$stmt->bind_param("i", $id);
-$stmt->execute();
-
-echo json_encode(['success' => true]);
 ?>

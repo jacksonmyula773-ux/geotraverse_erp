@@ -1,7 +1,5 @@
 <?php
-header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-
+// backend/api/backup_data.php
 require_once '../config/database.php';
 
 $database = new Database();
@@ -9,20 +7,19 @@ $db = $database->getConnection();
 
 $backup = [];
 
-$stmt = $db->query("SELECT * FROM users");
-$backup['employees'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+// Get all tables
+$tables = ['budget_allocations', 'conversations', 'daily_work', 'departments', 'messages', 'projects', 'reports', 'transactions', 'users'];
 
-$stmt = $db->query("SELECT * FROM projects");
-$backup['projects'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+foreach ($tables as $table) {
+    $query = "SELECT * FROM $table";
+    $stmt = $db->prepare($query);
+    $stmt->execute();
+    $backup[$table] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 
-$stmt = $db->query("SELECT * FROM transactions");
-$backup['transactions'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$backup['timestamp'] = date('Y-m-d H:i:s');
 
-$stmt = $db->query("SELECT * FROM reports");
-$backup['reports'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-$stmt = $db->query("SELECT * FROM messages");
-$backup['messages'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-echo json_encode(['success' => true, 'data' => $backup]);
+header('Content-Type: application/json');
+header('Content-Disposition: attachment; filename="geotraverse_backup_' . date('Y-m-d') . '.json"');
+echo json_encode($backup, JSON_PRETTY_PRINT);
 ?>

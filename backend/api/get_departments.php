@@ -1,26 +1,18 @@
 <?php
-header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
-header('Access-Control-Allow-Credentials: true');
-
+// backend/api/get_departments.php
 require_once '../config/database.php';
-session_start();
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
-}
+$database = new Database();
+$db = $database->getConnection();
 
-$stmt = $conn->prepare("SELECT id, name, email, phone, description FROM departments ORDER BY id");
+$query = "SELECT id, name, email, phone, description FROM departments WHERE id != 1 ORDER BY id";
+$stmt = $db->prepare($query);
 $stmt->execute();
-$result = $stmt->get_result();
-$departments = [];
 
-while ($row = $result->fetch_assoc()) {
+$departments = [];
+while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $departments[] = $row;
 }
 
-echo json_encode(['success' => true, 'data' => $departments]);
+sendResponse(true, $departments);
 ?>

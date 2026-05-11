@@ -1,33 +1,34 @@
 <?php
-header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
-header('Access-Control-Allow-Credentials: true');
-
+// backend/api/add_report.php
 require_once '../config/database.php';
-session_start();
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
+$data = json_decode(file_get_contents("php://input"), true);
+
+if (!isset($data['title']) || empty($data['title']) || !isset($data['content']) || empty($data['content'])) {
+    sendResponse(false, null, "Title and content required");
 }
 
-$data = json_decode(file_get_contents('php://input'), true);
+$database = new Database();
+$db = $database->getConnection();
 
-$title = $data['title'] ?? '';
+$title = $data['title'];
 $period = $data['period'] ?? 'monthly';
-$content = $data['content'] ?? '';
-$department_id = $data['department_id'] ?? ($_SESSION['department_id'] ?? 1);
+$content = $data['content'];
+$status = $data['status'] ?? 'draft';
+$department_id = $data['department_id'] ?? 1;
 
-if (!$title || !$content) {
-    echo json_encode(['success' => false, 'message' => 'Title and content required']);
-    exit;
+$query = "INSERT INTO reports (title, period, content, status, department_id) 
+          VALUES (:title, :period, :content, :status, :department_id)";
+$stmt = $db->prepare($query);
+$stmt->bindParam(':title', $title);
+$stmt->bindParam(':period', $period);
+$stmt->bindParam(':content', $content);
+$stmt->bindParam(':status', $status);
+$stmt->bindParam(':department_id', $department_id);
+
+if ($stmt->execute()) {
+    sendResponse(true, ['id' => $db->lastInsertId()], "Report added successfully");
+} else {
+    sendResponse(false, null, "Failed to add report");
 }
-
-$stmt = $conn->prepare("INSERT INTO reports (title, period, content, department_id, status, created_at) VALUES (?, ?, ?, ?, 'draft', NOW())");
-$stmt->bind_param("sssi", $title, $period, $content, $department_id);
-$stmt->execute();
-
-echo json_encode(['success' => true, 'id' => $conn->insert_id]);
 ?>

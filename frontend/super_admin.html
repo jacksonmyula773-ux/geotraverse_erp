@@ -704,26 +704,36 @@
         if (highlightId) document.getElementById(`proj-card-${highlightId}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
     
-    async function markProjectAsViewed(projectId) {
-        try {
-            const res = await apiCall('mark_project_viewed.php', 'POST', { project_id: projectId });
-            if (res.success) {
-                const project = projectsData.find(p => p.id === projectId);
-                if (project) project.is_viewed_by_admin = 1;
-                unviewedProjectsCount = Math.max(0, unviewedProjectsCount - 1);
-                updateProjectBadge();
-                await loadProjects();
-                await loadDashboard();
-                showToast('Project marked as viewed');
-            }
-        } catch (error) {
+async function markProjectAsViewed(projectId) {
+    try {
+        const res = await apiCall('mark_project_viewed.php', 'POST', { project_id: projectId });
+        if (res.success) {
+            // Update local data
             const project = projectsData.find(p => p.id === projectId);
             if (project) project.is_viewed_by_admin = 1;
-            unviewedProjectsCount = Math.max(0, unviewedProjectsCount - 1);
+            
+            // Update count from server response
+            if (res.unviewed_count !== undefined) {
+                unviewedProjectsCount = res.unviewed_count;
+            } else {
+                unviewedProjectsCount = Math.max(0, unviewedProjectsCount - 1);
+            }
+            
             updateProjectBadge();
-            loadProjects();
+            await loadProjects();
+            await loadDashboard();
+            showToast('Project marked as viewed');
         }
+    } catch (error) {
+        console.error('Error marking project:', error);
+        const project = projectsData.find(p => p.id === projectId);
+        if (project) project.is_viewed_by_admin = 1;
+        unviewedProjectsCount = Math.max(0, unviewedProjectsCount - 1);
+        updateProjectBadge();
+        loadProjects();
     }
+}
+
     
     function viewProjectDetails(id) {
         const p = projectsData.find(p => p.id === id);
@@ -1097,22 +1107,45 @@
         } 
     }
     
-    async function saveTransaction() { 
-        let id = document.getElementById('transId').value; 
-        let data = { 
-            type: document.getElementById('transType').value, 
-            source: document.getElementById('transSource').value, 
-            amount: parseAmount(document.getElementById('transAmount').value), 
-            transaction_date: document.getElementById('transDate').value, 
-            status: document.getElementById('transStatus').value, 
-            description: document.getElementById('transDesc').value, 
-            department_id: parseInt(document.getElementById('transDept').value)||1 
-        }; 
-        if(!data.source || data.amount<=0) { showToast('Source and valid amount required',true); return; } 
-        let res = id ? await apiCall('update_transaction.php','POST',{...data,id:parseInt(id)}) : await apiCall('add_transaction.php','POST',data); 
-        if(res.success) { showToast(id ? 'Transaction updated' : 'Transaction added'); closeModal('transModal'); loadCashflow(); loadDashboard(); } 
-        else showToast(res.message || 'Failed', true); 
+// Badilisha saveTransaction function
+async function saveTransaction() { 
+    let id = document.getElementById('transId').value; 
+    let data = { 
+        type: document.getElementById('transType').value, 
+        source: document.getElementById('transSource').value, 
+        amount: parseAmount(document.getElementById('transAmount').value), 
+        transaction_date: document.getElementById('transDate').value || new Date().toISOString().split('T')[0], 
+        status: document.getElementById('transStatus').value, 
+        description: document.getElementById('transDesc').value, 
+        department_id: parseInt(document.getElementById('transDept').value) || 1 
+    }; 
+    
+    if(!data.source || data.amount <= 0) { 
+        showToast('Source and valid amount required', true); 
+        return; 
     }
+    
+    let url = id ? 'update_transaction.php' : 'add_transaction.php';
+    let res = await apiCall(url, 'POST', data);
+    
+    console.log('Transaction save response:', res);
+    
+    if(res && res.success) { 
+        showToast(id ? 'Transaction updated' : 'Transaction added'); 
+        closeModal('transModal'); 
+        
+        // Clear form
+        document.getElementById('transId').value = '';
+        document.getElementById('transSource').value = '';
+        document.getElementById('transAmount').value = '';
+        document.getElementById('transDesc').value = '';
+        
+        await loadCashflow(); 
+        await loadDashboard(); 
+    } else { 
+        showToast((res && res.message) || 'Failed to save transaction', true); 
+    }
+}
     
     async function deleteTransaction(id) { 
         if(confirm('Delete this transaction?')) { 

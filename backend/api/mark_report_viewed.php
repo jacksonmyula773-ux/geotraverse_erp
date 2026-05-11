@@ -1,29 +1,28 @@
 <?php
-header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
-header('Access-Control-Allow-Credentials: true');
-
+// backend/api/mark_report_viewed.php
 require_once '../config/database.php';
-session_start();
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
+$data = json_decode(file_get_contents("php://input"), true);
+
+if (!isset($data['report_id'])) {
+    sendResponse(false, null, "Report ID required");
 }
 
-$data = json_decode(file_get_contents('php://input'), true);
-$report_id = isset($data['report_id']) ? intval($data['report_id']) : 0;
+$database = new Database();
+$db = $database->getConnection();
 
-if (!$report_id) {
-    echo json_encode(['success' => false, 'message' => 'Report ID required']);
-    exit;
+$query = "UPDATE reports SET is_viewed_by_admin = 1 WHERE id = :id";
+$stmt = $db->prepare($query);
+$stmt->bindParam(':id', $data['report_id']);
+
+if ($stmt->execute()) {
+    $countQuery = "SELECT COUNT(*) as unviewed FROM reports WHERE is_viewed_by_admin = 0 AND department_id != 1";
+    $countStmt = $db->prepare($countQuery);
+    $countStmt->execute();
+    $count = $countStmt->fetch(PDO::FETCH_ASSOC);
+    
+    sendResponse(true, null, "Report marked as viewed", $count['unviewed']);
+} else {
+    sendResponse(false, null, "Failed to mark report as viewed");
 }
-
-$stmt = $conn->prepare("UPDATE reports SET is_viewed_by_admin = 1 WHERE id = ?");
-$stmt->bind_param("i", $report_id);
-$stmt->execute();
-
-echo json_encode(['success' => true]);
 ?>

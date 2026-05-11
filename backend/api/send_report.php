@@ -1,114 +1,25 @@
 <?php
-header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
-header('Access-Control-Allow-Credentials: true');
-
+// backend/api/send_report.php
 require_once '../config/database.php';
-session_start();
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
+$data = json_decode(file_get_contents("php://input"), true);
+
+if (!isset($data['report_id']) || !isset($data['to_department_id'])) {
+    sendResponse(false, null, "Report ID and destination department required");
 }
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    echo json_encode(['success' => false, 'message' => 'Invalid request method']);
-    exit;
-}
+$database = new Database();
+$db = $database->getConnection();
 
-$data = json_decode(file_get_contents('php://input'), true);
-$report_id = isset($data['report_id']) ? intval($data['report_id']) : 0;
-$to_department_id = isset($data['to_department_id']) ? intval($data['to_department_id']) : 0;
-$message = isset($data['message']) ? trim($data['message']) : '';
-$sender_dept = isset($_SESSION['department_id']) ? $_SESSION['department_id'] : 1;
+$query = "UPDATE reports SET department_id = :to_dept, sent_from_dept = :from_dept, status = 'sent' WHERE id = :id";
+$stmt = $db->prepare($query);
+$stmt->bindParam(':to_dept', $data['to_department_id']);
+$stmt->bindParam(':from_dept', $data['from_department_id'] ?? 1);
+$stmt->bindParam(':id', $data['report_id']);
 
-if (!$report_id || !$to_department_id) {
-    echo json_encode(['success' => false, 'message' => 'Report ID and Department ID required']);
-    exit;
-}
-
-// Get report details
-$stmt = $conn->prepare("SELECT title, period, content FROM reports WHERE id = ?");
-$stmt->bind_param("i", $report_id);
-$stmt->execute();
-$result = $stmt->get_result();
-$report = $result->fetch_assoc();
-
-if (!$report) {
-    echo json_encode(['success' => false, 'message' => 'Report not found']);
-    exit;
-}
-
-// Create tables if they don't exist
-$conn->query("CREATE TABLE IF NOT EXISTS `conversations` (
-    `id` int(11) NOT NULL AUTO_INCREMENT,
-    `participant_1` int(11) NOT NULL,
-    `participant_2` int(11) NOT NULL,
-    `last_message` text DEFAULT NULL,
-    `last_message_time` datetime DEFAULT NULL,
-    `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-    `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-    PRIMARY KEY (`id`),
-    UNIQUE KEY `unique_conversation` (`participant_1`, `participant_2`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
-
-$conn->query("CREATE TABLE IF NOT EXISTS `messages` (
-    `id` int(11) NOT NULL AUTO_INCREMENT,
-    `conversation_id` int(11) NOT NULL,
-    `sender_dept` int(11) NOT NULL,
-    `receiver_dept` int(11) NOT NULL,
-    `message` text NOT NULL,
-    `is_read` tinyint(1) DEFAULT 0,
-    `read_at` datetime DEFAULT NULL,
-    `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-    PRIMARY KEY (`id`),
-    KEY `conversation_id` (`conversation_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
-
-// Find or create conversation
-$participant_1 = min($sender_dept, $to_department_id);
-$participant_2 = max($sender_dept, $to_department_id);
-
-$checkStmt = $conn->prepare("SELECT id FROM conversations WHERE participant_1 = ? AND participant_2 = ?");
-$checkStmt->bind_param("ii", $participant_1, $participant_2);
-$checkStmt->execute();
-$checkResult = $checkStmt->get_result();
-
-if ($checkResult->num_rows > 0) {
-    $conv = $checkResult->fetch_assoc();
-    $conversation_id = $conv['id'];
+if ($stmt->execute()) {
+    sendResponse(true, null, "Report sent successfully");
 } else {
-    $fullMessage = "REPORT: " . $report['title'];
-    $insertStmt = $conn->prepare("INSERT INTO conversations (participant_1, participant_2, last_message, last_message_time) VALUES (?, ?, ?, NOW())");
-    $insertStmt->bind_param("iis", $participant_1, $participant_2, $fullMessage);
-    $insertStmt->execute();
-    $conversation_id = $conn->insert_id;
+    sendResponse(false, null, "Failed to send report");
 }
-
-// Create message content
-$fullMessage = "📊 REPORT SHARED:\n\n";
-$fullMessage .= "Title: " . $report['title'] . "\n";
-$fullMessage .= "Period: " . $report['period'] . "\n";
-$fullMessage .= "Date: " . date('Y-m-d H:i:s') . "\n\n";
-$fullMessage .= "Content:\n" . $report['content'] . "\n";
-
-if ($message) {
-    $fullMessage .= "\n📝 Message: " . $message;
-}
-
-$fullMessage .= "\n\n--- Shared from Super Admin ---";
-
-// Insert message
-$msgStmt = $conn->prepare("INSERT INTO messages (conversation_id, sender_dept, receiver_dept, message, created_at) VALUES (?, ?, ?, ?, NOW())");
-$msgStmt->bind_param("iiis", $conversation_id, $sender_dept, $to_department_id, $fullMessage);
-$msgStmt->execute();
-
-// Update conversation last message
-$updateStmt = $conn->prepare("UPDATE conversations SET last_message = ?, last_message_time = NOW() WHERE id = ?");
-$updateStmt->bind_param("si", $fullMessage, $conversation_id);
-$updateStmt->execute();
-
-echo json_encode(['success' => true, 'message' => 'Report sent successfully']);
 ?>

@@ -1,77 +1,55 @@
 <?php
-header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST, OPTIONS');
-
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
-}
-
+// backend/api/restore_data.php
 require_once '../config/database.php';
 
-$data = json_decode(file_get_contents("php://input"), true);
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    sendResponse(false, null, "POST method required");
+}
 
-if (!$data) {
-    echo json_encode(['success' => false, 'error' => 'Invalid backup data']);
-    exit();
+if (!isset($_FILES['backup_file']) || $_FILES['backup_file']['error'] !== UPLOAD_ERR_OK) {
+    sendResponse(false, null, "Backup file required");
+}
+
+$fileContent = file_get_contents($_FILES['backup_file']['tmp_name']);
+$backup = json_decode($fileContent, true);
+
+if (!$backup) {
+    sendResponse(false, null, "Invalid backup file");
 }
 
 $database = new Database();
 $db = $database->getConnection();
 
+// Start transaction
+$db->beginTransaction();
+
 try {
-    $db->beginTransaction();
-    
-    if (isset($data['employees'])) {
-        $db->exec("DELETE FROM users WHERE id > 0");
-        foreach ($data['employees'] as $emp) {
-            $stmt = $db->prepare("INSERT INTO users (id, name, email, phone, department_id, role, salary, password, status, join_date, created_at) 
-                                  VALUES (:id, :name, :email, :phone, :dept_id, :role, :salary, :password, :status, :join_date, :created_at)");
-            $stmt->execute($emp);
-        }
+    // Truncate tables first
+    $tables = ['budget_allocations', 'conversations', 'daily_work', 'messages', 'projects', 'reports', 'transactions', 'users'];
+    foreach ($tables as $table) {
+        $db->exec("TRUNCATE TABLE $table");
     }
     
-    if (isset($data['projects'])) {
-        $db->exec("DELETE FROM projects WHERE id > 0");
-        foreach ($data['projects'] as $proj) {
-            $stmt = $db->prepare("INSERT INTO projects (id, name, client_name, amount, status, progress, location, description, image, department_id, created_at, updated_at) 
-                                  VALUES (:id, :name, :client_name, :amount, :status, :progress, :location, :description, :image, :dept_id, :created_at, :updated_at)");
-            $stmt->execute($proj);
-        }
-    }
-    
-    if (isset($data['transactions'])) {
-        $db->exec("DELETE FROM transactions WHERE id > 0");
-        foreach ($data['transactions'] as $trans) {
-            $stmt = $db->prepare("INSERT INTO transactions (id, type, department_id, source, amount, paid_amount, status, description, transaction_date) 
-                                  VALUES (:id, :type, :dept_id, :source, :amount, :paid_amount, :status, :description, :transaction_date)");
-            $stmt->execute($trans);
-        }
-    }
-    
-    if (isset($data['reports'])) {
-        $db->exec("DELETE FROM reports WHERE id > 0");
-        foreach ($data['reports'] as $report) {
-            $stmt = $db->prepare("INSERT INTO reports (id, department_id, title, period, content, status, created_at) 
-                                  VALUES (:id, :dept_id, :title, :period, :content, :status, :created_at)");
-            $stmt->execute($report);
-        }
-    }
-    
-    if (isset($data['messages'])) {
-        $db->exec("DELETE FROM messages WHERE id > 0");
-        foreach ($data['messages'] as $msg) {
-            $stmt = $db->prepare("INSERT INTO messages (id, from_department_id, to_department_id, message, is_read, created_at) 
-                                  VALUES (:id, :from_dept, :to_dept, :message, :is_read, :created_at)");
-            $stmt->execute($msg);
+    // Restore data
+    foreach ($tables as $table) {
+        if (isset($backup[$table]) && is_array($backup[$table])) {
+            foreach ($backup[$table] as $row) {
+                $columns = implode(", ", array_keys($row));
+                $placeholders = ":" . implode(", :", array_keys($row));
+                $query = "INSERT INTO $table ($columns) VALUES ($placeholders)";
+                $stmt = $db->prepare($query);
+                foreach ($row as $key => $value) {
+                    $stmt->bindValue(":$key", $value);
+                }
+                $stmt->execute();
+            }
         }
     }
     
     $db->commit();
-    echo json_encode(['success' => true]);
-} catch(Exception $e) {
+    sendResponse(true, null, "Database restored successfully");
+} catch (Exception $e) {
     $db->rollBack();
-    echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    sendResponse(false, null, "Restore failed: " . $e->getMessage());
 }
 ?>

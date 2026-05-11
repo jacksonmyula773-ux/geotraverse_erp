@@ -1,60 +1,46 @@
 <?php
-header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
-header('Access-Control-Allow-Credentials: true');
-
+// backend/api/get_conversation.php
 require_once '../config/database.php';
-session_start();
-
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
-}
 
 $department_id = isset($_GET['department_id']) ? intval($_GET['department_id']) : 0;
-$current_dept = isset($_SESSION['department_id']) ? $_SESSION['department_id'] : 1;
 
 if (!$department_id) {
-    echo json_encode(['success' => false, 'message' => 'Department ID required']);
-    exit;
+    sendResponse(false, null, "Department ID required");
 }
 
-$participant_1 = min($current_dept, $department_id);
-$participant_2 = max($current_dept, $department_id);
+$database = new Database();
+$db = $database->getConnection();
 
-$stmt = $conn->prepare("
-    SELECT c.id as conversation_id, 
-           m.*,
-           d1.name as sender_name,
-           d2.name as receiver_name
-    FROM conversations c
-    LEFT JOIN messages m ON c.id = m.conversation_id
-    LEFT JOIN departments d1 ON m.sender_dept = d1.id
-    LEFT JOIN departments d2 ON m.receiver_dept = d2.id
-    WHERE c.participant_1 = ? AND c.participant_2 = ?
-    ORDER BY m.created_at ASC
-");
-$stmt->bind_param("ii", $participant_1, $participant_2);
+// Get department name
+$deptQuery = "SELECT name FROM departments WHERE id = :id";
+$deptStmt = $db->prepare($deptQuery);
+$deptStmt->bindParam(':id', $department_id);
+$deptStmt->execute();
+$department = $deptStmt->fetch(PDO::FETCH_ASSOC);
+
+// Mark messages as read
+$updateQuery = "UPDATE messages SET is_read = 1, read_at = NOW() WHERE receiver_dept = 1 AND sender_dept = :dept_id AND is_read = 0";
+$updateStmt = $db->prepare($updateQuery);
+$updateStmt->bindParam(':dept_id', $department_id);
+$updateStmt->execute();
+
+// Get messages
+$query = "SELECT m.*,
+    CASE WHEN m.sender_dept = 1 THEN 'admin' ELSE 'department' END as sender_type
+    FROM messages m
+    WHERE (m.sender_dept = 1 AND m.receiver_dept = :dept_id) OR (m.sender_dept = :dept_id AND m.receiver_dept = 1)
+    ORDER BY m.created_at ASC";
+$stmt = $db->prepare($query);
+$stmt->bindParam(':dept_id', $department_id);
 $stmt->execute();
-$result = $stmt->get_result();
-$messages = [];
 
-while ($row = $result->fetch_assoc()) {
+$messages = [];
+while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $messages[] = $row;
 }
 
-// Get department name
-$deptStmt = $conn->prepare("SELECT name FROM departments WHERE id = ?");
-$deptStmt->bind_param("i", $department_id);
-$deptStmt->execute();
-$deptResult = $deptStmt->get_result();
-$deptName = $deptResult->fetch_assoc()['name'] ?? 'Unknown';
-
-echo json_encode([
-    'success' => true, 
-    'data' => $messages,
-    'department_name' => $deptName
+sendResponse(true, [
+    'messages' => $messages,
+    'department_name' => $department ? $department['name'] : ''
 ]);
 ?>

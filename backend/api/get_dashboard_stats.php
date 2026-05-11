@@ -1,81 +1,50 @@
 <?php
 // backend/api/get_dashboard_stats.php
-session_start();
-header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET');
-
-if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['success' => false, 'message' => 'Not logged in']);
-    exit();
-}
-
 require_once '../config/database.php';
 
 $database = new Database();
 $db = $database->getConnection();
 
-if (!$db) {
-    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
-    exit();
-}
-
 // Get total employees
-$empQuery = "SELECT COUNT(*) as count FROM users WHERE is_active = 1";
-$empStmt = $db->prepare($empQuery);
-$empStmt->execute();
-$totalEmployees = $empStmt->fetch(PDO::FETCH_ASSOC)['count'];
+$query = "SELECT COUNT(*) as total FROM users WHERE is_active = 1";
+$stmt = $db->prepare($query);
+$stmt->execute();
+$employees = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// Get total projects
-$projQuery = "SELECT COUNT(*) as count FROM projects";
-$projStmt = $db->prepare($projQuery);
-$projStmt->execute();
-$totalProjects = $projStmt->fetch(PDO::FETCH_ASSOC)['count'];
+// Get project stats
+$query = "SELECT 
+    COUNT(*) as total,
+    SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as pending,
+    SUM(CASE WHEN status = 'in_progress' THEN 1 ELSE 0 END) as in_progress,
+    SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed
+    FROM projects";
+$stmt = $db->prepare($query);
+$stmt->execute();
+$projects = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// Get unviewed projects
-$unviewedProjQuery = "SELECT COUNT(*) as count FROM projects WHERE is_viewed_by_admin = 0 AND department_id != 1";
-$unviewedProjStmt = $db->prepare($unviewedProjQuery);
-$unviewedProjStmt->execute();
-$unviewedProjects = $unviewedProjStmt->fetch(PDO::FETCH_ASSOC)['count'];
+// Get financial stats
+$query = "SELECT 
+    SUM(CASE WHEN type = 'income' AND status = 'paid' THEN amount ELSE 0 END) as total_income,
+    SUM(CASE WHEN type = 'expense' AND status = 'paid' THEN amount ELSE 0 END) as total_expense
+    FROM transactions";
+$stmt = $db->prepare($query);
+$stmt->execute();
+$finance = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// Get total income and expenses
-$incomeQuery = "SELECT SUM(amount) as total FROM transactions WHERE type = 'income'";
-$incomeStmt = $db->prepare($incomeQuery);
-$incomeStmt->execute();
-$totalIncome = $incomeStmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
+// Get unread messages count for admin
+$query = "SELECT COUNT(*) as unread FROM messages WHERE receiver_dept = 1 AND is_read = 0";
+$stmt = $db->prepare($query);
+$stmt->execute();
+$messages = $stmt->fetch(PDO::FETCH_ASSOC);
 
-$expenseQuery = "SELECT SUM(amount) as total FROM transactions WHERE type = 'expense'";
-$expenseStmt = $db->prepare($expenseQuery);
-$expenseStmt->execute();
-$totalExpense = $expenseStmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
-
-// Get unread messages
-$msgQuery = "SELECT COUNT(*) as count FROM messages WHERE to_department_id = 1 AND is_read = 0";
-$msgStmt = $db->prepare($msgQuery);
-$msgStmt->execute();
-$unreadMessages = $msgStmt->fetch(PDO::FETCH_ASSOC)['count'];
-
-// Get recent employees
-$recentQuery = "SELECT u.id, u.name, u.email, u.role, d.name as department_name 
-                FROM users u 
-                LEFT JOIN departments d ON u.department_id = d.id 
-                WHERE u.is_active = 1 
-                ORDER BY u.id DESC LIMIT 5";
-$recentStmt = $db->prepare($recentQuery);
-$recentStmt->execute();
-$recentEmployees = $recentStmt->fetchAll(PDO::FETCH_ASSOC);
-
-echo json_encode([
-    'success' => true,
-    'data' => [
-        'total_employees' => $totalEmployees,
-        'total_projects' => $totalProjects,
-        'unviewed_projects' => $unviewedProjects,
-        'total_income' => (float)$totalIncome,
-        'total_expenses' => (float)$totalExpense,
-        'net_profit' => (float)$totalIncome - (float)$totalExpense,
-        'unread_messages' => $unreadMessages,
-        'recent_employees' => $recentEmployees
-    ]
+sendResponse(true, [
+    'total_employees' => $employees['total'],
+    'total_projects' => $projects['total'],
+    'pending_projects' => $projects['pending'],
+    'in_progress_projects' => $projects['in_progress'],
+    'completed_projects' => $projects['completed'],
+    'total_income' => floatval($finance['total_income']),
+    'total_expense' => floatval($finance['total_expense']),
+    'unread_messages' => $messages['unread']
 ]);
 ?>

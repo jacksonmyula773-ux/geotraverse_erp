@@ -1,62 +1,52 @@
 <?php
-header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
-header('Access-Control-Allow-Credentials: true');
-
+// backend/api/update_project.php
 require_once '../config/database.php';
-session_start();
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
+$data = json_decode(file_get_contents("php://input"), true);
+
+if (!isset($data['id'])) {
+    sendResponse(false, null, "Project ID required");
 }
 
-$data = json_decode(file_get_contents('php://input'), true);
+$database = new Database();
+$db = $database->getConnection();
 
-$id = $data['id'] ?? 0;
-$name = $data['name'] ?? '';
-$client_name = $data['client_name'] ?? '';
-$amount = $data['amount'] ?? 0;
-$location = $data['location'] ?? '';
-$description = $data['description'] ?? '';
-$status = $data['status'] ?? 'pending';
-$progress = $data['progress'] ?? 0;
-$department_id = $data['department_id'] ?? 1;
-$image = $data['image'] ?? '';
+$fields = [];
+$params = [':id' => $data['id']];
 
-if (!$id || !$name) {
-    echo json_encode(['success' => false, 'message' => 'Project ID and name required']);
-    exit;
-}
-
-$upload_dir = dirname(__DIR__, 2) . '/frontend/assets/uploads/projects/';
-if (!is_dir($upload_dir)) {
-    mkdir($upload_dir, 0777, true);
-}
-
-$image_url = null;
-if ($image && $image != '') {
-    $filename = 'project_' . time() . '_' . rand(1000, 9999) . '.png';
-    $filepath = $upload_dir . $filename;
-    
-    $image_data = preg_replace('#^data:image/\w+;base64,#i', '', $image);
-    $image_data = base64_decode($image_data);
-    
-    if (file_put_contents($filepath, $image_data)) {
-        $image_url = 'assets/uploads/projects/' . $filename;
+$allowed_fields = ['name', 'client_name', 'amount', 'location', 'description', 'status', 'progress', 'department_id'];
+foreach ($allowed_fields as $field) {
+    if (isset($data[$field])) {
+        $fields[] = "$field = :$field";
+        $params[":$field"] = $data[$field];
     }
 }
 
-if ($image_url) {
-    $stmt = $conn->prepare("UPDATE projects SET name = ?, client_name = ?, amount = ?, location = ?, description = ?, status = ?, progress = ?, department_id = ?, image = ? WHERE id = ?");
-    $stmt->bind_param("ssdsssiisi", $name, $client_name, $amount, $location, $description, $status, $progress, $department_id, $image_url, $id);
-} else {
-    $stmt = $conn->prepare("UPDATE projects SET name = ?, client_name = ?, amount = ?, location = ?, description = ?, status = ?, progress = ?, department_id = ? WHERE id = ?");
-    $stmt->bind_param("ssdsssiii", $name, $client_name, $amount, $location, $description, $status, $progress, $department_id, $id);
+// Handle image update
+if (isset($data['image']) && !empty($data['image'])) {
+    if (strpos($data['image'], 'data:image') === 0) {
+        $upload_dir = dirname(__DIR__, 2) . '/frontend/assets/uploads/projects/';
+        if (!file_exists($upload_dir)) {
+            mkdir($upload_dir, 0777, true);
+        }
+        $image_data = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $data['image']));
+        $image_name = 'project_' . time() . '_' . uniqid() . '.png';
+        $fields[] = "image = :image";
+        $params[':image'] = $image_name;
+        file_put_contents($upload_dir . $image_name, $image_data);
+    }
 }
-$stmt->execute();
 
-echo json_encode(['success' => true]);
+if (empty($fields)) {
+    sendResponse(false, null, "No fields to update");
+}
+
+$query = "UPDATE projects SET " . implode(", ", $fields) . " WHERE id = :id";
+$stmt = $db->prepare($query);
+
+if ($stmt->execute($params)) {
+    sendResponse(true, null, "Project updated successfully");
+} else {
+    sendResponse(false, null, "Failed to update project");
+}
 ?>

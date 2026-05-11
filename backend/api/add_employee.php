@@ -1,47 +1,50 @@
 <?php
-header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
-header('Access-Control-Allow-Credentials: true');
-
+// backend/api/add_employee.php
 require_once '../config/database.php';
-session_start();
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
+$data = json_decode(file_get_contents("php://input"), true);
+
+if (!isset($data['name']) || !isset($data['email'])) {
+    sendResponse(false, null, "Name and email required");
 }
 
-$data = json_decode(file_get_contents('php://input'), true);
+$database = new Database();
+$db = $database->getConnection();
 
-$name = $data['name'] ?? '';
-$email = $data['email'] ?? '';
-$phone = $data['phone'] ?? '';
+// Check if email exists
+$check = "SELECT id FROM users WHERE email = :email";
+$stmt = $db->prepare($check);
+$stmt->bindParam(':email', $data['email']);
+$stmt->execute();
+
+if ($stmt->rowCount() > 0) {
+    sendResponse(false, null, "Email already exists");
+}
+
+$password = isset($data['password']) && !empty($data['password']) ? password_hash($data['password'], PASSWORD_DEFAULT) : password_hash("123456", PASSWORD_DEFAULT);
+$name = $data['name'];
+$email = $data['email'];
+$phone = $data['phone'] ?? null;
 $department_id = $data['department_id'] ?? 1;
 $role = $data['role'] ?? 'Staff';
 $salary = $data['salary'] ?? 0;
-$password = isset($data['password']) ? md5($data['password']) : md5('1234');
+$join_date = $data['join_date'] ?? date('Y-m-d');
 
-if (!$name || !$email) {
-    echo json_encode(['success' => false, 'message' => 'Name and email required']);
-    exit;
+$query = "INSERT INTO users (name, email, password, phone, department_id, role, salary, join_date) 
+          VALUES (:name, :email, :password, :phone, :department_id, :role, :salary, :join_date)";
+$stmt = $db->prepare($query);
+$stmt->bindParam(':name', $name);
+$stmt->bindParam(':email', $email);
+$stmt->bindParam(':password', $password);
+$stmt->bindParam(':phone', $phone);
+$stmt->bindParam(':department_id', $department_id);
+$stmt->bindParam(':role', $role);
+$stmt->bindParam(':salary', $salary);
+$stmt->bindParam(':join_date', $join_date);
+
+if ($stmt->execute()) {
+    sendResponse(true, ['id' => $db->lastInsertId()], "Employee added successfully");
+} else {
+    sendResponse(false, null, "Failed to add employee");
 }
-
-// Check if email exists
-$checkStmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
-$checkStmt->bind_param("s", $email);
-$checkStmt->execute();
-$checkResult = $checkStmt->get_result();
-
-if ($checkResult->num_rows > 0) {
-    echo json_encode(['success' => false, 'message' => 'Email already exists']);
-    exit;
-}
-
-$stmt = $conn->prepare("INSERT INTO users (name, email, phone, department_id, role, salary, password, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())");
-$stmt->bind_param("sssisis", $name, $email, $phone, $department_id, $role, $salary, $password);
-$stmt->execute();
-
-echo json_encode(['success' => true, 'id' => $conn->insert_id]);
 ?>

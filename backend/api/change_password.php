@@ -1,57 +1,47 @@
 <?php
-header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
-header('Access-Control-Allow-Credentials: true');
+// backend/api/change_password.php
+require_once '../config/database.php';
 
-require_once '../config/database.php');
-session_start();
+$data = json_decode(file_get_contents("php://input"), true);
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
+if (!isset($data['current_password']) || !isset($data['new_password'])) {
+    sendResponse(false, null, "Current and new password required");
 }
 
-$data = json_decode(file_get_contents('php://input'), true);
-
-$current_password = $data['current_password'] ?? '';
-$new_password = $data['new_password'] ?? '';
-$user_id = $_SESSION['user_id'] ?? 0;
-
-if (!$user_id) {
-    echo json_encode(['success' => false, 'message' => 'Not logged in']);
-    exit;
+if (strlen($data['new_password']) < 4) {
+    sendResponse(false, null, "New password must be at least 4 characters");
 }
 
-if (!$new_password || strlen($new_password) < 4) {
-    echo json_encode(['success' => false, 'message' => 'Password must be at least 4 characters']);
-    exit;
-}
+$database = new Database();
+$db = $database->getConnection();
 
-// Get current user
-$stmt = $conn->prepare("SELECT password FROM users WHERE id = ?");
-$stmt->bind_param("i", $user_id);
+// Get current user (assuming admin id = 1 for now)
+$userId = $_SESSION['user_id'] ?? 1;
+
+$query = "SELECT password FROM users WHERE id = :id";
+$stmt = $db->prepare($query);
+$stmt->bindParam(':id', $userId);
 $stmt->execute();
-$result = $stmt->get_result();
-$user = $result->fetch_assoc();
 
-if (!$user) {
-    echo json_encode(['success' => false, 'message' => 'User not found']);
-    exit;
+if ($stmt->rowCount() > 0) {
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if (password_verify($data['current_password'], $user['password'])) {
+        $newPassword = password_hash($data['new_password'], PASSWORD_DEFAULT);
+        $updateQuery = "UPDATE users SET password = :password WHERE id = :id";
+        $updateStmt = $db->prepare($updateQuery);
+        $updateStmt->bindParam(':password', $newPassword);
+        $updateStmt->bindParam(':id', $userId);
+        
+        if ($updateStmt->execute()) {
+            sendResponse(true, null, "Password changed successfully");
+        } else {
+            sendResponse(false, null, "Failed to change password");
+        }
+    } else {
+        sendResponse(false, null, "Current password is incorrect");
+    }
+} else {
+    sendResponse(false, null, "User not found");
 }
-
-// Verify current password (MD5)
-if (md5($current_password) !== $user['password']) {
-    echo json_encode(['success' => false, 'message' => 'Current password is incorrect']);
-    exit;
-}
-
-// Update password
-$new_password_md5 = md5($new_password);
-$updateStmt = $conn->prepare("UPDATE users SET password = ? WHERE id = ?");
-$updateStmt->bind_param("si", $new_password_md5, $user_id);
-$updateStmt->execute();
-
-echo json_encode(['success' => true, 'message' => 'Password changed successfully']);
 ?>
