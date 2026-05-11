@@ -57,6 +57,7 @@
         .btn-success { background: #10b981; color: white; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; }
         .btn-success:hover { background: #059669; transform: translateY(-1px); }
         .btn-danger { background: #ef4444; color: white; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; }
+        .btn-warning { background: #f59e0b; color: white; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; }
         
         .action-btn { padding: 5px 10px; font-size: 11px; border-radius: 5px; cursor: pointer; transition: all 0.2s; border: none; }
         .action-btn.view { background: #3b82f6; color: white; }
@@ -73,7 +74,7 @@
         @media (max-width: 1024px) { .messages-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 640px) { .messages-grid { grid-template-columns: 1fr; } }
         
-        /* Messages Section - White Background */
+        /* Messages Section */
         .messages-section .message-item { 
             background: white; 
             border: 1px solid #e5e7eb; 
@@ -99,6 +100,15 @@
         .messages-section .message-item:hover .delete-conv-btn { opacity: 1; }
         .messages-section .delete-conv-btn:hover { background: #dc2626; transform: scale(1.05); }
         .dept-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        
+        /* Send Dropdown */
+        .send-dropdown { position: relative; display: inline-block; }
+        .send-dropdown-content { display: none; position: absolute; right: 0; top: 100%; background: white; min-width: 180px; border-radius: 8px; z-index: 100; border: 1px solid #e5e7eb; max-height: 300px; overflow-y: auto; margin-top: 5px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .send-dropdown-content a { display: block; padding: 8px 12px; text-decoration: none; color: #333; font-size: 13px; cursor: pointer; }
+        .send-dropdown-content a:hover { background: #f3f4f6; }
+        body.dark-mode .send-dropdown-content { background: #1e293b; border-color: #334155; }
+        body.dark-mode .send-dropdown-content a { color: #f1f5f9; }
+        body.dark-mode .send-dropdown-content a:hover { background: #334155; }
         
         .chat-container { display: flex; flex-direction: column; height: 500px; }
         .chat-messages { flex: 1; overflow-y: auto; padding: 16px; background: #f9fafb; border-radius: 12px; margin-bottom: 12px; }
@@ -150,23 +160,12 @@
         .dailywork-table th { background: #f8fafc; font-weight: 600; position: sticky; top: 0; }
         body.dark-mode .dailywork-table th { background: #1e293b; }
         
-        /* Color options for sidebar */
         .color-option { width: 42px; height: 42px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: all 0.2s; display: inline-block; margin: 5px; }
         .color-option:hover { transform: scale(1.1); }
         .color-option.selected { border-color: white; box-shadow: 0 0 0 2px #333; }
         
-        /* Department Colors */
-        .dept-bg-2 { background: #10b98120; border-left: 3px solid #10b981; }
-        .dept-bg-3 { background: #f59e0b20; border-left: 3px solid #f59e0b; }
-        .dept-bg-4 { background: #3b82f620; border-left: 3px solid #3b82f6; }
-        .dept-bg-5 { background: #06b6d420; border-left: 3px solid #06b6d4; }
-        .dept-bg-6 { background: #8b5cf620; border-left: 3px solid #8b5cf6; }
-        .dept-bg-7 { background: #6b728020; border-left: 3px solid #6b7280; }
-        .dept-bg-8 { background: #ec489920; border-left: 3px solid #ec4899; }
-        .dept-bg-9 { background: #14b8a620; border-left: 3px solid #14b8a6; }
-        .dept-bg-10 { background: #f9731620; border-left: 3px solid #f97316; }
-        .dept-bg-11 { background: #ef444420; border-left: 3px solid #ef4444; }
-        .dept-bg-12 { background: #84cc1620; border-left: 3px solid #84cc16; }
+        .detail-buttons { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 15px; padding-top: 15px; border-top: 1px solid #e5e7eb; }
+        .detail-btn { padding: 8px 16px; border-radius: 6px; font-size: 12px; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; border: none; }
     </style>
 </head>
 <body>
@@ -245,7 +244,7 @@
 
 <div id="projModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-tasks text-green-500 mr-2"></i>Add/Edit Project</h3><input type="hidden" id="projId"><input type="text" id="projName" placeholder="Project Name" required><input type="text" id="projClient" placeholder="Client"><input type="text" id="projAmount" placeholder="Amount (TZS)" class="amount-input"><input type="text" id="projLocation" placeholder="Location"><textarea id="projDesc" rows="2" placeholder="Description"></textarea><select id="projStatus"><option value="pending">Pending</option><option value="in_progress">In Progress</option><option value="completed">Completed</option></select><input type="number" id="projProgress" placeholder="Progress 0-100"><select id="projDept"></select><div class="mb-2"><label class="text-sm font-semibold">Project Image</label></div><div id="projImageUploadArea" class="border-2 border-dashed border-gray-300 rounded-xl p-5 text-center cursor-pointer hover:border-blue-500 transition" onclick="document.getElementById('projImageFile').click()"><i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i><p>Click to upload project image</p><p class="text-xs text-gray-400 mt-1">Supported: JPG, PNG, GIF (Max 2MB)</p></div><input type="file" id="projImageFile" accept="image/*" class="hidden"><div id="projImagePreviewContainer" class="hidden mt-2"><img id="projImagePreview" class="w-full h-32 object-cover rounded border"><button type="button" onclick="removeProjectImage()" class="mt-2 text-red-500 text-sm w-full py-1 bg-red-50 rounded hover:bg-red-100 transition">Remove Image</button></div><div class="flex gap-3 pt-4"><button onclick="saveProject()" class="flex-1 btn-primary">Save Project</button><button onclick="closeModal('projModal')" class="flex-1 bg-gray-200 py-2 rounded hover:bg-gray-300 transition">Cancel</button></div></div></div>
 
-<div id="viewProjModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-folder-open text-green-500 mr-2"></i>Project Details</h3><div id="viewProjContent"></div><div id="viewProjButtons" class="flex flex-wrap gap-2 justify-center mt-4 pt-3 border-t"></div><button onclick="closeModal('viewProjModal')" class="w-full bg-gray-200 py-2 rounded mt-3 hover:bg-gray-300 transition">Close</button></div></div>
+<div id="viewProjModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-folder-open text-green-500 mr-2"></i>Project Details</h3><div id="viewProjContent"></div><div id="viewProjButtons" class="detail-buttons"></div><button onclick="closeModal('viewProjModal')" class="w-full bg-gray-200 py-2 rounded mt-3 hover:bg-gray-300 transition">Close</button></div></div>
 
 <div id="dailyworkModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-calendar-plus text-purple-500 mr-2"></i>Add Daily Work</h3><input type="hidden" id="dailyworkId"><input type="date" id="dailyworkDate"><input type="text" id="dailyworkProject" placeholder="Project" required><textarea id="dailyworkDesc" rows="2" placeholder="Description"></textarea><input type="text" id="dailyworkIncome" placeholder="Income" class="amount-input"><input type="text" id="dailyworkExpenses" placeholder="Expenses" class="amount-input"><input type="text" id="dailyworkPaid" placeholder="Paid" class="amount-input"><select id="dailyworkStatus"><option value="pending">Pending</option><option value="paid">Paid</option><option value="partial">Partial</option></select><select id="dailyworkDept"></select><div class="flex gap-3 pt-4"><button onclick="saveDailyWork()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('dailyworkModal')" class="flex-1 bg-gray-200 py-2 rounded hover:bg-gray-300 transition">Cancel</button></div></div></div>
 
@@ -257,7 +256,7 @@
 
 <div id="reportModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-chart-line text-purple-500 mr-2"></i>Add Report</h3><input type="hidden" id="reportId"><input type="text" id="reportTitle" placeholder="Title" required><select id="reportPeriod"><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="quarterly">Quarterly</option><option value="annual">Annual</option></select><textarea id="reportContent" rows="5" placeholder="Content" required></textarea><div class="flex gap-3 pt-4"><button onclick="saveReport()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('reportModal')" class="flex-1 bg-gray-200 py-2 rounded hover:bg-gray-300 transition">Cancel</button></div></div></div>
 
-<div id="viewReportModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-file-alt text-purple-500 mr-2"></i>Report Details</h3><div id="viewReportContent" class="report-content"></div><div id="viewReportButtons" class="flex flex-wrap gap-2 justify-center mt-4 pt-3 border-t"></div><button onclick="closeModal('viewReportModal')" class="w-full bg-gray-200 py-2 rounded mt-3 hover:bg-gray-300 transition">Close</button></div></div>
+<div id="viewReportModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-file-alt text-purple-500 mr-2"></i>Report Details</h3><div id="viewReportContent" class="report-content"></div><div id="viewReportButtons" class="detail-buttons"></div><button onclick="closeModal('viewReportModal')" class="w-full bg-gray-200 py-2 rounded mt-3 hover:bg-gray-300 transition">Close</button></div></div>
 
 <div id="msgModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-paper-plane text-blue-500 mr-2"></i>Send Message</h3><select id="msgTo"></select><textarea id="msgContent" rows="4" placeholder="Type your message..." required></textarea><div class="flex gap-3 pt-4"><button onclick="sendNewMessage()" class="flex-1 btn-primary">Send</button><button onclick="closeModal('msgModal')" class="flex-1 bg-gray-200 py-2 rounded hover:bg-gray-300 transition">Cancel</button></div></div></div>
 
@@ -370,6 +369,14 @@
             let num = parseFloat(value);
             if (!isNaN(num)) input.value = num.toLocaleString('en-US');
         }
+    }
+    
+    function toggleSendDropdown(dropdownId) {
+        const dropdown = document.getElementById(dropdownId);
+        document.querySelectorAll('.send-dropdown-content').forEach(d => { 
+            if (d.id !== dropdownId) d.style.display = 'none'; 
+        });
+        if (dropdown) dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
     }
     
     document.addEventListener('DOMContentLoaded', function() {
@@ -587,7 +594,7 @@
             <h2 class="text-xl font-bold"><i class="fas fa-users text-blue-600 mr-2"></i>Employees (${employeesData.length})</h2>
             <div class="flex gap-2"><button onclick="openModal('empModal')" class="btn-primary"><i class="fas fa-plus mr-1"></i> Add Employee</button><button onclick="exportEmployeesToExcel()" class="btn-success"><i class="fas fa-file-excel mr-1"></i> Excel</button><button onclick="exportEmployeesToPDF()" class="btn-danger"><i class="fas fa-file-pdf mr-1"></i> PDF</button></div>
         </div>
-        <div class="bg-white rounded-xl overflow-x-auto shadow-sm border border-gray-100"><table class="min-w-full"><thead class="bg-gray-50"><tr class="border-b"><th class="p-3 text-left">ID</th><th class="p-3 text-left">Name</th><th class="p-3 text-left">Email</th><th class="p-3 text-left">Dept</th><th class="p-3 text-left">Role</th><th class="p-3 text-left">Salary</th><th class="p-3 text-left">Actions</th></tr></thead><tbody>`;
+        <div class="bg-white rounded-xl overflow-x-auto shadow-sm border border-gray-100"><table class="min-w-full"><thead class="bg-gray-50"><tr class="border-b"><th class="p-3 text-left">ID</th><th class="p-3 text-left">Name</th><th class="p-3 text-left">Email</th><th class="p-3 text-left">Dept</th><th class="p-3 text-left">Role</th><th class="p-3 text-left">Salary</th><th class="p-3 text-left">Actions</th></td></thead><tbody>`;
         
         employeesData.forEach(e => { 
             const isHighlighted = highlightId && e.id === highlightId;
@@ -753,11 +760,32 @@
             }
             const imageHtml = imageUrl ? `<img src="${imageUrl}?t=${new Date().getTime()}" class="w-full h-48 object-cover rounded-lg mb-3 cursor-pointer" onclick="showFullImage('${imageUrl}')">` : '<div class="no-image w-full h-48 mb-3"><i class="fas fa-image text-3xl"></i></div>';
             document.getElementById('viewProjContent').innerHTML = `${imageHtml}<div class="space-y-1"><p><strong>Name:</strong> ${escapeHtml(p.name)}</p><p><strong>Client:</strong> ${escapeHtml(p.client_name || 'N/A')}</p><p><strong>Amount:</strong> ${formatMoney(p.amount)}</p><p><strong>Status:</strong> ${p.status}</p><p><strong>Progress:</strong> ${p.progress}%</p><p><strong>Location:</strong> ${escapeHtml(p.location || 'N/A')}</p><p><strong>Description:</strong> ${escapeHtml(p.description || 'N/A')}</p></div>`;
+            
+            // Build send dropdown options
+            let deptOptions = '';
+            departmentsList.forEach(d => { 
+                deptOptions += `<a onclick="sendProjectToDept(${p.id}, ${d.id})">${escapeHtml(d.name)}</a>`; 
+            });
+            
             document.getElementById('viewProjButtons').innerHTML = `
                 <button onclick="exportSingleProjectExcel(${p.id})" class="btn-success text-white px-3 py-1.5 rounded text-sm"><i class="fas fa-file-excel"></i> Excel</button>
                 <button onclick="exportSingleProjectPDF(${p.id})" class="btn-danger text-white px-3 py-1.5 rounded text-sm"><i class="fas fa-file-pdf"></i> PDF</button>
-                ${imageUrl ? `<button onclick="showFullImage('${imageUrl}')" class="btn-primary text-white px-3 py-1.5 rounded text-sm"><i class="fas fa-image"></i> View Full Image</button>` : ''}`;
+                ${imageUrl ? `<button onclick="showFullImage('${imageUrl}')" class="btn-primary text-white px-3 py-1.5 rounded text-sm"><i class="fas fa-image"></i> View Full Image</button>` : ''}
+                <div class="send-dropdown"><button class="btn-warning text-white px-3 py-1.5 rounded text-sm" onclick="toggleSendDropdown('projectSendDropdown-${p.id}')"><i class="fas fa-paper-plane"></i> Send to Department</button>
+                    <div id="projectSendDropdown-${p.id}" class="send-dropdown-content" style="display:none;">${deptOptions}</div>
+                </div>
+            `;
             openModal('viewProjModal');
+        }
+    }
+    
+    async function sendProjectToDept(projectId, deptId) {
+        const p = projectsData.find(p => p.id === projectId);
+        if (p) {
+            const res = await apiCall('send_project.php', 'POST', { project_id: projectId, to_department_id: deptId });
+            if (res.success) showToast(`Project "${p.name}" sent to ${departmentNames[deptId]}`);
+            else showToast(`Failed to send project`, true);
+            toggleSendDropdown(`projectSendDropdown-${projectId}`);
         }
     }
     
@@ -917,7 +945,7 @@
                         <th class="p-3 text-right">Profit</th>
                         <th class="p-3">Status</th>
                         <th class="p-3 text-center">Actions</th>
-                    </tr>
+                    </td>
                 </thead>
                 <tbody>`;
         
@@ -949,7 +977,7 @@
     
     function exportDailyWorkToPDF() {
         let element = document.createElement('div');
-        element.innerHTML = `<div style="padding:20px"><h1>Daily Work Report</h1><p>${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><tr><th>Date</th><th>Project</th><th>Income</th><th>Expenses</th><th>Profit</th></tr>${dailyworkData.map(w => `<tr><td class="px-2 py-1">${w.date}</td><td class="px-2 py-1">${w.project_name}</td><td class="px-2 py-1">${formatMoney(w.income)}</td><td class="px-2 py-1">${formatMoney(w.expenses)}</td><td class="px-2 py-1">${formatMoney(w.income - w.expenses)}</td></tr>`).join('')}</table></div>`;
+        element.innerHTML = `<div style="padding:20px"><h1>Daily Work Report</h1><p>${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><tr><th>Date</th><th>Project</th><th>Income</th><th>Expenses</th><th>Profit</th></table>${dailyworkData.map(w => `<tr><td class="px-2 py-1">${w.date}</td><td class="px-2 py-1">${w.project_name}</td><td class="px-2 py-1">${formatMoney(w.income)}</td><td class="px-2 py-1">${formatMoney(w.expenses)}</td><td class="px-2 py-1">${formatMoney(w.income - w.expenses)}</td></tr>`).join('')}</table></div>`;
         html2pdf().set({ margin: 0.5, filename: `dailywork_report.pdf` }).from(element).save();
         showToast('Exported to PDF');
     }
@@ -1092,7 +1120,6 @@
     }
     
     function editTransaction(id) { 
-        // Make sure we get the ID correctly
         const transactionId = parseInt(id);
         console.log('Editing transaction with ID:', transactionId);
         
@@ -1157,7 +1184,6 @@
         if(res && res.success) { 
             showToast(isUpdate ? 'Transaction updated' : 'Transaction added'); 
             closeModal('transModal'); 
-            // Clear form
             document.getElementById('transId').value = '';
             document.getElementById('transSource').value = '';
             document.getElementById('transAmount').value = '';
@@ -1196,7 +1222,7 @@
         updateMessageBadge();
         
         let html = `<div class="flex justify-between flex-wrap gap-3 mb-4">
-            <h2 class="text-xl font-bold text-gray-800"><i class="fas fa-envelope text-blue-600 mr-2"></i>Messages (${messagesData.length})</h2>
+            <h2 class="text-xl font-bold text-gray-800 dark:text-white"><i class="fas fa-envelope text-blue-600 mr-2"></i>Messages (${messagesData.length})</h2>
             <button onclick="openModal('msgModal')" class="btn-primary"><i class="fas fa-paper-plane mr-1"></i> New Message</button>
         </div>
         <div class="messages-grid" id="messagesGridContainer"></div>`;
@@ -1204,7 +1230,7 @@
         document.getElementById('messagesPage').innerHTML = html;
         
         if (messagesData.length === 0) { 
-            document.getElementById('messagesGridContainer').innerHTML = '<div class="col-span-3 text-center py-12 text-gray-400 bg-white rounded-xl">No messages found. Start a conversation!</div>'; 
+            document.getElementById('messagesGridContainer').innerHTML = '<div class="col-span-3 text-center py-12 text-gray-400 bg-white dark:bg-gray-800 rounded-xl">No messages found. Start a conversation!</div>'; 
             return; 
         }
         
@@ -1405,11 +1431,32 @@
         const r = reportsData.find(r => r.id === id);
         if (r) {
             if (r.is_viewed_by_admin === 0 && r.department_id !== 1) markReportAsViewed(id);
-            document.getElementById('viewReportContent').innerHTML = `<p><strong>Department:</strong> ${departmentNames[r.department_id] || 'Admin'}</p><p><strong>Period:</strong> ${r.period}</p><p><strong>Created:</strong> ${formatDate(r.created_at)}</p><div class="bg-gray-100 p-4 rounded-lg mt-3 whitespace-pre-wrap">${escapeHtml(r.content)}</div>`;
+            document.getElementById('viewReportContent').innerHTML = `<p><strong>Department:</strong> ${departmentNames[r.department_id] || 'Admin'}</p><p><strong>Period:</strong> ${r.period}</p><p><strong>Created:</strong> ${formatDate(r.created_at)}</p><div class="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg mt-3 whitespace-pre-wrap">${escapeHtml(r.content)}</div>`;
+            
+            // Build send dropdown options
+            let deptOptions = '';
+            departmentsList.forEach(d => { 
+                deptOptions += `<a onclick="sendReportToDept(${r.id}, ${d.id})">${escapeHtml(d.name)}</a>`; 
+            });
+            
             document.getElementById('viewReportButtons').innerHTML = `
                 <button onclick="exportSingleReportExcel(${r.id})" class="btn-success text-white px-3 py-1.5 rounded text-sm"><i class="fas fa-file-excel"></i> Excel</button>
-                <button onclick="exportSingleReportPDF(${r.id})" class="btn-danger text-white px-3 py-1.5 rounded text-sm"><i class="fas fa-file-pdf"></i> PDF</button>`;
+                <button onclick="exportSingleReportPDF(${r.id})" class="btn-danger text-white px-3 py-1.5 rounded text-sm"><i class="fas fa-file-pdf"></i> PDF</button>
+                <div class="send-dropdown"><button class="btn-warning text-white px-3 py-1.5 rounded text-sm" onclick="toggleSendDropdown('reportSendDropdown-${r.id}')"><i class="fas fa-paper-plane"></i> Send to Department</button>
+                    <div id="reportSendDropdown-${r.id}" class="send-dropdown-content" style="display:none;">${deptOptions}</div>
+                </div>
+            `;
             openModal('viewReportModal');
+        }
+    }
+    
+    async function sendReportToDept(reportId, deptId) {
+        const r = reportsData.find(r => r.id === reportId);
+        if (r) {
+            const res = await apiCall('send_report.php', 'POST', { report_id: reportId, to_department_id: deptId });
+            if (res.success) showToast(`Report "${r.title}" sent to ${departmentNames[deptId]}`);
+            else showToast(`Failed to send report`, true);
+            toggleSendDropdown(`reportSendDropdown-${reportId}`);
         }
     }
     
@@ -1497,7 +1544,6 @@
             </div>
         `;
         
-        // Add color options
         const container = document.getElementById('colorOptionsContainer');
         if (container) {
             container.innerHTML = '';
@@ -1632,7 +1678,6 @@
         });
         document.getElementById('logoutBtn')?.addEventListener('click', logout);
         
-        // Load saved settings
         const savedColor = localStorage.getItem('sidebar_color');
         if (savedColor) {
             document.getElementById('mainSidebar').style.background = `linear-gradient(180deg, ${savedColor} 0%, ${savedColor}cc 100%)`;
@@ -1655,6 +1700,7 @@
     window.openModal = openModal;
     window.closeModal = closeModal;
     window.togglePassword = togglePassword;
+    window.toggleSendDropdown = toggleSendDropdown;
     window.viewEmployee = viewEmployee;
     window.editEmployee = editEmployee;
     window.saveEmployee = saveEmployee;
@@ -1670,6 +1716,7 @@
     window.exportSingleProjectPDF = exportSingleProjectPDF;
     window.removeProjectImage = removeProjectImage;
     window.markProjectAsViewed = markProjectAsViewed;
+    window.sendProjectToDept = sendProjectToDept;
     window.viewDailyWork = viewDailyWork;
     window.editDailyWork = editDailyWork;
     window.saveDailyWork = saveDailyWork;
@@ -1694,6 +1741,7 @@
     window.saveReport = saveReport;
     window.deleteReport = deleteReport;
     window.markReportAsViewed = markReportAsViewed;
+    window.sendReportToDept = sendReportToDept;
     window.changePassword = changePassword;
     window.changeSidebarColor = changeSidebarColor;
     window.createBackup = createBackup;
