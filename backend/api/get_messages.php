@@ -4,6 +4,7 @@ header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
+header('Access-Control-Allow-Credentials: true');
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
@@ -12,20 +13,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 require_once '../config/database.php';
 
-error_log("=== get_messages.php called ===");
+error_log("=== GET MESSAGES API CALLED ===");
 
 $database = new Database();
 $db = $database->getConnection();
 
-// Get all conversations with latest message and unread count
+// Get all conversations for admin (admin_id = 1) with active status
 $query = "SELECT 
     c.id as conversation_id,
-    c.user_id as department_user_id,
+    c.user_id,
+    c.admin_id,
     c.subject,
     c.status as conversation_status,
     c.created_at as conversation_created,
     c.updated_at,
-    u.name as department_user_name,
+    u.name as user_name,
     u.department_id,
     d.name as department_name,
     (SELECT m.message FROM messages m WHERE m.conversation_id = c.id ORDER BY m.created_at DESC LIMIT 1) as last_message,
@@ -44,11 +46,12 @@ $conversations = array();
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $conversations[] = array(
         'conversation_id' => (int)$row['conversation_id'],
-        'department_user_id' => (int)$row['department_user_id'],
+        'user_id' => (int)$row['user_id'],
         'department_id' => (int)$row['department_id'],
         'department_name' => $row['department_name'],
-        'department_user_name' => $row['department_user_name'],
+        'user_name' => $row['user_name'],
         'subject' => $row['subject'],
+        'conversation_status' => $row['conversation_status'],
         'last_message' => $row['last_message'],
         'last_message_time' => $row['last_message_time'],
         'unread_count' => (int)$row['unread_count'],
