@@ -267,6 +267,23 @@
             color: #fca5a5;
         }
         
+        .success-message {
+            background: #d1fae5;
+            color: #059669;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        body.dark-mode .success-message {
+            background: rgba(5,150,105,0.2);
+            color: #34d399;
+        }
+        
         .loading-spinner {
             display: inline-block;
             width: 14px;
@@ -311,6 +328,27 @@
         
         body.dark-mode .demo-credentials .cred-row {
             color: #94a3b8;
+        }
+        
+        .forgot-password {
+            text-align: right;
+            margin-top: -10px;
+            margin-bottom: 15px;
+        }
+        
+        .forgot-password a {
+            font-size: 11px;
+            color: #1e3a8a;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        body.dark-mode .forgot-password a {
+            color: #60a5fa;
+        }
+        
+        .forgot-password a:hover {
+            text-decoration: underline;
         }
         
         .theme-toggle {
@@ -398,6 +436,90 @@
                 font-size: 13px;
             }
         }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            animation: modalFadeIn 0.3s ease;
+        }
+        
+        body.dark-mode .modal-content {
+            background: #1e293b;
+        }
+        
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .modal h3 {
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .modal-buttons button {
+            flex: 1;
+            padding: 10px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        .modal-buttons .btn-primary {
+            background: #1e3a8a;
+            color: white;
+        }
+        
+        .modal-buttons .btn-secondary {
+            background: #e5e7eb;
+            color: #374151;
+        }
+        
+        body.dark-mode .modal-buttons .btn-secondary {
+            background: #334155;
+            color: #f1f5f9;
+        }
+        
+        .close-modal {
+            float: right;
+            cursor: pointer;
+            font-size: 20px;
+            color: #9ca3af;
+        }
+        
+        .close-modal:hover {
+            color: #374151;
+        }
     </style>
 </head>
 <body>
@@ -427,6 +549,11 @@
             <span id="adminErrorMsg"></span>
         </div>
         
+        <div id="adminSuccess" class="success-message" style="display: none;">
+            <i class="fas fa-check-circle"></i>
+            <span id="adminSuccessMsg"></span>
+        </div>
+        
         <div class="input-group">
             <label><i class="fas fa-envelope"></i> Email Address</label>
             <input type="email" id="adminEmail" placeholder="admin@geotraverse.com" autocomplete="off" value="jacksonmyula773@gmail.com">
@@ -438,6 +565,10 @@
                 <input type="password" id="adminPassword" placeholder="Enter password" value="1234">
                 <i class="fas fa-eye toggle-password" onclick="togglePassword('adminPassword')"></i>
             </div>
+        </div>
+        
+        <div class="forgot-password">
+            <a onclick="openForgotPasswordModal('admin')">Forgot Password?</a>
         </div>
         
         <button class="login-btn" id="adminLoginBtn" onclick="loginAdmin()">
@@ -456,6 +587,11 @@
         <div id="deptError" class="error-message" style="display: none;">
             <i class="fas fa-exclamation-circle"></i>
             <span id="deptErrorMsg"></span>
+        </div>
+        
+        <div id="deptSuccess" class="success-message" style="display: none;">
+            <i class="fas fa-check-circle"></i>
+            <span id="deptSuccessMsg"></span>
         </div>
         
         <div class="input-group">
@@ -478,6 +614,10 @@
             </div>
         </div>
         
+        <div class="forgot-password">
+            <a onclick="openForgotPasswordModal('department')">Forgot Password?</a>
+        </div>
+        
         <button class="login-btn" id="deptLoginBtn" onclick="loginDepartment()">
             <i class="fas fa-sign-in-alt"></i> Login as Department
         </button>
@@ -485,6 +625,37 @@
         <div class="demo-credentials" id="deptDemoCredentials">
             <p><i class="fas fa-info-circle"></i> Department Credentials (Password: 1234):</p>
             <div id="deptCredentialsList"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Forgot Password Modal -->
+<div id="forgotPasswordModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeForgotPasswordModal()">&times;</span>
+        <h3><i class="fas fa-key"></i> Reset Password</h3>
+        <p style="font-size: 13px; color: #6b7280; margin-bottom: 20px;">Enter your email address and we'll send you a temporary password.</p>
+        
+        <div class="input-group">
+            <label><i class="fas fa-envelope"></i> Email Address</label>
+            <input type="email" id="resetEmail" placeholder="Enter your email">
+        </div>
+        
+        <input type="hidden" id="resetUserType" value="admin">
+        
+        <div id="resetError" class="error-message" style="display: none;">
+            <i class="fas fa-exclamation-circle"></i>
+            <span id="resetErrorMsg"></span>
+        </div>
+        
+        <div id="resetSuccess" class="success-message" style="display: none;">
+            <i class="fas fa-check-circle"></i>
+            <span id="resetSuccessMsg"></span>
+        </div>
+        
+        <div class="modal-buttons">
+            <button class="btn-secondary" onclick="closeForgotPasswordModal()">Cancel</button>
+            <button class="btn-primary" onclick="sendResetPassword()">Send Reset Link</button>
         </div>
     </div>
 </div>
@@ -528,11 +699,11 @@
         4: "james.ndege@geotraverse.com",
         5: "mary.kilimanjaro@geotraverse.com",
         6: "peter.tabora@geotraverse.com",
-        7: "grace.zanzibar@geotraverse.com",
+        7: "ali.hassan@geotraverse.com",
         8: "daniel.singida@geotraverse.com",
-        9: "elizabeth.morogoro@geotraverse.com",
+        9: "michael.angelo@geotraverse.com",
         10: "william.ruvuma@geotraverse.com",
-        11: "catherine.mbeya@geotraverse.com",
+        11: "hamisi.ramadhan@geotraverse.com",
         12: "richard.arusha@geotraverse.com"
     };
     
@@ -550,9 +721,11 @@
                 let credHtml = '';
                 
                 result.data.forEach(dept => {
-                    deptSelect.innerHTML += `<option value="${dept.id}">${dept.name}</option>`;
-                    if (departmentEmails[dept.id]) {
-                        credHtml += `<div class="cred-row"><span>${dept.name}:</span><span>${departmentEmails[dept.id]}</span></div>`;
+                    if (dept.id !== 1) {
+                        deptSelect.innerHTML += `<option value="${dept.id}">${dept.name}</option>`;
+                        if (departmentEmails[dept.id]) {
+                            credHtml += `<div class="cred-row"><span>${dept.name}:</span><span>${departmentEmails[dept.id]}</span></div>`;
+                        }
                     }
                 });
                 
@@ -591,16 +764,33 @@
     }
     
     // ==================== SHOW ERROR ====================
-    function showError(errorDivId, errorMsgId, message) {
-        const errorDiv = document.getElementById(errorDivId);
-        const errorMsg = document.getElementById(errorMsgId);
-        
-        errorMsg.innerText = message;
-        errorDiv.style.display = 'flex';
-        
-        setTimeout(() => {
-            errorDiv.style.display = 'none';
-        }, 5000);
+    function showError(errorDivId, errorMsgId, message, isForm = true) {
+        if (isForm) {
+            const errorDiv = document.getElementById(errorDivId);
+            const errorMsg = document.getElementById(errorMsgId);
+            if (errorDiv && errorMsg) {
+                errorMsg.innerText = message;
+                errorDiv.style.display = 'flex';
+                setTimeout(() => {
+                    errorDiv.style.display = 'none';
+                }, 5000);
+            }
+        } else {
+            showToast(message, true);
+        }
+    }
+    
+    // ==================== SHOW SUCCESS ====================
+    function showSuccess(successDivId, successMsgId, message) {
+        const successDiv = document.getElementById(successDivId);
+        const successMsg = document.getElementById(successMsgId);
+        if (successDiv && successMsg) {
+            successMsg.innerText = message;
+            successDiv.style.display = 'flex';
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 5000);
+        }
     }
     
     // ==================== SHOW TOAST ====================
@@ -628,9 +818,70 @@
         } else {
             if (buttonId === 'adminLoginBtn') {
                 btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login as Admin';
-            } else {
+            } else if (buttonId === 'deptLoginBtn') {
                 btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login as Department';
             }
+            btn.disabled = false;
+        }
+    }
+    
+    // ==================== FORGOT PASSWORD MODAL ====================
+    let currentResetType = 'admin';
+    
+    function openForgotPasswordModal(type) {
+        currentResetType = type;
+        document.getElementById('resetUserType').value = type;
+        document.getElementById('resetEmail').value = '';
+        document.getElementById('resetError').style.display = 'none';
+        document.getElementById('resetSuccess').style.display = 'none';
+        document.getElementById('forgotPasswordModal').style.display = 'flex';
+    }
+    
+    function closeForgotPasswordModal() {
+        document.getElementById('forgotPasswordModal').style.display = 'none';
+    }
+    
+    async function sendResetPassword() {
+        const email = document.getElementById('resetEmail').value.trim();
+        const userType = document.getElementById('resetUserType').value;
+        
+        if (!email) {
+            showError('resetError', 'resetErrorMsg', 'Please enter your email address', true);
+            return;
+        }
+        
+        // Show loading on button
+        const btn = document.querySelector('#forgotPasswordModal .btn-primary');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span class="loading-spinner"></span> Sending...';
+        btn.disabled = true;
+        
+        try {
+            const response = await fetch(API_BASE + 'forgot_password.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, user_type: userType })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                document.getElementById('resetError').style.display = 'none';
+                showSuccess('resetSuccess', 'resetSuccessMsg', result.message);
+                showToast(result.message);
+                
+                // Close modal after 3 seconds
+                setTimeout(() => {
+                    closeForgotPasswordModal();
+                }, 3000);
+            } else {
+                showError('resetError', 'resetErrorMsg', result.message || 'Failed to reset password', true);
+            }
+        } catch (error) {
+            console.error('Reset password error:', error);
+            showError('resetError', 'resetErrorMsg', 'Network error. Please try again.', true);
+        } finally {
+            btn.innerHTML = originalText;
             btn.disabled = false;
         }
     }
@@ -647,7 +898,6 @@
             const result = await response.json();
             
             if (result.success && result.logged_in) {
-                // User is already logged in, redirect
                 window.location.href = result.redirect;
             }
         } catch (error) {
@@ -671,6 +921,8 @@
         }
         
         setLoading('adminLoginBtn', true);
+        document.getElementById('adminError').style.display = 'none';
+        document.getElementById('adminSuccess').style.display = 'none';
         
         try {
             const response = await fetch(API_BASE + 'login.php', {
@@ -683,9 +935,10 @@
             const result = await response.json();
             
             if (result.success) {
+                showSuccess('adminSuccess', 'adminSuccessMsg', 'Login successful! Redirecting...');
                 showToast('✅ Login successful! Redirecting...');
                 setTimeout(() => {
-                    window.location.href = result.redirect;
+                    window.location.href = result.redirect || 'super_admin.html';
                 }, 1000);
             } else {
                 showError('adminError', 'adminErrorMsg', result.message || 'Invalid email or password');
@@ -720,6 +973,8 @@
         }
         
         setLoading('deptLoginBtn', true);
+        document.getElementById('deptError').style.display = 'none';
+        document.getElementById('deptSuccess').style.display = 'none';
         
         try {
             const response = await fetch(API_BASE + 'login.php', {
@@ -732,9 +987,11 @@
             const result = await response.json();
             
             if (result.success) {
-                showToast(`✅ Login successful! Redirecting to ${result.user.department_name} Dashboard...`);
+                showSuccess('deptSuccess', 'deptSuccessMsg', `Login successful! Redirecting to ${result.user.department_name} Dashboard...`);
+                showToast(`✅ Login successful! Redirecting...`);
                 setTimeout(() => {
-                    window.location.href = result.redirect;
+                    const page = departmentPages[deptId] || 'dashboard.html';
+                    window.location.href = page;
                 }, 1000);
             } else {
                 showError('deptError', 'deptErrorMsg', result.message || 'Invalid email or password');
@@ -762,10 +1019,12 @@
                 adminForm.classList.add('active');
                 deptForm.classList.remove('active');
                 document.getElementById('adminError').style.display = 'none';
+                document.getElementById('adminSuccess').style.display = 'none';
             } else {
                 adminForm.classList.remove('active');
                 deptForm.classList.add('active');
                 document.getElementById('deptError').style.display = 'none';
+                document.getElementById('deptSuccess').style.display = 'none';
             }
         });
     });
@@ -803,9 +1062,25 @@
         if (e.key === 'Enter') loginDepartment();
     });
     
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        const modal = document.getElementById('forgotPasswordModal');
+        if (event.target === modal) {
+            closeForgotPasswordModal();
+        }
+    }
+    
     // ==================== INIT ====================
     loadDepartments();
     checkSession();
+    
+    // Expose functions globally
+    window.togglePassword = togglePassword;
+    window.loginAdmin = loginAdmin;
+    window.loginDepartment = loginDepartment;
+    window.openForgotPasswordModal = openForgotPasswordModal;
+    window.closeForgotPasswordModal = closeForgotPasswordModal;
+    window.sendResetPassword = sendResetPassword;
 </script>
 </body>
 </html>

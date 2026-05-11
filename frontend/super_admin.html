@@ -97,8 +97,7 @@
         .messages-section .message-preview { padding: 0 16px 12px 16px; font-size: 13px; color: #6b7280; }
         body.dark-mode .messages-section .message-preview { color: #94a3b8; }
         
-        /* Delete Conversation Button - Opacity 60% normal, 100% on hover */
-        .messages-section .delete-conv-btn { 
+        .delete-conv-btn { 
             position: absolute; 
             top: 10px; 
             right: 10px; 
@@ -115,12 +114,8 @@
             transition: all 0.2s; 
             z-index: 15; 
         }
-        .messages-section .message-item:hover .delete-conv-btn { opacity: 1; }
-        .messages-section .delete-conv-btn:hover { 
-            background: #dc2626; 
-            transform: scale(1.05);
-            opacity: 1;
-        }
+        .message-item:hover .delete-conv-btn { opacity: 1; }
+        .delete-conv-btn:hover { background: #dc2626; transform: scale(1.05); opacity: 1; }
         .dept-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
         
         /* Send Dropdown */
@@ -145,7 +140,6 @@
         body.dark-mode .chat-received .chat-bubble { background: #334155; color: #f1f5f9; }
         .chat-time { font-size: 10px; opacity: 0.7; margin-top: 4px; display: block; }
         
-        /* Delete Message Button - Opacity 60% normal, 100% on hover */
         .delete-msg-btn { 
             background: #ef4444; 
             color: white; 
@@ -167,11 +161,7 @@
         }
         .chat-sent .delete-msg-btn { order: -1; margin-left: 0; margin-right: 8px; }
         .chat-received .delete-msg-btn { margin-left: 8px; margin-right: 0; }
-        .delete-msg-btn:hover { 
-            background: #dc2626; 
-            transform: scale(1.05);
-            opacity: 1;
-        }
+        .delete-msg-btn:hover { background: #dc2626; transform: scale(1.05); opacity: 1; }
         
         .chat-input-area { display: flex; gap: 10px; margin-top: 12px; }
         .chat-input-area textarea { flex: 1; margin: 0; resize: none; }
@@ -201,49 +191,15 @@
         .dept-card:hover { transform: translateX(5px); border-color: #0f74ba; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         body.dark-mode .dept-card { background: #1e293b; border-color: #334155; }
         
-        /* Daily Work Table Styles - Improved */
-        .dailywork-table-container { 
-            overflow-x: auto; 
-            border-radius: 12px; 
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-        .dailywork-table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            min-width: 800px;
-        }
-        .dailywork-table th, 
-        .dailywork-table td { 
-            padding: 14px 16px; 
-            vertical-align: middle;
-            border-bottom: 1px solid #e5e7eb;
-        }
-        .dailywork-table th { 
-            background: #f8fafc; 
-            font-weight: 600; 
-            font-size: 13px;
-            position: sticky; 
-            top: 0; 
-            color: #4b5563;
-        }
-        .dailywork-table tbody tr:hover {
-            background-color: #f9fafb;
-        }
-        body.dark-mode .dailywork-table th { 
-            background: #1e293b; 
-            border-bottom-color: #334155;
-            color: #94a3b8;
-        }
-        body.dark-mode .dailywork-table tbody tr:hover {
-            background-color: #334155;
-        }
-        .dept-badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 500;
-        }
+        .dailywork-table-container { overflow-x: auto; border-radius: 12px; }
+        .dailywork-table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        .dailywork-table th, .dailywork-table td { padding: 14px 16px; vertical-align: middle; border-bottom: 1px solid #e5e7eb; }
+        .dailywork-table th { background: #f8fafc; font-weight: 600; font-size: 13px; position: sticky; top: 0; color: #4b5563; }
+        .dailywork-table tbody tr:hover { background-color: #f9fafb; }
+        body.dark-mode .dailywork-table th { background: #1e293b; border-bottom-color: #334155; color: #94a3b8; }
+        body.dark-mode .dailywork-table tbody tr:hover { background-color: #334155; }
+        
+        .dept-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; }
         .dept-badge-2 { background: #10b98120; color: #10b981; }
         .dept-badge-3 { background: #f59e0b20; color: #f59e0b; }
         .dept-badge-4 { background: #3b82f620; color: #3b82f6; }
@@ -263,7 +219,6 @@
         .detail-buttons { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 15px; padding-top: 15px; border-top: 1px solid #e5e7eb; }
         .detail-btn { padding: 8px 16px; border-radius: 6px; font-size: 12px; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; border: none; }
         
-        /* Role Badges */
         .role-super-admin { background: #8b5cf6; color: white; }
         .role-admin { background: #3b82f6; color: white; }
         .role-manager { background: #f59e0b; color: white; }
@@ -387,7 +342,7 @@
 
 <script>
     // ==================== CONFIGURATION ====================
-    const API_BASE = '/geotraverse/backend/api/';
+    const API_BASE = '../backend/api/';
     let searchTimeout = null;
     let statusChart = null;
     
@@ -759,7 +714,7 @@
     
     function exportEmployeesToPDF() {
         let element = document.createElement('div');
-        element.innerHTML = `<div style="padding:20px"><h1>Employees Report</h1><p>${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><tr><th>Name</th><th>Email</th><th>Department</th><th>Role</th><th>Salary</th></tr>${employeesData.map(e => `<tr><td class="px-2 py-1">${e.name}</td><td class="px-2 py-1">${e.email}</td><td class="px-2 py-1">${departmentNames[e.department_id]}</td><td class="px-2 py-1">${e.role || 'Staff'}</td><td class="px-2 py-1">${formatMoney(e.salary)}</td></tr>`).join('')}</table></div>`;
+        element.innerHTML = `<div style="padding:20px"><h1>Employees Report</h1><p>${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><tr><th>Name</th><th>Email</th><th>Department</th><th>Role</th><th>Salary</th></tr>${employeesData.map(e => `<tr><td class="px-2 py-1">${e.name}</td><td class="px-2 py-1">${e.email}</td><td class="px-2 py-1">${departmentNames[e.department_id]}</td><td class="px-2 py-1">${e.role || 'Staff'}</td><td class="px-2 py-1">${formatMoney(e.salary)}</td></tr>`).join('')}｜｜DSML｜｜</div>`;
         html2pdf().set({ margin: 0.5, filename: `employees_report.pdf` }).from(element).save();
         showToast('Exported to PDF');
     }
@@ -915,6 +870,101 @@
         }
     }
     
+    // Export Single Project PDF with Image
+    function exportSingleProjectPDF(projectId) {
+        const p = projectsData.find(p => p.id === projectId);
+        if (p) {
+            // Create a container for PDF
+            const element = document.createElement('div');
+            
+            // Get image HTML if exists
+            let imageHtml = '';
+            if (p.image && p.image !== '') {
+                let imgUrl = p.image;
+                if (!imgUrl.startsWith('http') && !imgUrl.startsWith('assets/')) {
+                    imgUrl = '/geotraverse/frontend/assets/uploads/projects/' + imgUrl;
+                }
+                imageHtml = `<div style="text-align: center; margin-bottom: 20px;">
+                    <img src="${imgUrl}" style="max-width: 100%; max-height: 300px; object-fit: cover; border-radius: 8px; border: 1px solid #e5e7eb;">
+                </div>`;
+            } else {
+                imageHtml = `<div style="text-align: center; margin-bottom: 20px; padding: 40px; background: #f3f4f6; border-radius: 8px; color: #9ca3af;">
+                    <i class="fas fa-image" style="font-size: 48px;"></i>
+                    <p>No Image Available</p>
+                </div>`;
+            }
+            
+            element.innerHTML = `
+                <div style="padding: 20px; font-family: Arial, sans-serif;">
+                    <div style="text-align: center; border-bottom: 2px solid #0f74ba; padding-bottom: 15px; margin-bottom: 20px;">
+                        <h1 style="color: #0f74ba; margin: 0;">${escapeHtml(p.name)}</h1>
+                        <p style="color: #6b7280; margin: 5px 0 0;">Project Report</p>
+                    </div>
+                    ${imageHtml}
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                        <tr style="border-bottom: 1px solid #e5e7eb;">
+                            <td style="padding: 8px; font-weight: 600; width: 30%;">Project ID:</td>
+                            <td style="padding: 8px;">#${p.id}</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #e5e7eb;">
+                            <td style="padding: 8px; font-weight: 600;">Client Name:</td>
+                            <td style="padding: 8px;">${escapeHtml(p.client_name || 'N/A')}</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #e5e7eb;">
+                            <td style="padding: 8px; font-weight: 600;">Amount:</td>
+                            <td style="padding: 8px; color: #059669; font-weight: bold;">${formatMoney(p.amount)}</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #e5e7eb;">
+                            <td style="padding: 8px; font-weight: 600;">Status:</td>
+                            <td style="padding: 8px;">${p.status}</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #e5e7eb;">
+                            <td style="padding: 8px; font-weight: 600;">Progress:</td>
+                            <td style="padding: 8px;">
+                                <div style="background: #e5e7eb; border-radius: 10px; height: 10px; width: 100%;">
+                                    <div style="background: #0f74ba; width: ${p.progress || 0}%; height: 10px; border-radius: 10px;"></div>
+                                </div>
+                                <span style="font-size: 12px;">${p.progress || 0}% Complete</span>
+                            </td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #e5e7eb;">
+                            <td style="padding: 8px; font-weight: 600;">Location:</td>
+                            <td style="padding: 8px;">${escapeHtml(p.location || 'N/A')}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; font-weight: 600; vertical-align: top;">Description:</td>
+                            <td style="padding: 8px;">${escapeHtml(p.description || 'No description provided')}</td>
+                        </tr>
+                    </table>
+                    <div style="margin-top: 30px; text-align: center; font-size: 10px; color: #9ca3af; border-top: 1px solid #e5e7eb; padding-top: 15px;">
+                        <p>Generated: ${new Date().toLocaleString()}</p>
+                        <p>GeoTraverse ERP System</p>
+                    </div>
+                </div>
+            `;
+            
+            html2pdf().set({ 
+                margin: 0.5, 
+                filename: `project_${p.id}_${p.name.replace(/[^a-z0-9]/gi, '_')}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, letterRendering: true },
+                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+            }).from(element).save();
+            
+            showToast('PDF exported with project image');
+        }
+    }
+    
+    function exportSingleProjectExcel(projectId) {
+        const p = projectsData.find(p => p.id === projectId);
+        if (p) {
+            let ws = [['ID', 'Name', 'Client', 'Amount', 'Status', 'Progress', 'Location', 'Description']];
+            ws.push([p.id, p.name, p.client_name || '-', p.amount, p.status, p.progress, p.location || '-', p.description || '-']);
+            let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), 'Project'); XLSX.writeFile(wb, `project_${p.id}.xlsx`);
+            showToast('Exported to Excel');
+        }
+    }
+    
     async function sendProjectToDept(projectId, deptId) {
         const p = projectsData.find(p => p.id === projectId);
         if (p) {
@@ -922,26 +972,6 @@
             if (res.success) showToast(`Project "${p.name}" sent to ${departmentNames[deptId]}`);
             else showToast(`Failed to send project`, true);
             toggleSendDropdown(`projectSendDropdown-${projectId}`);
-        }
-    }
-    
-    function exportSingleProjectExcel(projectId) {
-        const p = projectsData.find(p => p.id === projectId);
-        if (p) {
-            let ws = [['ID', 'Name', 'Client', 'Amount', 'Status', 'Progress']];
-            ws.push([p.id, p.name, p.client_name || '-', p.amount, p.status, p.progress]);
-            let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), 'Project'); XLSX.writeFile(wb, `project_${p.id}.xlsx`);
-            showToast('Exported to Excel');
-        }
-    }
-    
-    function exportSingleProjectPDF(projectId) {
-        const p = projectsData.find(p => p.id === projectId);
-        if (p) {
-            let element = document.createElement('div');
-            element.innerHTML = `<div style="padding:20px"><h1 style="color:#0f74ba;">${escapeHtml(p.name)}</h1><p><strong>Client:</strong> ${p.client_name}</p><p><strong>Amount:</strong> ${formatMoney(p.amount)}</p><p><strong>Status:</strong> ${p.status}</p><p><strong>Progress:</strong> ${p.progress}%</p><p><strong>Location:</strong> ${p.location}</p><p><strong>Description:</strong> ${p.description || 'N/A'}</p><p>Generated: ${new Date().toLocaleString()}</p></div>`;
-            html2pdf().set({ margin: 0.5, filename: `project_${p.id}.pdf` }).from(element).save();
-            showToast('Exported to PDF');
         }
     }
     
@@ -1054,7 +1084,7 @@
         } 
     }
     
-    // ==================== DAILY WORK - IMPROVED TABLE ====================
+    // ==================== DAILY WORK ====================
     async function loadDailyWork(highlightId = null) {
         const res = await apiCall('get_dailywork.php');
         if (res.success && res.data) dailyworkData = res.data.sort((a,b) => b.id - a.id);
@@ -1085,7 +1115,7 @@
                         <th class="text-right">Profit</th>
                         <th class="text-center">Status</th>
                         <th class="text-center">Actions</th>
-                    </tr>
+                    </table>
                 </thead>
                 <tbody>`;
         
@@ -1263,7 +1293,7 @@
     
     function exportCashflowToPDF() {
         let element = document.createElement('div');
-        element.innerHTML = `<div style="padding:20px"><h1>Cashflow Report</h1><p>${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><tr><th>Date</th><th>Type</th><th>Source</th><th>Amount</th></tr>${transactionsData.map(t => `<tr><td class="px-2 py-1">${t.transaction_date}</td><td class="px-2 py-1">${t.type}</td><td class="px-2 py-1">${t.source}</td><td class="px-2 py-1">${formatMoney(t.amount)}</td></tr>`).join('')}</table></div>`;
+        element.innerHTML = `<div style="padding:20px"><h1>Cashflow Report</h1><p>${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><tr><th>Date</th><th>Type</th><th>Source</th><th>Amount</th></tr>${transactionsData.map(t => `<td><td class="px-2 py-1">${t.transaction_date}</td><td class="px-2 py-1">${t.type}</td><td class="px-2 py-1">${t.source}</td><td class="px-2 py-1">${formatMoney(t.amount)}</td></tr>`).join('')}</table></div>`;
         html2pdf().set({ margin: 0.5, filename: `cashflow_report.pdf` }).from(element).save();
         showToast('Exported to PDF');
     }
