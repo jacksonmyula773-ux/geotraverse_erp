@@ -1,46 +1,102 @@
 <?php
 // backend/api/get_conversation.php
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
+
 require_once '../config/database.php';
 
-$department_id = isset($_GET['department_id']) ? intval($_GET['department_id']) : 0;
+error_log("=== get_conversation.php called ===");
 
-if (!$department_id) {
-    sendResponse(false, null, "Department ID required");
+$conversation_id = isset($_GET['conversation_id']) ? intval($_GET['conversation_id']) : 0;
+$conversation_id = isset($_GET['id']) ? intval($_GET['id']) : $conversation_id;
+
+if (!$conversation_id) {
+    sendResponse(false, null, "Conversation ID required");
 }
 
 $database = new Database();
 $db = $database->getConnection();
 
-// Get department name
-$deptQuery = "SELECT name FROM departments WHERE id = :id";
-$deptStmt = $db->prepare($deptQuery);
-$deptStmt->bindParam(':id', $department_id);
-$deptStmt->execute();
-$department = $deptStmt->fetch(PDO::FETCH_ASSOC);
+// Get conversation info
+$convQuery = "SELECT 
+    c.*, 
+    u.name as department_user_name, 
+    u.department_id,
+    d.name as department_name
+FROM conversations c
+JOIN users u ON c.user_id = u.id
+JOIN departments d ON u.department_id = d.id
+WHERE c.id = :conv_id AND c.admin_id = 1";
+$convStmt = $db->prepare($convQuery);
+$convStmt->bindParam(':conv_id', $conversation_id);
+$convStmt->execute();
+$conversation = $convStmt->fetch(PDO::FETCH_ASSOC);
 
-// Mark messages as read
-$updateQuery = "UPDATE messages SET is_read = 1, read_at = NOW() WHERE receiver_dept = 1 AND sender_dept = :dept_id AND is_read = 0";
-$updateStmt = $db->prepare($updateQuery);
-$updateStmt->bindParam(':dept_id', $department_id);
-$updateStmt->execute();
-
-// Get messages
-$query = "SELECT m.*,
-    CASE WHEN m.sender_dept = 1 THEN 'admin' ELSE 'department' END as sender_type
-    FROM messages m
-    WHERE (m.sender_dept = 1 AND m.receiver_dept = :dept_id) OR (m.sender_dept = :dept_id AND m.receiver_dept = 1)
-    ORDER BY m.created_at ASC";
-$stmt = $db->prepare($query);
-$stmt->bindParam(':dept_id', $department_id);
-$stmt->execute();
-
-$messages = [];
-while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-    $messages[] = $row;
+if (!$conversation) {
+    sendResponse(false, null, "Conversation not found");
 }
 
-sendResponse(true, [
-    'messages' => $messages,
-    'department_name' => $department ? $department['name'] : ''
-]);
+// Mark unread messages as read (where receiver is admin)
+$updateQuery = "UPDATE messages SET is_read = 1, read_at = NOW() 
+                WHERE conversation_id = :conv_id AND receiver_id = 1 AND is_read = 0";
+$updateStmt = $db->prepare($updateQuery);
+$updateStmt->bindParam(':conv_id', $conversation_id);
+$updateStmt->execute();
+
+// Get all messages in this conversation - ORDER BY created_at ASC for chronological order
+$query = "SELECT 
+    m.id, 
+    m.conversation_id,
+    m.sender_id, 
+    m.receiver_id, 
+    m.message, 
+    m.is_read, 
+    m.read_at,
+    m.status as message_status,
+    m.created_at,
+    CASE 
+        WHEN m.sender_id = 1 THEN 'admin' 
+        ELSE 'department' 
+    END as sender_type
+FROM messages m
+WHERE m.conversation_id = :conv_id
+ORDER BY m.created_at ASC";  // ASC for oldest first (chronological)
+
+$stmt = $db->prepare($query);
+$stmt->bindParam(':conv_id', $conversation_id);
+$stmt->execute();
+
+$messages = array();
+while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+    $messages[] = array(
+        'id' => (int)$row['id'],
+        'conversation_id' => (int)$row['conversation_id'],
+        'message' => $row['message'],
+        'sender_id' => (int)$row['sender_id'],
+        'receiver_id' => (int)$row['receiver_id'],
+        'sender_type' => $row['sender_type'],
+        'is_read' => (int)$row['is_read'],
+        'status' => $row['message_status'],
+        'created_at' => $row['created_at']
+    );
+}
+
+error_log("Messages found for conversation {$conversation_id}: " . count($messages));
+
+sendResponse(true, array(
+    'conversation_id' => $conversation_id,
+    'department_user_id' => (int)$conversation['user_id'],
+    'department_name' => $conversation['department_name'],
+    'department_user_name' => $conversation['department_user_name'],
+    'department_id' => (int)$conversation['department_id'],
+    'subject' => $conversation['subject'],
+    'messages' => $messages
+));
 ?>

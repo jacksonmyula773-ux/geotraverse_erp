@@ -1,28 +1,62 @@
 <?php
 // backend/api/get_messages.php
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
+
 require_once '../config/database.php';
+
+error_log("=== get_messages.php called ===");
 
 $database = new Database();
 $db = $database->getConnection();
 
-// Get conversations for admin (department_id = 1)
+// Get all conversations with latest message and unread count
 $query = "SELECT 
-    d.id as other_dept_id,
-    d.name as other_dept_name,
-    (SELECT message FROM messages WHERE (sender_dept = d.id AND receiver_dept = 1) OR (sender_dept = 1 AND receiver_dept = d.id) ORDER BY created_at DESC LIMIT 1) as last_message,
-    (SELECT created_at FROM messages WHERE (sender_dept = d.id AND receiver_dept = 1) OR (sender_dept = 1 AND receiver_dept = d.id) ORDER BY created_at DESC LIMIT 1) as last_message_time,
-    (SELECT COUNT(*) FROM messages WHERE receiver_dept = 1 AND sender_dept = d.id AND is_read = 0) as unread_count
-    FROM departments d
-    WHERE d.id != 1
-    AND EXISTS (SELECT 1 FROM messages WHERE (sender_dept = d.id AND receiver_dept = 1) OR (sender_dept = 1 AND receiver_dept = d.id))
-    ORDER BY last_message_time DESC";
+    c.id as conversation_id,
+    c.user_id as department_user_id,
+    c.subject,
+    c.status as conversation_status,
+    c.created_at as conversation_created,
+    c.updated_at,
+    u.name as department_user_name,
+    u.department_id,
+    d.name as department_name,
+    (SELECT m.message FROM messages m WHERE m.conversation_id = c.id ORDER BY m.created_at DESC LIMIT 1) as last_message,
+    (SELECT m.created_at FROM messages m WHERE m.conversation_id = c.id ORDER BY m.created_at DESC LIMIT 1) as last_message_time,
+    (SELECT COUNT(*) FROM messages m WHERE m.conversation_id = c.id AND m.receiver_id = 1 AND m.is_read = 0) as unread_count
+FROM conversations c
+JOIN users u ON c.user_id = u.id
+JOIN departments d ON u.department_id = d.id
+WHERE c.admin_id = 1 AND c.status = 'active'
+ORDER BY c.updated_at DESC, last_message_time DESC";
+
 $stmt = $db->prepare($query);
 $stmt->execute();
 
-$conversations = [];
+$conversations = array();
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-    $conversations[] = $row;
+    $conversations[] = array(
+        'conversation_id' => (int)$row['conversation_id'],
+        'department_user_id' => (int)$row['department_user_id'],
+        'department_id' => (int)$row['department_id'],
+        'department_name' => $row['department_name'],
+        'department_user_name' => $row['department_user_name'],
+        'subject' => $row['subject'],
+        'last_message' => $row['last_message'],
+        'last_message_time' => $row['last_message_time'],
+        'unread_count' => (int)$row['unread_count'],
+        'updated_at' => $row['updated_at']
+    );
 }
+
+error_log("Total conversations found: " . count($conversations));
 
 sendResponse(true, $conversations);
 ?>

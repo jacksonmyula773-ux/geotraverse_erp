@@ -426,16 +426,31 @@
         }
     }
     
-    async function loadDepartmentsForDropdowns() {
-        const res = await apiCall('get_departments.php');
-        if (res.success && res.data) departmentsList = res.data.filter(d => d.id !== 1);
-        else departmentsList = Object.entries(departmentNames).filter(([id]) => id != 1).map(([id, name]) => ({ id: parseInt(id), name }));
+async function loadDepartmentsForDropdowns() {
+    const res = await apiCall('get_departments.php');
+    if (res.success && res.data) {
+        if (res.data.departments) {
+            departmentsList = res.data.departments;
+        } else {
+            departmentsList = res.data.filter(d => d.id !== 1);
+        }
         
-        ['empDept', 'projDept', 'dailyworkDept', 'transDept', 'msgTo'].forEach(id => {
+        // Populate department dropdowns
+        ['empDept', 'projDept', 'dailyworkDept', 'transDept'].forEach(id => {
             const s = document.getElementById(id);
             if (s) s.innerHTML = '<option value="">Select Department</option>' + departmentsList.map(d => `<option value="${d.id}">${escapeHtml(d.name)}</option>`).join('');
         });
+        
+        // Populate message recipient dropdown (users)
+        if (res.data.users) {
+            const msgTo = document.getElementById('msgTo');
+            if (msgTo) {
+                msgTo.innerHTML = '<option value="">Select Recipient</option>' + 
+                    res.data.users.map(u => `<option value="${u.id}">${escapeHtml(u.name)} (${escapeHtml(u.department_name)})</option>`).join('');
+            }
+        }
     }
+}
     
     function updateProjectBadge() {
         const badge = document.getElementById('projectBadge');
@@ -1092,20 +1107,28 @@ async function markProjectAsViewed(projectId) {
         } 
     }
     
-    function editTransaction(id) { 
-        const t = transactionsData.find(t=>t.id===id); 
-        if(t) { 
-            document.getElementById('transId').value = t.id; 
-            document.getElementById('transType').value = t.type; 
-            document.getElementById('transDept').value = t.department_id; 
-            document.getElementById('transSource').value = t.source; 
-            document.getElementById('transAmount').value = t.amount; 
-            document.getElementById('transDate').value = t.transaction_date; 
-            document.getElementById('transStatus').value = t.status; 
-            document.getElementById('transDesc').value = t.description||''; 
-            openModal('transModal'); 
-        } 
+function editTransaction(id) { 
+    const t = transactionsData.find(t => t.id === parseInt(id)); 
+    if(t) { 
+        document.getElementById('transId').value = t.id; 
+        document.getElementById('transType').value = t.type; 
+        document.getElementById('transDept').value = t.department_id; 
+        document.getElementById('transSource').value = t.source; 
+        document.getElementById('transAmount').value = t.amount; 
+        document.getElementById('transDate').value = t.transaction_date; 
+        document.getElementById('transStatus').value = t.status; 
+        document.getElementById('transDesc').value = t.description || ''; 
+        
+        // Also set paid_amount if needed
+        if (document.getElementById('transPaidAmount')) {
+            document.getElementById('transPaidAmount').value = t.paid_amount || 0;
+        }
+        
+        openModal('transModal'); 
+    } else {
+        showToast('Transaction not found', true);
     }
+}
     
 // Badilisha saveTransaction function
 async function saveTransaction() { 
@@ -1119,6 +1142,11 @@ async function saveTransaction() {
         description: document.getElementById('transDesc').value, 
         department_id: parseInt(document.getElementById('transDept').value) || 1 
     }; 
+    
+    // Add paid_amount if partial
+    if (data.status === 'partial' && document.getElementById('transPaidAmount')) {
+        data.paid_amount = parseAmount(document.getElementById('transPaidAmount').value);
+    }
     
     if(!data.source || data.amount <= 0) { 
         showToast('Source and valid amount required', true); 
@@ -1282,120 +1310,135 @@ async function saveTransaction() {
     }
     
     // ==================== MESSAGES ====================
-    async function loadMessages(highlightId = null) {
-        const res = await apiCall('get_messages.php');
-        
-        if (res.success && res.data) {
-            messagesData = res.data;
-        } else {
-            messagesData = [];
-        }
-        updateMessageBadge();
-        
-        // Process conversations from the new structure
-        let conversations = [];
-        if (res.data && res.data.length > 0) {
-            conversations = res.data;
-        }
-        
-        let html = `<div class="flex justify-between flex-wrap gap-3 mb-4">
-            <h2 class="text-xl font-bold"><i class="fas fa-envelope text-blue-600 mr-2"></i>Messages (${conversations.length})</h2>
-            <button onclick="openModal('msgModal')" class="btn-primary"><i class="fas fa-paper-plane mr-1"></i> New Message</button>
-        </div>
-        <div class="space-y-2" id="messagesListContainer"></div>`;
-        
-        document.getElementById('messagesPage').innerHTML = html;
-        
-        if (conversations.length === 0) { 
-            document.getElementById('messagesListContainer').innerHTML = '<div class="bg-white rounded-xl p-8 text-center text-gray-400">No messages found</div>'; 
-            return; 
-        }
-        
-        let msgsHtml = '';
-        for (let conv of conversations) {
-            const isUnread = conv.unread_count > 0;
-            const preview = conv.last_message ? (conv.last_message.substring(0, 80) + (conv.last_message.length > 80 ? '...' : '')) : 'No messages';
-            const isHighlighted = highlightId && conv.other_dept_id === highlightId;
-            msgsHtml += `<div class="message-item ${isUnread ? 'message-unread' : ''} ${isHighlighted ? 'search-highlight' : ''}" onclick="openChat(${conv.other_dept_id}, '${escapeHtml(conv.other_dept_name)}')">
-                <div class="message-header">
-                    <div><span class="font-semibold">${escapeHtml(conv.other_dept_name)}</span>${isUnread ? `<span class="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full ml-2">${conv.unread_count}</span>` : ''}</div>
-                    <span class="text-[10px] text-gray-400">${new Date(conv.last_message_time).toLocaleString()}</span>
-                </div>
-                <div class="message-preview">${escapeHtml(preview)}</div>
-            </div>`;
-        }
-        document.getElementById('messagesListContainer').innerHTML = msgsHtml;
-        if (highlightId) {
-            const msgDiv = Array.from(document.querySelectorAll('.message-item')).find(el => el.textContent.includes(departmentNames[highlightId] || ''));
-            if (msgDiv) msgDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
+async function loadMessages(highlightId = null) {
+    const res = await apiCall('get_messages.php');
+    
+    if (res.success && res.data) {
+        messagesData = res.data;
+    } else {
+        messagesData = [];
+    }
+    updateMessageBadge();
+    
+    let conversations = messagesData;
+    
+    let html = `<div class="flex justify-between flex-wrap gap-3 mb-4">
+        <h2 class="text-xl font-bold"><i class="fas fa-envelope text-blue-600 mr-2"></i>Messages (${conversations.length})</h2>
+        <button onclick="openModal('msgModal')" class="btn-primary"><i class="fas fa-paper-plane mr-1"></i> New Message</button>
+    </div>
+    <div class="space-y-2" id="messagesListContainer"></div>`;
+    
+    document.getElementById('messagesPage').innerHTML = html;
+    
+    if (conversations.length === 0) { 
+        document.getElementById('messagesListContainer').innerHTML = '<div class="bg-white rounded-xl p-8 text-center text-gray-400">No messages found</div>'; 
+        return; 
     }
     
-    async function sendNewMessage() { 
-        let to = document.getElementById('msgTo').value; 
-        let msg = document.getElementById('msgContent').value; 
-        if (!to || !msg) { showToast('Select department and enter message', true); return; } 
-        let res = await apiCall('send_message.php', 'POST', { to_department_id: parseInt(to), message: msg }); 
-        if (res && res.success) { 
-            showToast('Message sent'); 
-            closeModal('msgModal'); 
-            document.getElementById('msgContent').value = '';
-            await loadMessages(); 
-            await loadDashboard(); 
-        } else { 
-            showToast((res && res.message) || 'Failed to send message', true); 
-        }
+    let msgsHtml = '';
+    for (let conv of conversations) {
+        const isUnread = conv.unread_count > 0;
+        const preview = conv.last_message ? (conv.last_message.substring(0, 80) + (conv.last_message.length > 80 ? '...' : '')) : 'No messages';
+        msgsHtml += `<div class="message-item ${isUnread ? 'message-unread' : ''}" onclick="openChat(${conv.conversation_id}, '${escapeHtml(conv.department_name)}')">
+            <div class="message-header">
+                <div><span class="font-semibold">${escapeHtml(conv.department_name)}</span>${isUnread ? `<span class="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full ml-2">${conv.unread_count}</span>` : ''}</div>
+                <span class="text-[10px] text-gray-400">${conv.last_message_time ? new Date(conv.last_message_time).toLocaleString() : ''}</span>
+            </div>
+            <div class="message-preview">${escapeHtml(preview)}</div>
+        </div>`;
     }
+    document.getElementById('messagesListContainer').innerHTML = msgsHtml;
+}
     
-    function openChat(deptId, deptName) { 
-        document.getElementById('chatModalTitle').innerHTML = `Chat with ${deptName}`; 
-        
-        // Use the conversation API to get messages
-        fetch(API_BASE + `get_conversation.php?department_id=${deptId}`)
-            .then(res => res.json())
-            .then(data => {
-                let msgs = [];
-                let dept = deptName;
-                
-                if (data.success && data.data) {
-                    msgs = data.data;
-                    dept = data.department_name || deptName;
-                    document.getElementById('chatModalTitle').innerHTML = `Chat with ${dept}`;
+async function sendNewMessage() { 
+    let departmentUserId = document.getElementById('msgTo').value; 
+    let msg = document.getElementById('msgContent').value; 
+    if (!departmentUserId || !msg) { showToast('Select department user and enter message', true); return; } 
+    
+    let res = await apiCall('send_message.php', 'POST', { 
+        department_user_id: parseInt(departmentUserId), 
+        message: msg 
+    }); 
+    
+    if (res && res.success) { 
+        showToast('Message sent'); 
+        closeModal('msgModal'); 
+        document.getElementById('msgContent').value = '';
+        await loadMessages(); 
+    } else { 
+        showToast((res && res.message) || 'Failed to send message', true); 
+    }
+}
+    
+function openChat(conversationId, deptName) { 
+    document.getElementById('chatModalTitle').innerHTML = `Chat with ${deptName}`; 
+    
+    fetch(API_BASE + `get_conversation.php?conversation_id=${conversationId}`)
+        .then(res => res.json())
+        .then(data => {
+            let msgs = [];
+            if (data.success && data.data && data.data.messages) {
+                msgs = data.data.messages;
+                document.currentConversationId = conversationId;
+                document.currentReceiverId = data.data.department_id;
+            }
+            
+            let chatHtml = '';
+            if (!msgs || msgs.length === 0) { 
+                chatHtml = '<div class="text-center text-gray-400 py-8">No messages yet. Start the conversation!</div>'; 
+            } else {
+                for (let m of msgs) {
+                    const isSent = (m.sender_type === 'admin');
+                    chatHtml += `<div class="chat-message ${isSent ? 'chat-sent' : 'chat-received'}">
+                        <div class="chat-bubble">
+                            <div>${escapeHtml(m.message)}</div>
+                            <span class="chat-time">${new Date(m.created_at).toLocaleString()}</span>
+                        </div>
+                    </div>`;
                 }
-                
-                let chatHtml = '';
-                if (!msgs || msgs.length === 0 || (msgs.length === 1 && !msgs[0].message)) { 
-                    chatHtml = '<div class="text-center text-gray-400 py-8">No messages yet. Start the conversation!</div>'; 
-                } else {
-                    for (let m of msgs) {
-                        if (!m.message) continue;
-                        const isSent = (m.sender_dept === 1);
-                        chatHtml += `<div class="chat-message ${isSent ? 'chat-sent' : 'chat-received'}">
-                            <div class="chat-bubble">
-                                <div>${escapeHtml(m.message)}</div>
-                                <span class="chat-time">${new Date(m.created_at).toLocaleString()}</span>
-                            </div>
-                        </div>`;
-                    }
-                }
-                document.getElementById('chatMessagesArea').innerHTML = chatHtml;
-                if (msgs.length > 0) {
-                    const chatArea = document.getElementById('chatMessagesArea');
-                    chatArea.scrollTop = chatArea.scrollHeight;
-                }
-                openModal('chatModal'); 
-            })
-            .catch(error => {
-                console.error('Error fetching conversation:', error);
-                document.getElementById('chatMessagesArea').innerHTML = '<div class="text-center text-gray-400 py-8">Error loading messages</div>';
-                openModal('chatModal');
-            });
+            }
+            document.getElementById('chatMessagesArea').innerHTML = chatHtml;
+            if (msgs.length > 0) {
+                const chatArea = document.getElementById('chatMessagesArea');
+                chatArea.scrollTop = chatArea.scrollHeight;
+            }
+            openModal('chatModal'); 
+        })
+        .catch(error => {
+            console.error('Error fetching conversation:', error);
+            document.getElementById('chatMessagesArea').innerHTML = '<div class="text-center text-gray-400 py-8">Error loading messages</div>';
+            openModal('chatModal');
+        });
+}
+    
+async function sendChatMessage() { 
+    let msg = document.getElementById('replyMsg').value;
+    if (!msg.trim()) {
+        showToast('Enter a message', true);
+        return;
     }
     
-    function sendChatMessage() { 
-        showToast('To send a message, click "New Message" button', true);
+    let conversationId = document.currentConversationId;
+    if (!conversationId) {
+        showToast('No active conversation', true);
+        return;
     }
     
+    let res = await apiCall('send_message.php', 'POST', { 
+        conversation_id: conversationId,
+        message: msg 
+    });
+    
+    if (res && res.success) {
+        document.getElementById('replyMsg').value = '';
+        // Reload chat
+        openChat(conversationId, document.getElementById('chatModalTitle').innerHTML.replace('Chat with ', ''));
+        showToast('Message sent');
+        loadMessages(); // Refresh message list
+    } else {
+        showToast((res && res.message) || 'Failed to send message', true);
+    }
+}
     // ==================== SETTINGS ====================
     function loadSettings() {
         const savedColor = localStorage.getItem('sidebar_color') || '#0f74ba';
