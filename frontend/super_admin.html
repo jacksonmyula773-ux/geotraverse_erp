@@ -27,14 +27,61 @@
         .stat-card { background: white; border-radius: 16px; border: 1px solid #e5e7eb; padding: 20px; transition: all 0.2s; cursor: pointer; }
         .stat-card:hover { transform: translateY(-3px); border-color: #0f74ba; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
         
-        input, select, textarea { width: 100%; padding: 10px 14px; margin: 8px 0; border: 1px solid #e5e7eb; border-radius: 10px; font-size: 14px; background: white; transition: all 0.2s; }
-        input:focus, select:focus, textarea:focus { outline: none; border-color: #0f74ba; box-shadow: 0 0 0 3px rgba(15,116,186,0.1); }
+        /* Improved Form Styles */
+        .form-group {
+            margin-bottom: 18px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+        .form-group label .required {
+            color: #ef4444;
+            margin-left: 2px;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            font-size: 14px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 10px;
+            background: white;
+            transition: all 0.2s;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #0f74ba;
+            box-shadow: 0 0 0 3px rgba(15,116,186,0.1);
+        }
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #9ca3af;
+            font-size: 13px;
+        }
+        
+        body.dark-mode .form-group label {
+            color: #94a3b8;
+        }
+        body.dark-mode .form-group input,
+        body.dark-mode .form-group select,
+        body.dark-mode .form-group textarea {
+            background: #0f172a;
+            border-color: #334155;
+            color: #f1f5f9;
+        }
         
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
-        .modal-content { background: white; border-radius: 20px; width: 90%; max-width: 650px; max-height: 85vh; overflow-y: auto; padding: 25px; animation: fadeIn 0.2s ease; }
+        .modal-content { background: white; border-radius: 20px; width: 90%; max-width: 600px; max-height: 85vh; overflow-y: auto; padding: 25px; animation: fadeIn 0.2s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         
-        .toast { position: fixed; bottom: 20px; right: 20px; background: #10b981; color: white; padding: 12px 24px; border-radius: 12px; z-index: 1000; animation: slideInRight 0.3s ease; }
+        .toast { position: fixed; bottom: 20px; right: 20px; background: #10b981; color: white; padding: 12px 24px; border-radius: 12px; z-index: 1000; animation: slideInRight 0.3s ease; font-size: 13px; }
         .toast.error { background: #ef4444; }
         @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         
@@ -52,12 +99,12 @@
         .project-card:hover, .report-card:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
         .new-badge { position: absolute; top: -8px; right: -8px; background: #ef4444; color: white; border-radius: 50%; width: 24px; height: 24px; font-size: 11px; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; z-index: 10; }
         
-        .btn-primary { background: #0f74ba; color: white; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; transition: all 0.2s; }
+        .btn-primary { background: #0f74ba; color: white; padding: 10px 18px; border-radius: 10px; border: none; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.2s; }
         .btn-primary:hover { background: #0a5a8e; transform: translateY(-1px); }
-        .btn-success { background: #10b981; color: white; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; }
+        .btn-success { background: #10b981; color: white; padding: 10px 18px; border-radius: 10px; border: none; cursor: pointer; font-size: 14px; font-weight: 500; }
         .btn-success:hover { background: #059669; transform: translateY(-1px); }
-        .btn-danger { background: #ef4444; color: white; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; }
-        .btn-warning { background: #f59e0b; color: white; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; }
+        .btn-danger { background: #ef4444; color: white; padding: 10px 18px; border-radius: 10px; border: none; cursor: pointer; font-size: 14px; font-weight: 500; }
+        .btn-warning { background: #f59e0b; color: white; padding: 10px 18px; border-radius: 10px; border: none; cursor: pointer; font-size: 14px; font-weight: 500; }
         
         .action-btn { padding: 5px 10px; font-size: 11px; border-radius: 5px; cursor: pointer; transition: all 0.2s; border: none; }
         .action-btn.view { background: #3b82f6; color: white; }
@@ -74,22 +121,8 @@
         @media (max-width: 1024px) { .messages-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 640px) { .messages-grid { grid-template-columns: 1fr; } }
         
-        /* Messages Section */
-        .messages-section .message-item { 
-            background: white; 
-            border: 1px solid #e5e7eb; 
-            border-radius: 16px; 
-            overflow: hidden; 
-            cursor: pointer; 
-            transition: all 0.2s; 
-            position: relative; 
-            color: #1f2937;
-        }
-        body.dark-mode .messages-section .message-item {
-            background: #1e293b;
-            border-color: #334155;
-            color: #f1f5f9;
-        }
+        .messages-section .message-item { background: white; border: 1px solid #e5e7eb; border-radius: 16px; overflow: hidden; cursor: pointer; transition: all 0.2s; position: relative; color: #1f2937; }
+        body.dark-mode .messages-section .message-item { background: #1e293b; border-color: #334155; color: #f1f5f9; }
         .messages-section .message-item:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); border-color: #0f74ba; }
         .messages-section .message-unread { background: #eff6ff; border-left: 4px solid #3b82f6; }
         body.dark-mode .messages-section .message-unread { background: #0f74ba20; border-left-color: #60a5fa; }
@@ -97,33 +130,11 @@
         .messages-section .message-preview { padding: 0 16px 12px 16px; font-size: 13px; color: #6b7280; }
         body.dark-mode .messages-section .message-preview { color: #94a3b8; }
         
-        /* Delete Conversation Button - Opacity 60% normal, 100% on hover */
-        .messages-section .delete-conv-btn { 
-            position: absolute; 
-            top: 10px; 
-            right: 10px; 
-            background: #ef4444; 
-            color: white; 
-            border-radius: 50%; 
-            width: 28px; 
-            height: 28px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            cursor: pointer; 
-            opacity: 0.6;
-            transition: all 0.2s; 
-            z-index: 15; 
-        }
-        .messages-section .message-item:hover .delete-conv-btn { opacity: 1; }
-        .messages-section .delete-conv-btn:hover { 
-            background: #dc2626; 
-            transform: scale(1.05);
-            opacity: 1;
-        }
+        .delete-conv-btn { position: absolute; top: 10px; right: 10px; background: #ef4444; color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0.6; transition: all 0.2s; z-index: 15; }
+        .message-item:hover .delete-conv-btn { opacity: 1; }
+        .delete-conv-btn:hover { background: #dc2626; transform: scale(1.05); opacity: 1; }
         .dept-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
         
-        /* Send Dropdown */
         .send-dropdown { position: relative; display: inline-block; }
         .send-dropdown-content { display: none; position: absolute; right: 0; top: 100%; background: white; min-width: 180px; border-radius: 8px; z-index: 100; border: 1px solid #e5e7eb; max-height: 300px; overflow-y: auto; margin-top: 5px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
         .send-dropdown-content a { display: block; padding: 8px 12px; text-decoration: none; color: #333; font-size: 13px; cursor: pointer; }
@@ -132,7 +143,6 @@
         body.dark-mode .send-dropdown-content a { color: #f1f5f9; }
         body.dark-mode .send-dropdown-content a:hover { background: #334155; }
         
-        /* Chat Styles */
         .chat-container { display: flex; flex-direction: column; height: 500px; }
         .chat-messages { flex: 1; overflow-y: auto; padding: 16px; background: #f9fafb; border-radius: 12px; margin-bottom: 12px; }
         body.dark-mode .chat-messages { background: #1e293b; }
@@ -145,33 +155,10 @@
         body.dark-mode .chat-received .chat-bubble { background: #334155; color: #f1f5f9; }
         .chat-time { font-size: 10px; opacity: 0.7; margin-top: 4px; display: block; }
         
-        /* Delete Message Button - Opacity 60% normal, 100% on hover */
-        .delete-msg-btn { 
-            background: #ef4444; 
-            color: white; 
-            border-radius: 50%; 
-            width: 28px; 
-            height: 28px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            cursor: pointer; 
-            font-size: 11px; 
-            transition: all 0.2s; 
-            z-index: 20; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            margin-left: 8px;
-            margin-right: 8px;
-            flex-shrink: 0;
-            opacity: 0.6;
-        }
+        .delete-msg-btn { background: #ef4444; color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 11px; transition: all 0.2s; z-index: 20; box-shadow: 0 2px 5px rgba(0,0,0,0.2); margin-left: 8px; margin-right: 8px; flex-shrink: 0; opacity: 0.6; }
         .chat-sent .delete-msg-btn { order: -1; margin-left: 0; margin-right: 8px; }
         .chat-received .delete-msg-btn { margin-left: 8px; margin-right: 0; }
-        .delete-msg-btn:hover { 
-            background: #dc2626; 
-            transform: scale(1.05);
-            opacity: 1;
-        }
+        .delete-msg-btn:hover { background: #dc2626; transform: scale(1.05); opacity: 1; }
         
         .chat-input-area { display: flex; gap: 10px; margin-top: 12px; }
         .chat-input-area textarea { flex: 1; margin: 0; resize: none; }
@@ -201,49 +188,15 @@
         .dept-card:hover { transform: translateX(5px); border-color: #0f74ba; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         body.dark-mode .dept-card { background: #1e293b; border-color: #334155; }
         
-        /* Daily Work Table Styles - Improved */
-        .dailywork-table-container { 
-            overflow-x: auto; 
-            border-radius: 12px; 
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-        .dailywork-table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            min-width: 800px;
-        }
-        .dailywork-table th, 
-        .dailywork-table td { 
-            padding: 14px 16px; 
-            vertical-align: middle;
-            border-bottom: 1px solid #e5e7eb;
-        }
-        .dailywork-table th { 
-            background: #f8fafc; 
-            font-weight: 600; 
-            font-size: 13px;
-            position: sticky; 
-            top: 0; 
-            color: #4b5563;
-        }
-        .dailywork-table tbody tr:hover {
-            background-color: #f9fafb;
-        }
-        body.dark-mode .dailywork-table th { 
-            background: #1e293b; 
-            border-bottom-color: #334155;
-            color: #94a3b8;
-        }
-        body.dark-mode .dailywork-table tbody tr:hover {
-            background-color: #334155;
-        }
-        .dept-badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 500;
-        }
+        .dailywork-table-container { overflow-x: auto; border-radius: 12px; }
+        .dailywork-table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        .dailywork-table th, .dailywork-table td { padding: 14px 16px; vertical-align: middle; border-bottom: 1px solid #e5e7eb; font-size: 13px; }
+        .dailywork-table th { background: #f8fafc; font-weight: 600; position: sticky; top: 0; color: #4b5563; }
+        .dailywork-table tbody tr:hover { background-color: #f9fafb; }
+        body.dark-mode .dailywork-table th { background: #1e293b; border-bottom-color: #334155; color: #94a3b8; }
+        body.dark-mode .dailywork-table tbody tr:hover { background-color: #334155; }
+        
+        .dept-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; }
         .dept-badge-2 { background: #10b98120; color: #10b981; }
         .dept-badge-3 { background: #f59e0b20; color: #f59e0b; }
         .dept-badge-4 { background: #3b82f620; color: #3b82f6; }
@@ -263,7 +216,6 @@
         .detail-buttons { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 15px; padding-top: 15px; border-top: 1px solid #e5e7eb; }
         .detail-btn { padding: 8px 16px; border-radius: 6px; font-size: 12px; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; border: none; }
         
-        /* Role Badges */
         .role-super-admin { background: #8b5cf6; color: white; }
         .role-admin { background: #3b82f6; color: white; }
         .role-manager { background: #f59e0b; color: white; }
@@ -345,49 +297,391 @@
     </main>
 </div>
 
-<!-- MODALS -->
-<div id="empModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-user-plus text-blue-500 mr-2"></i>Add Employee</h3><input type="hidden" id="empId"><input type="text" id="empName" placeholder="Full Name" required><input type="email" id="empEmail" placeholder="Email" required><input type="text" id="empPhone" placeholder="Phone"><select id="empDept"></select><select id="empRole">
-    <option value="Super Administrator">Super Administrator</option>
-    <option value="Administrator">Administrator</option>
-    <option value="Manager">Manager</option>
-    <option value="Finance Manager">Finance Manager</option>
-    <option value="Accountant">Accountant</option>
-    <option value="HR Manager">HR Manager</option>
-    <option value="Department Head">Department Head</option>
-    <option value="Team Leader">Team Leader</option>
-    <option value="Staff">Staff</option>
-    <option value="Intern">Intern</option>
-</select><input type="text" id="empSalary" placeholder="Salary" class="amount-input"><div class="relative"><input type="password" id="empPassword" placeholder="Password" value="1234" class="w-full"><i class="fas fa-eye absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400" onclick="togglePassword('empPassword')"></i></div><div class="flex gap-3 pt-4"><button onclick="saveEmployee()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('empModal')" class="flex-1 bg-gray-200 py-2 rounded hover:bg-gray-300 transition">Cancel</button></div></div></div>
+<!-- MODALS WITH PERFECT FORMS -->
+
+<!-- Employee Modal -->
+<div id="empModal" class="modal">
+    <div class="modal-content">
+        <h3 class="text-xl font-bold mb-4"><i class="fas fa-user-plus text-blue-500 mr-2"></i>Add Employee</h3>
+        <input type="hidden" id="empId">
+        
+        <div class="form-group">
+            <label>Full Name <span class="required">*</span></label>
+            <input type="text" id="empName" placeholder="Enter full name" required>
+        </div>
+        
+        <div class="form-group">
+            <label>Email Address <span class="required">*</span></label>
+            <input type="email" id="empEmail" placeholder="Enter email address" required>
+        </div>
+        
+        <div class="form-group">
+            <label>Phone Number</label>
+            <input type="text" id="empPhone" placeholder="Enter phone number">
+        </div>
+        
+        <div class="form-group">
+            <label>Department</label>
+            <select id="empDept"></select>
+        </div>
+        
+        <div class="form-group">
+            <label>Role</label>
+            <select id="empRole">
+                <option value="Super Administrator">Super Administrator</option>
+                <option value="Administrator">Administrator</option>
+                <option value="Manager">Manager</option>
+                <option value="Finance Manager">Finance Manager</option>
+                <option value="Accountant">Accountant</option>
+                <option value="HR Manager">HR Manager</option>
+                <option value="Department Head">Department Head</option>
+                <option value="Team Leader">Team Leader</option>
+                <option value="Staff">Staff</option>
+                <option value="Intern">Intern</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>Salary (TZS)</label>
+            <input type="text" id="empSalary" placeholder="Enter salary" class="amount-input">
+        </div>
+        
+        <div class="form-group">
+            <label>Password</label>
+            <div class="relative">
+                <input type="password" id="empPassword" placeholder="Enter password" value="1234" class="w-full">
+                <i class="fas fa-eye absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400" onclick="togglePassword('empPassword')"></i>
+            </div>
+        </div>
+        
+        <div class="flex gap-3 pt-2">
+            <button onclick="saveEmployee()" class="flex-1 btn-primary">Save Employee</button>
+            <button onclick="closeModal('empModal')" class="flex-1 bg-gray-200 py-2 rounded hover:bg-gray-300 transition">Cancel</button>
+        </div>
+    </div>
+</div>
 
 <div id="viewEmpModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-user text-blue-500 mr-2"></i>Employee Details</h3><div id="viewEmpContent"></div><button onclick="closeModal('viewEmpModal')" class="w-full bg-gray-200 py-2 rounded mt-3 hover:bg-gray-300 transition">Close</button></div></div>
 
-<div id="projModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-tasks text-green-500 mr-2"></i>Add/Edit Project</h3><input type="hidden" id="projId"><input type="text" id="projName" placeholder="Project Name" required><input type="text" id="projClient" placeholder="Client"><input type="text" id="projAmount" placeholder="Amount (TZS)" class="amount-input"><input type="text" id="projLocation" placeholder="Location"><textarea id="projDesc" rows="2" placeholder="Description"></textarea><select id="projStatus"><option value="pending">Pending</option><option value="in_progress">In Progress</option><option value="completed">Completed</option></select><input type="number" id="projProgress" placeholder="Progress 0-100"><select id="projDept"></select><div class="mb-2"><label class="text-sm font-semibold">Project Image</label></div><div id="projImageUploadArea" class="border-2 border-dashed border-gray-300 rounded-xl p-5 text-center cursor-pointer hover:border-blue-500 transition" onclick="document.getElementById('projImageFile').click()"><i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i><p>Click to upload project image</p><p class="text-xs text-gray-400 mt-1">Supported: JPG, PNG, GIF (Max 2MB)</p></div><input type="file" id="projImageFile" accept="image/*" class="hidden"><div id="projImagePreviewContainer" class="hidden mt-2"><img id="projImagePreview" class="w-full h-32 object-cover rounded border"><button type="button" onclick="removeProjectImage()" class="mt-2 text-red-500 text-sm w-full py-1 bg-red-50 rounded hover:bg-red-100 transition">Remove Image</button></div><div class="flex gap-3 pt-4"><button onclick="saveProject()" class="flex-1 btn-primary">Save Project</button><button onclick="closeModal('projModal')" class="flex-1 bg-gray-200 py-2 rounded hover:bg-gray-300 transition">Cancel</button></div></div></div>
+<!-- Project Modal -->
+<div id="projModal" class="modal">
+    <div class="modal-content">
+        <h3 class="text-xl font-bold mb-4"><i class="fas fa-tasks text-green-500 mr-2"></i>Add/Edit Project</h3>
+        <input type="hidden" id="projId">
+        
+        <div class="form-group">
+            <label>Project Name <span class="required">*</span></label>
+            <input type="text" id="projName" placeholder="Enter project name" required>
+        </div>
+        
+        <div class="form-group">
+            <label>Client Name</label>
+            <input type="text" id="projClient" placeholder="Enter client name">
+        </div>
+        
+        <div class="form-group">
+            <label>Amount (TZS)</label>
+            <input type="text" id="projAmount" placeholder="Enter amount" class="amount-input">
+        </div>
+        
+        <div class="form-group">
+            <label>Location</label>
+            <input type="text" id="projLocation" placeholder="Enter location">
+        </div>
+        
+        <div class="form-group">
+            <label>Description</label>
+            <textarea id="projDesc" rows="3" placeholder="Enter project description"></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label>Status</label>
+            <select id="projStatus">
+                <option value="pending">Pending</option>
+                <option value="in_progress">In Progress</option>
+                <option value="completed">Completed</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>Progress (%)</label>
+            <input type="number" id="projProgress" placeholder="0-100" min="0" max="100">
+        </div>
+        
+        <div class="form-group">
+            <label>Department</label>
+            <select id="projDept"></select>
+        </div>
+        
+        <div class="form-group">
+            <label>Project Image</label>
+            <div id="projImageUploadArea" class="border-2 border-dashed border-gray-300 rounded-xl p-4 text-center cursor-pointer hover:border-blue-500 transition" onclick="document.getElementById('projImageFile').click()">
+                <i class="fas fa-cloud-upload-alt text-2xl text-gray-400 mb-1"></i>
+                <p class="text-sm">Click to upload project image</p>
+                <p class="text-xs text-gray-400 mt-1">JPG, PNG, GIF (Max 2MB)</p>
+            </div>
+            <input type="file" id="projImageFile" accept="image/*" class="hidden">
+            <div id="projImagePreviewContainer" class="hidden mt-2">
+                <img id="projImagePreview" class="w-full h-28 object-cover rounded border">
+                <button type="button" onclick="removeProjectImage()" class="mt-1 text-red-500 text-sm w-full py-1 bg-red-50 rounded hover:bg-red-100 transition">Remove Image</button>
+            </div>
+        </div>
+        
+        <div class="flex gap-3 pt-2">
+            <button onclick="saveProject()" class="flex-1 btn-primary">Save Project</button>
+            <button onclick="closeModal('projModal')" class="flex-1 bg-gray-200 py-2 rounded hover:bg-gray-300 transition">Cancel</button>
+        </div>
+    </div>
+</div>
 
 <div id="viewProjModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-folder-open text-green-500 mr-2"></i>Project Details</h3><div id="viewProjContent"></div><div id="viewProjButtons" class="detail-buttons"></div><button onclick="closeModal('viewProjModal')" class="w-full bg-gray-200 py-2 rounded mt-3 hover:bg-gray-300 transition">Close</button></div></div>
 
-<div id="dailyworkModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-calendar-plus text-purple-500 mr-2"></i>Add Daily Work</h3><input type="hidden" id="dailyworkId"><input type="date" id="dailyworkDate"><input type="text" id="dailyworkProject" placeholder="Project" required><textarea id="dailyworkDesc" rows="2" placeholder="Description"></textarea><input type="text" id="dailyworkIncome" placeholder="Income" class="amount-input"><input type="text" id="dailyworkExpenses" placeholder="Expenses" class="amount-input"><input type="text" id="dailyworkPaid" placeholder="Paid" class="amount-input"><select id="dailyworkStatus"><option value="pending">Pending</option><option value="paid">Paid</option><option value="partial">Partial</option></select><select id="dailyworkDept"></select><div class="flex gap-3 pt-4"><button onclick="saveDailyWork()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('dailyworkModal')" class="flex-1 bg-gray-200 py-2 rounded hover:bg-gray-300 transition">Cancel</button></div></div></div>
+<!-- Daily Work Modal -->
+<div id="dailyworkModal" class="modal">
+    <div class="modal-content">
+        <h3 class="text-xl font-bold mb-4"><i class="fas fa-calendar-plus text-purple-500 mr-2"></i>Add Daily Work</h3>
+        <input type="hidden" id="dailyworkId">
+        
+        <div class="form-group">
+            <label>Date</label>
+            <input type="date" id="dailyworkDate">
+        </div>
+        
+        <div class="form-group">
+            <label>Project Name <span class="required">*</span></label>
+            <input type="text" id="dailyworkProject" placeholder="Enter project name" required>
+        </div>
+        
+        <div class="form-group">
+            <label>Description</label>
+            <textarea id="dailyworkDesc" rows="3" placeholder="Enter work description"></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label>Income (TZS)</label>
+            <input type="text" id="dailyworkIncome" placeholder="Enter income" class="amount-input">
+        </div>
+        
+        <div class="form-group">
+            <label>Expenses (TZS)</label>
+            <input type="text" id="dailyworkExpenses" placeholder="Enter expenses" class="amount-input">
+        </div>
+        
+        <div class="form-group">
+            <label>Paid Amount (TZS)</label>
+            <input type="text" id="dailyworkPaid" placeholder="Enter paid amount" class="amount-input">
+        </div>
+        
+        <div class="form-group">
+            <label>Status</label>
+            <select id="dailyworkStatus">
+                <option value="pending">Pending</option>
+                <option value="paid">Paid</option>
+                <option value="partial">Partial</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>Department</label>
+            <select id="dailyworkDept"></select>
+        </div>
+        
+        <div class="flex gap-3 pt-2">
+            <button onclick="saveDailyWork()" class="flex-1 btn-primary">Save</button>
+            <button onclick="closeModal('dailyworkModal')" class="flex-1 bg-gray-200 py-2 rounded hover:bg-gray-300 transition">Cancel</button>
+        </div>
+    </div>
+</div>
 
 <div id="viewDailyworkModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-calendar-day text-purple-500 mr-2"></i>Daily Work Details</h3><div id="viewDailyworkContent"></div><button onclick="closeModal('viewDailyworkModal')" class="w-full bg-gray-200 py-2 rounded mt-3 hover:bg-gray-300 transition">Close</button></div></div>
 
-<div id="transModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-exchange-alt text-orange-500 mr-2"></i>Add/Edit Transaction</h3><input type="hidden" id="transId"><select id="transType"><option value="income">Income</option><option value="expense">Expense</option></select><select id="transDept"></select><input type="text" id="transSource" placeholder="Source" required><input type="text" id="transAmount" placeholder="Amount" class="amount-input" required><input type="date" id="transDate"><select id="transStatus"><option value="paid">Paid</option><option value="pending">Pending</option><option value="partial">Partial</option></select><input type="text" id="transPaidAmount" placeholder="Paid Amount (for partial)" class="amount-input hidden"><textarea id="transDesc" rows="2" placeholder="Description"></textarea><div class="flex gap-3 pt-4"><button onclick="saveTransaction()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('transModal')" class="flex-1 bg-gray-200 py-2 rounded hover:bg-gray-300 transition">Cancel</button></div></div></div>
+<!-- Transaction Modal -->
+<div id="transModal" class="modal">
+    <div class="modal-content">
+        <h3 class="text-xl font-bold mb-4"><i class="fas fa-exchange-alt text-orange-500 mr-2"></i>Add/Edit Transaction</h3>
+        <input type="hidden" id="transId">
+        
+        <div class="form-group">
+            <label>Type</label>
+            <select id="transType">
+                <option value="income">Income</option>
+                <option value="expense">Expense</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>Department</label>
+            <select id="transDept"></select>
+        </div>
+        
+        <div class="form-group">
+            <label>Source <span class="required">*</span></label>
+            <input type="text" id="transSource" placeholder="Enter source (e.g., Client Name)" required>
+        </div>
+        
+        <div class="form-group">
+            <label>Amount (TZS) <span class="required">*</span></label>
+            <input type="text" id="transAmount" placeholder="Enter amount" class="amount-input" required>
+        </div>
+        
+        <div class="form-group">
+            <label>Transaction Date</label>
+            <input type="date" id="transDate">
+        </div>
+        
+        <div class="form-group">
+            <label>Status</label>
+            <select id="transStatus">
+                <option value="paid">Paid</option>
+                <option value="pending">Pending</option>
+                <option value="partial">Partial</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>Paid Amount (TZS) <span class="text-gray-400 text-xs">(for partial payments)</span></label>
+            <input type="text" id="transPaidAmount" placeholder="Enter paid amount" class="amount-input hidden">
+        </div>
+        
+        <div class="form-group">
+            <label>Description</label>
+            <textarea id="transDesc" rows="3" placeholder="Enter description"></textarea>
+        </div>
+        
+        <div class="flex gap-3 pt-2">
+            <button onclick="saveTransaction()" class="flex-1 btn-primary">Save Transaction</button>
+            <button onclick="closeModal('transModal')" class="flex-1 bg-gray-200 py-2 rounded hover:bg-gray-300 transition">Cancel</button>
+        </div>
+    </div>
+</div>
 
 <div id="viewTransModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-receipt text-orange-500 mr-2"></i>Transaction Details</h3><div id="viewTransContent"></div><button onclick="closeModal('viewTransModal')" class="w-full bg-gray-200 py-2 rounded mt-3 hover:bg-gray-300 transition">Close</button></div></div>
 
-<div id="reportModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-chart-line text-purple-500 mr-2"></i>Add Report</h3><input type="hidden" id="reportId"><input type="text" id="reportTitle" placeholder="Title" required><select id="reportPeriod"><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="quarterly">Quarterly</option><option value="annual">Annual</option></select><textarea id="reportContent" rows="5" placeholder="Content" required></textarea><div class="flex gap-3 pt-4"><button onclick="saveReport()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('reportModal')" class="flex-1 bg-gray-200 py-2 rounded hover:bg-gray-300 transition">Cancel</button></div></div></div>
+<!-- Report Modal -->
+<div id="reportModal" class="modal">
+    <div class="modal-content">
+        <h3 class="text-xl font-bold mb-4"><i class="fas fa-chart-line text-purple-500 mr-2"></i>Add Report</h3>
+        <input type="hidden" id="reportId">
+        
+        <div class="form-group">
+            <label>Title <span class="required">*</span></label>
+            <input type="text" id="reportTitle" placeholder="Enter report title" required>
+        </div>
+        
+        <div class="form-group">
+            <label>Period</label>
+            <select id="reportPeriod">
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+                <option value="quarterly">Quarterly</option>
+                <option value="annual">Annual</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>Content <span class="required">*</span></label>
+            <textarea id="reportContent" rows="6" placeholder="Enter report content" required></textarea>
+        </div>
+        
+        <div class="flex gap-3 pt-2">
+            <button onclick="saveReport()" class="flex-1 btn-primary">Save Report</button>
+            <button onclick="closeModal('reportModal')" class="flex-1 bg-gray-200 py-2 rounded hover:bg-gray-300 transition">Cancel</button>
+        </div>
+    </div>
+</div>
 
 <div id="viewReportModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-file-alt text-purple-500 mr-2"></i>Report Details</h3><div id="viewReportContent" class="report-content"></div><div id="viewReportButtons" class="detail-buttons"></div><button onclick="closeModal('viewReportModal')" class="w-full bg-gray-200 py-2 rounded mt-3 hover:bg-gray-300 transition">Close</button></div></div>
 
-<div id="msgModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-paper-plane text-blue-500 mr-2"></i>Send Message</h3><select id="msgTo"></select><textarea id="msgContent" rows="4" placeholder="Type your message..." required></textarea><div class="flex gap-3 pt-4"><button onclick="sendNewMessage()" class="flex-1 btn-primary">Send</button><button onclick="closeModal('msgModal')" class="flex-1 bg-gray-200 py-2 rounded hover:bg-gray-300 transition">Cancel</button></div></div></div>
+<!-- Message Modal -->
+<div id="msgModal" class="modal">
+    <div class="modal-content">
+        <h3 class="text-xl font-bold mb-4"><i class="fas fa-paper-plane text-blue-500 mr-2"></i>Send Message</h3>
+        
+        <div class="form-group">
+            <label>Select Department <span class="required">*</span></label>
+            <select id="msgTo"></select>
+        </div>
+        
+        <div class="form-group">
+            <label>Message <span class="required">*</span></label>
+            <textarea id="msgContent" rows="5" placeholder="Type your message..." required></textarea>
+        </div>
+        
+        <div class="flex gap-3 pt-2">
+            <button onclick="sendNewMessage()" class="flex-1 btn-primary">Send Message</button>
+            <button onclick="closeModal('msgModal')" class="flex-1 bg-gray-200 py-2 rounded hover:bg-gray-300 transition">Cancel</button>
+        </div>
+    </div>
+</div>
 
-<div id="chatModal" class="modal"><div class="modal-content" style="max-width:750px;"><div class="flex justify-between items-center mb-4"><h3 id="chatModalTitle" class="text-xl font-bold"><i class="fas fa-comments text-blue-500 mr-2"></i>Chat</h3><button onclick="closeModal('chatModal')" class="text-gray-400 text-2xl hover:text-gray-600">&times;</button></div><div class="chat-container"><div id="chatMessagesArea" class="chat-messages"><div class="text-center text-gray-400 py-8">Select a conversation to start chatting</div></div><div class="chat-input-area"><textarea id="replyMsg" rows="2" placeholder="Type your message..." class="border rounded-lg p-2"></textarea><button onclick="sendChatMessage()" class="btn-primary">Send</button></div></div></div></div>
+<!-- Chat Modal -->
+<div id="chatModal" class="modal">
+    <div class="modal-content" style="max-width:750px;">
+        <div class="flex justify-between items-center mb-4">
+            <h3 id="chatModalTitle" class="text-xl font-bold"><i class="fas fa-comments text-blue-500 mr-2"></i>Chat</h3>
+            <button onclick="closeModal('chatModal')" class="text-gray-400 text-2xl hover:text-gray-600">&times;</button>
+        </div>
+        <div class="chat-container">
+            <div id="chatMessagesArea" class="chat-messages">
+                <div class="text-center text-gray-400 py-8">Select a conversation to start chatting</div>
+            </div>
+            <div class="chat-input-area">
+                <textarea id="replyMsg" rows="2" placeholder="Type your message..." class="border rounded-lg p-2"></textarea>
+                <button onclick="sendChatMessage()" class="btn-primary">Send</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-<div id="pwdModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-key text-blue-500 mr-2"></i>Change Password</h3><div class="relative"><input type="password" id="oldPwd" placeholder="Current Password" class="w-full"><i class="fas fa-eye absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400" onclick="togglePassword('oldPwd')"></i></div><div class="relative mt-2"><input type="password" id="newPwd" placeholder="New Password (min 4 characters)" class="w-full"><i class="fas fa-eye absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400" onclick="togglePassword('newPwd')"></i></div><div class="relative mt-2"><input type="password" id="confirmPwd" placeholder="Confirm Password" class="w-full"><i class="fas fa-eye absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400" onclick="togglePassword('confirmPwd')"></i></div><div class="flex gap-3 pt-4"><button onclick="changePassword()" class="flex-1 btn-primary">Change</button><button onclick="closeModal('pwdModal')" class="flex-1 bg-gray-200 py-2 rounded hover:bg-gray-300 transition">Cancel</button></div></div></div>
+<!-- Change Password Modal -->
+<div id="pwdModal" class="modal">
+    <div class="modal-content">
+        <h3 class="text-xl font-bold mb-4"><i class="fas fa-key text-blue-500 mr-2"></i>Change Password</h3>
+        
+        <div class="form-group">
+            <label>Current Password <span class="required">*</span></label>
+            <div class="relative">
+                <input type="password" id="oldPwd" placeholder="Enter current password" class="w-full">
+                <i class="fas fa-eye absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400" onclick="togglePassword('oldPwd')"></i>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>New Password <span class="required">*</span></label>
+            <div class="relative">
+                <input type="password" id="newPwd" placeholder="Enter new password (min 4 characters)" class="w-full">
+                <i class="fas fa-eye absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400" onclick="togglePassword('newPwd')"></i>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>Confirm Password <span class="required">*</span></label>
+            <div class="relative">
+                <input type="password" id="confirmPwd" placeholder="Confirm new password" class="w-full">
+                <i class="fas fa-eye absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400" onclick="togglePassword('confirmPwd')"></i>
+            </div>
+        </div>
+        
+        <div class="flex gap-3 pt-2">
+            <button onclick="changePassword()" class="flex-1 btn-primary">Change Password</button>
+            <button onclick="closeModal('pwdModal')" class="flex-1 bg-gray-200 py-2 rounded hover:bg-gray-300 transition">Cancel</button>
+        </div>
+    </div>
+</div>
 
-<div id="backupModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-database text-green-500 mr-2"></i>Backup & Restore</h3><button onclick="createBackup()" class="w-full btn-success mb-3 py-2 rounded-lg"><i class="fas fa-download mr-2"></i> Backup Database</button><button onclick="restoreBackup()" class="w-full bg-orange-500 text-white py-2 rounded-lg mb-3 hover:bg-orange-600 transition"><i class="fas fa-upload mr-2"></i> Restore Database</button><button onclick="closeModal('backupModal')" class="w-full bg-gray-200 py-2 rounded-lg hover:bg-gray-300 transition">Close</button></div></div>
+<!-- Backup Modal -->
+<div id="backupModal" class="modal">
+    <div class="modal-content">
+        <h3 class="text-xl font-bold mb-4"><i class="fas fa-database text-green-500 mr-2"></i>Backup & Restore</h3>
+        <button onclick="createBackup()" class="w-full btn-success mb-3 py-3 rounded-lg"><i class="fas fa-download mr-2"></i> Backup Database</button>
+        <button onclick="restoreBackup()" class="w-full bg-orange-500 text-white py-3 rounded-lg mb-3 hover:bg-orange-600 transition"><i class="fas fa-upload mr-2"></i> Restore Database</button>
+        <button onclick="closeModal('backupModal')" class="w-full bg-gray-200 py-3 rounded-lg hover:bg-gray-300 transition">Close</button>
+    </div>
+</div>
 
 <script>
     // ==================== CONFIGURATION ====================
-    const API_BASE = '/geotraverse/backend/api/';
+    const API_BASE = '../backend/api/';
     let searchTimeout = null;
     let statusChart = null;
     
@@ -432,10 +726,6 @@
             'Intern': 'role-intern'
         };
         return map[role] || 'role-staff';
-    }
-    
-    function getDeptBadgeClass(deptId) {
-        return `dept-badge-${deptId}`;
     }
     
     // ==================== HELPER FUNCTIONS ====================
@@ -541,10 +831,18 @@
     async function apiCall(endpoint, method = 'GET', data = null) {
         try { 
             const url = API_BASE + endpoint;
-            const opts = { method, headers: { 'Content-Type': 'application/json' }, credentials: 'include' }; 
-            if (data && method !== 'GET') opts.body = JSON.stringify(data); 
+            const opts = { 
+                method, 
+                headers: { 'Content-Type': 'application/json' }, 
+                credentials: 'include' 
+            }; 
+            if (data && method !== 'GET') {
+                opts.body = JSON.stringify(data);
+            }
             const res = await fetch(url, opts); 
             if (!res.ok) {
+                const errorText = await res.text();
+                console.error('API Error Response:', errorText);
                 throw new Error(`HTTP ${res.status}`);
             }
             return await res.json(); 
@@ -915,6 +1213,106 @@
         }
     }
     
+    // ==================== PDF EXPORT WITH IMAGE ON TOP ====================
+    async function exportSingleProjectPDF(projectId) {
+        const p = projectsData.find(p => p.id === parseInt(projectId));
+        if (!p) {
+            showToast('Project not found', true);
+            return;
+        }
+        
+        showToast('📄 Generating PDF, please wait...');
+        
+        // Get image as base64
+        let imageBase64 = '';
+        if (p.image && p.image !== '') {
+            let imgUrl = p.image;
+            if (!imgUrl.startsWith('http') && !imgUrl.startsWith('assets/')) {
+                imgUrl = '/geotraverse/frontend/assets/uploads/projects/' + imgUrl;
+            }
+            
+            try {
+                const response = await fetch(imgUrl);
+                const blob = await response.blob();
+                imageBase64 = await new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => resolve(reader.result);
+                    reader.readAsDataURL(blob);
+                });
+            } catch(e) {
+                console.error('Image load error:', e);
+            }
+        }
+        
+        // Status colors
+        let statusColor = '', statusBg = '';
+        if (p.status === 'completed') {
+            statusColor = '#059669';
+            statusBg = '#d1fae5';
+        } else if (p.status === 'in_progress') {
+            statusColor = '#2563eb';
+            statusBg = '#dbeafe';
+        } else {
+            statusColor = '#d97706';
+            statusBg = '#fef3c7';
+        }
+        
+        const progressWidth = p.progress || 0;
+        const startDate = p.start_date ? new Date(p.start_date).toLocaleDateString('en-GB') : 'Not specified';
+        const endDate = p.end_date ? new Date(p.end_date).toLocaleDateString('en-GB') : 'Not specified';
+        
+        const element = document.createElement('div');
+        element.style.padding = '20px';
+        element.style.fontFamily = 'Arial, sans-serif';
+        element.style.background = 'white';
+        element.style.maxWidth = '800px';
+        element.style.margin = '0 auto';
+        
+        element.innerHTML = `
+            <div style="text-align: center; border-bottom: 3px solid #0f74ba; padding-bottom: 15px; margin-bottom: 20px;">
+                <h1 style="color: #0f74ba; margin: 0; font-size: 24px;">${escapeHtml(p.name)}</h1>
+                <p style="color: #6b7280; margin: 5px 0 0 0; font-size: 11px;">Project Report - Official Document</p>
+                <p style="color: #9ca3af; margin: 3px 0 0 0; font-size: 9px;">Generated: ${new Date().toLocaleString()}</p>
+            </div>
+            
+            ${imageBase64 ? `<div style="text-align: center; margin: 0 0 20px 0;"><img src="${imageBase64}" style="max-width: 100%; max-height: 200px; object-fit: contain; border-radius: 8px; border: 1px solid #ddd;"></div>` : '<div style="text-align: center; margin: 0 0 20px 0; padding: 30px; background: #f3f4f6; border-radius: 8px;"><p style="color: #9ca3af;">No Image Available</p></div>'}
+            
+            <table style="width: 100%; border-collapse: collapse; border: 1px solid #ddd; margin-top: 15px;">
+                <tr style="border-bottom: 1px solid #ddd;"><td style="padding: 10px; border: 1px solid #ddd; background: #f8fafc; width: 35%;"><strong>Project ID:</strong></td><td style="padding: 10px; border: 1px solid #ddd;">#${p.id}</td></tr>
+                <tr style="border-bottom: 1px solid #ddd;"><td style="padding: 10px; border: 1px solid #ddd; background: #f8fafc;"><strong>Client:</strong></td><td style="padding: 10px; border: 1px solid #ddd;">${escapeHtml(p.client_name || 'N/A')}</td></tr>
+                <tr style="border-bottom: 1px solid #ddd;"><td style="padding: 10px; border: 1px solid #ddd; background: #f8fafc;"><strong>Amount:</strong></td><td style="padding: 10px; border: 1px solid #ddd; color: #059669; font-weight: bold;">${formatMoney(p.amount)}</td></tr>
+                <tr style="border-bottom: 1px solid #ddd;"><td style="padding: 10px; border: 1px solid #ddd; background: #f8fafc;"><strong>Status:</strong></td><td style="padding: 10px; border: 1px solid #ddd;"><span style="background: ${statusBg}; color: ${statusColor}; padding: 3px 10px; border-radius: 20px;">${p.status}</span></td></tr>
+                <tr style="border-bottom: 1px solid #ddd;"><td style="padding: 10px; border: 1px solid #ddd; background: #f8fafc;"><strong>Progress:</strong></td><td style="padding: 10px; border: 1px solid #ddd;"><div style="background: #e5e7eb; border-radius: 10px; height: 8px; width: 120px; display: inline-block; margin-right: 8px;"><div style="background: #0f74ba; width: ${progressWidth}%; height: 8px; border-radius: 10px;"></div></div>${progressWidth}%</td></tr>
+                <tr style="border-bottom: 1px solid #ddd;"><td style="padding: 10px; border: 1px solid #ddd; background: #f8fafc;"><strong>Location:</strong></td><td style="padding: 10px; border: 1px solid #ddd;">${escapeHtml(p.location || 'N/A')}</td></tr>
+                <tr style="border-bottom: 1px solid #ddd;"><td style="padding: 10px; border: 1px solid #ddd; background: #f8fafc;"><strong>Start Date:</strong></td><td style="padding: 10px; border: 1px solid #ddd;">${startDate}</td></tr>
+                <tr style="border-bottom: 1px solid #ddd;"><td style="padding: 10px; border: 1px solid #ddd; background: #f8fafc;"><strong>End Date:</strong></td><td style="padding: 10px; border: 1px solid #ddd;">${endDate}</td></tr>
+                <tr><td style="padding: 10px; border: 1px solid #ddd; background: #f8fafc; vertical-align: top;"><strong>Description:</strong></td><td style="padding: 10px; border: 1px solid #ddd; line-height: 1.4;">${escapeHtml(p.description || 'No description')}</td></tr>
+            </table>
+            
+            <div style="text-align: center; font-size: 9px; color: #999; border-top: 1px solid #eee; padding-top: 10px; margin-top: 15px;">
+                <p>GeoTraverse ERP System - Official Project Document</p>
+            </div>
+        `;
+        
+        html2pdf().from(element).set({
+            margin: 0.5,
+            filename: `project_${p.id}.pdf`,
+            html2canvas: { scale: 2 }
+        }).save();
+        
+        showToast('✅ PDF downloaded with image on top!');
+    }
+    
+    function exportSingleProjectExcel(projectId) {
+        const p = projectsData.find(p => p.id === projectId);
+        if (p) {
+            let ws = [['ID', 'Name', 'Client', 'Amount', 'Status', 'Progress', 'Location', 'Start Date', 'End Date', 'Description']];
+            ws.push([p.id, p.name, p.client_name || '-', p.amount, p.status, p.progress, p.location || '-', p.start_date || '-', p.end_date || '-', p.description || '-']);
+            let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), 'Project'); XLSX.writeFile(wb, `project_${p.id}.xlsx`);
+            showToast('Exported to Excel');
+        }
+    }
+    
     async function sendProjectToDept(projectId, deptId) {
         const p = projectsData.find(p => p.id === projectId);
         if (p) {
@@ -922,26 +1320,6 @@
             if (res.success) showToast(`Project "${p.name}" sent to ${departmentNames[deptId]}`);
             else showToast(`Failed to send project`, true);
             toggleSendDropdown(`projectSendDropdown-${projectId}`);
-        }
-    }
-    
-    function exportSingleProjectExcel(projectId) {
-        const p = projectsData.find(p => p.id === projectId);
-        if (p) {
-            let ws = [['ID', 'Name', 'Client', 'Amount', 'Status', 'Progress']];
-            ws.push([p.id, p.name, p.client_name || '-', p.amount, p.status, p.progress]);
-            let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), 'Project'); XLSX.writeFile(wb, `project_${p.id}.xlsx`);
-            showToast('Exported to Excel');
-        }
-    }
-    
-    function exportSingleProjectPDF(projectId) {
-        const p = projectsData.find(p => p.id === projectId);
-        if (p) {
-            let element = document.createElement('div');
-            element.innerHTML = `<div style="padding:20px"><h1 style="color:#0f74ba;">${escapeHtml(p.name)}</h1><p><strong>Client:</strong> ${p.client_name}</p><p><strong>Amount:</strong> ${formatMoney(p.amount)}</p><p><strong>Status:</strong> ${p.status}</p><p><strong>Progress:</strong> ${p.progress}%</p><p><strong>Location:</strong> ${p.location}</p><p><strong>Description:</strong> ${p.description || 'N/A'}</p><p>Generated: ${new Date().toLocaleString()}</p></div>`;
-            html2pdf().set({ margin: 0.5, filename: `project_${p.id}.pdf` }).from(element).save();
-            showToast('Exported to PDF');
         }
     }
     
@@ -967,10 +1345,10 @@
         if(p) { 
             document.getElementById('projId').value = p.id; 
             document.getElementById('projName').value = p.name; 
-            document.getElementById('projClient').value = p.client_name; 
+            document.getElementById('projClient').value = p.client_name || ''; 
             document.getElementById('projAmount').value = p.amount; 
-            document.getElementById('projLocation').value = p.location; 
-            document.getElementById('projDesc').value = p.description; 
+            document.getElementById('projLocation').value = p.location || ''; 
+            document.getElementById('projDesc').value = p.description || ''; 
             document.getElementById('projStatus').value = p.status; 
             document.getElementById('projProgress').value = p.progress; 
             document.getElementById('projDept').value = p.department_id; 
@@ -1054,76 +1432,60 @@
         } 
     }
     
-    // ==================== DAILY WORK - IMPROVED TABLE ====================
+    // ==================== DAILY WORK ====================
     async function loadDailyWork(highlightId = null) {
         const res = await apiCall('get_dailywork.php');
         if (res.success && res.data) dailyworkData = res.data.sort((a,b) => b.id - a.id);
         else dailyworkData = [];
         
         if (dailyworkData.length === 0) { 
-            document.getElementById('dailyworkPage').innerHTML = '<div class="text-center py-12 text-gray-400">No daily work records</div>'; 
+            document.getElementById('dailyworkPage').innerHTML = `
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold"><i class="fas fa-calendar-day text-purple-600 mr-2"></i>Daily Work</h2>
+                    <button onclick="openModal('dailyworkModal')" class="btn-primary"><i class="fas fa-plus mr-1"></i> Add Daily Work</button>
+                </div>
+                <div class="bg-white rounded-xl p-8 text-center text-gray-400">No daily work records found</div>
+            `; 
             return; 
         }
         
-        let html = `<div class="flex flex-wrap justify-between items-center gap-3 mb-4">
-            <h2 class="text-xl font-bold"><i class="fas fa-calendar-day text-purple-600 mr-2"></i>Daily Work (${dailyworkData.length})</h2>
-            <div class="flex gap-2">
-                <button onclick="openModal('dailyworkModal')" class="btn-primary"><i class="fas fa-plus mr-1"></i> Add</button>
-                <button onclick="exportDailyWorkToExcel()" class="btn-success"><i class="fas fa-file-excel mr-1"></i> Excel</button>
-                <button onclick="exportDailyWorkToPDF()" class="btn-danger"><i class="fas fa-file-pdf mr-1"></i> PDF</button>
+        let html = `
+            <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
+                <h2 class="text-xl font-bold"><i class="fas fa-calendar-day text-purple-600 mr-2"></i>Daily Work (${dailyworkData.length})</h2>
+                <div class="flex gap-2">
+                    <button onclick="openModal('dailyworkModal')" class="btn-primary"><i class="fas fa-plus mr-1"></i> Add</button>
+                    <button onclick="exportDailyWorkToExcel()" class="btn-success"><i class="fas fa-file-excel mr-1"></i> Excel</button>
+                    <button onclick="exportDailyWorkToPDF()" class="btn-danger"><i class="fas fa-file-pdf mr-1"></i> PDF</button>
+                </div>
             </div>
-        </div>
-        <div class="dailywork-table-container bg-white rounded-xl shadow-sm border border-gray-100">
-            <table class="dailywork-table">
-                <thead>
-                    <tr>
-                        <th class="text-left">Date</th>
-                        <th class="text-left">Department</th>
-                        <th class="text-left">Project</th>
-                        <th class="text-right">Income</th>
-                        <th class="text-right">Expenses</th>
-                        <th class="text-right">Profit</th>
-                        <th class="text-center">Status</th>
-                        <th class="text-center">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>`;
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="dailywork-table">
+                        <thead><tr><th>Date</th><th>Dept</th><th>Project</th><th class="text-right">Income</th><th class="text-right">Expenses</th><th class="text-right">Profit</th><th class="text-center">Status</th><th class="text-center">Actions</th></tr></thead>
+                        <tbody>`;
         
         dailyworkData.forEach(w => { 
             const isHighlighted = highlightId && w.id === highlightId;
             let profit = (parseFloat(w.income) || 0) - (parseFloat(w.expenses) || 0);
-            let statusClass = w.status === 'paid' ? 'status-paid' : (w.status === 'partial' ? 'status-partial' : 'status-pending');
+            let statusClass = w.status === 'paid' ? 'bg-green-100 text-green-700' : (w.status === 'partial' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-700');
             let statusText = w.status === 'paid' ? 'Paid' : (w.status === 'partial' ? 'Partial' : 'Pending');
             let deptId = w.department_id || 1;
             
-            html += `<tr class="${isHighlighted ? 'search-highlight' : ''}">
-                <td class="text-sm font-medium">${w.date}</td>
-                <td><span class="dept-badge ${getDeptBadgeClass(deptId)}">${departmentNames[deptId] || deptId}</span></td>
-                <td class="text-sm font-semibold text-gray-800">${escapeHtml(w.project_name)}</td>
-                <td class="text-right text-sm text-green-600 font-semibold">${formatMoney(w.income)}</td>
-                <td class="text-right text-sm text-red-600">${formatMoney(w.expenses)}</td>
-                <td class="text-right text-sm ${profit >= 0 ? 'text-green-600' : 'text-red-600'} font-semibold">${formatMoney(profit)}</td>
+            html += `<tr class="${isHighlighted ? 'bg-yellow-50' : 'hover:bg-gray-50'}">
+                <td>${w.date}</td>
+                <td><span class="dept-badge dept-badge-${deptId}">${departmentNames[deptId] || deptId}</span></td>
+                <td class="font-medium">${escapeHtml(w.project_name)}</td>
+                <td class="text-right text-green-600 font-semibold">${formatMoney(w.income)}</td>
+                <td class="text-right text-red-600">${formatMoney(w.expenses)}</td>
+                <td class="text-right ${profit >= 0 ? 'text-green-600' : 'text-red-600'} font-semibold">${formatMoney(profit)}</td>
                 <td class="text-center"><span class="status-badge ${statusClass}">${statusText}</span></td>
-                <td class="text-center">
-                    <div class="flex gap-1 justify-center">
-                        <button onclick="viewDailyWork(${w.id})" class="action-btn view px-2 py-1 rounded text-xs" title="View"><i class="fas fa-eye"></i></button>
-                        <button onclick="editDailyWork(${w.id})" class="action-btn edit px-2 py-1 rounded text-xs" title="Edit"><i class="fas fa-edit"></i></button>
-                        <button onclick="deleteDailyWork(${w.id})" class="action-btn delete px-2 py-1 rounded text-xs" title="Delete"><i class="fas fa-trash"></i></button>
-                    </div>
-                </td>
+                <td class="text-center"><div class="flex gap-1 justify-center"><button onclick="viewDailyWork(${w.id})" class="action-btn view p-1"><i class="fas fa-eye"></i></button><button onclick="editDailyWork(${w.id})" class="action-btn edit p-1"><i class="fas fa-edit"></i></button><button onclick="deleteDailyWork(${w.id})" class="action-btn delete p-1"><i class="fas fa-trash"></i></button></div></td>
             </tr>`; 
         });
         
-        html += `</tbody>
-            </table>
-        </div>`;
-        
+        html += `</tbody></table></div></div>`;
         document.getElementById('dailyworkPage').innerHTML = html;
-        
-        if (highlightId) {
-            const element = document.getElementById(`daily-row-${highlightId}`);
-            if (element) element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
+        if (highlightId) document.getElementById(`daily-row-${highlightId}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
     
     function exportDailyWorkToExcel() {
@@ -1135,7 +1497,7 @@
     
     function exportDailyWorkToPDF() {
         let element = document.createElement('div');
-        element.innerHTML = `<div style="padding:20px"><h1>Daily Work Report</h1><p>${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><tr><th>Date</th><th>Project</th><th>Income</th><th>Expenses</th><th>Profit</th></tr>${dailyworkData.map(w => `<tr><td class="px-2 py-1">${w.date}</td><td class="px-2 py-1">${w.project_name}</td><td class="px-2 py-1">${formatMoney(w.income)}</td><td class="px-2 py-1">${formatMoney(w.expenses)}</td><td class="px-2 py-1">${formatMoney(w.income - w.expenses)}</td></tr>`).join('')}</table></div>`;
+        element.innerHTML = `<div style="padding:20px"><h1>Daily Work Report</h1><p>${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><tr><th>Date</th><th>Project</th><th>Income</th><th>Expenses</th><th>Profit</th><tr>${dailyworkData.map(w => `<tr><td class="px-2 py-1">${w.date}</td><td class="px-2 py-1">${w.project_name}</td><td class="px-2 py-1">${formatMoney(w.income)}</td><td class="px-2 py-1">${formatMoney(w.expenses)}</td><td class="px-2 py-1">${formatMoney(w.income - w.expenses)}</td></tr>`).join('')}</table></div>`;
         html2pdf().set({ margin: 0.5, filename: `dailywork_report.pdf` }).from(element).save();
         showToast('Exported to PDF');
     }
@@ -1194,49 +1556,30 @@
     // ==================== CASHFLOW ====================
     async function loadCashflow(highlightId = null) {
         const res = await apiCall('get_transactions.php');
-        
-        if (res.success && res.data && res.data.length > 0) {
-            transactionsData = res.data.sort((a,b) => b.id - a.id);
-        } else {
-            transactionsData = [];
-        }
+        if (res.success && res.data) transactionsData = res.data.sort((a,b) => b.id - a.id);
+        else transactionsData = [];
         
         let totalIncome = 0, totalExpense = 0, totalPending = 0;
         for (let t of transactionsData) {
-            let amount = parseFloat(t.amount) || 0;
-            let paid = parseFloat(t.paid_amount) || 0;
-            
-            if (t.type === 'income') { 
-                totalIncome += paid; 
-                if (t.status !== 'paid') totalPending += (amount - paid); 
-            } else { 
-                totalExpense += paid; 
-            }
+            let amount = parseFloat(t.amount) || 0, paid = parseFloat(t.paid_amount) || 0;
+            if (t.type === 'income') { totalIncome += paid; if (t.status !== 'paid') totalPending += (amount - paid); } 
+            else { totalExpense += paid; }
         }
         let netProfit = totalIncome - totalExpense;
         
         if (transactionsData.length === 0) { 
-            document.getElementById('cashflowPage').innerHTML = `<div class="flex justify-between flex-wrap gap-3 mb-4">
-                <h2 class="text-xl font-bold"><i class="fas fa-exchange-alt text-blue-600 mr-2"></i>Cashflow (0)</h2>
-                <button onclick="openModal('transModal')" class="btn-primary"><i class="fas fa-plus mr-1"></i> Add Transaction</button>
-            </div>
-            <div class="bg-white rounded-xl p-8 text-center text-gray-400">No transactions found. Click "Add Transaction" to get started.</div>`;
+            document.getElementById('cashflowPage').innerHTML = `<div class="flex justify-between flex-wrap gap-3 mb-4"><h2 class="text-xl font-bold"><i class="fas fa-exchange-alt text-blue-600 mr-2"></i>Cashflow (0)</h2><button onclick="openModal('transModal')" class="btn-primary"><i class="fas fa-plus mr-1"></i> Add Transaction</button></div><div class="bg-white rounded-xl p-8 text-center text-gray-400">No transactions found.</div>`;
             return; 
         }
         
-        let html = `<div class="flex justify-between flex-wrap gap-3 mb-4">
-            <h2 class="text-xl font-bold"><i class="fas fa-exchange-alt text-blue-600 mr-2"></i>Cashflow (${transactionsData.length})</h2>
-            <div class="flex gap-2"><button onclick="openModal('transModal')" class="btn-primary"><i class="fas fa-plus mr-1"></i> Add Transaction</button><button onclick="exportCashflowToExcel()" class="btn-success"><i class="fas fa-file-excel mr-1"></i> Excel</button><button onclick="exportCashflowToPDF()" class="btn-danger"><i class="fas fa-file-pdf mr-1"></i> PDF</button></div>
-        </div>
+        let html = `<div class="flex justify-between flex-wrap gap-3 mb-4"><h2 class="text-xl font-bold"><i class="fas fa-exchange-alt text-blue-600 mr-2"></i>Cashflow (${transactionsData.length})</h2><div class="flex gap-2"><button onclick="openModal('transModal')" class="btn-primary"><i class="fas fa-plus mr-1"></i> Add</button><button onclick="exportCashflowToExcel()" class="btn-success"><i class="fas fa-file-excel mr-1"></i> Excel</button><button onclick="exportCashflowToPDF()" class="btn-danger"><i class="fas fa-file-pdf mr-1"></i> PDF</button></div></div>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-            <div class="bg-gradient-to-r from-green-50 to-green-100 rounded-xl p-3 text-center"><p class="text-xs text-gray-500 uppercase">Total Income</p><p class="text-xl font-bold text-green-600">${formatMoney(totalIncome)}</p></div>
-            <div class="bg-gradient-to-r from-red-50 to-red-100 rounded-xl p-3 text-center"><p class="text-xs text-gray-500 uppercase">Total Expenses</p><p class="text-xl font-bold text-red-600">${formatMoney(totalExpense)}</p></div>
-            <div class="bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl p-3 text-center"><p class="text-xs text-gray-500 uppercase">Net Profit</p><p class="text-xl font-bold ${netProfit>=0?'text-blue-600':'text-red-600'}">${formatMoney(netProfit)}</p></div>
-            <div class="bg-gradient-to-r from-orange-50 to-orange-100 rounded-xl p-3 text-center"><p class="text-xs text-gray-500 uppercase">Pending</p><p class="text-xl font-bold text-orange-600">${formatMoney(totalPending)}</p></div>
+            <div class="bg-green-50 rounded-xl p-3 text-center"><p class="text-xs text-gray-500 uppercase">Total Income</p><p class="text-xl font-bold text-green-600">${formatMoney(totalIncome)}</p></div>
+            <div class="bg-red-50 rounded-xl p-3 text-center"><p class="text-xs text-gray-500 uppercase">Expenses</p><p class="text-xl font-bold text-red-600">${formatMoney(totalExpense)}</p></div>
+            <div class="bg-blue-50 rounded-xl p-3 text-center"><p class="text-xs text-gray-500 uppercase">Net Profit</p><p class="text-xl font-bold ${netProfit>=0?'text-blue-600':'text-red-600'}">${formatMoney(netProfit)}</p></div>
+            <div class="bg-orange-50 rounded-xl p-3 text-center"><p class="text-xs text-gray-500 uppercase">Pending</p><p class="text-xl font-bold text-orange-600">${formatMoney(totalPending)}</p></div>
         </div>
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="min-w-full"><thead><tr class="bg-gray-50 border-b"><th class="p-3 text-left">Date</th><th class="p-3 text-left">Type</th><th class="p-3 text-left">Source</th><th class="p-3 text-right">Amount</th><th class="p-3 text-left">Status</th><th class="p-3 text-center">Actions</th></tr></thead><tbody>`;
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"><div class="overflow-x-auto"><table class="min-w-full"><thead><tr class="bg-gray-50 border-b"><th class="p-3 text-left">Date</th><th class="p-3 text-left">Type</th><th class="p-3 text-left">Source</th><th class="p-3 text-right">Amount</th><th class="p-3 text-left">Status</th><th class="p-3 text-center">Actions</th></tr></thead><tbody>`;
         
         for (let t of transactionsData) { 
             const isHighlighted = highlightId && t.id === highlightId;
@@ -1272,15 +1615,13 @@
         const t = transactionsData.find(t=>t.id===id); 
         if(t) { 
             let pending = t.type === 'income' && t.status !== 'paid' ? parseFloat(t.amount) - (t.paid_amount || 0) : 0;
-            document.getElementById('viewTransContent').innerHTML = `<div class="space-y-2"><p><strong>Date:</strong> ${t.transaction_date}</p><p><strong>Type:</strong> <span class="status-badge ${t.type==='income'?'status-paid':'status-partial'}">${t.type}</span></p><p><strong>Source:</strong> ${escapeHtml(t.source)}</p><p><strong>Amount:</strong> ${formatMoney(t.amount)}</p><p><strong>Paid:</strong> ${formatMoney(t.paid_amount || 0)}</p>${pending > 0 ? `<p><strong>Pending:</strong> ${formatMoney(pending)}</p>` : ''}<p><strong>Status:</strong> <span class="status-badge ${t.status==='paid'?'status-paid':t.status==='partial'?'status-partial':'status-pending'}">${t.status}</span></p><p><strong>Description:</strong> ${escapeHtml(t.description || '-')}</p></div>`; 
+            document.getElementById('viewTransContent').innerHTML = `<div class="space-y-2"><p><strong>Date:</strong> ${t.transaction_date}</p><p><strong>Type:</strong> ${t.type}</p><p><strong>Source:</strong> ${escapeHtml(t.source)}</p><p><strong>Amount:</strong> ${formatMoney(t.amount)}</p><p><strong>Paid:</strong> ${formatMoney(t.paid_amount || 0)}</p>${pending > 0 ? `<p><strong>Pending:</strong> ${formatMoney(pending)}</p>` : ''}<p><strong>Status:</strong> ${t.status}</p><p><strong>Description:</strong> ${escapeHtml(t.description || '-')}</p></div>`; 
             openModal('viewTransModal'); 
         } 
     }
     
     function editTransaction(id) { 
-        const transactionId = parseInt(id);
-        const t = transactionsData.find(t => t.id === transactionId); 
-        
+        const t = transactionsData.find(t => t.id === parseInt(id)); 
         if(t) { 
             document.getElementById('transId').value = t.id; 
             document.getElementById('transType').value = t.type; 
@@ -1290,7 +1631,6 @@
             document.getElementById('transDate').value = t.transaction_date; 
             document.getElementById('transStatus').value = t.status; 
             document.getElementById('transDesc').value = t.description || ''; 
-            
             if (t.status === 'partial') {
                 document.getElementById('transPaidAmount').classList.remove('hidden');
                 document.getElementById('transPaidAmount').value = t.paid_amount || 0;
@@ -1298,56 +1638,20 @@
                 document.getElementById('transPaidAmount').classList.add('hidden');
             }
             openModal('transModal'); 
-        } else {
-            showToast('Transaction not found', true);
-        }
+        } else { showToast('Transaction not found', true); }
     }
     
     async function saveTransaction() { 
         let id = document.getElementById('transId').value; 
         let isUpdate = id && id !== '';
-        
-        let data = { 
-            type: document.getElementById('transType').value, 
-            source: document.getElementById('transSource').value.trim(), 
-            amount: parseAmount(document.getElementById('transAmount').value), 
-            transaction_date: document.getElementById('transDate').value || new Date().toISOString().split('T')[0], 
-            status: document.getElementById('transStatus').value, 
-            description: document.getElementById('transDesc').value, 
-            department_id: parseInt(document.getElementById('transDept').value) || 1 
-        }; 
-        
-        if (data.status === 'partial') {
-            data.paid_amount = parseAmount(document.getElementById('transPaidAmount').value);
-        }
-        
-        if(!data.source || data.amount <= 0) { 
-            showToast('Source and valid amount required', true); 
-            return; 
-        }
-        
-        let url = 'add_transaction.php';
-        if (isUpdate) {
-            data.id = parseInt(id);
-            url = 'update_transaction.php';
-        }
-        
+        let data = { type: document.getElementById('transType').value, source: document.getElementById('transSource').value.trim(), amount: parseAmount(document.getElementById('transAmount').value), transaction_date: document.getElementById('transDate').value || new Date().toISOString().split('T')[0], status: document.getElementById('transStatus').value, description: document.getElementById('transDesc').value, department_id: parseInt(document.getElementById('transDept').value) || 1 }; 
+        if (data.status === 'partial') data.paid_amount = parseAmount(document.getElementById('transPaidAmount').value);
+        if(!data.source || data.amount <= 0) { showToast('Source and valid amount required', true); return; }
+        let url = isUpdate ? 'update_transaction.php' : 'add_transaction.php';
+        if (isUpdate) data.id = parseInt(id);
         let res = await apiCall(url, 'POST', data);
-        
-        if(res && res.success) { 
-            showToast(isUpdate ? 'Transaction updated' : 'Transaction added'); 
-            closeModal('transModal'); 
-            document.getElementById('transId').value = '';
-            document.getElementById('transSource').value = '';
-            document.getElementById('transAmount').value = '';
-            document.getElementById('transDesc').value = '';
-            document.getElementById('transPaidAmount').value = '';
-            await loadCashflow(); 
-            await loadDashboard(); 
-        } else { 
-            const errorMsg = (res && res.message) || 'Failed to save transaction';
-            showToast(errorMsg, true); 
-        }
+        if(res && res.success) { showToast(isUpdate ? 'Transaction updated' : 'Transaction added'); closeModal('transModal'); document.getElementById('transId').value = ''; document.getElementById('transSource').value = ''; document.getElementById('transAmount').value = ''; document.getElementById('transDesc').value = ''; document.getElementById('transPaidAmount').value = ''; await loadCashflow(); await loadDashboard(); } 
+        else { showToast((res && res.message) || 'Failed to save transaction', true); }
     }
     
     async function deleteTransaction(id) { 
@@ -1361,182 +1665,130 @@
     // ==================== MESSAGES ====================
     async function loadMessages(highlightId = null) {
         const res = await apiCall('get_messages.php');
-        
         if (res.success && res.data) {
             messagesData = res.data.sort((a,b) => {
                 if (a.unread_count > 0 && b.unread_count === 0) return -1;
                 if (a.unread_count === 0 && b.unread_count > 0) return 1;
                 return new Date(b.last_message_time) - new Date(a.last_message_time);
             });
-        } else {
-            messagesData = [];
-        }
+        } else { messagesData = []; }
         updateMessageBadge();
         
-        let html = `<div class="flex flex-wrap justify-between items-center gap-3 mb-4">
-            <h2 class="text-xl font-bold text-gray-800 dark:text-white"><i class="fas fa-envelope text-blue-600 mr-2"></i>Messages (${messagesData.length})</h2>
-            <button onclick="openModal('msgModal')" class="btn-primary"><i class="fas fa-paper-plane mr-1"></i> New Message</button>
-        </div>
-        <div class="messages-grid" id="messagesGridContainer"></div>`;
-        
+        let html = `<div class="flex flex-wrap justify-between items-center gap-3 mb-4"><h2 class="text-xl font-bold text-gray-800 dark:text-white"><i class="fas fa-envelope text-blue-600 mr-2"></i>Messages (${messagesData.length})</h2><button onclick="openModal('msgModal')" class="btn-primary"><i class="fas fa-paper-plane mr-1"></i> New Message</button></div><div class="messages-grid" id="messagesGridContainer"></div>`;
         document.getElementById('messagesPage').innerHTML = html;
-        
-        if (messagesData.length === 0) { 
-            document.getElementById('messagesGridContainer').innerHTML = '<div class="col-span-3 text-center py-12 text-gray-400 bg-white dark:bg-gray-800 rounded-xl">No messages found. Start a conversation!</div>'; 
-            return; 
-        }
+        if (messagesData.length === 0) { document.getElementById('messagesGridContainer').innerHTML = '<div class="col-span-3 text-center py-12 text-gray-400 bg-white dark:bg-gray-800 rounded-xl">No messages found. Start a conversation!</div>'; return; }
         
         let msgsHtml = '';
         for (let conv of messagesData) {
             const isUnread = conv.unread_count > 0;
-            const preview = conv.last_message ? (conv.last_message.substring(0, 80) + (conv.last_message.length > 80 ? '...' : '')) : 'No messages';
+            const preview = conv.last_message ? (conv.last_message.substring(0, 70) + (conv.last_message.length > 70 ? '...' : '')) : 'No messages';
             const isHighlighted = highlightId && conv.conversation_id === highlightId;
             const deptId = conv.department_id;
             const icon = departmentIcons[deptId] || 'fa-building';
             const color = departmentColors[deptId] || '#0f74ba';
-            
             msgsHtml += `<div class="message-item ${isUnread ? 'message-unread' : ''} ${isHighlighted ? 'search-highlight' : ''}" onclick="openChat(${conv.conversation_id}, ${deptId}, '${escapeHtml(conv.department_name)}')">
-                <div class="delete-conv-btn" onclick="event.stopPropagation(); deleteConversation(${conv.conversation_id})" title="Delete conversation"><i class="fas fa-trash-alt"></i></div>
+                <div class="delete-conv-btn" onclick="event.stopPropagation(); deleteConversation(${conv.conversation_id})" title="Delete conversation"><i class="fas fa-trash-alt text-xs"></i></div>
                 <div class="message-header">
-                    <div class="flex items-center gap-3">
-                        <div class="dept-icon" style="background: ${color}20; color: ${color}; border: 1px solid ${color}40">
-                            <i class="fas ${icon}"></i>
-                        </div>
-                        <div>
-                            <span class="font-semibold">${escapeHtml(conv.department_name)}</span>
-                            ${isUnread ? `<span class="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full ml-2">${conv.unread_count}</span>` : ''}
-                        </div>
-                    </div>
-                    <span class="text-[10px] text-gray-400">${conv.last_message_time ? new Date(conv.last_message_time).toLocaleString() : ''}</span>
+                    <div class="flex items-center gap-3"><div class="dept-icon" style="background: ${color}20; color: ${color}; border: 1px solid ${color}40"><i class="fas ${icon} text-xs"></i></div><div><span class="font-semibold text-sm">${escapeHtml(conv.department_name)}</span>${isUnread ? `<span class="bg-red-500 text-white text-[9px] px-1.5 py-0.5 rounded-full ml-1">${conv.unread_count}</span>` : ''}</div></div>
+                    <span class="text-[9px] text-gray-400">${conv.last_message_time ? new Date(conv.last_message_time).toLocaleString() : ''}</span>
                 </div>
-                <div class="message-preview">${escapeHtml(preview)}</div>
+                <div class="message-preview text-xs">${escapeHtml(preview)}</div>
             </div>`;
         }
         document.getElementById('messagesGridContainer').innerHTML = msgsHtml;
-        if (highlightId) {
-            const msgDiv = Array.from(document.querySelectorAll('.message-item')).find(el => el.textContent.includes(highlightId));
-            if (msgDiv) msgDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
+        if (highlightId) { const msgDiv = Array.from(document.querySelectorAll('.message-item')).find(el => el.textContent.includes(highlightId)); if (msgDiv) msgDiv.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
     }
     
     async function deleteConversation(conversationId) {
-        if (confirm('Are you sure you want to delete this entire conversation? This action cannot be undone.')) {
+        if (confirm('Delete this conversation? Cannot be undone.')) {
             const res = await apiCall('delete_conversation.php', 'POST', { conversation_id: conversationId });
-            if (res && res.success) {
-                showToast('Conversation deleted successfully');
-                await loadMessages();
-                if (currentConversationId === conversationId) {
-                    closeModal('chatModal');
-                    currentConversationId = null;
-                }
-            } else {
-                showToast((res && res.message) || 'Failed to delete conversation', true);
-            }
+            if (res && res.success) { showToast('Conversation deleted'); await loadMessages(); if (currentConversationId === conversationId) { closeModal('chatModal'); currentConversationId = null; } }
+            else { showToast((res && res.message) || 'Failed to delete', true); }
         }
     }
     
     async function deleteMessage(messageId) {
         if (confirm('Delete this message?')) {
             const res = await apiCall('delete_message.php', 'POST', { message_id: messageId });
-            if (res && res.success) {
-                showToast('Message deleted successfully');
-                if (currentConversationId) {
-                    await openChat(currentConversationId, currentDepartmentId, '');
-                }
-                await loadMessages();
-            } else {
-                showToast((res && res.message) || 'Failed to delete message', true);
-            }
+            if (res && res.success) { showToast('Message deleted'); if (currentConversationId) await openChat(currentConversationId, currentDepartmentId, ''); await loadMessages(); }
+            else { showToast((res && res.message) || 'Failed to delete', true); }
         }
     }
     
     async function sendNewMessage() { 
-        let departmentId = document.getElementById('msgTo').value; 
-        let msg = document.getElementById('msgContent').value; 
-        if (!departmentId || !msg) { showToast('Select department and enter message', true); return; } 
+        const departmentId = document.getElementById('msgTo').value; 
+        const msg = document.getElementById('msgContent').value; 
         
-        let res = await apiCall('send_message.php', 'POST', { 
-            department_id: parseInt(departmentId), 
-            message: msg,
-            subject: 'New Message'
-        }); 
+        if (!departmentId || !departmentId.length) { 
+            showToast('Please select a department', true); 
+            return; 
+        }
         
-        if (res && res.success) { 
-            showToast('Message sent successfully'); 
-            closeModal('msgModal'); 
-            document.getElementById('msgContent').value = '';
-            await loadMessages(); 
-            if (res.data && res.data.conversation_id) {
-                setTimeout(() => openChat(res.data.conversation_id, departmentId, ''), 500);
+        if (!msg || !msg.trim()) { 
+            showToast('Please enter a message', true); 
+            return; 
+        }
+        
+        const sendBtn = document.querySelector('#msgModal .btn-primary');
+        const originalText = sendBtn.innerHTML;
+        sendBtn.innerHTML = '<span class="loading-spinner"></span> Sending...';
+        sendBtn.disabled = true;
+        
+        try {
+            const res = await apiCall('send_message.php', 'POST', { 
+                department_id: parseInt(departmentId), 
+                message: msg.trim(),
+                subject: 'New Message'
+            }); 
+            
+            if (res && res.success) { 
+                showToast('✅ Message sent successfully!'); 
+                closeModal('msgModal'); 
+                document.getElementById('msgContent').value = '';
+                await loadMessages(); 
+                if (res.data && res.data.conversation_id) {
+                    setTimeout(() => {
+                        openChat(res.data.conversation_id, departmentId, '');
+                    }, 500);
+                }
+            } else { 
+                const errorMsg = (res && res.message) || 'Failed to send message';
+                console.error('Send message error:', errorMsg);
+                showToast('❌ ' + errorMsg, true); 
             }
-        } else { 
-            showToast((res && res.message) || 'Failed to send message', true); 
+        } catch (error) {
+            console.error('Error sending message:', error);
+            showToast('❌ Network error. Please try again.', true);
+        } finally {
+            sendBtn.innerHTML = originalText;
+            sendBtn.disabled = false;
         }
     }
     
     async function openChat(conversationId, departmentId, deptName) { 
-        currentConversationId = conversationId;
+        currentConversationId = conversationId; 
         currentDepartmentId = departmentId;
         document.getElementById('chatModalTitle').innerHTML = `<i class="fas fa-comments text-blue-500 mr-2"></i>Chat with ${deptName}`;
-        
         const res = await apiCall(`get_conversation.php?conversation_id=${conversationId}`);
-        
         if (res.success && res.data) {
-            const conversation = res.data;
-            const msgs = conversation.messages || [];
-            
+            const msgs = res.data.messages || [];
             let chatHtml = '';
-            if (msgs.length === 0) { 
-                chatHtml = '<div class="text-center text-gray-400 py-8">No messages yet. Start the conversation!</div>'; 
-            } else {
-                for (let m of msgs) {
-                    const isSent = (m.sender_type === 'admin');
-                    chatHtml += `<div class="chat-message ${isSent ? 'chat-sent' : 'chat-received'}">
-                        <div class="chat-bubble">
-                            <div>${escapeHtml(m.message)}</div>
-                            <span class="chat-time">${new Date(m.created_at).toLocaleString()}</span>
-                        </div>
-                        <div class="delete-msg-btn" onclick="event.stopPropagation(); deleteMessage(${m.id})" title="Delete message"><i class="fas fa-trash-alt"></i></div>
-                    </div>`;
-                }
-            }
+            if (msgs.length === 0) { chatHtml = '<div class="text-center text-gray-400 py-8">No messages yet. Start the conversation!</div>'; }
+            else { for (let m of msgs) { const isSent = (m.sender_type === 'admin'); chatHtml += `<div class="chat-message ${isSent ? 'chat-sent' : 'chat-received'}"><div class="chat-bubble"><div>${escapeHtml(m.message)}</div><span class="chat-time">${new Date(m.created_at).toLocaleString()}</span></div><div class="delete-msg-btn" onclick="event.stopPropagation(); deleteMessage(${m.id})" title="Delete message"><i class="fas fa-trash-alt text-xs"></i></div></div>`; } }
             document.getElementById('chatMessagesArea').innerHTML = chatHtml;
-            const chatArea = document.getElementById('chatMessagesArea');
-            chatArea.scrollTop = chatArea.scrollHeight;
+            document.getElementById('chatMessagesArea').scrollTop = document.getElementById('chatMessagesArea').scrollHeight;
             openModal('chatModal');
-            
             await loadMessages();
-        } else {
-            showToast('Error loading conversation', true);
-            openModal('chatModal');
-        }
+        } else { showToast('Error loading conversation', true); openModal('chatModal'); }
     }
     
     async function sendChatMessage() { 
         let msg = document.getElementById('replyMsg').value;
-        if (!msg.trim()) {
-            showToast('Enter a message', true);
-            return;
-        }
-        
-        if (!currentConversationId) {
-            showToast('No active conversation', true);
-            return;
-        }
-        
-        let res = await apiCall('send_message.php', 'POST', { 
-            conversation_id: currentConversationId,
-            message: msg 
-        });
-        
-        if (res && res.success) {
-            document.getElementById('replyMsg').value = '';
-            await openChat(currentConversationId, currentDepartmentId, '');
-            await loadMessages();
-            showToast('Message sent');
-        } else {
-            showToast((res && res.message) || 'Failed to send message', true);
-        }
+        if (!msg.trim()) { showToast('Enter a message', true); return; }
+        if (!currentConversationId) { showToast('No active conversation', true); return; }
+        let res = await apiCall('send_message.php', 'POST', { conversation_id: currentConversationId, message: msg });
+        if (res && res.success) { document.getElementById('replyMsg').value = ''; await openChat(currentConversationId, currentDepartmentId, ''); await loadMessages(); showToast('Message sent'); }
+        else { showToast((res && res.message) || 'Failed to send', true); }
     }
     
     // ==================== REPORTS ====================
@@ -1557,9 +1809,9 @@
             const isHighlighted = highlightId && r.id === highlightId;
             reportsHtml += `<div class="report-card relative ${isHighlighted ? 'search-highlight' : ''}" id="report-card-${r.id}" onclick="viewReportDetails(${r.id})">
                 ${isUnviewed ? '<div class="new-badge" onclick="event.stopPropagation(); markReportAsViewed(' + r.id + ')">!</div>' : ''}
-                <div class="flex justify-between items-start"><h4 class="font-semibold">${escapeHtml(r.title)}</h4><span class="text-xs ${r.status==='sent'?'text-green-600':'text-yellow-600'}">${r.status}</span></div>
-                <p class="text-xs text-gray-500 mt-1">Period: ${r.period} · ${formatDate(r.created_at)}</p>
-                <div class="text-sm text-gray-600 mt-2 line-clamp-2">${escapeHtml(r.content.substring(0,100))}${r.content.length>100?'...':''}</div>
+                <div class="flex justify-between items-start"><h4 class="font-semibold text-sm">${escapeHtml(r.title)}</h4><span class="text-xs ${r.status==='sent'?'text-green-600':'text-yellow-600'}">${r.status}</span></div>
+                <p class="text-xs text-gray-500 mt-1">${r.period} · ${formatDate(r.created_at)}</p>
+                <div class="text-xs text-gray-600 mt-1 line-clamp-2">${escapeHtml(r.content.substring(0,80))}${r.content.length>80?'...':''}</div>
                 <div class="flex gap-2 mt-3"><button onclick="event.stopPropagation(); viewReportDetails(${r.id})" class="action-btn view"><i class="fas fa-eye mr-1"></i>View</button><button onclick="event.stopPropagation(); editReport(${r.id})" class="action-btn edit"><i class="fas fa-edit mr-1"></i>Edit</button><button onclick="event.stopPropagation(); deleteReport(${r.id})" class="action-btn delete"><i class="fas fa-trash mr-1"></i>Delete</button></div>
             </div>`;
         }
@@ -1587,9 +1839,7 @@
             document.getElementById('viewReportContent').innerHTML = `<p><strong>Department:</strong> ${departmentNames[r.department_id] || 'Admin'}</p><p><strong>Period:</strong> ${r.period}</p><p><strong>Created:</strong> ${formatDate(r.created_at)}</p><div class="bg-white dark:bg-gray-800 p-4 rounded-lg mt-3 whitespace-pre-wrap border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200">${escapeHtml(r.content)}</div>`;
             
             let deptOptions = '';
-            departmentsList.forEach(d => { 
-                deptOptions += `<a onclick="sendReportToDept(${r.id}, ${d.id})">${escapeHtml(d.name)}</a>`; 
-            });
+            departmentsList.forEach(d => { deptOptions += `<a onclick="sendReportToDept(${r.id}, ${d.id})">${escapeHtml(d.name)}</a>`; });
             
             document.getElementById('viewReportButtons').innerHTML = `
                 <button onclick="exportSingleReportExcel(${r.id})" class="btn-success text-white px-3 py-1.5 rounded text-sm"><i class="fas fa-file-excel"></i> Excel</button>
@@ -1634,13 +1884,7 @@
     
     function editReport(id) { 
         const r = reportsData.find(r=>r.id===id); 
-        if(r) { 
-            document.getElementById('reportId').value = r.id; 
-            document.getElementById('reportTitle').value = r.title; 
-            document.getElementById('reportPeriod').value = r.period; 
-            document.getElementById('reportContent').value = r.content; 
-            openModal('reportModal'); 
-        } 
+        if(r) { document.getElementById('reportId').value = r.id; document.getElementById('reportTitle').value = r.title; document.getElementById('reportPeriod').value = r.period; document.getElementById('reportContent').value = r.content; openModal('reportModal'); } 
     }
     
     async function saveReport() { 
@@ -1663,17 +1907,13 @@
     // ==================== SETTINGS ====================
     function loadSettings() {
         const darkMode = document.body.classList.contains('dark-mode');
-        
         document.getElementById('settingsPage').innerHTML = `
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
                     <h3 class="font-semibold mb-4 flex items-center"><i class="fas fa-palette text-purple-500 mr-2"></i>Appearance</h3>
                     <div class="space-y-4">
                         <div class="flex justify-between items-center"><span><i class="fas fa-moon mr-2 text-blue-500"></i> Dark Mode</span><label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" id="darkModeToggle" class="sr-only peer" ${darkMode ? 'checked' : ''}><div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div></label></div>
-                        <div>
-                            <span class="text-sm font-medium"><i class="fas fa-palette mr-2 text-green-500"></i> Sidebar Color</span>
-                            <div class="flex flex-wrap gap-2 mt-2" id="colorOptionsContainer"></div>
-                        </div>
+                        <div><span class="text-sm font-medium"><i class="fas fa-palette mr-2 text-green-500"></i> Sidebar Color</span><div class="flex flex-wrap gap-2 mt-2" id="colorOptionsContainer"></div></div>
                     </div>
                 </div>
                 <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
@@ -1686,15 +1926,10 @@
                 </div>
                 <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
                     <h3 class="font-semibold mb-4 flex items-center"><i class="fas fa-info-circle text-indigo-500 mr-2"></i>System Information</h3>
-                    <div class="space-y-2 text-sm">
-                        <div class="flex justify-between"><span>Total Employees:</span><span class="font-semibold">${employeesData.length}</span></div>
-                        <div class="flex justify-between"><span>Total Projects:</span><span class="font-semibold">${projectsData.length}</span></div>
-                        <div class="flex justify-between"><span>System Version:</span><span class="font-semibold">2.0.0</span></div>
-                    </div>
+                    <div class="space-y-2 text-sm"><div class="flex justify-between"><span>Total Employees:</span><span class="font-semibold">${employeesData.length}</span></div><div class="flex justify-between"><span>Total Projects:</span><span class="font-semibold">${projectsData.length}</span></div><div class="flex justify-between"><span>System Version:</span><span class="font-semibold">2.0.0</span></div></div>
                 </div>
             </div>
         `;
-        
         const container = document.getElementById('colorOptionsContainer');
         if (container) {
             container.innerHTML = '';
@@ -1703,16 +1938,7 @@
                 container.innerHTML += `<div class="color-option ${isSelected ? 'selected' : ''}" style="background: ${c}" onclick="changeSidebarColor('${c}', this)"></div>`;
             });
         }
-        
-        document.getElementById('darkModeToggle')?.addEventListener('change', e => { 
-            document.body.classList.toggle('dark-mode', e.target.checked); 
-            localStorage.setItem('dark_mode', e.target.checked); 
-            const icon = document.getElementById('darkIcon'); 
-            if (icon) { 
-                if (e.target.checked) { icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); } 
-                else { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); } 
-            } 
-        });
+        document.getElementById('darkModeToggle')?.addEventListener('change', e => { document.body.classList.toggle('dark-mode', e.target.checked); localStorage.setItem('dark_mode', e.target.checked); const icon = document.getElementById('darkIcon'); if (icon) { if (e.target.checked) { icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); } else { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); } } });
     }
     
     function changeSidebarColor(color, el) {
@@ -1724,9 +1950,7 @@
     }
     
     async function changePassword() { 
-        let oldPwd = document.getElementById('oldPwd').value; 
-        let newPwd = document.getElementById('newPwd').value; 
-        let confirmPwd = document.getElementById('confirmPwd').value; 
+        let oldPwd = document.getElementById('oldPwd').value, newPwd = document.getElementById('newPwd').value, confirmPwd = document.getElementById('confirmPwd').value; 
         if (!newPwd) { showToast('Enter new password', true); return; } 
         if (newPwd.length < 4) { showToast('Password must be at least 4 characters', true); return; } 
         if (newPwd !== confirmPwd) { showToast('Passwords do not match', true); return; } 
@@ -1738,18 +1962,11 @@
     function createBackup() { 
         const data = { employees: employeesData, projects: projectsData, dailywork: dailyworkData, transactions: transactionsData, reports: reportsData, timestamp: new Date().toISOString() }; 
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }); 
-        const a = document.createElement('a'); 
-        a.href = URL.createObjectURL(blob); 
-        a.download = `geotraverse_backup_${new Date().toISOString().slice(0,19)}.json`; 
-        a.click(); 
-        showToast('Backup created'); 
-        closeModal('backupModal'); 
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `geotraverse_backup_${new Date().toISOString().slice(0,19)}.json`; a.click(); 
+        showToast('Backup created'); closeModal('backupModal'); 
     }
     
-    function restoreBackup() { 
-        showToast('Restore feature - Upload a valid backup JSON file', false);
-        closeModal('backupModal');
-    }
+    function restoreBackup() { showToast('Restore feature - Upload a valid backup JSON file', false); closeModal('backupModal'); }
     
     // ==================== GLOBAL SEARCH ====================
     function performGlobalSearch() {
@@ -1757,30 +1974,18 @@
         const dropdown = document.getElementById('searchResultsDropdown');
         if (searchTimeout) clearTimeout(searchTimeout);
         if (term === "") { dropdown.classList.remove('active'); return; }
-        
         searchTimeout = setTimeout(() => {
             let html = '';
-            
             const empResults = employeesData.filter(e => e.name.toLowerCase().includes(term));
             if (empResults.length) {
                 html += '<div class="p-2 bg-gray-100 text-xs font-semibold"><i class="fas fa-users mr-1"></i> EMPLOYEES</div>';
-                empResults.slice(0,3).forEach(e => { 
-                    html += `<div class="search-result-item p-3 border-b hover:bg-gray-50 cursor-pointer" onclick="showPageAndHighlight('employees', ${e.id}, 'emp-row-${e.id}')">
-                        <div class="font-medium">${escapeHtml(e.name)}</div><div class="text-xs text-gray-500">${e.email}</div>
-                    </div>`; 
-                });
+                empResults.slice(0,3).forEach(e => { html += `<div class="search-result-item p-3 border-b hover:bg-gray-50 cursor-pointer" onclick="showPageAndHighlight('employees', ${e.id}, 'emp-row-${e.id}')"><div class="font-medium">${escapeHtml(e.name)}</div><div class="text-xs text-gray-500">${e.email}</div></div>`; });
             }
-            
             const projResults = projectsData.filter(p => p.name.toLowerCase().includes(term));
             if (projResults.length) {
                 html += '<div class="p-2 bg-gray-100 text-xs font-semibold"><i class="fas fa-tasks mr-1"></i> PROJECTS</div>';
-                projResults.slice(0,3).forEach(p => { 
-                    html += `<div class="search-result-item p-3 border-b hover:bg-gray-50 cursor-pointer" onclick="showPageAndHighlight('projects', ${p.id}, 'proj-card-${p.id}')">
-                        <div class="font-medium">${escapeHtml(p.name)}</div><div class="text-xs text-gray-500">${formatMoney(p.amount)}</div>
-                    </div>`; 
-                });
+                projResults.slice(0,3).forEach(p => { html += `<div class="search-result-item p-3 border-b hover:bg-gray-50 cursor-pointer" onclick="showPageAndHighlight('projects', ${p.id}, 'proj-card-${p.id}')"><div class="font-medium">${escapeHtml(p.name)}</div><div class="text-xs text-gray-500">${formatMoney(p.amount)}</div></div>`; });
             }
-            
             if (!html) html = '<div class="p-4 text-center text-gray-400 text-sm">No results found</div>';
             dropdown.innerHTML = html;
             dropdown.classList.add('active');
@@ -1793,11 +1998,7 @@
         showPage(page, id);
         setTimeout(() => {
             const element = document.getElementById(elementId);
-            if (element) {
-                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                element.classList.add('search-highlight');
-                setTimeout(() => element.classList.remove('search-highlight'), 2000);
-            }
+            if (element) { element.scrollIntoView({ behavior: 'smooth', block: 'center' }); element.classList.add('search-highlight'); setTimeout(() => element.classList.remove('search-highlight'), 2000); }
         }, 500);
     }
     
@@ -1814,94 +2015,38 @@
     // ==================== INITIALIZATION ====================
     async function init() {
         console.log('Initializing Super Admin Dashboard...');
-        
         await loadDepartmentsForDropdowns();
-        
-        document.querySelectorAll('.nav-item').forEach(item => { 
-            item.addEventListener('click', () => showPage(item.getAttribute('data-page'))); 
-        });
-        
+        document.querySelectorAll('.nav-item').forEach(item => { item.addEventListener('click', () => showPage(item.getAttribute('data-page'))); });
         document.getElementById('homeBtn')?.addEventListener('click', () => showPage('dashboard'));
         document.getElementById('searchInput')?.addEventListener('input', performGlobalSearch);
-        document.getElementById('mobileMenuBtn')?.addEventListener('click', () => { 
-            document.getElementById('mainSidebar').classList.add('mobile-open'); 
-            document.getElementById('mobileMenuOverlay').classList.remove('hidden'); 
-        });
+        document.getElementById('mobileMenuBtn')?.addEventListener('click', () => { document.getElementById('mainSidebar').classList.add('mobile-open'); document.getElementById('mobileMenuOverlay').classList.remove('hidden'); });
         document.getElementById('logoutBtn')?.addEventListener('click', logout);
-        
         const savedColor = localStorage.getItem('sidebar_color');
-        if (savedColor) {
-            document.getElementById('mainSidebar').style.background = `linear-gradient(180deg, ${savedColor} 0%, ${savedColor}cc 100%)`;
-        }
-        
-        if (localStorage.getItem('dark_mode') === 'true') {
-            document.body.classList.add('dark-mode');
-            const icon = document.getElementById('darkIcon');
-            if (icon) { icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); }
-        }
-        
+        if (savedColor) document.getElementById('mainSidebar').style.background = `linear-gradient(180deg, ${savedColor} 0%, ${savedColor}cc 100%)`;
+        if (localStorage.getItem('dark_mode') === 'true') { document.body.classList.add('dark-mode'); const icon = document.getElementById('darkIcon'); if (icon) { icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); } }
         initScrollTop();
         showPage('dashboard');
         updateConnectionStatus();
         setInterval(updateConnectionStatus, 30000);
     }
     
-    // Expose functions globally
-    window.showPage = showPage;
-    window.openModal = openModal;
-    window.closeModal = closeModal;
-    window.togglePassword = togglePassword;
-    window.toggleSendDropdown = toggleSendDropdown;
-    window.viewEmployee = viewEmployee;
-    window.editEmployee = editEmployee;
-    window.saveEmployee = saveEmployee;
-    window.deleteEmployee = deleteEmployee;
-    window.exportEmployeesToExcel = exportEmployeesToExcel;
-    window.exportEmployeesToPDF = exportEmployeesToPDF;
-    window.viewProjectDetails = viewProjectDetails;
-    window.editProject = editProject;
-    window.saveProject = saveProject;
-    window.deleteProject = deleteProject;
-    window.openAddProjectModal = openAddProjectModal;
-    window.exportSingleProjectExcel = exportSingleProjectExcel;
-    window.exportSingleProjectPDF = exportSingleProjectPDF;
-    window.removeProjectImage = removeProjectImage;
-    window.markProjectAsViewed = markProjectAsViewed;
-    window.sendProjectToDept = sendProjectToDept;
-    window.viewDailyWork = viewDailyWork;
-    window.editDailyWork = editDailyWork;
-    window.saveDailyWork = saveDailyWork;
-    window.deleteDailyWork = deleteDailyWork;
-    window.exportDailyWorkToExcel = exportDailyWorkToExcel;
-    window.exportDailyWorkToPDF = exportDailyWorkToPDF;
-    window.viewTransaction = viewTransaction;
-    window.editTransaction = editTransaction;
-    window.saveTransaction = saveTransaction;
-    window.deleteTransaction = deleteTransaction;
-    window.exportCashflowToExcel = exportCashflowToExcel;
-    window.exportCashflowToPDF = exportCashflowToPDF;
-    window.sendNewMessage = sendNewMessage;
-    window.openChat = openChat;
-    window.sendChatMessage = sendChatMessage;
-    window.deleteConversation = deleteConversation;
-    window.deleteMessage = deleteMessage;
-    window.viewReportDetails = viewReportDetails;
-    window.exportSingleReportExcel = exportSingleReportExcel;
-    window.exportSingleReportPDF = exportSingleReportPDF;
-    window.editReport = editReport;
-    window.saveReport = saveReport;
-    window.deleteReport = deleteReport;
-    window.markReportAsViewed = markReportAsViewed;
-    window.sendReportToDept = sendReportToDept;
-    window.changePassword = changePassword;
-    window.changeSidebarColor = changeSidebarColor;
-    window.createBackup = createBackup;
-    window.restoreBackup = restoreBackup;
-    window.logout = logout;
-    window.closeMobileSidebar = closeMobileSidebar;
-    window.openDepartmentDashboard = openDepartmentDashboard;
-    window.showFullImage = showFullImage;
-    window.closeFullImage = closeFullImage;
+    window.showPage = showPage; window.openModal = openModal; window.closeModal = closeModal; window.togglePassword = togglePassword; window.toggleSendDropdown = toggleSendDropdown;
+    window.viewEmployee = viewEmployee; window.editEmployee = editEmployee; window.saveEmployee = saveEmployee; window.deleteEmployee = deleteEmployee;
+    window.exportEmployeesToExcel = exportEmployeesToExcel; window.exportEmployeesToPDF = exportEmployeesToPDF;
+    window.viewProjectDetails = viewProjectDetails; window.editProject = editProject; window.saveProject = saveProject; window.deleteProject = deleteProject;
+    window.openAddProjectModal = openAddProjectModal; window.exportSingleProjectExcel = exportSingleProjectExcel; window.exportSingleProjectPDF = exportSingleProjectPDF;
+    window.removeProjectImage = removeProjectImage; window.markProjectAsViewed = markProjectAsViewed; window.sendProjectToDept = sendProjectToDept;
+    window.viewDailyWork = viewDailyWork; window.editDailyWork = editDailyWork; window.saveDailyWork = saveDailyWork; window.deleteDailyWork = deleteDailyWork;
+    window.exportDailyWorkToExcel = exportDailyWorkToExcel; window.exportDailyWorkToPDF = exportDailyWorkToPDF;
+    window.viewTransaction = viewTransaction; window.editTransaction = editTransaction; window.saveTransaction = saveTransaction; window.deleteTransaction = deleteTransaction;
+    window.exportCashflowToExcel = exportCashflowToExcel; window.exportCashflowToPDF = exportCashflowToPDF;
+    window.sendNewMessage = sendNewMessage; window.openChat = openChat; window.sendChatMessage = sendChatMessage;
+    window.deleteConversation = deleteConversation; window.deleteMessage = deleteMessage;
+    window.viewReportDetails = viewReportDetails; window.exportSingleReportExcel = exportSingleReportExcel; window.exportSingleReportPDF = exportSingleReportPDF;
+    window.editReport = editReport; window.saveReport = saveReport; window.deleteReport = deleteReport; window.markReportAsViewed = markReportAsViewed; window.sendReportToDept = sendReportToDept;
+    window.changePassword = changePassword; window.changeSidebarColor = changeSidebarColor; window.createBackup = createBackup; window.restoreBackup = restoreBackup;
+    window.logout = logout; window.closeMobileSidebar = closeMobileSidebar; window.openDepartmentDashboard = openDepartmentDashboard;
+    window.showFullImage = showFullImage; window.closeFullImage = closeFullImage;
     
     init();
 </script>
