@@ -1213,95 +1213,161 @@
         }
     }
     
-    // ==================== PDF EXPORT WITH IMAGE ON TOP ====================
-    async function exportSingleProjectPDF(projectId) {
-        const p = projectsData.find(p => p.id === parseInt(projectId));
-        if (!p) {
-            showToast('Project not found', true);
-            return;
-        }
-        
-        showToast('📄 Generating PDF, please wait...');
-        
-        // Get image as base64
-        let imageBase64 = '';
-        if (p.image && p.image !== '') {
-            let imgUrl = p.image;
-            if (!imgUrl.startsWith('http') && !imgUrl.startsWith('assets/')) {
-                imgUrl = '/geotraverse/frontend/assets/uploads/projects/' + imgUrl;
-            }
-            
-            try {
-                const response = await fetch(imgUrl);
-                const blob = await response.blob();
-                imageBase64 = await new Promise((resolve) => {
-                    const reader = new FileReader();
-                    reader.onloadend = () => resolve(reader.result);
-                    reader.readAsDataURL(blob);
-                });
-            } catch(e) {
-                console.error('Image load error:', e);
-            }
-        }
-        
-        // Status colors
-        let statusColor = '', statusBg = '';
-        if (p.status === 'completed') {
-            statusColor = '#059669';
-            statusBg = '#d1fae5';
-        } else if (p.status === 'in_progress') {
-            statusColor = '#2563eb';
-            statusBg = '#dbeafe';
+// ==================== FALLBACK PDF EXPORT - USING WINDOW PRINT ====================
+function exportSingleProjectPDF(projectId) {
+    const p = projectsData.find(p => p.id === parseInt(projectId));
+    if (!p) {
+        showToast('Project not found', true);
+        return;
+    }
+    
+    showToast('📄 Opening PDF, please wait...');
+    
+    // Get image URL
+    let imageUrl = null;
+    if (p.image && p.image !== '') {
+        if (p.image.startsWith('http')) {
+            imageUrl = p.image;
+        } else if (p.image.startsWith('assets/')) {
+            imageUrl = '/geotraverse/frontend/' + p.image;
         } else {
-            statusColor = '#d97706';
-            statusBg = '#fef3c7';
+            imageUrl = '/geotraverse/frontend/assets/uploads/projects/' + p.image;
         }
-        
-        const progressWidth = p.progress || 0;
-        const startDate = p.start_date ? new Date(p.start_date).toLocaleDateString('en-GB') : 'Not specified';
-        const endDate = p.end_date ? new Date(p.end_date).toLocaleDateString('en-GB') : 'Not specified';
-        
-        const element = document.createElement('div');
-        element.style.padding = '20px';
-        element.style.fontFamily = 'Arial, sans-serif';
-        element.style.background = 'white';
-        element.style.maxWidth = '800px';
-        element.style.margin = '0 auto';
-        
-        element.innerHTML = `
-            <div style="text-align: center; border-bottom: 3px solid #0f74ba; padding-bottom: 15px; margin-bottom: 20px;">
-                <h1 style="color: #0f74ba; margin: 0; font-size: 24px;">${escapeHtml(p.name)}</h1>
-                <p style="color: #6b7280; margin: 5px 0 0 0; font-size: 11px;">Project Report - Official Document</p>
-                <p style="color: #9ca3af; margin: 3px 0 0 0; font-size: 9px;">Generated: ${new Date().toLocaleString()}</p>
+    }
+    
+    // Status colors
+    let statusColor = '', statusBg = '';
+    if (p.status === 'completed') {
+        statusColor = '#059669';
+        statusBg = '#d1fae5';
+    } else if (p.status === 'in_progress') {
+        statusColor = '#2563eb';
+        statusBg = '#dbeafe';
+    } else {
+        statusColor = '#d97706';
+        statusBg = '#fef3c7';
+    }
+    
+    const progressWidth = p.progress || 0;
+    const startDate = p.start_date ? new Date(p.start_date).toLocaleDateString('en-GB') : 'Not specified';
+    const endDate = p.end_date ? new Date(p.end_date).toLocaleDateString('en-GB') : 'Not specified';
+    
+    // Build HTML for print
+    const printContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>${escapeHtml(p.name)} - Project Report</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    padding: 40px;
+                    max-width: 800px;
+                    margin: 0 auto;
+                }
+                h1 {
+                    color: #0f74ba;
+                    text-align: center;
+                    border-bottom: 3px solid #0f74ba;
+                    padding-bottom: 15px;
+                }
+                .image-section {
+                    text-align: center;
+                    margin: 20px 0;
+                }
+                .image-section img {
+                    max-width: 100%;
+                    max-height: 200px;
+                    border: 1px solid #ddd;
+                    border-radius: 8px;
+                }
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin: 15px 0;
+                    border: 1px solid #ddd;
+                }
+                th, td {
+                    border: 1px solid #ddd;
+                    padding: 8px 12px;
+                    text-align: left;
+                    vertical-align: top;
+                }
+                th {
+                    background: #f5f5f5;
+                    width: 35%;
+                }
+                .status-badge {
+                    display: inline-block;
+                    padding: 3px 10px;
+                    border-radius: 20px;
+                    font-size: 11px;
+                }
+                .progress-bar {
+                    background: #e5e7eb;
+                    border-radius: 10px;
+                    height: 8px;
+                    width: 150px;
+                    margin-top: 5px;
+                }
+                .progress-fill {
+                    background: #0f74ba;
+                    height: 8px;
+                    border-radius: 10px;
+                    width: ${progressWidth}%;
+                }
+                .footer {
+                    text-align: center;
+                    font-size: 10px;
+                    color: #999;
+                    margin-top: 30px;
+                    padding-top: 10px;
+                    border-top: 1px solid #ddd;
+                }
+                @media print {
+                    body { padding: 20px; }
+                    .no-print { display: none; }
+                }
+            </style>
+        </head>
+        <body>
+            <h1>${escapeHtml(p.name)}</h1>
+            <p style="text-align: center; color: #666;">Project Report - Generated: ${new Date().toLocaleString()}</p>
+            
+            <div class="image-section">
+                ${imageUrl ? `<img src="${imageUrl}" alt="Project Image" onerror="this.style.display='none'">` : '<p style="color:#999; text-align:center;">No Image Available</p>'}
             </div>
             
-            ${imageBase64 ? `<div style="text-align: center; margin: 0 0 20px 0;"><img src="${imageBase64}" style="max-width: 100%; max-height: 200px; object-fit: contain; border-radius: 8px; border: 1px solid #ddd;"></div>` : '<div style="text-align: center; margin: 0 0 20px 0; padding: 30px; background: #f3f4f6; border-radius: 8px;"><p style="color: #9ca3af;">No Image Available</p></div>'}
-            
-            <table style="width: 100%; border-collapse: collapse; border: 1px solid #ddd; margin-top: 15px;">
-                <tr style="border-bottom: 1px solid #ddd;"><td style="padding: 10px; border: 1px solid #ddd; background: #f8fafc; width: 35%;"><strong>Project ID:</strong></td><td style="padding: 10px; border: 1px solid #ddd;">#${p.id}</td></tr>
-                <tr style="border-bottom: 1px solid #ddd;"><td style="padding: 10px; border: 1px solid #ddd; background: #f8fafc;"><strong>Client:</strong></td><td style="padding: 10px; border: 1px solid #ddd;">${escapeHtml(p.client_name || 'N/A')}</td></tr>
-                <tr style="border-bottom: 1px solid #ddd;"><td style="padding: 10px; border: 1px solid #ddd; background: #f8fafc;"><strong>Amount:</strong></td><td style="padding: 10px; border: 1px solid #ddd; color: #059669; font-weight: bold;">${formatMoney(p.amount)}</td></tr>
-                <tr style="border-bottom: 1px solid #ddd;"><td style="padding: 10px; border: 1px solid #ddd; background: #f8fafc;"><strong>Status:</strong></td><td style="padding: 10px; border: 1px solid #ddd;"><span style="background: ${statusBg}; color: ${statusColor}; padding: 3px 10px; border-radius: 20px;">${p.status}</span></td></tr>
-                <tr style="border-bottom: 1px solid #ddd;"><td style="padding: 10px; border: 1px solid #ddd; background: #f8fafc;"><strong>Progress:</strong></td><td style="padding: 10px; border: 1px solid #ddd;"><div style="background: #e5e7eb; border-radius: 10px; height: 8px; width: 120px; display: inline-block; margin-right: 8px;"><div style="background: #0f74ba; width: ${progressWidth}%; height: 8px; border-radius: 10px;"></div></div>${progressWidth}%</td></tr>
-                <tr style="border-bottom: 1px solid #ddd;"><td style="padding: 10px; border: 1px solid #ddd; background: #f8fafc;"><strong>Location:</strong></td><td style="padding: 10px; border: 1px solid #ddd;">${escapeHtml(p.location || 'N/A')}</td></tr>
-                <tr style="border-bottom: 1px solid #ddd;"><td style="padding: 10px; border: 1px solid #ddd; background: #f8fafc;"><strong>Start Date:</strong></td><td style="padding: 10px; border: 1px solid #ddd;">${startDate}</td></tr>
-                <tr style="border-bottom: 1px solid #ddd;"><td style="padding: 10px; border: 1px solid #ddd; background: #f8fafc;"><strong>End Date:</strong></td><td style="padding: 10px; border: 1px solid #ddd;">${endDate}</td></tr>
-                <tr><td style="padding: 10px; border: 1px solid #ddd; background: #f8fafc; vertical-align: top;"><strong>Description:</strong></td><td style="padding: 10px; border: 1px solid #ddd; line-height: 1.4;">${escapeHtml(p.description || 'No description')}</td></tr>
+            <table>
+                <tr><th>Project ID:</th><td>#${p.id}</td></tr>
+                <tr><th>Project Name:</th><td>${escapeHtml(p.name)}</td></tr>
+                <tr><th>Client Name:</th><td>${escapeHtml(p.client_name || 'N/A')}</td></tr>
+                <tr><th>Amount:</th><td style="color:#059669; font-weight:bold;">${formatMoney(p.amount)}</td></tr>
+                <tr><th>Status:</th><td><span class="status-badge" style="background:${statusBg}; color:${statusColor};">${p.status}</span></td></tr>
+                <tr><th>Progress:</th><td><div class="progress-bar"><div class="progress-fill"></div></div>${progressWidth}% Complete</td></tr>
+                <tr><th>Location:</th><td>${escapeHtml(p.location || 'N/A')}</td></tr>
+                <tr><th>Start Date:</th><td>${startDate}</td></tr>
+                <tr><th>End Date:</th><td>${endDate}</td></tr>
+                <tr><th>Description:</th><td>${escapeHtml(p.description || 'No description provided')}</td></tr>
             </table>
             
-            <div style="text-align: center; font-size: 9px; color: #999; border-top: 1px solid #eee; padding-top: 10px; margin-top: 15px;">
+            <div class="footer">
                 <p>GeoTraverse ERP System - Official Project Document</p>
             </div>
-        `;
-        
-        html2pdf().from(element).set({
-            margin: 0.5,
-            filename: `project_${p.id}.pdf`,
-            html2canvas: { scale: 2 }
-        }).save();
-        
-        showToast('✅ PDF downloaded with image on top!');
-    }
+            
+            <div class="no-print" style="text-align: center; margin-top: 20px;">
+                <button onclick="window.print()" style="padding: 10px 20px; background: #0f74ba; color: white; border: none; border-radius: 5px; cursor: pointer;">Save as PDF</button>
+            </div>
+        </body>
+        </html>
+    `;
+    
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+    showToast('📄 Click "Save as PDF" button to download');
+}
     
     function exportSingleProjectExcel(projectId) {
         const p = projectsData.find(p => p.id === projectId);
