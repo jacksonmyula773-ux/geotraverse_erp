@@ -1,9 +1,28 @@
 <?php
 // backend/api/get_departments.php
-require_once '../config/database.php';
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
 
-$database = new Database();
-$db = $database->getConnection();
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
+
+// Direct database connection (bypass the class for testing)
+$host = "localhost";
+$db_name = "geotraverse_erp";
+$username = "root";
+$password = "";
+
+try {
+    $db = new PDO("mysql:host=" . $host . ";dbname=" . $db_name . ";charset=utf8mb4", $username, $password);
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch(PDOException $e) {
+    echo json_encode(["success" => false, "message" => "Database connection failed: " . $e->getMessage()]);
+    exit();
+}
 
 $query = "SELECT id, name, email, phone, description FROM departments WHERE id != 1 ORDER BY id";
 $stmt = $db->prepare($query);
@@ -20,26 +39,6 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     );
 }
 
-// Also get department users for messaging
-$userQuery = "SELECT u.id, u.name, u.department_id, d.name as department_name
-              FROM users u
-              JOIN departments d ON u.department_id = d.id
-              WHERE u.department_id != 1 AND u.is_active = 1
-              ORDER BY d.id, u.name";
-$userStmt = $db->prepare($userQuery);
-$userStmt->execute();
-$users = array();
-while ($row = $userStmt->fetch(PDO::FETCH_ASSOC)) {
-    $users[] = array(
-        'id' => (int)$row['id'],
-        'name' => $row['name'],
-        'department_id' => (int)$row['department_id'],
-        'department_name' => $row['department_name']
-    );
-}
-
-sendResponse(true, array(
-    'departments' => $departments,
-    'users' => $users
-));
+echo json_encode(["success" => true, "data" => $departments]);
+exit();
 ?>
