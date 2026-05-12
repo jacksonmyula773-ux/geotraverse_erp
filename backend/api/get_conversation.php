@@ -16,18 +16,15 @@ require_once '../config/database.php';
 error_log("=== GET CONVERSATION API CALLED ===");
 
 $conversation_id = isset($_GET['conversation_id']) ? intval($_GET['conversation_id']) : 0;
-$conversation_id = isset($_GET['id']) ? intval($_GET['id']) : $conversation_id;
-
-error_log("Conversation ID: " . $conversation_id);
 
 if (!$conversation_id) {
-    sendResponse(false, null, "Conversation ID is required");
+    sendResponse(false, null, "Conversation ID required");
 }
 
 $database = new Database();
 $db = $database->getConnection();
 
-// Get conversation info with department details
+// Get conversation info
 $convQuery = "SELECT 
     c.id as conversation_id,
     c.user_id,
@@ -54,7 +51,6 @@ if ($convStmt->rowCount() === 0) {
 }
 
 $conversation = $convStmt->fetch(PDO::FETCH_ASSOC);
-error_log("Conversation found: " . print_r($conversation, true));
 
 // Mark unread messages as read (where receiver is admin)
 $updateQuery = "UPDATE messages SET is_read = 1, read_at = NOW() 
@@ -62,7 +58,6 @@ $updateQuery = "UPDATE messages SET is_read = 1, read_at = NOW()
 $updateStmt = $db->prepare($updateQuery);
 $updateStmt->bindParam(':conv_id', $conversation_id);
 $updateStmt->execute();
-error_log("Marked read: " . $updateStmt->rowCount() . " messages");
 
 // Get all messages in this conversation
 $query = "SELECT 
@@ -78,11 +73,7 @@ $query = "SELECT
     CASE 
         WHEN m.sender_id = 1 THEN 'admin'
         ELSE 'department'
-    END as sender_type,
-    CASE 
-        WHEN m.sender_id = 1 THEN 'Admin'
-        ELSE (SELECT name FROM users WHERE id = m.sender_id)
-    END as sender_name
+    END as sender_type
 FROM messages m
 WHERE m.conversation_id = :conv_id
 ORDER BY m.created_at ASC";
@@ -100,7 +91,6 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         'sender_id' => (int)$row['sender_id'],
         'receiver_id' => (int)$row['receiver_id'],
         'sender_type' => $row['sender_type'],
-        'sender_name' => $row['sender_name'],
         'is_read' => (int)$row['is_read'],
         'status' => $row['message_status'],
         'created_at' => $row['created_at']
@@ -111,7 +101,6 @@ error_log("Found " . count($messages) . " messages for conversation {$conversati
 
 sendResponse(true, array(
     'conversation_id' => (int)$conversation['conversation_id'],
-    'user_id' => (int)$conversation['user_id'],
     'department_id' => (int)$conversation['department_id'],
     'department_name' => $conversation['department_name'],
     'user_name' => $conversation['user_name'],

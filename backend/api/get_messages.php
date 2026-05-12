@@ -18,7 +18,7 @@ error_log("=== GET MESSAGES API CALLED ===");
 $database = new Database();
 $db = $database->getConnection();
 
-// Get all conversations for admin (admin_id = 1) with active status
+// Get all conversations for admin (admin_id = 1)
 $query = "SELECT 
     c.id as conversation_id,
     c.user_id,
@@ -51,15 +51,12 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         'department_name' => $row['department_name'],
         'user_name' => $row['user_name'],
         'subject' => $row['subject'],
-        'conversation_status' => $row['conversation_status'],
         'last_message' => $row['last_message'],
         'last_message_time' => $row['last_message_time'],
-        'unread_count' => (int)$row['unread_count'],
-        'updated_at' => $row['updated_at']
+        'unread_count' => (int)$row['unread_count']
     );
 }
 
 error_log("Total conversations found: " . count($conversations));
-
 sendResponse(true, $conversations);
 ?>
