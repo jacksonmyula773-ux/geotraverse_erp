@@ -1,5 +1,4 @@
 <?php
-// backend/api/get_departments.php
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
@@ -10,22 +9,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
 
-// Direct database connection (bypass the class for testing)
 $host = "localhost";
 $db_name = "geotraverse_erp";
 $username = "root";
 $password = "";
 
 try {
-    $db = new PDO("mysql:host=" . $host . ";dbname=" . $db_name . ";charset=utf8mb4", $username, $password);
-    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo = new PDO("mysql:host=" . $host . ";dbname=" . $db_name . ";charset=utf8mb4", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch(PDOException $e) {
-    echo json_encode(["success" => false, "message" => "Database connection failed: " . $e->getMessage()]);
+    echo json_encode(["success" => false, "message" => "Database connection failed"]);
     exit();
 }
 
-$query = "SELECT id, name, email, phone, description FROM departments WHERE id != 1 ORDER BY id";
-$stmt = $db->prepare($query);
+$query = "SELECT id, name, email, phone, description FROM departments ORDER BY id";
+$stmt = $pdo->prepare($query);
 $stmt->execute();
 
 $departments = array();

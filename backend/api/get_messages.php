@@ -1,62 +1,59 @@
 <?php
-// backend/api/get_messages.php
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
-header('Access-Control-Allow-Credentials: true');
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
+$host = "localhost";
+$db_name = "geotraverse_erp";
+$username = "root";
+$password = "";
+
+try {
+    $pdo = new PDO("mysql:host=" . $host . ";dbname=" . $db_name . ";charset=utf8mb4", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch(PDOException $e) {
+    echo json_encode(["success" => false, "message" => "Database connection failed", "data" => []]);
     exit();
 }
 
-require_once '../config/database.php';
+$conversation_id = isset($_GET['conversation_id']) ? intval($_GET['conversation_id']) : 0;
+$user_id = isset($_GET['user_id']) ? intval($_GET['user_id']) : 1;
 
-error_log("=== GET MESSAGES API CALLED ===");
-
-$database = new Database();
-$db = $database->getConnection();
-
-// Get all conversations for admin (admin_id = 1)
-$query = "SELECT 
-    c.id as conversation_id,
-    c.user_id,
-    c.admin_id,
-    c.subject,
-    c.status as conversation_status,
-    c.created_at as conversation_created,
-    c.updated_at,
-    u.name as user_name,
-    u.department_id,
-    d.name as department_name,
-    (SELECT m.message FROM messages m WHERE m.conversation_id = c.id ORDER BY m.created_at DESC LIMIT 1) as last_message,
-    (SELECT m.created_at FROM messages m WHERE m.conversation_id = c.id ORDER BY m.created_at DESC LIMIT 1) as last_message_time,
-    (SELECT COUNT(*) FROM messages m WHERE m.conversation_id = c.id AND m.receiver_id = 1 AND m.is_read = 0) as unread_count
-FROM conversations c
-JOIN users u ON c.user_id = u.id
-JOIN departments d ON u.department_id = d.id
-WHERE c.admin_id = 1 AND c.status = 'active'
-ORDER BY c.updated_at DESC, last_message_time DESC";
-
-$stmt = $db->prepare($query);
-$stmt->execute();
-
-$conversations = array();
-while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-    $conversations[] = array(
-        'conversation_id' => (int)$row['conversation_id'],
-        'user_id' => (int)$row['user_id'],
-        'department_id' => (int)$row['department_id'],
-        'department_name' => $row['department_name'],
-        'user_name' => $row['user_name'],
-        'subject' => $row['subject'],
-        'last_message' => $row['last_message'],
-        'last_message_time' => $row['last_message_time'],
-        'unread_count' => (int)$row['unread_count']
-    );
+if ($conversation_id === 0) {
+    echo json_encode(["success" => false, "message" => "Missing conversation_id", "data" => []]);
+    exit();
 }
 
-error_log("Total conversations found: " . count($conversations));
-sendResponse(true, $conversations);
+// Mark messages as read
+$markRead = $pdo->prepare("UPDATE messages SET is_read = 1, read_at = NOW() 
+                          WHERE conversation_id = ? AND receiver_id = ? AND is_read = 0");
+$markRead->execute([$conversation_id, $user_id]);
+
+$query = "
+    SELECT 
+        m.id,
+        m.conversation_id,
+        m.sender_id,
+        m.receiver_id,
+        m.message,
+        m.is_read,
+        m.created_at,
+        u_sender.name as sender_name,
+        d_sender.name as sender_department,
+        CASE WHEN m.sender_id = ? THEN 'admin' ELSE 'user' END as sender_type
+    FROM messages m
+    JOIN users u_sender ON m.sender_id = u_sender.id
+    LEFT JOIN departments d_sender ON u_sender.department_id = d_sender.id
+    WHERE m.conversation_id = ?
+    AND ((m.sender_id = ? AND m.sender_deleted = 0) OR (m.receiver_id = ? AND m.receiver_deleted = 0))
+    ORDER BY m.created_at ASC
+";
+
+$stmt = $pdo->prepare($query);
+$stmt->execute([$user_id, $conversation_id, $user_id, $user_id]);
+$messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+echo json_encode(["success" => true, "data" => $messages]);
+exit();
 ?>

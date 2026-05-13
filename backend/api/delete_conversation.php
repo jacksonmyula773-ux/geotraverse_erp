@@ -1,75 +1,46 @@
 <?php
-// backend/api/delete_conversation.php
-header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
-header('Access-Control-Allow-Credentials: true');
+header("Content-Type: application/json");
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type");
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
-}
-
-require_once '../config/database.php';
-
-error_log("=== DELETE CONVERSATION API CALLED ===");
-
-$inputJSON = file_get_contents("php://input");
-error_log("Raw input: " . $inputJSON);
-
-$data = json_decode($inputJSON, true);
-
-if (!$data) {
-    $data = $_POST;
-}
-
-error_log("Processed data: " . print_r($data, true));
-
-if (!isset($data['conversation_id']) || empty($data['conversation_id'])) {
-    sendResponse(false, null, "Conversation ID is required");
-}
-
-$conversationId = intval($data['conversation_id']);
+require_once "../config/database.php";
 
 $database = new Database();
-$db = $database->getConnection();
+$conn = $database->getConnection();
 
-// Start transaction
-$db->beginTransaction();
+$data = json_decode(file_get_contents("php://input"), true);
 
-try {
-    // First, check if conversation exists and belongs to admin
-    $checkQuery = "SELECT id FROM conversations WHERE id = :conv_id AND admin_id = 1";
-    $checkStmt = $db->prepare($checkQuery);
-    $checkStmt->bindParam(':conv_id', $conversationId);
-    $checkStmt->execute();
-    
-    if ($checkStmt->rowCount() === 0) {
-        $db->rollBack();
-        sendResponse(false, null, "Conversation not found or access denied");
-    }
-    
-    // Delete all messages in this conversation
-    $msgQuery = "DELETE FROM messages WHERE conversation_id = :conv_id";
-    $msgStmt = $db->prepare($msgQuery);
-    $msgStmt->bindParam(':conv_id', $conversationId);
-    $msgStmt->execute();
-    error_log("Deleted " . $msgStmt->rowCount() . " messages");
-    
-    // Delete the conversation
-    $convQuery = "DELETE FROM conversations WHERE id = :conv_id";
-    $convStmt = $db->prepare($convQuery);
-    $convStmt->bindParam(':conv_id', $conversationId);
-    $convStmt->execute();
-    error_log("Deleted conversation");
-    
-    $db->commit();
-    sendResponse(true, null, "Conversation deleted successfully");
-    
-} catch (Exception $e) {
-    $db->rollBack();
-    error_log("Delete conversation error: " . $e->getMessage());
-    sendResponse(false, null, "Failed to delete conversation: " . $e->getMessage());
+$conversation_id = isset($data['conversation_id']) ? intval($data['conversation_id']) : 0;
+$user_id = isset($data['user_id']) ? intval($data['user_id']) : 0;
+
+if ($conversation_id === 0) {
+    echo json_encode(["success" => false, "message" => "Missing conversation_id"]);
+    exit;
 }
+
+if ($user_id === 0) {
+    session_start();
+    if (isset($_SESSION['user_id'])) {
+        $user_id = $_SESSION['user_id'];
+    } else {
+        echo json_encode(["success" => false, "message" => "Missing user_id"]);
+        exit;
+    }
+}
+
+// Soft delete all messages for this user
+$stmt1 = $conn->prepare("UPDATE messages SET sender_deleted = 1, deleted_at = NOW() 
+                         WHERE conversation_id = ? AND sender_id = ?");
+$stmt1->bind_param("ii", $conversation_id, $user_id);
+$stmt1->execute();
+
+$stmt2 = $conn->prepare("UPDATE messages SET receiver_deleted = 1, deleted_at = NOW() 
+                         WHERE conversation_id = ? AND receiver_id = ?");
+$stmt2->bind_param("ii", $conversation_id, $user_id);
+$stmt2->execute();
+
+echo json_encode(["success" => true, "message" => "Conversation deleted successfully"]);
+
+$conn->close();
 ?>
