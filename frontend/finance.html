@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>GeoTraverse | Finance Dashboard</title>
+    <title>GeoTraverse | Finance Dashboard - ERP System</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -16,60 +16,26 @@
         * { font-family: 'Inter', sans-serif; }
         body { background: #f0f2f5; transition: background 0.3s; font-size: 14px; }
         
-        .sidebar {
-            background: linear-gradient(180deg, #0f74ba 0%, #0a5a8e 100%);
-            position: fixed;
-            width: 280px;
-            height: 100vh;
-            overflow-y: auto;
-            z-index: 30;
-            transition: all 0.3s;
-        }
+        .sidebar { background: linear-gradient(180deg, #059669 0%, #047857 100%); position: fixed; width: 260px; height: 100vh; overflow-y: auto; z-index: 30; transition: left 0.3s; }
+        .main-content { margin-left: 260px; }
+        @media (max-width: 768px) { .sidebar { left: -260px; } .sidebar.mobile-open { left: 0; } .main-content { margin-left: 0; } }
         
-        .sidebar::-webkit-scrollbar { width: 5px; }
-        .sidebar::-webkit-scrollbar-track { background: rgba(255,255,255,0.1); }
-        .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 5px; }
-        
-        .main-content { margin-left: 280px; }
-        
-        @media (max-width: 768px) {
-            .sidebar { left: -280px; }
-            .sidebar.mobile-open { left: 0; }
-            .main-content { margin-left: 0; }
-        }
-        
-        .nav-item { 
-            display: flex; 
-            align-items: center; 
-            gap: 12px; 
-            padding: 10px 16px; 
-            border-radius: 10px; 
-            color: white; 
-            cursor: pointer; 
-            transition: all 0.2s; 
-        }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 10px; color: white; cursor: pointer; transition: all 0.2s; }
         .nav-item:hover { background: rgba(255,255,255,0.1); }
-        .nav-item.active { background: rgba(255,255,255,0.15); border-left: 3px solid #60a5fa; }
+        .nav-item.active { background: rgba(255,255,255,0.15); border-left: 3px solid #6ee7b7; }
         
-        .stat-card { 
-            background: white; 
-            border-radius: 16px; 
-            border: 1px solid #e5e7eb; 
-            padding: 20px; 
-            transition: all 0.2s; 
-            cursor: pointer; 
-        }
-        .stat-card:hover { transform: translateY(-3px); border-color: #0f74ba; }
+        .stat-card { background: white; border-radius: 16px; border: 1px solid #e5e7eb; padding: 20px; transition: all 0.2s; cursor: pointer; }
+        .stat-card:hover { transform: translateY(-3px); border-color: #059669; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
         
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 500; color: #374151; margin-bottom: 6px; }
         .form-group label .required { color: #ef4444; margin-left: 2px; }
         .form-group input, .form-group select, .form-group textarea {
-            width: 100%; padding: 10px 14px; font-size: 14px; border: 1.5px solid #e5e7eb;
-            border-radius: 10px; background: white; transition: all 0.2s;
+            width: 100%; padding: 10px 14px; font-size: 14px; border: 1.5px solid #e5e7eb; border-radius: 10px;
+            background: white; transition: all 0.2s;
         }
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-            outline: none; border-color: #0f74ba; box-shadow: 0 0 0 3px rgba(15,116,186,0.1);
+            outline: none; border-color: #059669; box-shadow: 0 0 0 3px rgba(5,150,105,0.1);
         }
         
         body.dark-mode .form-group label { color: #94a3b8; }
@@ -78,29 +44,26 @@
         }
         
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
-        .modal-content { background: white; border-radius: 24px; width: 90%; max-width: 550px; max-height: 85vh; overflow-y: auto; padding: 28px; animation: fadeIn 0.2s ease; }
+        .modal-content { background: white; border-radius: 20px; width: 90%; max-width: 650px; max-height: 85vh; overflow-y: auto; padding: 25px; animation: fadeIn 0.2s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         
         .toast { position: fixed; bottom: 20px; right: 20px; background: #10b981; color: white; padding: 12px 24px; border-radius: 12px; z-index: 1000; animation: slideInRight 0.3s ease; font-size: 13px; }
         .toast.error { background: #ef4444; }
         @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         
-        .loading-spinner { display: inline-block; width: 24px; height: 24px; border: 3px solid #e5e7eb; border-top-color: #0f74ba; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        .loading-spinner { display: inline-block; width: 24px; height: 24px; border: 3px solid #e5e7eb; border-top-color: #059669; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         
         .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; display: inline-block; }
         .status-paid { background: #d1fae5; color: #059669; }
-        .status-pending { background: #fee2e2; color: #dc2626; }
         .status-partial { background: #fef3c7; color: #d97706; }
+        .status-pending { background: #fee2e2; color: #dc2626; }
         
-        .income-row { background-color: #f0fdf4; }
-        .expense-row { background-color: #fef2f2; }
-        
-        .btn-primary { background: #0f74ba; color: white; padding: 10px 18px; border-radius: 10px; border: none; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.2s; }
-        .btn-primary:hover { background: #0a5a8e; transform: translateY(-1px); }
-        .btn-success { background: #10b981; color: white; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; }
-        .btn-danger { background: #ef4444; color: white; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; }
-        .btn-warning { background: #f59e0b; color: white; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; }
+        .btn-primary { background: #059669; color: white; padding: 10px 18px; border-radius: 10px; border: none; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.2s; }
+        .btn-primary:hover { background: #047857; transform: translateY(-1px); }
+        .btn-success { background: #10b981; color: white; padding: 10px 18px; border-radius: 10px; border: none; cursor: pointer; font-size: 14px; font-weight: 500; }
+        .btn-danger { background: #ef4444; color: white; padding: 10px 18px; border-radius: 10px; border: none; cursor: pointer; font-size: 14px; font-weight: 500; }
+        .btn-warning { background: #f59e0b; color: white; padding: 10px 18px; border-radius: 10px; border: none; cursor: pointer; font-size: 14px; font-weight: 500; }
         
         .action-btn { padding: 5px 10px; font-size: 11px; border-radius: 5px; cursor: pointer; transition: all 0.2s; border: none; }
         .action-btn.view { background: #3b82f6; color: white; }
@@ -109,54 +72,104 @@
         
         body.dark-mode { background: #0f172a; }
         body.dark-mode .bg-white, body.dark-mode .stat-card, body.dark-mode .modal-content,
-        body.dark-mode .message-item, body.dark-mode .budget-card, body.dark-mode .report-card {
-            background: #1e293b; border-color: #334155; color: #f1f5f9;
-        }
-        body.dark-mode th { background: #1e293b; }
-        body.dark-mode .bg-gray-50 { background: #1e293b; }
-        body.dark-mode .bg-green-50 { background: #064e3b; }
-        body.dark-mode .bg-red-50 { background: #7f1d1d; }
-        body.dark-mode .bg-blue-50 { background: #1e3a8a; }
-        body.dark-mode .bg-orange-50 { background: #78350f; }
+        body.dark-mode .message-item, body.dark-mode .dept-budget-card, body.dark-mode .report-card { background: #1e293b; border-color: #334155; color: #f1f5f9; }
+        
+        .scroll-top { position: fixed; bottom: 20px; right: 20px; background: #059669; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: all 0.3s; z-index: 99; color: white; }
+        .scroll-top.visible { opacity: 1; }
         
         .section { display: block; }
         .section.hidden { display: none; }
         
-        .notification-badge { background: #ef4444; color: white; border-radius: 9999px; padding: 2px 6px; font-size: 10px; margin-left: 6px; display: inline-block; min-width: 18px; text-align: center; }
+        .income-row { background-color: #f0fdf4; }
+        .expense-row { background-color: #fef2f2; }
+        .pending-row { background-color: #fef3c7; }
+        .partial-row { background-color: #fffbeb; }
+        body.dark-mode .income-row { background-color: #064e3b20; }
+        body.dark-mode .expense-row { background-color: #7f1d1d20; }
+        body.dark-mode .pending-row { background-color: #78350f20; }
+        body.dark-mode .partial-row { background-color: #451a0320; }
         
-        .budget-card { background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 16px; transition: all 0.2s; margin-bottom: 16px; }
-        .budget-card:hover { transform: translateY(-2px); border-color: #0f74ba; }
+        .search-results-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: white; border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); z-index: 50; max-height: 350px; overflow-y: auto; display: none; }
+        .search-results-dropdown.active { display: block; }
+        .search-highlight { background: #fef3c7 !important; border-left: 3px solid #f59e0b !important; transition: background 0.3s; }
+        body.dark-mode .search-highlight { background: #451a03 !important; border-left-color: #fbbf24 !important; }
         
-        .report-card { background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 16px; transition: all 0.2s; cursor: pointer; }
-        .report-card:hover { transform: translateY(-3px); border-color: #0f74ba; }
+        /* Chat Styles */
+        .chat-container { display: flex; flex-direction: column; height: 500px; }
+        .chat-messages { flex: 1; overflow-y: auto; padding: 16px; background: #f9fafb; border-radius: 12px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px; }
+        body.dark-mode .chat-messages { background: #1e293b; }
+        .chat-message { display: flex; margin-bottom: 8px; position: relative; align-items: flex-end; }
+        .chat-sent { justify-content: flex-end; }
+        .chat-received { justify-content: flex-start; }
+        .chat-bubble { max-width: 70%; padding: 10px 15px; border-radius: 18px; word-wrap: break-word; position: relative; }
+        .chat-sent .chat-bubble { background: #059669; color: white; border-bottom-right-radius: 4px; }
+        .chat-received .chat-bubble { background: #e5e7eb; color: #333; border-bottom-left-radius: 4px; }
+        body.dark-mode .chat-received .chat-bubble { background: #334155; color: #f1f5f9; }
+        .chat-time { font-size: 10px; opacity: 0.7; margin-top: 4px; display: block; }
+        .delete-msg-btn { background: #ef4444; color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 11px; margin-left: 8px; margin-right: 8px; flex-shrink: 0; opacity: 0.6; transition: all 0.2s; }
+        .chat-sent .delete-msg-btn { order: -1; margin-left: 0; margin-right: 8px; }
+        .chat-received .delete-msg-btn { margin-left: 8px; margin-right: 0; }
+        .delete-msg-btn:hover { background: #dc2626; opacity: 1; transform: scale(1.05); }
+        .chat-input-area { display: flex; gap: 10px; margin-top: 12px; }
+        .chat-input-area textarea { flex: 1; margin: 0; resize: none; }
         
-        .message-item { background: white; border: 1px solid #e5e7eb; border-radius: 16px; overflow: hidden; cursor: pointer; transition: all 0.2s; position: relative; margin-bottom: 12px; }
-        .message-item:hover { transform: translateY(-3px); border-color: #0f74ba; }
-        .message-unread { background: #eff6ff; border-left: 4px solid #3b82f6; }
+        .messages-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        @media (max-width: 1024px) { .messages-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 640px) { .messages-grid { grid-template-columns: 1fr; } }
+        
+        .message-item { background: white; border: 1px solid #e5e7eb; border-radius: 16px; overflow: hidden; cursor: pointer; transition: all 0.2s; position: relative; }
+        .message-item:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); border-color: #059669; }
+        .message-unread { background: #ecfdf5; border-left: 4px solid #059669; }
+        body.dark-mode .message-unread { background: #064e3b20; border-left-color: #34d399; }
         .message-header { padding: 14px 16px 8px 16px; display: flex; justify-content: space-between; align-items: center; }
         .message-preview { padding: 0 16px 12px 16px; font-size: 13px; color: #6b7280; }
         .delete-conv-btn { position: absolute; top: 10px; right: 10px; background: #ef4444; color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0.6; transition: all 0.2s; z-index: 15; }
         .message-item:hover .delete-conv-btn { opacity: 1; }
         .delete-conv-btn:hover { background: #dc2626; transform: scale(1.05); opacity: 1; }
+        .dept-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
         
-        .chat-container { display: flex; flex-direction: column; height: 500px; }
-        .chat-messages { flex: 1; overflow-y: auto; padding: 16px; background: #f9fafb; border-radius: 12px; margin-bottom: 12px; display: flex; flex-direction: column; }
-        body.dark-mode .chat-messages { background: #1e293b; }
-        .chat-message { display: flex; margin-bottom: 12px; align-items: flex-end; }
-        .chat-sent { justify-content: flex-end; }
-        .chat-received { justify-content: flex-start; }
-        .chat-bubble { max-width: 70%; padding: 10px 15px; border-radius: 18px; word-wrap: break-word; position: relative; }
-        .chat-sent .chat-bubble { background: #0f74ba; color: white; border-bottom-right-radius: 4px; }
-        .chat-received .chat-bubble { background: #e5e7eb; color: #333; border-bottom-left-radius: 4px; }
-        body.dark-mode .chat-received .chat-bubble { background: #334155; color: #f1f5f9; }
-        .chat-time { font-size: 10px; opacity: 0.7; margin-top: 4px; display: block; }
+        /* Transaction Table Styles */
+        .trans-table-container { overflow-x: auto; border-radius: 12px; }
+        .trans-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 800px; }
+        .trans-table th, .trans-table td { padding: 12px 10px; text-align: left; border-bottom: 1px solid #e5e7eb; vertical-align: middle; }
+        .trans-table th { background: #f8fafc; font-weight: 600; position: sticky; top: 0; }
+        .trans-table .text-right { text-align: right; }
+        .trans-table .text-center { text-align: center; }
+        body.dark-mode .trans-table th { background: #1e293b; border-bottom-color: #334155; }
         
-        .delete-msg-btn { background: #ef4444; color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 11px; transition: all 0.2s; margin-left: 8px; margin-right: 8px; flex-shrink: 0; opacity: 0.6; }
-        .delete-msg-btn:hover { background: #dc2626; transform: scale(1.05); opacity: 1; }
+        /* Report Card Styles */
+        .report-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; }
+        .report-card { background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 16px; transition: all 0.2s; position: relative; cursor: pointer; }
+        .report-card:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); border-color: #059669; }
         
-        .chat-input-area { display: flex; gap: 10px; margin-top: 12px; }
-        .chat-input-area textarea { flex: 1; margin: 0; resize: none; }
+        /* View Report Dark Content Styles */
+        .report-content-dark { background: #1e1e2f; color: #f1f5f9; padding: 20px; border-radius: 12px; white-space: pre-wrap; font-family: monospace; font-size: 13px; line-height: 1.6; }
+        body.dark-mode .report-content-dark { background: #0f0f1a; color: #e2e8f0; }
         
+        .dept-budget-card { background: white; border-radius: 16px; border: 1px solid #e5e7eb; margin-bottom: 20px; overflow: hidden; }
+        .dept-budget-header { padding: 15px 20px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; cursor: pointer; background: #f9fafb; }
+        body.dark-mode .dept-budget-header { background: #0f172a; border-bottom-color: #334155; }
+        .dept-budget-header:hover { background: #f3f4f6; }
+        body.dark-mode .dept-budget-header:hover { background: #1e293b; }
+        .budget-table-container { overflow-x: auto; border-radius: 12px; margin-top: 15px; }
+        .budget-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 600px; }
+        .budget-table th, .budget-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #e5e7eb; vertical-align: middle; }
+        .budget-table th { background: #f8fafc; font-weight: 600; }
+        body.dark-mode .budget-table th { background: #1e293b; border-bottom-color: #334155; }
+        
+        .color-option { width: 42px; height: 42px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: all 0.2s; display: inline-block; margin: 5px; }
+        .color-option:hover { transform: scale(1.1); }
+        .color-option.selected { border-color: white; box-shadow: 0 0 0 2px #333; }
+        
+        .connection-status { position: fixed; bottom: 10px; right: 10px; background: #1f2937; color: #10b981; padding: 6px 12px; border-radius: 8px; font-size: 10px; font-family: monospace; z-index: 9999; display: flex; align-items: center; gap: 8px; }
+        .connection-status.error { color: #ef4444; }
+        
+        .progress-bar { height: 6px; border-radius: 3px; }
+        .progress-low { background: #ef4444; }
+        .progress-medium { background: #f59e0b; }
+        .progress-high { background: #10b981; }
+        
+        .detail-buttons { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 15px; padding-top: 15px; border-top: 1px solid #e5e7eb; }
         .send-dropdown { position: relative; display: inline-block; }
         .send-dropdown-content { display: none; position: absolute; right: 0; top: 100%; background: white; min-width: 180px; border-radius: 8px; z-index: 100; border: 1px solid #e5e7eb; max-height: 300px; overflow-y: auto; margin-top: 5px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
         .send-dropdown-content a { display: block; padding: 8px 12px; text-decoration: none; color: #333; font-size: 13px; cursor: pointer; }
@@ -164,41 +177,6 @@
         body.dark-mode .send-dropdown-content { background: #1e293b; border-color: #334155; }
         body.dark-mode .send-dropdown-content a { color: #f1f5f9; }
         body.dark-mode .send-dropdown-content a:hover { background: #334155; }
-        
-        .scroll-top { position: fixed; bottom: 20px; right: 20px; background: #0f74ba; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: all 0.3s; z-index: 99; color: white; }
-        .scroll-top.visible { opacity: 1; }
-        
-        .connection-status { position: fixed; bottom: 10px; right: 10px; background: #1f2937; color: #10b981; padding: 6px 12px; border-radius: 8px; font-size: 10px; font-family: monospace; z-index: 9999; display: flex; align-items: center; gap: 8px; }
-        .connection-status.error { color: #ef4444; }
-        
-        .search-highlight { background-color: #fef3c7 !important; border-left: 3px solid #f59e0b !important; animation: pulse 0.5s ease; }
-        @keyframes pulse { 0%, 100% { background-color: #fef3c7; } 50% { background-color: #fde68a; } }
-        
-        .search-results-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: white; border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); z-index: 50; max-height: 350px; overflow-y: auto; display: none; }
-        .search-results-dropdown.active { display: block; }
-        
-        .form-row { display: flex; gap: 15px; margin-bottom: 20px; }
-        .form-row .form-group { flex: 1; margin-bottom: 0; }
-        
-        @media (max-width: 640px) {
-            .form-row { flex-direction: column; gap: 0; }
-            .modal-content { padding: 20px; }
-        }
-        
-        .color-option { width: 42px; height: 42px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: all 0.2s; display: inline-block; margin: 5px; }
-        .color-option:hover { transform: scale(1.1); }
-        .color-option.selected { border-color: white; box-shadow: 0 0 0 2px #333; }
-        
-        .budget-table { width: 100%; border-collapse: collapse; }
-        .budget-table th, .budget-table td { padding: 12px 10px; text-align: left; border-bottom: 1px solid #e5e7eb; }
-        .budget-table th { background: #f9fafb; font-weight: 600; }
-        body.dark-mode .budget-table th { background: #1e293b; }
-        
-        .summary-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; }
-        .summary-stat { background: white; border-radius: 12px; padding: 15px; text-align: center; border: 1px solid #e5e7eb; }
-        body.dark-mode .summary-stat { background: #1e293b; border-color: #334155; }
-        .summary-stat h4 { font-size: 11px; text-transform: uppercase; color: #6b7280; margin-bottom: 5px; }
-        .summary-stat .value { font-size: 20px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -210,1347 +188,572 @@
     <aside id="mainSidebar" class="sidebar text-white">
         <div class="p-5 border-b border-white/20">
             <div class="flex items-center gap-3">
-                <img src="https://i.postimg.cc/MT6jTVHh/weblogo.png" alt="Logo" class="w-10 h-10 object-contain rounded-lg" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%230f74ba%22/%3E%3Ctext x=%2250%22 y=%2265%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2240%22 font-weight=%22bold%22%3EG%3C/text%3E%3C/svg%3E'">
+                <img src="https://i.postimg.cc/MT6jTVHh/weblogo.png" alt="GeoTraverse Logo" class="w-10 h-10 object-contain rounded-lg" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23059669%22/%3E%3Ctext x=%2250%22 y=%2265%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2240%22 font-weight=%22bold%22%3EG%3C/text%3E%3C/svg%3E'">
                 <div><span class="text-xl font-bold">GeoTraverse</span><p class="text-[10px] text-white/60">Finance Dept</p></div>
             </div>
         </div>
         <nav class="flex-1 p-3 space-y-1">
             <div class="nav-item active" data-page="dashboard"><i class="fas fa-tachometer-alt w-5"></i><span>Dashboard</span></div>
             <div class="nav-item" data-page="transactions"><i class="fas fa-exchange-alt w-5"></i><span>Transactions</span></div>
-            <div class="nav-item" data-page="budgets"><i class="fas fa-chart-pie w-5"></i><span>Department Budgets</span></div>
-            <div class="nav-item" data-page="reports"><i class="fas fa-chart-bar w-5"></i><span>Reports</span><span id="reportBadge" class="notification-badge hidden">0</span></div>
-            <div class="nav-item" data-page="messages"><i class="fas fa-envelope w-5"></i><span>Messages</span><span id="msgBadge" class="notification-badge hidden">0</span></div>
+            <div class="nav-item" data-page="dept-budgets"><i class="fas fa-building w-5"></i><span>Dept Budgets</span></div>
+            <div class="nav-item" data-page="messages"><i class="fas fa-envelope w-5"></i><span>Messages</span><span id="msgBadge" class="bg-red-500 text-white text-[10px] rounded-full px-2 py-0.5 ml-2 hidden">0</span></div>
+            <div class="nav-item" data-page="reports"><i class="fas fa-chart-line w-5"></i><span>Reports</span></div>
             <div class="nav-item" data-page="settings"><i class="fas fa-cog w-5"></i><span>Settings</span></div>
         </nav>
         <div class="p-4 border-t border-white/20">
-            <button id="logoutBtn" class="w-full bg-red-600/80 hover:bg-red-600 py-2.5 rounded-lg text-sm transition font-medium"><i class="fas fa-sign-out-alt mr-2"></i>Logout</button>
+            <button id="logoutBtn" class="w-full bg-red-600/80 hover:bg-red-600 py-2 rounded-lg text-sm transition">Logout</button>
         </div>
     </aside>
     
     <main class="flex-1 main-content">
-        <header class="bg-white shadow-sm px-5 py-3 sticky top-0 z-10 border-b">
-            <div class="flex items-center justify-between flex-wrap gap-3">
-                <div class="flex items-center gap-3">
-                    <button id="mobileMenuBtn" class="md:hidden text-gray-600 text-xl"><i class="fas fa-bars"></i></button>
-                    <button id="homeBtn" class="text-blue-600 text-xl bg-transparent border-none cursor-pointer mr-3"><i class="fas fa-home"></i></button>
-                    <div><h1 class="text-lg font-bold text-gray-800">Finance Dashboard</h1><p class="text-xs text-gray-400">Financial Management System</p></div>
-                </div>
-                <div class="flex-1 max-w-md relative">
-                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
-                    <input type="text" id="searchInput" placeholder="Search transactions, reports, budgets..." class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-500">
-                    <div id="searchResultsDropdown" class="search-results-dropdown"></div>
-                </div>
-                <div class="flex items-center gap-3">
-                    <button id="darkModeBtn" class="text-gray-500"><i id="darkIcon" class="fas fa-moon text-xl"></i></button>
-                    <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">FM</div>
-                </div>
+        <header class="bg-white shadow-sm px-5 py-3 sticky top-0 z-10 flex justify-between items-center border-b">
+            <div class="flex items-center gap-3">
+                <button id="mobileMenuBtn" class="md:hidden text-gray-600 text-xl"><i class="fas fa-bars"></i></button>
+                <button id="homeBtn" class="text-green-600 text-xl hover:text-green-700 transition"><i class="fas fa-home"></i></button>
+            </div>
+            <div class="relative w-full max-w-md">
+                <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
+                <input type="text" id="searchInput" placeholder="Search transactions, reports, budget categories..." class="w-full pl-10 pr-4 py-2 border rounded-lg text-sm focus:outline-none focus:border-green-500">
+                <div id="searchResultsDropdown" class="search-results-dropdown"></div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button id="darkModeBtn" class="text-gray-500 hover:text-gray-700"><i id="darkIcon" class="fas fa-moon text-xl"></i></button>
+                <div class="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center text-white font-bold shadow-md">FM</div>
             </div>
         </header>
         
-        <div id="dashboardPage" class="section p-5"></div>
-        <div id="transactionsPage" class="section p-5 hidden"></div>
-        <div id="budgetsPage" class="section p-5 hidden"></div>
-        <div id="reportsPage" class="section p-5 hidden"></div>
-        <div id="messagesPage" class="section p-5 hidden"></div>
-        <div id="settingsPage" class="section p-5 hidden"></div>
+        <div id="dashboardPage" class="section p-5 mb-20"></div>
+        <div id="transactionsPage" class="section p-5 hidden mb-20"></div>
+        <div id="deptBudgetsPage" class="section p-5 hidden mb-20"></div>
+        <div id="messagesPage" class="section p-5 hidden mb-20"></div>
+        <div id="reportsPage" class="section p-5 hidden mb-20"></div>
+        <div id="settingsPage" class="section p-5 hidden mb-20"></div>
     </main>
 </div>
 
 <!-- MODALS -->
 <div id="transModal" class="modal">
     <div class="modal-content">
-        <h3 class="text-xl font-bold mb-5"><i class="fas fa-exchange-alt text-blue-500 mr-2"></i>Add Transaction</h3>
+        <h3 class="text-xl font-bold mb-4"><i class="fas fa-exchange-alt text-green-500 mr-2"></i>Add Transaction</h3>
         <input type="hidden" id="transId">
-        
-        <div class="form-row">
-            <div class="form-group">
-                <label>Type <span class="required">*</span></label>
-                <select id="transType">
-                    <option value="income">💰 Income</option>
-                    <option value="expense">💸 Expense</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Status</label>
-                <select id="transStatus">
-                    <option value="paid">✅ Paid (Full)</option>
-                    <option value="partial">🔄 Partial Payment</option>
-                    <option value="pending">⏳ Pending</option>
-                </select>
-            </div>
-        </div>
-        
-        <div class="form-group">
-            <label>Source / Description <span class="required">*</span></label>
-            <input type="text" id="transSource" placeholder="e.g., Client payment, Office supplies, etc.">
-        </div>
-        
-        <div class="form-row">
-            <div class="form-group">
-                <label>Amount (TZS) <span class="required">*</span></label>
-                <input type="text" id="transAmount" placeholder="Enter amount" class="amount-input">
-            </div>
-            <div class="form-group">
-                <label>Date <span class="required">*</span></label>
-                <input type="date" id="transDate">
-            </div>
-        </div>
-        
-        <div class="form-group" id="paidAmountGroup" style="display: none;">
-            <label>Partial Amount Paid (TZS)</label>
-            <input type="text" id="transPaidAmount" placeholder="Enter partial amount paid" class="amount-input" value="0">
-            <p class="text-xs text-gray-400 mt-1">Remaining balance will be calculated automatically</p>
-        </div>
-        
-        <div class="form-group">
-            <label>Additional Notes</label>
-            <textarea id="transDesc" rows="3" placeholder="Optional notes or remarks..."></textarea>
-        </div>
-        
-        <div class="flex gap-3 pt-3">
-            <button onclick="saveTransaction()" class="flex-1 btn-primary py-2.5"><i class="fas fa-save mr-2"></i>Save</button>
-            <button onclick="closeModal('transModal')" class="flex-1 bg-gray-200 py-2.5 rounded hover:bg-gray-300 transition">Cancel</button>
-        </div>
+        <div class="form-group"><label>Type</label><select id="transType"><option value="income">Income</option><option value="expense">Expense</option></select></div>
+        <div class="form-group"><label>Source <span class="required">*</span></label><input type="text" id="transSource" placeholder="Enter source" required></div>
+        <div class="form-group"><label>Amount (TZS) <span class="required">*</span></label><input type="text" id="transAmount" placeholder="Enter amount" class="amount-input" required></div>
+        <div class="form-group"><label>Date</label><input type="date" id="transDate"></div>
+        <div class="form-group"><label>Status</label><select id="transStatus"><option value="paid">Paid</option><option value="pending">Pending</option><option value="partial">Partial</option></select></div>
+        <div class="form-group"><label>Paid Amount (for partial)</label><input type="text" id="transPaidAmount" placeholder="Enter paid amount" class="amount-input"></div>
+        <div class="form-group"><label>Description</label><textarea id="transDesc" rows="3" placeholder="Enter description"></textarea></div>
+        <div class="flex gap-3 pt-2"><button onclick="saveTransaction()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('transModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div>
     </div>
 </div>
 
-<div id="viewTransModal" class="modal">
-    <div class="modal-content">
-        <h3 class="text-xl font-bold mb-4"><i class="fas fa-receipt text-blue-500 mr-2"></i>Transaction Details</h3>
-        <div id="viewTransContent" class="space-y-3"></div>
-        <button onclick="closeModal('viewTransModal')" class="w-full bg-gray-200 py-2.5 rounded mt-4 hover:bg-gray-300 transition">Close</button>
-    </div>
-</div>
+<div id="viewTransModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-receipt text-green-500 mr-2"></i>Transaction Details</h3><div id="viewTransContent"></div><button onclick="closeModal('viewTransModal')" class="w-full bg-gray-200 py-2 rounded mt-3">Close</button></div></div>
 
 <div id="reportModal" class="modal">
     <div class="modal-content">
-        <h3 class="text-xl font-bold mb-5"><i class="fas fa-chart-line text-green-500 mr-2"></i>Add Report</h3>
+        <h3 class="text-xl font-bold mb-4"><i class="fas fa-chart-line text-purple-500 mr-2"></i>Add Report</h3>
         <input type="hidden" id="reportId">
-        
-        <div class="form-group">
-            <label>Report Title <span class="required">*</span></label>
-            <input type="text" id="reportTitle" placeholder="e.g., Monthly Financial Summary">
-        </div>
-        
-        <div class="form-group">
-            <label>Period</label>
-            <select id="reportPeriod">
-                <option value="weekly">📅 Weekly</option>
-                <option value="monthly">📆 Monthly</option>
-                <option value="quarterly">📊 Quarterly</option>
-                <option value="annual">📈 Annual</option>
-            </select>
-        </div>
-        
-        <div class="form-group">
-            <label>Report Content <span class="required">*</span></label>
-            <textarea id="reportContent" rows="6" placeholder="Write your report content here..."></textarea>
-        </div>
-        
-        <div class="flex gap-3 pt-3">
-            <button onclick="saveReport()" class="flex-1 btn-primary py-2.5"><i class="fas fa-save mr-2"></i>Save</button>
-            <button onclick="closeModal('reportModal')" class="flex-1 bg-gray-200 py-2.5 rounded hover:bg-gray-300 transition">Cancel</button>
-        </div>
+        <div class="form-group"><label>Title <span class="required">*</span></label><input type="text" id="reportTitle" placeholder="Enter report title" required></div>
+        <div class="form-group"><label>Period</label><select id="reportPeriod"><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="quarterly">Quarterly</option><option value="annual">Annual</option></select></div>
+        <div class="form-group"><label>Content <span class="required">*</span></label><textarea id="reportContent" rows="6" placeholder="Enter report content" required></textarea></div>
+        <div class="flex gap-3 pt-2"><button onclick="saveReport()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('reportModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div>
     </div>
 </div>
 
 <div id="viewReportModal" class="modal">
     <div class="modal-content">
-        <h3 class="text-xl font-bold mb-4"><i class="fas fa-file-alt text-green-500 mr-2"></i>Report Details</h3>
-        <div id="viewReportContent" class="space-y-3"></div>
-        <div id="viewReportButtons" class="flex flex-wrap gap-2 justify-center mt-4 pt-3 border-t"></div>
-        <button onclick="closeModal('viewReportModal')" class="w-full bg-gray-200 py-2.5 rounded mt-3 hover:bg-gray-300 transition">Close</button>
+        <h3 class="text-xl font-bold mb-4"><i class="fas fa-file-alt text-purple-500 mr-2"></i>Report Details</h3>
+        <div id="viewReportContent" class="report-content-dark"></div>
+        <div id="viewReportButtons" class="detail-buttons"></div>
+        <button onclick="closeModal('viewReportModal')" class="w-full bg-gray-200 py-2 rounded mt-3">Close</button>
     </div>
 </div>
 
 <div id="msgModal" class="modal">
     <div class="modal-content">
-        <h3 class="text-xl font-bold mb-5"><i class="fas fa-paper-plane text-blue-500 mr-2"></i>Send Message</h3>
-        
-        <div class="form-group">
-            <label>Select Department <span class="required">*</span></label>
-            <select id="msgTo"></select>
-        </div>
-        
-        <div class="form-group">
-            <label>Message <span class="required">*</span></label>
-            <textarea id="msgContent" rows="5" placeholder="Type your message here..."></textarea>
-        </div>
-        
-        <div class="flex gap-3 pt-3">
-            <button onclick="sendNewMessage()" class="flex-1 btn-primary py-2.5"><i class="fas fa-paper-plane mr-2"></i>Send</button>
-            <button onclick="closeModal('msgModal')" class="flex-1 bg-gray-200 py-2.5 rounded hover:bg-gray-300 transition">Cancel</button>
-        </div>
+        <h3 class="text-xl font-bold mb-4"><i class="fas fa-paper-plane text-green-500 mr-2"></i>Send Message</h3>
+        <div class="form-group"><label>Department <span class="required">*</span></label><select id="msgTo"></select></div>
+        <div class="form-group"><label>Message <span class="required">*</span></label><textarea id="msgContent" rows="5" placeholder="Type your message..."></textarea></div>
+        <div class="flex gap-3 pt-2"><button onclick="sendNewMessage()" class="flex-1 btn-primary">Send</button><button onclick="closeModal('msgModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div>
     </div>
 </div>
 
 <div id="chatModal" class="modal">
     <div class="modal-content" style="max-width:750px;">
-        <div class="flex justify-between items-center mb-4">
-            <h3 id="chatModalTitle" class="text-xl font-bold"><i class="fas fa-comments text-blue-500 mr-2"></i>Chat</h3>
-            <button onclick="closeModal('chatModal')" class="text-gray-400 text-2xl hover:text-gray-600">&times;</button>
-        </div>
-        <div class="chat-container">
-            <div id="chatMessagesArea" class="chat-messages">
-                <div class="text-center text-gray-400 py-8">Select a conversation to start chatting</div>
-            </div>
-            <div class="chat-input-area">
-                <textarea id="replyMsg" rows="2" placeholder="Type your message..." class="border rounded-lg p-2"></textarea>
-                <button onclick="sendChatMessage()" class="btn-primary px-4"><i class="fas fa-paper-plane"></i></button>
-            </div>
-        </div>
+        <div class="flex justify-between items-center mb-4"><h3 id="chatModalTitle" class="text-xl font-bold"><i class="fas fa-comments text-green-500 mr-2"></i>Chat</h3><button onclick="closeModal('chatModal')" class="text-gray-400 text-2xl hover:text-gray-600">&times;</button></div>
+        <div class="chat-container"><div id="chatMessagesArea" class="chat-messages"></div><div class="chat-input-area"><textarea id="replyMsg" rows="2" placeholder="Type your message..."></textarea><button onclick="sendChatMessage()" class="btn-primary">Send</button></div></div>
     </div>
 </div>
 
-<div id="backupModal" class="modal">
-    <div class="modal-content">
-        <h3 class="text-xl font-bold mb-5"><i class="fas fa-database text-green-500 mr-2"></i>Backup & Restore</h3>
-        <button onclick="createBackup()" class="w-full btn-success mb-3 py-2.5 rounded-lg"><i class="fas fa-download mr-2"></i> Backup Database</button>
-        <button onclick="restoreBackup()" class="w-full bg-orange-500 text-white py-2.5 rounded-lg mb-3 hover:bg-orange-600 transition"><i class="fas fa-upload mr-2"></i> Restore from Backup</button>
-        <button onclick="closeModal('backupModal')" class="w-full bg-gray-200 py-2.5 rounded-lg hover:bg-gray-300 transition">Close</button>
-    </div>
-</div>
+<div id="backupModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-database text-green-500 mr-2"></i>Backup & Restore</h3><button onclick="createBackup()" class="w-full btn-success mb-3 py-3 rounded-lg"><i class="fas fa-download mr-2"></i> Backup Database</button><button onclick="restoreBackup()" class="w-full bg-orange-500 text-white py-3 rounded-lg mb-3"><i class="fas fa-upload mr-2"></i> Restore Database</button><button onclick="closeModal('backupModal')" class="w-full bg-gray-200 py-3 rounded-lg">Close</button></div></div>
 
 <script>
     // ==================== CONFIGURATION ====================
     const API_BASE = '../backend/api/';
-    const DEPARTMENT_ID = 2; // Finance department
+    const DEPARTMENT_ID = 2;
+    
     let searchTimeout = null;
     let revenueChart = null;
-    let budgetChart = null;
     
-    let transactionsData = [];
-    let budgetsData = [];
-    let reportsData = [];
-    let departmentsList = [];
-    let messagesData = [];
-    let currentConversationId = null;
-    let currentDepartmentId = null;
-    let currentDepartmentName = '';
+    let transactionsData = [], reportsData = [], messagesData = [], departmentsList = [], allBudgets = [];
+    let currentConversationId = null, currentDepartmentId = null, currentDeptName = null;
     
-    const departmentNames = {
-        1: "Super Admin",
-        2: "Finance", 
-        3: "Sales & Marketing", 
-        4: "Manager",
-        5: "Secretary", 
-        6: "Bricks & Timber", 
-        7: "Aluminium",
-        8: "Town Planning", 
-        9: "Architectural", 
-        10: "Survey",
-        11: "Construction", 
-        12: "Hatimiliki"
-    };
+    const departmentNames = { 1: "Super Admin", 2: "Finance", 3: "Sales & Marketing", 4: "Manager", 5: "Secretary", 6: "Bricks & Timber", 7: "Aluminium", 8: "Town Planning", 9: "Architectural", 10: "Survey", 11: "Construction", 12: "Hatimiliki" };
+    const departmentIcons = { 1: "fa-crown", 2: "fa-coins", 3: "fa-chart-line", 4: "fa-user-tie", 5: "fa-calendar-check", 6: "fa-cubes", 7: "fa-industry", 8: "fa-city", 9: "fa-draw-polygon", 10: "fa-drafting-compass", 11: "fa-hard-hat", 12: "fa-file-contract" };
+    const departmentColors = { 1: "#0f74ba", 2: "#059669", 3: "#f59e0b", 4: "#3b82f6", 5: "#06b6d4", 6: "#8b5cf6", 7: "#6b7280", 8: "#ec4899", 9: "#14b8a6", 10: "#f97316", 11: "#ef4444", 12: "#84cc16" };
+    const sidebarColorOptions = ["#059669", "#047857", "#065f46", "#10b981", "#0f74ba", "#2563eb", "#7c3aed", "#dc2626", "#d97706", "#0d9488"];
     
-    const sidebarColorOptions = ["#0f74ba", "#1e3a5f", "#7c3aed", "#059669", "#dc2626", "#d97706", "#0d9488", "#db2777", "#4f46e5", "#10b981"];
+    function showToast(msg, isError) { let t = document.createElement('div'); t.className = 'toast' + (isError ? ' error' : ''); t.innerHTML = '<i class="fas ' + (isError ? 'fa-exclamation-circle' : 'fa-check-circle') + ' mr-2"></i>' + msg; document.body.appendChild(t); setTimeout(() => t.remove(), 3000); }
+    function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' })[m]); }
+    function formatMoney(amt) { let num = parseFloat(amt) || 0; return "TZS " + num.toLocaleString('en-US'); }
+    function parseAmount(str) { if (!str) return 0; return parseFloat(String(str).replace(/,/g, '')) || 0; }
+    function formatDate(d) { if (!d) return 'N/A'; return new Date(d).toLocaleDateString('en-GB'); }
+    function openModal(id) { document.getElementById(id).style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; document.body.style.overflow = 'auto'; }
+    function closeMobileSidebar() { document.getElementById("mainSidebar").classList.remove("mobile-open"); document.getElementById("mobileMenuOverlay").classList.add("hidden"); }
+    function formatAmountInput(input) { let value = input.value.replace(/,/g, ''); if (!isNaN(value) && value !== '') { let num = parseFloat(value); if (!isNaN(num)) input.value = num.toLocaleString('en-US'); } }
     
-    // ==================== HELPER FUNCTIONS ====================
-    function showToast(msg, isError) { 
-        let t = document.createElement('div'); 
-        t.className = 'toast' + (isError ? ' error' : ''); 
-        t.innerHTML = '<i class="fas ' + (isError ? 'fa-exclamation-circle' : 'fa-check-circle') + ' mr-2"></i>' + msg; 
-        document.body.appendChild(t); 
-        setTimeout(() => t.remove(), 3000); 
-    }
-    
-    function escapeHtml(str) { 
-        if (!str) return ''; 
-        return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); 
-    }
-    
-    function formatMoney(amt) { 
-        let num = parseFloat(amt) || 0;
-        return "TZS " + num.toLocaleString('en-US'); 
-    }
-    
-    function formatNumberWithCommas(num) {
-        if (num === null || num === undefined || num === '') return '';
-        let n = parseFloat(num);
-        if (isNaN(n)) return num;
-        return n.toLocaleString('en-US');
-    }
-    
-    function parseAmount(str) {
-        if (!str) return 0;
-        return parseFloat(String(str).replace(/,/g, '')) || 0;
-    }
-    
-    function formatDate(d) { 
-        if (!d) return 'N/A'; 
-        return new Date(d).toLocaleDateString('en-GB'); 
-    }
-    
-    function openModal(id) { 
-        document.getElementById(id).style.display = 'flex'; 
-        document.body.style.overflow = 'hidden';
-    }
-    
-    function closeModal(id) { 
-        document.getElementById(id).style.display = 'none'; 
-        document.body.style.overflow = 'auto';
-    }
-    
-    function closeMobileSidebar() { 
-        document.getElementById("mainSidebar").classList.remove("mobile-open"); 
-        document.getElementById("mobileMenuOverlay").classList.add("hidden"); 
-    }
-    
-    function toggleSendDropdown(dropdownId) {
-        const dropdown = document.getElementById(dropdownId);
-        document.querySelectorAll('.send-dropdown-content').forEach(d => { 
-            if (d.id !== dropdownId) d.style.display = 'none'; 
+    document.addEventListener('DOMContentLoaded', function() {
+        ['transAmount', 'transPaidAmount'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener('input', function() { formatAmountInput(this); });
         });
-        if (dropdown) dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-    }
-    
-    function formatAmountInput(input) {
-        let value = input.value.replace(/,/g, '');
-        if (!isNaN(value) && value !== '') {
-            let num = parseFloat(value);
-            if (!isNaN(num)) input.value = num.toLocaleString('en-US');
-        }
-    }
+    });
     
     // ==================== API CALLS ====================
     async function apiCall(endpoint, method = 'GET', data = null) {
         try { 
             const url = API_BASE + endpoint;
-            const opts = { method: method, headers: { 'Content-Type': 'application/json' }, credentials: 'include' }; 
+            const opts = { method, headers: { 'Content-Type': 'application/json' }, credentials: 'include' }; 
             if (data && method !== 'GET') opts.body = JSON.stringify(data); 
             const res = await fetch(url, opts); 
-            if (!res.ok) throw new Error('HTTP ' + res.status);
-            const text = await res.text();
-            try { return JSON.parse(text); } catch(e) { 
-                console.error('JSON Parse Error:', text.substring(0, 200)); 
-                return { success: false, message: 'Invalid server response', data: [] }; 
-            }
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return await res.json(); 
         } catch(e) { 
             console.error('API Error:', endpoint, e);
             return { success: false, message: e.message, data: [] }; 
         }
     }
     
-    async function logout() {
-        if (confirm('Are you sure you want to logout?')) {
-            localStorage.clear();
-            sessionStorage.clear();
-            window.location.href = 'login_system.html';
-        }
-    }
-    
-    async function updateConnectionStatus() {
-        const statusDiv = document.getElementById('connectionStatus');
-        try {
-            const response = await fetch(API_BASE + 'get_departments.php');
-            const data = await response.json();
-            if (data && data.success) {
-                statusDiv.innerHTML = '<i class="fas fa-check-circle"></i> DB Connected';
-                statusDiv.classList.remove('error');
-            } else {
-                statusDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> API Error';
-                statusDiv.classList.add('error');
-            }
-        } catch (error) {
-            statusDiv.innerHTML = '<i class="fas fa-plug"></i> API Offline';
-            statusDiv.classList.add('error');
-        }
-    }
+    async function logout() { if (confirm('Logout?')) { localStorage.clear(); sessionStorage.clear(); window.location.href = 'login_system.html'; } }
     
     async function loadDepartmentsForDropdowns() {
         const res = await apiCall('get_departments.php');
-        if (res.success && res.data) {
-            departmentsList = res.data;
-        } else {
-            departmentsList = Object.entries(departmentNames).map(([id, name]) => ({ id: parseInt(id), name }));
-        }
+        if (res.success && res.data) departmentsList = res.data.departments ? res.data.departments : res.data.filter(d => d.id !== 2);
+        else departmentsList = Object.entries(departmentNames).filter(([id]) => id != 2).map(([id, name]) => ({ id: parseInt(id), name }));
         
         const msgTo = document.getElementById('msgTo');
         if (msgTo) {
-            msgTo.innerHTML = '<option value="">-- Select Department --</option>';
-            departmentsList.forEach(d => {
-                if (d.id !== DEPARTMENT_ID) {
-                    msgTo.innerHTML += `<option value="${d.id}">📌 ${escapeHtml(d.name)}</option>`;
-                }
-            });
+            const filtered = departmentsList.filter(d => d.id !== 2);
+            msgTo.innerHTML = '<option value="">Select Department</option>' + filtered.map(d => `<option value="${d.id}">${escapeHtml(d.name)}</option>`).join('');
         }
     }
     
-    function updateReportBadge() {
-        // Reports sent TO Finance (received from other departments) that are unviewed
-        const unviewedCount = reportsData.filter(r => r.is_viewed_by_admin === 0 && r.department_id !== DEPARTMENT_ID).length;
-        const badge = document.getElementById('reportBadge');
-        if (unviewedCount > 0) { 
-            badge.classList.remove('hidden'); 
-            badge.innerText = unviewedCount > 99 ? '99+' : unviewedCount; 
-        } else {
-            badge.classList.add('hidden');
-        }
+    async function loadAllBudgets() {
+        const res = await apiCall('get_budgets.php');
+        if (res.success && res.data) allBudgets = res.data;
+        else allBudgets = [
+            { id: 1, category: "Operations", allocated_amount: 50000000, used_amount: 25000000, year: 2025, month: 5, department_id: 2, department_name: "Finance" },
+            { id: 2, category: "Salaries", allocated_amount: 30000000, used_amount: 15000000, year: 2025, month: 5, department_id: 2, department_name: "Finance" },
+            { id: 3, category: "Marketing", allocated_amount: 20000000, used_amount: 8000000, year: 2025, month: 5, department_id: 3, department_name: "Sales & Marketing" },
+            { id: 4, category: "Events", allocated_amount: 10000000, used_amount: 4000000, year: 2025, month: 5, department_id: 3, department_name: "Sales & Marketing" },
+            { id: 5, category: "Equipment", allocated_amount: 15000000, used_amount: 5000000, year: 2025, month: 5, department_id: 10, department_name: "Survey" },
+            { id: 6, category: "Software", allocated_amount: 8000000, used_amount: 3500000, year: 2025, month: 5, department_id: 9, department_name: "Architectural" },
+            { id: 7, category: "Training", allocated_amount: 8000000, used_amount: 2000000, year: 2025, month: 5, department_id: 4, department_name: "Manager" },
+            { id: 8, category: "Raw Materials", allocated_amount: 30000000, used_amount: 15000000, year: 2025, month: 5, department_id: 6, department_name: "Bricks & Timber" },
+            { id: 9, category: "Aluminium Sheets", allocated_amount: 25000000, used_amount: 8000000, year: 2025, month: 5, department_id: 7, department_name: "Aluminium" },
+            { id: 10, category: "Construction Materials", allocated_amount: 50000000, used_amount: 25000000, year: 2025, month: 5, department_id: 11, department_name: "Construction" },
+            { id: 11, category: "Town Planning", allocated_amount: 30000000, used_amount: 10000000, year: 2025, month: 5, department_id: 8, department_name: "Town Planning" },
+            { id: 12, category: "Title Deeds", allocated_amount: 40000000, used_amount: 15000000, year: 2025, month: 5, department_id: 12, department_name: "Hatimiliki" }
+        ];
     }
     
-    function updateMessageBadge() {
-        // Messages sent TO Finance (unread messages where receiver is Finance)
-        const unreadCount = messagesData.reduce((sum, conv) => sum + (conv.unread_count || 0), 0);
-        const badge = document.getElementById('msgBadge');
-        if (unreadCount > 0) { 
-            badge.classList.remove('hidden'); 
-            badge.innerText = unreadCount > 99 ? '99+' : unreadCount; 
-        } else {
-            badge.classList.add('hidden');
-        }
-    }
-    
-    function setupTransactionStatusListener() {
-        const statusSelect = document.getElementById('transStatus');
-        const paidAmountGroup = document.getElementById('paidAmountGroup');
-        
-        if (statusSelect && paidAmountGroup) {
-            statusSelect.addEventListener('change', function() {
-                if (this.value === 'partial') {
-                    paidAmountGroup.style.display = 'block';
-                } else {
-                    paidAmountGroup.style.display = 'none';
-                    document.getElementById('transPaidAmount').value = '';
-                }
-            });
-        }
-    }
-    
-    function setupAmountInputs() {
-        document.querySelectorAll('.amount-input').forEach(input => {
-            input.addEventListener('input', function() { formatAmountInput(this); });
-        });
-    }
-    
-    // Navigation
-    function showPage(pageId, highlightId = null) {
-        const pages = ['dashboard', 'transactions', 'budgets', 'reports', 'messages', 'settings'];
-        pages.forEach(page => {
-            const el = document.getElementById(page + 'Page');
-            if (el) el.classList.add('hidden');
-        });
-        
-        const activePage = document.getElementById(pageId + 'Page');
-        if (activePage) activePage.classList.remove('hidden');
-        
-        document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-        const activeNav = document.querySelector(`.nav-item[data-page="${pageId}"]`);
-        if (activeNav) activeNav.classList.add('active');
-        
-        if (pageId === 'dashboard') loadDashboard();
-        else if (pageId === 'transactions') loadTransactions(highlightId);
-        else if (pageId === 'budgets') loadBudgets(highlightId);
-        else if (pageId === 'reports') loadReports(highlightId);
-        else if (pageId === 'messages') loadMessages(highlightId);
-        else if (pageId === 'settings') loadSettings();
-    }
+    function updateMessageBadge() { const unread = messagesData.reduce((s, c) => s + (c.unread_count || 0), 0); const b = document.getElementById('msgBadge'); if (unread > 0) { b.classList.remove('hidden'); b.innerText = unread; } else b.classList.add('hidden'); }
     
     // ==================== DASHBOARD ====================
     async function loadDashboard() {
-        document.getElementById('dashboardPage').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div><span class="ml-3">Loading dashboard...</span></div>';
+        document.getElementById('dashboardPage').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div><span class="ml-3">Loading...</span></div>';
         
-        const transactions = await apiCall('get_transactions.php?department_id=' + DEPARTMENT_ID);
+        const transRes = await apiCall('get_transactions.php');
+        transactionsData = transRes.success ? transRes.data.filter(t => t.department_id === DEPARTMENT_ID || t.department_id === null) : [];
         
-        if (transactions.success && transactions.data) {
-            transactionsData = transactions.data;
-        } else {
-            transactionsData = [];
-        }
-        
-        let totalIncome = 0, totalExpense = 0, pendingPayments = 0;
-        for (let t of transactionsData) {
+        let totalIncome = 0, totalExpense = 0, pendingAmount = 0;
+        transactionsData.forEach(t => { 
             let amount = parseFloat(t.amount) || 0;
             let paid = parseFloat(t.paid_amount) || 0;
-            if (t.type === 'income') {
-                if (t.status === 'paid') totalIncome += amount;
-                else if (t.status === 'partial') totalIncome += paid;
-                if (t.status !== 'paid') pendingPayments += (amount - paid);
-            } else {
-                totalExpense += amount;
-            }
-        }
+            if (t.type === 'income') { 
+                totalIncome += paid;
+                if (t.status !== 'paid') pendingAmount += (amount - paid);
+            } else { totalExpense += paid; }
+        });
+        let netProfit = totalIncome - totalExpense;
         
         document.getElementById('dashboardPage').innerHTML = `
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <div class="stat-card cursor-pointer" onclick="showPage('transactions')">
-                    <div class="flex justify-between items-start"><div><p class="text-gray-500 text-xs uppercase tracking-wide">Total Income</p><p class="text-2xl font-bold text-green-600">${formatMoney(totalIncome)}</p></div><i class="fas fa-arrow-down text-green-500 text-2xl opacity-70"></i></div>
-                </div>
-                <div class="stat-card cursor-pointer" onclick="showPage('transactions')">
-                    <div class="flex justify-between items-start"><div><p class="text-gray-500 text-xs uppercase tracking-wide">Total Expenses</p><p class="text-2xl font-bold text-red-600">${formatMoney(totalExpense)}</p></div><i class="fas fa-arrow-up text-red-500 text-2xl opacity-70"></i></div>
-                </div>
-                <div class="stat-card cursor-pointer" onclick="showPage('transactions')">
-                    <div class="flex justify-between items-start"><div><p class="text-gray-500 text-xs uppercase tracking-wide">Net Profit</p><p class="text-2xl font-bold text-blue-600">${formatMoney(totalIncome - totalExpense)}</p></div><i class="fas fa-chart-line text-blue-500 text-2xl opacity-70"></i></div>
-                </div>
-                <div class="stat-card cursor-pointer" onclick="showPage('transactions')">
-                    <div class="flex justify-between items-start"><div><p class="text-gray-500 text-xs uppercase tracking-wide">Pending Payments</p><p class="text-2xl font-bold text-orange-600">${formatMoney(pendingPayments)}</p></div><i class="fas fa-clock text-orange-500 text-2xl opacity-70"></i></div>
-                </div>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-5">
+                <div class="stat-card cursor-pointer" onclick="showPage('transactions')"><div class="flex justify-between items-center"><div><p class="text-gray-500 text-xs uppercase">Total Income</p><p class="text-2xl font-bold text-green-600">${formatMoney(totalIncome)}</p></div><i class="fas fa-arrow-down text-green-500 text-2xl"></i></div></div>
+                <div class="stat-card cursor-pointer" onclick="showPage('transactions')"><div class="flex justify-between items-center"><div><p class="text-gray-500 text-xs uppercase">Total Expenses</p><p class="text-2xl font-bold text-red-600">${formatMoney(totalExpense)}</p></div><i class="fas fa-arrow-up text-red-500 text-2xl"></i></div></div>
+                <div class="stat-card cursor-pointer" onclick="showPage('transactions')"><div class="flex justify-between items-center"><div><p class="text-gray-500 text-xs uppercase">Net Profit</p><p class="text-2xl font-bold ${netProfit >= 0 ? 'text-green-600' : 'text-red-600'}">${formatMoney(netProfit)}</p></div><i class="fas fa-chart-line text-blue-500 text-2xl"></i></div></div>
+                <div class="stat-card cursor-pointer" onclick="showPage('transactions')"><div class="flex justify-between items-center"><div><p class="text-gray-500 text-xs uppercase">Pending Payments</p><p class="text-2xl font-bold text-orange-600">${formatMoney(pendingAmount)}</p></div><i class="fas fa-clock text-orange-500 text-2xl"></i></div></div>
             </div>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                <div class="bg-white rounded-xl p-5 shadow-sm border"><h3 class="font-semibold mb-4"><i class="fas fa-chart-line text-blue-500 mr-2"></i>Revenue Trend</h3><canvas id="revenueChart" height="200"></canvas></div>
-                <div class="bg-white rounded-xl p-5 shadow-sm border"><h3 class="font-semibold mb-4"><i class="fas fa-chart-pie text-blue-500 mr-2"></i>Budget Overview</h3><canvas id="budgetChart" height="200"></canvas></div>
-            </div>
-            <div class="grid grid-cols-3 gap-3">
-                <button onclick="openModal('transModal')" class="bg-blue-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition"><i class="fas fa-plus mr-2"></i>Add Transaction</button>
-                <button onclick="showPage('budgets')" class="bg-green-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-green-700 transition"><i class="fas fa-chart-pie mr-2"></i>View Budgets</button>
-                <button onclick="openModal('msgModal')" class="bg-purple-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-purple-700 transition"><i class="fas fa-comment mr-2"></i>Send Message</button>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                <div class="bg-white rounded-xl p-5 shadow-sm border"><h3 class="font-semibold mb-3"><i class="fas fa-chart-line text-green-500 mr-2"></i>Revenue Trend</h3><canvas id="revenueChart" height="200"></canvas></div>
+                <div class="bg-white rounded-xl p-5 shadow-sm border"><h3 class="font-semibold mb-3"><i class="fas fa-bolt text-orange-500 mr-2"></i>Quick Actions</h3><div class="grid grid-cols-2 gap-3"><button onclick="openModal('transModal')" class="bg-green-600 text-white py-2 rounded text-sm"><i class="fas fa-plus mr-2"></i> Add Transaction</button><button onclick="openModal('reportModal')" class="bg-purple-600 text-white py-2 rounded text-sm"><i class="fas fa-chart-bar mr-2"></i> Add Report</button><button onclick="openModal('msgModal')" class="bg-blue-600 text-white py-2 rounded text-sm"><i class="fas fa-paper-plane mr-2"></i> Send Message</button><button onclick="showPage('dept-budgets')" class="bg-indigo-600 text-white py-2 rounded text-sm"><i class="fas fa-building mr-2"></i> Dept Budgets</button></div></div>
             </div>
         `;
         
-        const budgetRes = await apiCall('get_budgets.php');
-        let totalAllocated = 0, totalUsed = 0;
-        if (budgetRes.success && budgetRes.data) {
-            budgetsData = budgetRes.data;
-            for (let b of budgetsData) {
-                totalAllocated += parseFloat(b.allocated_amount) || 0;
-                totalUsed += parseFloat(b.used_amount) || 0;
+        const monthlyData = { Jan: 0, Feb: 0, Mar: 0, Apr: 0, May: 0, Jun: 0 };
+        transactionsData.forEach(t => {
+            if (t.type === 'income' && t.status === 'paid') {
+                const month = new Date(t.transaction_date).toLocaleString('default', { month: 'short' });
+                if (monthlyData[month] !== undefined) monthlyData[month] += parseFloat(t.amount) / 1000000;
             }
-        }
-        
+        });
         const ctx = document.getElementById('revenueChart')?.getContext('2d');
-        if (ctx) {
-            if (revenueChart) revenueChart.destroy();
-            revenueChart = new Chart(ctx, {
-                type: 'line',
-                data: { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], 
-                        datasets: [{ label: 'Revenue', data: [totalIncome * 0.6, totalIncome * 0.7, totalIncome * 0.8, totalIncome * 0.9, totalIncome * 0.95, totalIncome], borderColor: '#0f74ba', backgroundColor: 'rgba(15,116,186,0.1)', fill: true, tension: 0.4 }] },
-                options: { responsive: true, maintainAspectRatio: true }
-            });
-        }
-        
-        const ctx2 = document.getElementById('budgetChart')?.getContext('2d');
-        if (ctx2) {
-            if (budgetChart) budgetChart.destroy();
-            budgetChart = new Chart(ctx2, {
-                type: 'doughnut',
-                data: { labels: ['Used', 'Remaining'], 
-                        datasets: [{ data: [totalUsed, Math.max(0, totalAllocated - totalUsed)], backgroundColor: ['#f59e0b', '#10b981'], borderWidth: 0 }] },
-                options: { responsive: true, maintainAspectRatio: true }
-            });
-        }
+        if (ctx) { if (revenueChart) revenueChart.destroy(); revenueChart = new Chart(ctx, { type: 'line', data: { labels: Object.keys(monthlyData), datasets: [{ label: 'Revenue (TZS M)', data: Object.values(monthlyData), borderColor: '#059669', fill: true, tension: 0.3 }] }, options: { responsive: true } }); }
     }
     
     // ==================== TRANSACTIONS ====================
     async function loadTransactions(highlightId = null) {
-        document.getElementById('transactionsPage').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div><span class="ml-3">Loading transactions...</span></div>';
+        const res = await apiCall('get_transactions.php');
+        transactionsData = res.success ? res.data.filter(t => t.department_id === DEPARTMENT_ID || t.department_id === null) : [];
         
-        const res = await apiCall('get_transactions.php?department_id=' + DEPARTMENT_ID);
-        if (res.success && res.data) {
-            transactionsData = res.data.sort((a,b) => b.id - a.id);
-        } else {
-            transactionsData = [];
-        }
-        
-        let totalIncome = 0, totalExpense = 0, pendingPaymentsTotal = 0;
-        for (let t of transactionsData) {
+        let totalIncome = 0, totalExpense = 0, pendingAmount = 0;
+        transactionsData.forEach(t => { 
             let amount = parseFloat(t.amount) || 0;
             let paid = parseFloat(t.paid_amount) || 0;
-            if (t.type === 'income') {
-                if (t.status === 'paid') totalIncome += amount;
-                else if (t.status === 'partial') totalIncome += paid;
-                if (t.status !== 'paid') pendingPaymentsTotal += (amount - paid);
-            } else {
-                totalExpense += amount;
-            }
-        }
+            if (t.type === 'income') { 
+                totalIncome += paid;
+                if (t.status !== 'paid') pendingAmount += (amount - paid);
+            } else { totalExpense += paid; }
+        });
         
-        let html = `
-            <div class="flex justify-between items-center mb-5 flex-wrap gap-3">
-                <div><h2 class="text-xl font-bold"><i class="fas fa-exchange-alt text-blue-600 mr-2"></i>Transactions</h2><p class="text-xs text-gray-400 mt-1">${transactionsData.length} total records</p></div>
-                <button onclick="openModal('transModal')" class="btn-primary"><i class="fas fa-plus mr-2"></i>Add Transaction</button>
+        let html = `<div class="flex flex-wrap justify-between items-center gap-3 mb-4">
+            <h2 class="text-xl font-bold"><i class="fas fa-exchange-alt text-green-600 mr-2"></i>Transactions (${transactionsData.length})</h2>
+            <div class="flex gap-2 flex-wrap">
+                <button onclick="openModal('transModal')" class="btn-primary"><i class="fas fa-plus mr-1"></i> Add Transaction</button>
+                <button onclick="exportTransactionsToExcel()" class="btn-success"><i class="fas fa-file-excel mr-1"></i> Excel</button>
+                <button onclick="exportTransactionsToPDF()" class="btn-danger"><i class="fas fa-file-pdf mr-1"></i> PDF</button>
             </div>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
-                <div class="bg-green-50 rounded-xl p-3 text-center"><p class="text-[10px] text-gray-500 uppercase">Income</p><p class="text-lg font-bold text-green-600">${formatMoney(totalIncome)}</p></div>
-                <div class="bg-red-50 rounded-xl p-3 text-center"><p class="text-[10px] text-gray-500 uppercase">Expenses</p><p class="text-lg font-bold text-red-600">${formatMoney(totalExpense)}</p></div>
-                <div class="bg-blue-50 rounded-xl p-3 text-center"><p class="text-[10px] text-gray-500 uppercase">Net Profit</p><p class="text-lg font-bold text-blue-600">${formatMoney(totalIncome - totalExpense)}</p></div>
-                <div class="bg-orange-50 rounded-xl p-3 text-center"><p class="text-[10px] text-gray-500 uppercase">Pending</p><p class="text-lg font-bold text-orange-600">${formatMoney(pendingPaymentsTotal)}</p></div>
-            </div>
-            <div class="bg-white rounded-xl shadow-sm overflow-hidden border">
-                <div class="overflow-x-auto"><table class="min-w-full"><thead class="bg-gray-50"><tr>
-                    <th class="px-4 py-3">Date</th><th class="px-4 py-3">Type</th><th class="px-4 py-3">Source</th><th class="px-4 py-3 text-right">Amount</th><th class="px-4 py-3">Status</th><th class="px-4 py-3 text-center">Actions</th>
-                </tr></thead><tbody>`;
-        
-        for (let t of transactionsData) {
-            const isHighlighted = highlightId && t.id === highlightId;
-            const rowClass = t.type === 'income' ? 'income-row' : 'expense-row';
-            const statusClass = t.status === 'paid' ? 'status-paid' : (t.status === 'partial' ? 'status-partial' : 'status-pending');
-            html += `<tr class="border-b ${rowClass} ${isHighlighted ? 'search-highlight' : ''}" id="trans-row-${t.id}">
-                <td class="px-4 py-3">${t.transaction_date}</td>
-                <td class="px-4 py-3"><span class="status-badge ${t.type === 'income' ? 'status-paid' : 'status-partial'}">${t.type}</span></td>
-                <td class="px-4 py-3 font-medium">${escapeHtml(t.source)}</td>
-                <td class="px-4 py-3 text-right ${t.type === 'income' ? 'text-green-600' : 'text-red-600'} font-bold">${formatMoney(t.amount)}</td>
-                <td class="px-4 py-3"><span class="status-badge ${statusClass}">${t.status}</span></td>
-                <td class="px-4 py-3 text-center"><div class="flex gap-2 justify-center">
-                    <button onclick="viewTransaction(${t.id})" class="action-btn view"><i class="fas fa-eye"></i></button>
-                    <button onclick="editTransaction(${t.id})" class="action-btn edit"><i class="fas fa-edit"></i></button>
-                    <button onclick="deleteTransaction(${t.id})" class="action-btn delete"><i class="fas fa-trash"></i></button>
-                </div></td>
-             </tr>`;
-        }
-        if (transactionsData.length === 0) html += `<tr><td colspan="6" class="text-center py-8 text-gray-400"><i class="fas fa-inbox text-3xl mb-2 opacity-50 block"></i>No transactions found</td></tr>`;
-        html += `</tbody></table></div></div>`;
-        document.getElementById('transactionsPage').innerHTML = html;
-        
-        if (highlightId) {
-            const element = document.getElementById(`trans-row-${highlightId}`);
-            if (element) element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-    }
-    
-    function viewTransaction(id) {
-        const t = transactionsData.find(t => t.id === id);
-        if (t) {
-            document.getElementById('viewTransContent').innerHTML = `
-                <div class="bg-gray-50 p-4 rounded-lg space-y-2">
-                    <div class="flex justify-between py-2 border-b"><span class="font-semibold">Date:</span><span>${t.transaction_date}</span></div>
-                    <div class="flex justify-between py-2 border-b"><span class="font-semibold">Type:</span><span class="status-badge ${t.type === 'income' ? 'status-paid' : 'status-partial'}">${t.type}</span></div>
-                    <div class="flex justify-between py-2 border-b"><span class="font-semibold">Source:</span><span>${escapeHtml(t.source)}</span></div>
-                    <div class="flex justify-between py-2 border-b"><span class="font-semibold">Amount:</span><span class="font-bold">${formatMoney(t.amount)}</span></div>
-                    <div class="flex justify-between py-2 border-b"><span class="font-semibold">Paid:</span><span>${formatMoney(t.paid_amount || 0)}</span></div>
-                    <div class="flex justify-between py-2 border-b"><span class="font-semibold">Status:</span><span class="status-badge ${t.status === 'paid' ? 'status-paid' : (t.status === 'partial' ? 'status-partial' : 'status-pending')}">${t.status}</span></div>
-                    <div class="py-2"><span class="font-semibold">Description:</span><p class="mt-1 text-gray-600">${escapeHtml(t.description || '-')}</p></div>
-                </div>`;
-            openModal('viewTransModal');
-        }
-    }
-    
-    function editTransaction(id) {
-        const t = transactionsData.find(t => t.id === id);
-        if (t) {
-            document.getElementById('transId').value = t.id;
-            document.getElementById('transType').value = t.type;
-            document.getElementById('transSource').value = t.source;
-            document.getElementById('transAmount').value = formatNumberWithCommas(t.amount);
-            document.getElementById('transDate').value = t.transaction_date;
-            document.getElementById('transStatus').value = t.status;
-            document.getElementById('transDesc').value = t.description || '';
-            
-            const paidAmountGroup = document.getElementById('paidAmountGroup');
-            if (t.status === 'partial') {
-                paidAmountGroup.style.display = 'block';
-                document.getElementById('transPaidAmount').value = formatNumberWithCommas(t.paid_amount || 0);
-            } else {
-                paidAmountGroup.style.display = 'none';
-                document.getElementById('transPaidAmount').value = '';
-            }
-            
-            openModal('transModal');
-        }
-    }
-    
-    async function saveTransaction() {
-        let id = document.getElementById('transId').value;
-        let source = document.getElementById('transSource').value.trim();
-        let amount = parseAmount(document.getElementById('transAmount').value);
-        let type = document.getElementById('transType').value;
-        let date = document.getElementById('transDate').value;
-        let paidAmount = parseAmount(document.getElementById('transPaidAmount').value) || 0;
-        let status = document.getElementById('transStatus').value;
-        let description = document.getElementById('transDesc').value;
-        
-        if (!source) { showToast('Source is required', true); return; }
-        if (!amount || amount <= 0) { showToast('Valid amount is required', true); return; }
-        if (!date) { showToast('Date is required', true); return; }
-        
-        if (status === 'partial' && paidAmount >= amount) {
-            status = 'paid';
-            paidAmount = amount;
-        }
-        if (status === 'partial' && paidAmount === 0) {
-            status = 'pending';
-        }
-        
-        let data = { type, source, amount, transaction_date: date, paid_amount: paidAmount, status, description, department_id: DEPARTMENT_ID };
-        
-        let res;
-        if (id) { data.id = parseInt(id); res = await apiCall('update_transaction.php', 'POST', data); }
-        else { res = await apiCall('add_transaction.php', 'POST', data); }
-        
-        if (res && res.success) {
-            showToast(id ? 'Transaction updated successfully' : 'Transaction added successfully');
-            closeModal('transModal');
-            loadTransactions();
-            loadDashboard();
-            document.getElementById('transId').value = '';
-            document.getElementById('transSource').value = '';
-            document.getElementById('transAmount').value = '';
-            document.getElementById('transDesc').value = '';
-            document.getElementById('transPaidAmount').value = '';
-            document.getElementById('paidAmountGroup').style.display = 'none';
-        } else {
-            showToast(res?.message || 'Failed to save transaction', true);
-        }
-    }
-    
-    async function deleteTransaction(id) {
-        if (confirm('Are you sure you want to delete this transaction?')) {
-            const res = await apiCall('delete_transaction.php', 'DELETE', { id });
-            if (res && res.success) {
-                showToast('Transaction deleted successfully');
-                loadTransactions();
-                loadDashboard();
-            } else {
-                showToast(res?.message || 'Failed to delete', true);
-            }
-        }
-    }
-    
-    // ==================== BUDGETS ====================
-    async function loadBudgets(highlightId = null) {
-        document.getElementById('budgetsPage').innerHTML = '<div class="loading-spinner mx-auto mt-20"></div>';
-        
-        const res = await apiCall('get_budgets.php');
-        if (res.success && res.data) {
-            budgetsData = res.data;
-        } else {
-            budgetsData = [];
-        }
-        
-        // Calculate totals from ALL departments (ALL budget records)
-        let totalAllocated = 0, totalUsed = 0, totalRemaining = 0;
-        for (let b of budgetsData) {
-            totalAllocated += parseFloat(b.allocated_amount) || 0;
-            totalUsed += parseFloat(b.used_amount) || 0;
-        }
-        totalRemaining = totalAllocated - totalUsed;
-        
-        let html = `
-            <div class="mb-5">
-                <h2 class="text-xl font-bold"><i class="fas fa-chart-pie text-blue-600 mr-2"></i>Department Budgets</h2>
-                <p class="text-xs text-gray-400 mt-1">Budget allocations across all departments</p>
-            </div>
-            
-            <!-- Summary Stats for All Departments -->
-            <div class="summary-stats">
-                <div class="summary-stat">
-                    <h4><i class="fas fa-chart-line text-green-500 mr-1"></i> Total Budget</h4>
-                    <div class="value text-green-600">${formatMoney(totalAllocated)}</div>
-                </div>
-                <div class="summary-stat">
-                    <h4><i class="fas fa-chart-pie text-orange-500 mr-1"></i> Total Used</h4>
-                    <div class="value text-orange-600">${formatMoney(totalUsed)}</div>
-                </div>
-                <div class="summary-stat">
-                    <h4><i class="fas fa-chart-line text-blue-500 mr-1"></i> Remaining</h4>
-                    <div class="value ${totalRemaining >= 0 ? 'text-blue-600' : 'text-red-600'}">${formatMoney(totalRemaining)}</div>
-                </div>
-                <div class="summary-stat">
-                    <h4><i class="fas fa-percent text-purple-500 mr-1"></i> Usage</h4>
-                    <div class="value text-purple-600">${totalAllocated > 0 ? ((totalUsed / totalAllocated) * 100).toFixed(1) : 0}%</div>
-                </div>
-            </div>
-            
-            <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="budget-table min-w-full">
-                        <thead>
-                            <tr class="bg-gray-50">
-                                <th class="px-4 py-3">Department</th>
-                                <th class="px-4 py-3">Category</th>
-                                <th class="px-4 py-3 text-right">Allocated (TZS)</th>
-                                <th class="px-4 py-3 text-right">Used (TZS)</th>
-                                <th class="px-4 py-3 text-right">Remaining (TZS)</th>
-                                <th class="px-4 py-3">Period</th>
-                             </tr>
-                        </thead>
-                        <tbody>`;
-        
-        if (budgetsData.length === 0) {
-            html += `<tr><td colspan="6" class="text-center py-8 text-gray-400">No budget data found</td></tr>`;
-        } else {
-            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-            for (let b of budgetsData) {
-                const isHighlighted = highlightId && b.id === highlightId;
-                const remaining = (parseFloat(b.allocated_amount) || 0) - (parseFloat(b.used_amount) || 0);
-                const period = b.month ? `${months[b.month - 1]} ${b.year}` : (b.year || 'N/A');
-                const deptName = departmentNames[b.department_id] || `Dept ${b.department_id}`;
-                html += `<tr class="border-b ${isHighlighted ? 'search-highlight' : ''}" id="budget-row-${b.id}">
-                    <td class="px-4 py-3 font-medium">${escapeHtml(deptName)}</td>
-                    <td class="px-4 py-3">${escapeHtml(b.category)}</td>
-                    <td class="px-4 py-3 text-right text-green-600">${formatMoney(b.allocated_amount)}</td>
-                    <td class="px-4 py-3 text-right text-orange-600">${formatMoney(b.used_amount)}</td>
-                    <td class="px-4 py-3 text-right ${remaining >= 0 ? 'text-blue-600' : 'text-red-600'}">${formatMoney(remaining)}</td>
-                    <td class="px-4 py-3">${period}</td>
-                 </tr>`;
-            }
-        }
-        
-        html += `</tbody></table></div></div>`;
-        document.getElementById('budgetsPage').innerHTML = html;
-        
-        if (highlightId) {
-            const element = document.getElementById(`budget-row-${highlightId}`);
-            if (element) element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-    }
-    
-    // ==================== REPORTS (Sent TO Finance) ====================
-    async function loadReports(highlightId = null) {
-        const res = await apiCall('get_reports.php');
-        if (res.success && res.data) {
-            // Get reports sent TO Finance (department_id = 2)
-            reportsData = res.data.filter(r => r.sent_from_dept !== DEPARTMENT_ID && r.sent_from_dept !== null);
-        } else {
-            reportsData = [];
-        }
-        updateReportBadge();
-        
-        let html = `<div class="flex justify-between items-center mb-5 flex-wrap gap-3">
-            <div><h2 class="text-xl font-bold"><i class="fas fa-chart-bar text-blue-600 mr-2"></i>Reports Received</h2><p class="text-xs text-gray-400 mt-1">${reportsData.length} total reports from other departments</p></div>
-            <button onclick="openModal('reportModal')" class="btn-primary"><i class="fas fa-plus mr-2"></i>Create Report</button>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="reportsGrid"></div>`;
-        document.getElementById('reportsPage').innerHTML = html;
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+            <div class="bg-green-50 rounded-xl p-3 text-center"><p class="text-xs text-gray-500 uppercase">Income</p><p class="text-xl font-bold text-green-600">${formatMoney(totalIncome)}</p></div>
+            <div class="bg-red-50 rounded-xl p-3 text-center"><p class="text-xs text-gray-500 uppercase">Expenses</p><p class="text-xl font-bold text-red-600">${formatMoney(totalExpense)}</p></div>
+            <div class="bg-blue-50 rounded-xl p-3 text-center"><p class="text-xs text-gray-500 uppercase">Net Profit</p><p class="text-xl font-bold ${totalIncome - totalExpense >= 0 ? 'text-blue-600' : 'text-red-600'}">${formatMoney(totalIncome - totalExpense)}</p></div>
+            <div class="bg-orange-50 rounded-xl p-3 text-center"><p class="text-xs text-gray-500 uppercase">Pending</p><p class="text-xl font-bold text-orange-600">${formatMoney(pendingAmount)}</p></div>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border trans-table-container">
+            <table class="trans-table">
+                <thead><tr><th>Date</th><th>Type</th><th>Source</th><th class="text-right">Amount</th><th class="text-right">Paid</th><th class="text-right">Pending</th><th class="text-center">Status</th><th class="text-center">Actions</th></tr></thead>
+                <tbody>`;
         
-        if (reportsData.length === 0) {
-            document.getElementById('reportsGrid').innerHTML = '<div class="col-span-2 text-center py-8 text-gray-400 bg-white rounded-xl border"><i class="fas fa-file-alt text-3xl mb-2 opacity-50 block"></i>No reports received from other departments</div>';
-            return;
-        }
-        
-        let reportsHtml = '';
-        for (let r of reportsData) {
-            const isHighlighted = highlightId && r.id === highlightId;
-            const isNew = r.is_viewed_by_admin === 0;
-            reportsHtml += `<div class="report-card ${isHighlighted ? 'search-highlight' : ''} ${isNew ? 'border-l-4 border-l-blue-500' : ''}" id="report-card-${r.id}" onclick="viewReportDetails(${r.id})">
-                <div class="flex justify-between items-start">
-                    <div><h4 class="font-semibold">${escapeHtml(r.title)}</h4><span class="text-[9px] px-2 py-0.5 rounded-full bg-gray-100">${r.period}</span><p class="text-xs text-gray-400 mt-1">From: ${departmentNames[r.sent_from_dept] || 'Department'}</p></div>
-                    ${isNew ? '<span class="bg-blue-500 text-white text-[9px] px-1.5 py-0.5 rounded-full">New</span>' : ''}
-                </div>
-                <p class="text-sm text-gray-600 mt-2 line-clamp-2">${escapeHtml(r.content.substring(0, 100))}${r.content.length > 100 ? '...' : ''}</p>
-                <div class="flex gap-2 mt-3">
-                    <button onclick="event.stopPropagation(); viewReportDetails(${r.id})" class="action-btn view"><i class="fas fa-eye mr-1"></i>View</button>
-                    <button onclick="event.stopPropagation(); deleteReport(${r.id})" class="action-btn delete"><i class="fas fa-trash mr-1"></i>Delete</button>
-                </div>
-            </div>`;
-        }
-        document.getElementById('reportsGrid').innerHTML = reportsHtml;
-        
-        if (highlightId) {
-            const element = document.getElementById(`report-card-${highlightId}`);
-            if (element) element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
+        transactionsData.forEach(t => { 
+            let amount = parseFloat(t.amount) || 0;
+            let paid = parseFloat(t.paid_amount) || 0;
+            let pending = (t.type === 'income' && t.status !== 'paid') ? amount - paid : 0;
+            let rowClass = t.status === 'pending' ? 'pending-row' : (t.status === 'partial' ? 'partial-row' : '');
+            html += `<tr id="trans-row-${t.id}" class="${t.type === 'income' ? 'income-row' : 'expense-row'} ${rowClass} border-b">
+                <td>${t.transaction_date}</td>
+                <td><span class="status-badge ${t.type === 'income' ? 'status-paid' : 'status-partial'}">${t.type}</span></td>
+                <td class="font-medium">${escapeHtml(t.source)}</td>
+                <td class="text-right ${t.type === 'income' ? 'text-green-600' : 'text-red-600'} font-bold">${formatMoney(amount)}</td>
+                <td class="text-right text-blue-600">${formatMoney(paid)}</td>
+                <td class="text-right ${pending > 0 ? 'text-orange-600 font-semibold' : 'text-green-600'}">${formatMoney(pending)}</td>
+                <td class="text-center"><span class="status-badge ${t.status === 'paid' ? 'status-paid' : t.status === 'partial' ? 'status-partial' : 'status-pending'}">${t.status}</span></td>
+                <td class="text-center"><div class="flex gap-1 justify-center"><button onclick="viewTransaction(${t.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="editTransaction(${t.id})" class="action-btn edit"><i class="fas fa-edit"></i></button><button onclick="deleteTransaction(${t.id})" class="action-btn delete"><i class="fas fa-trash"></i></button></div></td>
+            </tr>`; 
+        });
+        if(transactionsData.length === 0) html += `<tr><td colspan="8" class="text-center py-8 text-gray-400">No transactions found</td></tr>`;
+        html += `</tbody></div>`;
+        document.getElementById('transactionsPage').innerHTML = html;
+        if (highlightId) { const el = document.getElementById(`trans-row-${highlightId}`); if(el) { el.classList.add('search-highlight'); el.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => el.classList.remove('search-highlight'), 2000); } }
     }
     
-    async function markReportAsViewed(reportId) {
-        const res = await apiCall('mark_report_viewed.php', 'POST', { report_id: reportId });
-        if (res && res.success) {
-            const report = reportsData.find(r => r.id === reportId);
-            if (report) report.is_viewed_by_admin = 1;
-            updateReportBadge();
-            loadReports();
-        }
+    function exportTransactionsToExcel() {
+        let ws = [['Date', 'Type', 'Source', 'Amount', 'Paid', 'Pending', 'Status', 'Description']];
+        transactionsData.forEach(t => {
+            let amount = parseFloat(t.amount) || 0;
+            let paid = parseFloat(t.paid_amount) || 0;
+            let pending = (t.type === 'income' && t.status !== 'paid') ? amount - paid : 0;
+            ws.push([t.transaction_date, t.type, t.source, amount, paid, pending, t.status, t.description || '']);
+        });
+        let wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), 'Transactions');
+        XLSX.writeFile(wb, `transactions_${new Date().toISOString().slice(0,10)}.xlsx`);
+        showToast('Transactions exported to Excel');
     }
     
-    function viewReportDetails(id) {
-        const r = reportsData.find(r => r.id === id);
-        if (r) {
-            if (r.is_viewed_by_admin === 0) markReportAsViewed(id);
-            
-            document.getElementById('viewReportContent').innerHTML = `
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <div class="mb-3"><strong>From Department:</strong><br>${departmentNames[r.sent_from_dept] || 'Department'}</div>
-                    <div class="mb-3"><strong>Title:</strong><br>${escapeHtml(r.title)}</div>
-                    <div class="mb-3"><strong>Period:</strong><br>${r.period}</div>
-                    <div class="mb-3"><strong>Date:</strong><br>${formatDate(r.created_at)}</div>
-                    <div class="mt-3 pt-3 border-t"><strong>Content:</strong><br><div class="bg-white p-3 rounded-lg mt-2 whitespace-pre-wrap text-sm">${escapeHtml(r.content)}</div></div>
-                </div>`;
-            
-            document.getElementById('viewReportButtons').innerHTML = `
-                <button onclick="exportReportToExcel(${r.id})" class="btn-success"><i class="fas fa-file-excel mr-1"></i> Excel</button>
-                <button onclick="exportReportToPDF(${r.id})" class="btn-danger"><i class="fas fa-file-pdf mr-1"></i> PDF</button>
-            `;
-            openModal('viewReportModal');
-        }
+    function exportTransactionsToPDF() {
+        let element = document.createElement('div');
+        let rows = '';
+        transactionsData.forEach(t => {
+            let amount = parseFloat(t.amount) || 0;
+            let paid = parseFloat(t.paid_amount) || 0;
+            let pending = (t.type === 'income' && t.status !== 'paid') ? amount - paid : 0;
+            rows += `<tr><td class="px-2 py-1">${t.transaction_date}</td><td class="px-2 py-1">${t.type}</td><td class="px-2 py-1">${escapeHtml(t.source)}</td><td class="px-2 py-1 text-right">${formatMoney(amount)}</td><td class="px-2 py-1 text-right">${formatMoney(paid)}</td><td class="px-2 py-1 text-right">${formatMoney(pending)}</td><td class="px-2 py-1">${t.status}</td></tr>`;
+        });
+        element.innerHTML = `<div style="padding:20px"><h1 style="color:#059669">Transactions Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8" style="width:100%; border-collapse:collapse;"><thead><tr style="background:#f3f4f6"><th>Date</th><th>Type</th><th>Source</th><th class="text-right">Amount</th><th class="text-right">Paid</th><th class="text-right">Pending</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table><p style="margin-top:20px; font-size:10px; color:#999;">GeoTraverse ERP System - Finance Department Report</p></div>`;
+        html2pdf().set({ margin: 0.5, filename: `transactions_report.pdf` }).from(element).save();
+        showToast('Transactions exported to PDF');
     }
     
-    function exportReportToExcel(reportId) {
-        const r = reportsData.find(r => r.id === reportId);
-        if (r) {
-            let ws = [['From Department', 'Title', 'Period', 'Content', 'Date']];
-            ws.push([departmentNames[r.sent_from_dept] || 'Department', r.title, r.period, r.content, r.created_at]);
-            let wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), 'Report');
-            XLSX.writeFile(wb, `report_${r.id}_${new Date().toISOString().slice(0,10)}.xlsx`);
-            showToast('Exported to Excel');
-        }
-    }
+    function viewTransaction(id) { const t = transactionsData.find(t => t.id === id); if(t) { let amount = parseFloat(t.amount)||0; let paid = parseFloat(t.paid_amount)||0; let pending = (t.type === 'income' && t.status !== 'paid') ? amount - paid : 0; document.getElementById('viewTransContent').innerHTML = `<div class="space-y-2"><p><strong>Date:</strong> ${t.transaction_date}</p><p><strong>Type:</strong> ${t.type}</p><p><strong>Source:</strong> ${escapeHtml(t.source)}</p><p><strong>Amount:</strong> ${formatMoney(amount)}</p><p><strong>Paid:</strong> ${formatMoney(paid)}</p>${pending > 0 ? `<p><strong>Pending:</strong> ${formatMoney(pending)}</p>` : ''}<p><strong>Status:</strong> ${t.status}</p><p><strong>Description:</strong> ${escapeHtml(t.description || '-')}</p></div>`; openModal('viewTransModal'); } }
+    function editTransaction(id) { const t = transactionsData.find(t => t.id === id); if(t) { document.getElementById('transId').value = t.id; document.getElementById('transType').value = t.type; document.getElementById('transSource').value = t.source; document.getElementById('transAmount').value = t.amount; document.getElementById('transDate').value = t.transaction_date; document.getElementById('transStatus').value = t.status; document.getElementById('transPaidAmount').value = t.paid_amount || 0; document.getElementById('transDesc').value = t.description || ''; openModal('transModal'); } }
+    async function saveTransaction() { let id = document.getElementById('transId').value; let status = document.getElementById('transStatus').value; let data = { type: document.getElementById('transType').value, source: document.getElementById('transSource').value, amount: parseAmount(document.getElementById('transAmount').value), transaction_date: document.getElementById('transDate').value, status: status, description: document.getElementById('transDesc').value, department_id: DEPARTMENT_ID }; if (status === 'partial') data.paid_amount = parseAmount(document.getElementById('transPaidAmount').value); else data.paid_amount = data.amount; if(!data.source || data.amount <= 0) { showToast('Source and amount required', true); return; } let res = id ? await apiCall('update_transaction.php','POST',{...data,id:parseInt(id)}) : await apiCall('add_transaction.php','POST',data); if(res.success) { showToast(id ? 'Transaction updated' : 'Transaction added'); closeModal('transModal'); loadTransactions(); loadDashboard(); } else showToast(res.message || 'Failed', true); }
+    async function deleteTransaction(id) { if(confirm('Delete this transaction? This will only hide it from your view.')) { let res = await apiCall('delete_transaction.php','DELETE',{id}); if(res.success) { showToast('Transaction deleted from your view'); loadTransactions(); loadDashboard(); } else showToast(res.message || 'Failed', true); } }
     
-    function exportReportToPDF(reportId) {
-        const r = reportsData.find(r => r.id === reportId);
-        if (r) {
-            let element = document.createElement('div');
-            element.innerHTML = `<div style="padding:20px; font-family: Arial, sans-serif;">
-                <h1 style="color: #0f74ba;">${escapeHtml(r.title)}</h1>
-                <p><strong>From:</strong> ${departmentNames[r.sent_from_dept] || 'Department'}</p>
-                <p><strong>Period:</strong> ${r.period}</p>
-                <p><strong>Date:</strong> ${formatDate(r.created_at)}</p>
-                <hr/>
-                <div style="white-space: pre-wrap; margin-top: 15px;">${escapeHtml(r.content)}</div>
-                <hr/>
-                <p style="font-size: 10px; color: #666; margin-top: 20px;">Generated: ${new Date().toLocaleString()}</p>
-            </div>`;
-            html2pdf().set({ margin: 0.5, filename: `report_${r.id}.pdf` }).from(element).save();
-            showToast('Exported to PDF');
-        }
-    }
-    
-    async function saveReport() {
-        let title = document.getElementById('reportTitle').value.trim();
-        let period = document.getElementById('reportPeriod').value;
-        let content = document.getElementById('reportContent').value.trim();
+    // ==================== DEPARTMENT BUDGETS VIEW ====================
+    async function loadDeptBudgets(highlightId = null) {
+        await loadAllBudgets();
         
-        if (!title) { showToast('Report title is required', true); return; }
-        if (!content) { showToast('Report content is required', true); return; }
-        
-        let data = { title, period, content, department_id: DEPARTMENT_ID, status: 'sent', sent_from_dept: DEPARTMENT_ID };
-        let res = await apiCall('add_report.php', 'POST', data);
-        
-        if (res && res.success) {
-            showToast('Report sent successfully to Admin');
-            closeModal('reportModal');
-            document.getElementById('reportTitle').value = '';
-            document.getElementById('reportContent').value = '';
-        } else {
-            showToast(res?.message || 'Failed to send report', true);
-        }
-    }
-    
-    async function deleteReport(id) {
-        if (confirm('Delete this report?')) {
-            const res = await apiCall('delete_report.php', 'DELETE', { id });
-            if (res && res.success) {
-                showToast('Report deleted successfully');
-                loadReports();
-            } else {
-                showToast(res?.message || 'Failed to delete', true);
+        const budgetsByDept = {};
+        allBudgets.forEach(b => {
+            if (!budgetsByDept[b.department_id]) {
+                budgetsByDept[b.department_id] = {
+                    department_name: b.department_name || departmentNames[b.department_id] || 'Unknown',
+                    budgets: []
+                };
             }
+            budgetsByDept[b.department_id].budgets.push(b);
+        });
+        
+        let html = `<div class="mb-4"><h2 class="text-xl font-bold"><i class="fas fa-building text-green-600 mr-2"></i>Department Budgets</h2><p class="text-xs text-gray-500">View budget allocations for all departments</p></div>`;
+        
+        let totalAllocated = 0, totalUsed = 0;
+        allBudgets.forEach(b => { totalAllocated += parseFloat(b.allocated_amount || 0); totalUsed += parseFloat(b.used_amount || 0); });
+        html += `<div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-5">
+            <div class="bg-green-50 rounded-xl p-3 text-center"><p class="text-xs text-gray-500 uppercase">Total Allocated</p><p class="text-xl font-bold text-green-600">${formatMoney(totalAllocated)}</p></div>
+            <div class="bg-orange-50 rounded-xl p-3 text-center"><p class="text-xs text-gray-500 uppercase">Total Used</p><p class="text-xl font-bold text-orange-600">${formatMoney(totalUsed)}</p></div>
+            <div class="bg-blue-50 rounded-xl p-3 text-center"><p class="text-xs text-gray-500 uppercase">Remaining</p><p class="text-xl font-bold text-blue-600">${formatMoney(totalAllocated - totalUsed)}</p></div>
+        </div>`;
+        
+        let overallPercent = totalAllocated > 0 ? (totalUsed / totalAllocated * 100).toFixed(1) : 0;
+        let progressClass = overallPercent < 50 ? 'progress-high' : (overallPercent < 80 ? 'progress-medium' : 'progress-low');
+        html += `<div class="mb-5"><div class="flex justify-between text-xs mb-1"><span>Overall Budget Usage</span><span>${overallPercent}%</span></div><div class="w-full bg-gray-200 rounded-full h-2"><div class="${progressClass} h-2 rounded-full" style="width: ${Math.min(overallPercent, 100)}%"></div></div></div>`;
+        
+        html += `<div id="deptBudgetsContainer">`;
+        for (const [deptId, deptData] of Object.entries(budgetsByDept)) {
+            const deptTotalAllocated = deptData.budgets.reduce((s, b) => s + parseFloat(b.allocated_amount || 0), 0);
+            const deptTotalUsed = deptData.budgets.reduce((s, b) => s + parseFloat(b.used_amount || 0), 0);
+            const deptRemaining = deptTotalAllocated - deptTotalUsed;
+            const icon = departmentIcons[deptId] || 'fa-building';
+            const color = departmentColors[deptId] || '#059669';
+            
+            html += `<div class="dept-budget-card" id="dept-budget-${deptId}">
+                <div class="dept-budget-header" onclick="toggleDeptBudget(${deptId})">
+                    <div class="flex items-center gap-3"><div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: ${color}20; color: ${color}"><i class="fas ${icon} text-lg"></i></div><div><h3 class="font-semibold">${escapeHtml(deptData.department_name)}</h3><p class="text-xs text-gray-500">${deptData.budgets.length} budget items</p></div></div>
+                    <div class="flex items-center gap-4"><div class="text-right"><p class="text-xs text-gray-500">Budget: ${formatMoney(deptTotalAllocated)}</p><p class="text-xs ${deptRemaining >= 0 ? 'text-green-600' : 'text-red-600'}">Remaining: ${formatMoney(deptRemaining)}</p></div><i class="fas fa-chevron-down text-gray-400 transition-transform" id="dept-icon-${deptId}"></i></div>
+                </div>
+                <div id="dept-content-${deptId}" class="hidden p-4">
+                    <div class="budget-table-container">
+                        <table class="budget-table"><thead><tr><th>Category</th><th class="text-right">Allocated</th><th class="text-right">Used</th><th class="text-right">Remaining</th><th>Usage</th></tr></thead><tbody>`;
+            for (let b of deptData.budgets) {
+                let remaining = parseFloat(b.allocated_amount || 0) - parseFloat(b.used_amount || 0);
+                let percent = b.allocated_amount > 0 ? (b.used_amount / b.allocated_amount * 100).toFixed(1) : 0;
+                let rowClass = remaining < 0 ? 'text-red-600' : (remaining < b.allocated_amount * 0.2 ? 'text-orange-600' : 'text-green-600');
+                html += `<tr><td>${escapeHtml(b.category)}</td><td class="text-right">${formatMoney(b.allocated_amount)}</td><td class="text-right">${formatMoney(b.used_amount)}</td><td class="text-right ${rowClass}">${formatMoney(remaining)}</td><td><div class="w-24"><div class="w-full bg-gray-200 rounded-full h-1.5"><div class="${percent < 50 ? 'progress-high' : (percent < 80 ? 'progress-medium' : 'progress-low')} h-1.5 rounded-full" style="width: ${Math.min(percent, 100)}%"></div></div><span class="text-[9px]">${percent}%</span></div></td></tr>`;
+            }
+            html += `</tbody></table></div></div></div>`;
         }
+        html += `</div><div class="mt-5 flex gap-2"><button onclick="exportBudgetsToExcel()" class="btn-success"><i class="fas fa-file-excel mr-1"></i> Excel All</button><button onclick="exportBudgetsToPDF()" class="btn-danger"><i class="fas fa-file-pdf mr-1"></i> PDF All</button></div>`;
+        
+        document.getElementById('deptBudgetsPage').innerHTML = html;
+        if (highlightId) { const el = document.getElementById(`dept-budget-${highlightId}`); if(el) { el.classList.add('search-highlight'); el.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => el.classList.remove('search-highlight'), 2000); } }
     }
+    
+    function toggleDeptBudget(deptId) { const content = document.getElementById(`dept-content-${deptId}`); const icon = document.getElementById(`dept-icon-${deptId}`); if (content.classList.contains('hidden')) { content.classList.remove('hidden'); icon.style.transform = 'rotate(180deg)'; } else { content.classList.add('hidden'); icon.style.transform = 'rotate(0deg)'; } }
+    function exportBudgetsToExcel() { let ws = [['Department', 'Category', 'Allocated', 'Used', 'Remaining', 'Usage %']]; allBudgets.forEach(b => { let remaining = parseFloat(b.allocated_amount || 0) - parseFloat(b.used_amount || 0); let percent = b.allocated_amount > 0 ? (b.used_amount / b.allocated_amount * 100).toFixed(1) : 0; ws.push([departmentNames[b.department_id], b.category, b.allocated_amount, b.used_amount, remaining, percent]); }); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), 'Budgets'); XLSX.writeFile(wb, `budgets_${new Date().toISOString().slice(0,10)}.xlsx`); showToast('Exported to Excel'); }
+    function exportBudgetsToPDF() { let element = document.createElement('div'); let rows = ''; for (let b of allBudgets) { let remaining = parseFloat(b.allocated_amount || 0) - parseFloat(b.used_amount || 0); let percent = b.allocated_amount > 0 ? (b.used_amount / b.allocated_amount * 100).toFixed(1) : 0; rows += `<tr><td class="px-2 py-1">${departmentNames[b.department_id]}</td><td class="px-2 py-1">${b.category}</td><td class="px-2 py-1">${formatMoney(b.allocated_amount)}</td><td class="px-2 py-1">${formatMoney(b.used_amount)}</td><td class="px-2 py-1">${formatMoney(remaining)}</td><td class="px-2 py-1">${percent}%</td></tr>`; } element.innerHTML = `<div style="padding:20px"><h1>Department Budgets Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><tr><th>Department</th><th>Category</th><th>Allocated</th><th>Used</th><th>Remaining</th><th>Usage</th></tr>${rows}</table></div>`; html2pdf().set({ margin: 0.5, filename: `budgets_report.pdf` }).from(element).save(); showToast('Exported to PDF'); }
     
     // ==================== MESSAGES ====================
     async function loadMessages(highlightId = null) {
         const res = await apiCall('get_messages.php');
-        
-        if (res.success && res.data) {
-            messagesData = res.data.filter(conv => conv.department_id === DEPARTMENT_ID);
-        } else {
-            messagesData = [];
-        }
+        messagesData = res.success ? res.data : [];
         updateMessageBadge();
         
-        let html = `<div class="flex justify-between items-center mb-5 flex-wrap gap-3">
-            <div><h2 class="text-xl font-bold"><i class="fas fa-envelope text-blue-600 mr-2"></i>Messages</h2><p class="text-xs text-gray-400 mt-1">Conversations with Admin and other departments</p></div>
-            <button onclick="openModal('msgModal')" class="btn-primary"><i class="fas fa-plus mr-2"></i> New Message</button>
-        </div>
-        <div class="space-y-2" id="messagesListContainer"></div>`;
+        let html = `<div class="flex flex-wrap justify-between gap-3 mb-4"><h2 class="text-xl font-bold"><i class="fas fa-envelope text-green-600 mr-2"></i>Messages (${messagesData.length})</h2><button onclick="openModal('msgModal')" class="btn-primary"><i class="fas fa-paper-plane mr-1"></i> New Message</button></div><div class="messages-grid" id="messagesGridContainer"></div>`;
         document.getElementById('messagesPage').innerHTML = html;
         
-        if (messagesData.length === 0) {
-            document.getElementById('messagesListContainer').innerHTML = '<div class="bg-white rounded-xl p-8 text-center text-gray-400 border"><i class="fas fa-comments text-3xl mb-2 opacity-50 block"></i><p>No messages found</p><p class="text-xs mt-2">Click "New Message" to start a conversation</p></div>';
-            return;
-        }
+        if (messagesData.length === 0) { document.getElementById('messagesGridContainer').innerHTML = '<div class="col-span-3 text-center py-12 text-gray-400 bg-white rounded-xl">No messages</div>'; return; }
         
         let msgsHtml = '';
         for (let conv of messagesData) {
             const isUnread = conv.unread_count > 0;
-            const preview = conv.last_message ? (conv.last_message.substring(0, 60) + (conv.last_message.length > 60 ? '...' : '')) : 'No messages';
-            const isHighlighted = highlightId && conv.conversation_id === highlightId;
-            msgsHtml += `<div class="message-item ${isUnread ? 'message-unread' : ''} ${isHighlighted ? 'search-highlight' : ''}" id="msg-item-${conv.conversation_id}" onclick="openChat(${conv.conversation_id}, ${conv.department_id || 1}, '${escapeHtml(conv.department_name || 'Super Admin')}')">
-                <div class="delete-conv-btn" onclick="event.stopPropagation(); deleteConversation(${conv.conversation_id})" title="Delete conversation"><i class="fas fa-trash-alt text-xs"></i></div>
-                <div class="message-header">
-                    <div><span class="font-semibold text-sm">👤 ${escapeHtml(conv.department_name || 'Super Admin')}</span>${isUnread ? `<span class="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full ml-2">${conv.unread_count}</span>` : ''}</div>
-                    <span class="text-[10px] text-gray-400">${conv.last_message_time ? new Date(conv.last_message_time).toLocaleString() : ''}</span>
-                </div>
-                <div class="message-preview text-xs">💬 ${escapeHtml(preview)}</div>
+            const preview = conv.last_message ? (conv.last_message.substring(0, 70) + (conv.last_message.length > 70 ? '...' : '')) : 'No messages';
+            const deptId = conv.department_id;
+            const icon = departmentIcons[deptId] || 'fa-building';
+            const color = departmentColors[deptId] || '#059669';
+            msgsHtml += `<div class="message-item ${isUnread ? 'message-unread' : ''}" onclick="openChat(${conv.conversation_id}, ${deptId}, '${escapeHtml(conv.department_name)}')">
+                <div class="delete-conv-btn" onclick="event.stopPropagation(); deleteConversation(${conv.conversation_id})"><i class="fas fa-trash-alt"></i></div>
+                <div class="message-header"><div class="flex items-center gap-3"><div class="dept-icon" style="background: ${color}20; color: ${color}; border: 1px solid ${color}40"><i class="fas ${icon}"></i></div><div><span class="font-semibold">${escapeHtml(conv.department_name)}</span>${isUnread ? `<span class="bg-red-500 text-white text-[9px] px-1.5 py-0.5 rounded-full ml-1">${conv.unread_count}</span>` : ''}</div></div><span class="text-[9px] text-gray-400">${conv.last_message_time ? new Date(conv.last_message_time).toLocaleString() : ''}</span></div>
+                <div class="message-preview">${escapeHtml(preview)}</div>
             </div>`;
         }
-        document.getElementById('messagesListContainer').innerHTML = msgsHtml;
-        
-        if (highlightId) {
-            const element = document.getElementById(`msg-item-${highlightId}`);
-            if (element) element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
+        document.getElementById('messagesGridContainer').innerHTML = msgsHtml;
+        if (highlightId) { const el = Array.from(document.querySelectorAll('.message-item')).find(el => el.textContent.includes(highlightId)); if(el) { el.classList.add('search-highlight'); el.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => el.classList.remove('search-highlight'), 2000); } }
     }
     
-    async function deleteConversation(conversationId) {
-        if (confirm('Delete this conversation? This action cannot be undone.')) {
-            const res = await apiCall('delete_conversation.php', 'POST', { conversation_id: conversationId });
-            if (res && res.success) {
-                showToast('Conversation deleted');
-                await loadMessages();
-                if (currentConversationId === conversationId) {
-                    closeModal('chatModal');
-                    currentConversationId = null;
-                }
-            } else {
-                showToast(res?.message || 'Failed to delete', true);
-            }
+    async function deleteConversation(conversationId) { if (confirm('Delete this conversation? This will only hide it from your view.')) { const res = await apiCall('delete_conversation.php', 'POST', { conversation_id: conversationId }); if (res && res.success) { showToast('Conversation deleted from your view'); await loadMessages(); if (currentConversationId === conversationId) { closeModal('chatModal'); currentConversationId = null; } } else showToast(res?.message || 'Failed', true); } }
+    async function deleteMessage(messageId) { if (confirm('Delete this message? It will only be hidden from your view.')) { const res = await apiCall('delete_message.php', 'POST', { message_id: messageId }); if (res && res.success) { showToast('Message deleted from your view'); if (currentConversationId) await openChat(currentConversationId, currentDepartmentId, currentDeptName); await loadMessages(); } else showToast(res?.message || 'Failed', true); } }
+    async function sendNewMessage() { const deptId = document.getElementById('msgTo').value; const msg = document.getElementById('msgContent').value; if (!deptId) { showToast('Select department', true); return; } if (!msg.trim()) { showToast('Enter message', true); return; } if (parseInt(deptId) === 1) { showToast('Finance department cannot send messages to Super Admin', true); return; } const sendBtn = document.querySelector('#msgModal .btn-primary'); const originalText = sendBtn.innerHTML; sendBtn.innerHTML = '<span class="loading-spinner"></span> Sending...'; sendBtn.disabled = true; try { const res = await apiCall('send_message.php', 'POST', { department_id: parseInt(deptId), message: msg.trim() }); if (res && res.success) { showToast('✅ Message sent successfully'); closeModal('msgModal'); document.getElementById('msgContent').value = ''; await loadMessages(); } else { showToast('❌ ' + (res?.message || 'Failed'), true); } } catch (error) { showToast('❌ Network error', true); } finally { sendBtn.innerHTML = originalText; sendBtn.disabled = false; } }
+    async function openChat(conversationId, departmentId, deptName) { currentConversationId = conversationId; currentDepartmentId = departmentId; currentDeptName = deptName; document.getElementById('chatModalTitle').innerHTML = `<i class="fas fa-comments text-green-500 mr-2"></i>Chat with ${deptName}`; const res = await apiCall(`get_conversation.php?conversation_id=${conversationId}`); if (res.success && res.data) { const msgs = res.data.messages || []; let chatHtml = ''; if (msgs.length === 0) chatHtml = '<div class="text-center text-gray-400 py-8">No messages yet</div>'; else { for (let m of msgs) { const isSent = (m.sender_dept === DEPARTMENT_ID); chatHtml += `<div class="chat-message ${isSent ? 'chat-sent' : 'chat-received'}"><div class="chat-bubble"><div>${escapeHtml(m.message)}</div><span class="chat-time">${new Date(m.created_at).toLocaleString()}</span></div><div class="delete-msg-btn" onclick="event.stopPropagation(); deleteMessage(${m.id})"><i class="fas fa-trash-alt"></i></div></div>`; } } document.getElementById('chatMessagesArea').innerHTML = chatHtml; document.getElementById('chatMessagesArea').scrollTop = document.getElementById('chatMessagesArea').scrollHeight; openModal('chatModal'); await loadMessages(); } else { openModal('chatModal'); } }
+    async function sendChatMessage() { let msg = document.getElementById('replyMsg').value; if (!msg.trim()) { showToast('Enter message', true); return; } if (!currentConversationId) { showToast('No conversation', true); return; } let res = await apiCall('send_message.php', 'POST', { conversation_id: currentConversationId, message: msg }); if (res && res.success) { document.getElementById('replyMsg').value = ''; await openChat(currentConversationId, currentDepartmentId, currentDeptName); await loadMessages(); showToast('Sent'); } else showToast(res?.message || 'Failed', true); }
+    
+    // ==================== REPORTS SECTION (with Dark Content) ====================
+    async function loadReports(highlightId = null) {
+        const res = await apiCall('get_reports.php');
+        reportsData = res.success ? res.data.filter(r => r.department_id === DEPARTMENT_ID || r.department_id === null) : [];
+        
+        let html = `<div class="flex flex-wrap justify-between items-center gap-3 mb-4">
+            <h2 class="text-xl font-bold"><i class="fas fa-chart-line text-purple-600 mr-2"></i>Reports (${reportsData.length})</h2>
+            <div class="flex gap-2 flex-wrap">
+                <button onclick="openModal('reportModal')" class="btn-primary"><i class="fas fa-plus mr-1"></i> Add Report</button>
+                <button onclick="exportAllReportsToExcel()" class="btn-success"><i class="fas fa-file-excel mr-1"></i> Excel All</button>
+                <button onclick="exportAllReportsToPDF()" class="btn-danger"><i class="fas fa-file-pdf mr-1"></i> PDF All</button>
+            </div>
+        </div>
+        <div class="report-grid" id="reportsGrid"></div>`;
+        document.getElementById('reportsPage').innerHTML = html;
+        
+        if (reportsData.length === 0) { document.getElementById('reportsGrid').innerHTML = '<div class="col-span-2 text-center py-8 text-gray-400">No reports found</div>'; return; }
+        
+        let reportsHtml = '';
+        for (let r of reportsData) {
+            reportsHtml += `<div class="report-card" id="report-card-${r.id}">
+                <div class="flex justify-between items-start"><h4 class="font-semibold text-sm">${escapeHtml(r.title)}</h4><span class="text-xs ${r.status==='sent'?'text-green-600':'text-yellow-600'}">${r.status}</span></div>
+                <p class="text-xs text-gray-500 mt-1">${r.period} · ${formatDate(r.created_at)}</p>
+                <div class="text-xs text-gray-600 mt-1">${escapeHtml(r.content.substring(0,100))}${r.content.length>100?'...':''}</div>
+                <div class="flex gap-2 mt-3">
+                    <button onclick="viewReportDetail(${r.id})" class="action-btn view"><i class="fas fa-eye mr-1"></i>View</button>
+                    <button onclick="editReportDetail(${r.id})" class="action-btn edit"><i class="fas fa-edit mr-1"></i>Edit</button>
+                    <button onclick="deleteReportDetail(${r.id})" class="action-btn delete"><i class="fas fa-trash mr-1"></i>Delete</button>
+                </div>
+            </div>`;
         }
+        document.getElementById('reportsGrid').innerHTML = reportsHtml;
+        if (highlightId) { const el = document.getElementById(`report-card-${highlightId}`); if(el) { el.classList.add('search-highlight'); el.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => el.classList.remove('search-highlight'), 2000); } }
     }
     
-    async function deleteMessage(messageId) {
-        if (confirm('Delete this message?')) {
-            const res = await apiCall('delete_message.php', 'POST', { message_id: messageId });
-            if (res && res.success) {
-                showToast('Message deleted');
-                if (currentConversationId) {
-                    await openChat(currentConversationId, currentDepartmentId, currentDepartmentName);
-                }
-                await loadMessages();
-            } else {
-                showToast(res?.message || 'Failed to delete', true);
-            }
-        }
-    }
-    
-    async function sendNewMessage() {
-        let toDept = document.getElementById('msgTo').value;
-        let msg = document.getElementById('msgContent').value.trim();
-        
-        if (!toDept) { showToast('Please select a department', true); return; }
-        if (!msg) { showToast('Please enter a message', true); return; }
-        
-        const sendBtn = document.querySelector('#msgModal .btn-primary');
-        const originalText = sendBtn.innerHTML;
-        sendBtn.innerHTML = '<span class="loading-spinner"></span> Sending...';
-        sendBtn.disabled = true;
-        
-        try {
-            const res = await apiCall('send_message.php', 'POST', { 
-                department_id: parseInt(toDept), 
-                message: msg,
-                subject: 'Message from Finance',
-                sender_dept: DEPARTMENT_ID
+    function viewReportDetail(id) { 
+        const r = reportsData.find(r => r.id === id); 
+        if(r) { 
+            // Dark content styling - text nyeupe kwenye background nyeusi
+            document.getElementById('viewReportContent').innerHTML = `<div class="space-y-3">
+                <div><strong class="text-green-400">Period:</strong> <span class="text-gray-300">${r.period}</span></div>
+                <div><strong class="text-green-400">Created:</strong> <span class="text-gray-300">${formatDate(r.created_at)}</span></div>
+                <div><strong class="text-green-400">Status:</strong> <span class="text-gray-300">${r.status === 'sent' ? 'Sent' : 'Draft'}</span></div>
+                <div class="border-t border-gray-700 my-2"></div>
+                <div class="whitespace-pre-wrap text-gray-200 leading-relaxed">${escapeHtml(r.content)}</div>
+            </div>`;
+            
+            let deptOptions = '';
+            departmentsList.filter(d => d.id !== 2).forEach(d => { 
+                deptOptions += `<a onclick="sendReportToDept(${r.id}, ${d.id})">${escapeHtml(d.name)}</a>`; 
             });
             
-            if (res && res.success) {
-                showToast('✅ Message sent successfully!');
-                closeModal('msgModal');
-                document.getElementById('msgContent').value = '';
-                await loadMessages();
-                if (res.data && res.data.conversation_id) {
-                    setTimeout(() => {
-                        openChat(res.data.conversation_id, parseInt(toDept), '');
-                    }, 500);
-                }
-            } else {
-                showToast('❌ ' + (res?.message || 'Failed to send message'), true);
-            }
-        } catch (error) {
-            console.error('Error sending message:', error);
-            showToast('❌ Network error. Please try again.', true);
-        } finally {
-            sendBtn.innerHTML = originalText;
-            sendBtn.disabled = false;
-        }
+            document.getElementById('viewReportButtons').innerHTML = `
+                <button onclick="exportSingleReportExcel(${r.id})" class="btn-success text-white px-3 py-1.5 rounded text-sm"><i class="fas fa-file-excel"></i> Excel</button>
+                <button onclick="exportSingleReportPDF(${r.id})" class="btn-danger text-white px-3 py-1.5 rounded text-sm"><i class="fas fa-file-pdf"></i> PDF</button>
+                <div class="send-dropdown"><button class="btn-warning text-white px-3 py-1.5 rounded text-sm" onclick="toggleSendDropdown('viewReportSendDropdown-${r.id}')"><i class="fas fa-paper-plane"></i> Send</button>
+                <div id="viewReportSendDropdown-${r.id}" class="send-dropdown-content">${deptOptions}</div></div>
+            `;
+            openModal('viewReportModal'); 
+        } 
     }
     
-    async function openChat(conversationId, departmentId, deptName) {
-        currentConversationId = conversationId;
-        currentDepartmentId = departmentId;
-        currentDepartmentName = deptName;
-        document.getElementById('chatModalTitle').innerHTML = `<i class="fas fa-comments text-blue-500 mr-2"></i>Chat with ${deptName || 'Admin'}`;
-        
-        const res = await apiCall(`get_conversation.php?conversation_id=${conversationId}`);
-        
-        if (res.success && res.data) {
-            const msgs = res.data.messages || [];
-            let chatHtml = '';
-            if (msgs.length === 0) {
-                chatHtml = '<div class="text-center text-gray-400 py-8">No messages yet. Start the conversation!</div>';
-            } else {
-                for (let m of msgs) {
-                    // Determine if message is sent by Finance (DEPARTMENT_ID=2)
-                    const isSent = (m.sender_dept === DEPARTMENT_ID) || (m.sender_id === DEPARTMENT_ID);
-                    chatHtml += `<div class="chat-message ${isSent ? 'chat-sent' : 'chat-received'}">
-                        ${!isSent ? `<div class="delete-msg-btn" onclick="event.stopPropagation(); deleteMessage(${m.id})" title="Delete message"><i class="fas fa-trash-alt text-xs"></i></div>` : ''}
-                        <div class="chat-bubble">
-                            <div>${escapeHtml(m.message)}</div>
-                            <span class="chat-time">${new Date(m.created_at).toLocaleString()}</span>
-                        </div>
-                    </div>`;
-                }
-            }
-            document.getElementById('chatMessagesArea').innerHTML = chatHtml;
-            document.getElementById('chatMessagesArea').scrollTop = document.getElementById('chatMessagesArea').scrollHeight;
-            openModal('chatModal');
-            await loadMessages();
-        } else {
-            showToast('Error loading conversation', true);
-            openModal('chatModal');
-        }
-    }
-    
-    async function sendChatMessage() {
-        let msg = document.getElementById('replyMsg').value.trim();
-        if (!msg) {
-            showToast('Please enter a message', true);
-            return;
-        }
-        
-        if (!currentConversationId) {
-            showToast('No active conversation', true);
-            return;
-        }
-        
-        let res = await apiCall('send_message.php', 'POST', {
-            conversation_id: currentConversationId,
-            message: msg,
-            sender_dept: DEPARTMENT_ID
-        });
-        
-        if (res && res.success) {
-            document.getElementById('replyMsg').value = '';
-            await openChat(currentConversationId, currentDepartmentId, currentDepartmentName);
-            await loadMessages();
-        } else {
-            showToast(res?.message || 'Failed to send message', true);
-        }
-    }
+    function editReportDetail(id) { const r = reportsData.find(r => r.id === id); if(r) { document.getElementById('reportId').value = r.id; document.getElementById('reportTitle').value = r.title; document.getElementById('reportPeriod').value = r.period; document.getElementById('reportContent').value = r.content; openModal('reportModal'); } }
+    async function saveReport() { let id = document.getElementById('reportId').value; let data = { title: document.getElementById('reportTitle').value, period: document.getElementById('reportPeriod').value, content: document.getElementById('reportContent').value, department_id: DEPARTMENT_ID }; if(!data.title||!data.content) { showToast('Title and content required',true); return; } let res = id ? await apiCall('update_report.php','POST',{...data,id:parseInt(id)}) : await apiCall('add_report.php','POST',data); if(res.success) { showToast(id ? 'Report updated' : 'Report added'); closeModal('reportModal'); loadReports(); loadDashboard(); } else showToast(res.message || 'Failed', true); }
+    async function deleteReportDetail(id) { if(confirm('Delete this report? This will only hide it from your view.')) { let res = await apiCall('delete_report.php','DELETE',{id}); if(res.success) { showToast('Report deleted from your view'); loadReports(); loadDashboard(); } else showToast(res.message || 'Failed', true); } }
+    function exportSingleReportExcel(reportId) { const r = reportsData.find(r => r.id === reportId); if(r) { let ws = [['Title', 'Period', 'Content', 'Created']]; ws.push([r.title, r.period, r.content, r.created_at]); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), 'Report'); XLSX.writeFile(wb, `report_${r.id}.xlsx`); showToast('Exported to Excel'); } }
+    function exportSingleReportPDF(reportId) { const r = reportsData.find(r => r.id === reportId); if(r) { let element = document.createElement('div'); element.innerHTML = `<div style="padding:20px"><h1 style="color:#059669">${escapeHtml(r.title)}</h1><p><strong>Period:</strong> ${r.period}</p><p><strong>Created:</strong> ${formatDate(r.created_at)}</p><hr/><div class="bg-gray-100 p-3 rounded whitespace-pre-wrap" style="background:#1e1e2f; color:#f1f5f9;">${escapeHtml(r.content)}</div><p>Generated: ${new Date().toLocaleString()}</p></div>`; html2pdf().set({ margin: 0.5, filename: `report_${r.id}.pdf` }).from(element).save(); showToast('Exported to PDF'); } }
+    function exportAllReportsToExcel() { let ws = [['ID', 'Title', 'Period', 'Content', 'Created']]; reportsData.forEach(r => ws.push([r.id, r.title, r.period, r.content, r.created_at])); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), 'Reports'); XLSX.writeFile(wb, `reports_${new Date().toISOString().slice(0,10)}.xlsx`); showToast('All reports exported to Excel'); }
+    function exportAllReportsToPDF() { let element = document.createElement('div'); let reportsHtml = reportsData.map(r => `<div style="margin-bottom:20px;"><h3 style="color:#059669">${escapeHtml(r.title)}</h3><p><strong>Period:</strong> ${r.period}</p><p><strong>Created:</strong> ${formatDate(r.created_at)}</p><div class="bg-gray-100 p-2 rounded" style="background:#1e1e2f; color:#f1f5f9;">${escapeHtml(r.content)}</div><hr/></div>`).join(''); element.innerHTML = `<div style="padding:20px"><h1 style="color:#059669">All Reports</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/>${reportsHtml}</div>`; html2pdf().set({ margin: 0.5, filename: `all_reports.pdf` }).from(element).save(); showToast('All reports exported to PDF'); }
+    async function sendReportToDept(reportId, deptId) { const r = reportsData.find(r => r.id === reportId); if (r) { const res = await apiCall('send_report.php', 'POST', { report_id: reportId, to_department_id: deptId }); if (res.success) showToast(`Report sent to ${departmentNames[deptId]}`); else showToast('Failed', true); toggleSendDropdown(`viewReportSendDropdown-${reportId}`); } }
     
     // ==================== SETTINGS ====================
     function loadSettings() {
         const darkMode = document.body.classList.contains('dark-mode');
-        
-        document.getElementById('settingsPage').innerHTML = `
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div class="bg-white rounded-xl p-6 shadow-sm border">
-                    <h3 class="font-semibold text-lg mb-4"><i class="fas fa-palette text-blue-500 mr-2"></i>Appearance</h3>
-                    <div class="space-y-4">
-                        <div class="flex justify-between items-center"><span><i class="fas fa-moon mr-2 text-blue-500"></i> Dark Mode</span><label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" id="darkModeToggle" class="sr-only peer" ${darkMode ? 'checked' : ''}><div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div></label></div>
-                        <div><span class="text-sm font-medium"><i class="fas fa-palette mr-2 text-green-500"></i> Sidebar Color</span><div class="flex flex-wrap gap-2 mt-2" id="colorOptionsContainer"></div></div>
-                    </div>
-                </div>
-                <div class="bg-white rounded-xl p-6 shadow-sm border">
-                    <h3 class="font-semibold text-lg mb-4"><i class="fas fa-database text-green-500 mr-2"></i>Data Management</h3>
-                    <div class="space-y-3">
-                        <div class="flex justify-between items-center"><span><i class="fas fa-download mr-2"></i> Backup Database</span><button onclick="openModal('backupModal')" class="bg-green-600 text-white px-3 py-1.5 rounded text-sm hover:bg-green-700 transition">Backup</button></div>
-                    </div>
-                </div>
-                <div class="bg-white rounded-xl p-6 shadow-sm border">
-                    <h3 class="font-semibold text-lg mb-4"><i class="fas fa-info-circle text-indigo-500 mr-2"></i>System Information</h3>
-                    <div class="space-y-2 text-sm">
-                        <div class="flex justify-between py-1"><span class="text-gray-500">Total Transactions:</span><span class="font-semibold">${transactionsData.length}</span></div>
-                        <div class="flex justify-between py-1"><span class="text-gray-500">Total Reports Received:</span><span class="font-semibold">${reportsData.length}</span></div>
-                        <div class="flex justify-between py-1"><span class="text-gray-500">Department ID:</span><span class="font-semibold">${DEPARTMENT_ID} (Finance)</span></div>
-                        <div class="flex justify-between py-1"><span class="text-gray-500">System Version:</span><span class="font-semibold">2.0.0</span></div>
-                    </div>
-                </div>
-                <div class="bg-white rounded-xl p-6 shadow-sm border">
-                    <h3 class="font-semibold text-lg mb-4"><i class="fas fa-shield-alt text-red-500 mr-2"></i>Security Info</h3>
-                    <div class="space-y-2 text-sm">
-                        <div class="flex justify-between py-1"><span class="text-gray-500">Session Status:</span><span class="font-semibold text-green-600"><i class="fas fa-check-circle mr-1"></i> Active</span></div>
-                        <div class="flex justify-between py-1"><span class="text-gray-500">Last Login:</span><span class="font-semibold">${new Date().toLocaleString()}</span></div>
-                    </div>
-                </div>
-            </div>
-        `;
-        
+        let html = `<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div class="bg-white rounded-xl p-5"><h3 class="font-semibold mb-4"><i class="fas fa-palette text-purple-500 mr-2"></i>Appearance</h3><div class="space-y-4"><div class="flex justify-between items-center"><span><i class="fas fa-moon mr-2 text-blue-500"></i> Dark Mode</span><label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" id="darkModeToggle" class="sr-only peer" ${darkMode ? 'checked' : ''}><div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div></label></div><div><span class="text-sm font-medium"><i class="fas fa-palette mr-2 text-green-500"></i> Sidebar Color</span><div class="flex flex-wrap gap-2 mt-2" id="colorOptionsContainer"></div></div></div></div>
+            <div class="bg-white rounded-xl p-5"><h3 class="font-semibold mb-4"><i class="fas fa-database text-green-500 mr-2"></i>Data Management</h3><button onclick="openModal('backupModal')" class="w-full bg-green-600 text-white py-2 rounded text-sm">Backup & Restore Database</button></div>
+        </div>`;
+        document.getElementById('settingsPage').innerHTML = html;
         const container = document.getElementById('colorOptionsContainer');
-        if (container) {
-            container.innerHTML = '';
-            sidebarColorOptions.forEach(c => {
-                const isSelected = localStorage.getItem('sidebar_color') === c;
-                container.innerHTML += `<div class="color-option ${isSelected ? 'selected' : ''}" style="background: ${c}" onclick="changeSidebarColor('${c}', this)"></div>`;
-            });
-        }
-        
-        document.getElementById('darkModeToggle')?.addEventListener('change', e => {
-            document.body.classList.toggle('dark-mode', e.target.checked);
-            localStorage.setItem('dark_mode', e.target.checked);
-            const icon = document.getElementById('darkIcon');
-            if (icon) {
-                if (e.target.checked) { icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); }
-                else { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); }
-            }
-        });
+        if (container) { container.innerHTML = ''; sidebarColorOptions.forEach(c => { const isSelected = localStorage.getItem('sidebar_color') === c; container.innerHTML += `<div class="color-option ${isSelected ? 'selected' : ''}" style="background: ${c}" onclick="changeSidebarColor('${c}', this)"></div>`; }); }
+        document.getElementById('darkModeToggle')?.addEventListener('change', e => { document.body.classList.toggle('dark-mode', e.target.checked); localStorage.setItem('dark_mode', e.target.checked); const icon = document.getElementById('darkIcon'); if (icon) { if (e.target.checked) { icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); } else { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); } } });
     }
     
-    function changeSidebarColor(color, el) {
-        document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
-        el.classList.add('selected');
-        document.getElementById('mainSidebar').style.background = `linear-gradient(180deg, ${color} 0%, ${color}cc 100%)`;
-        localStorage.setItem('sidebar_color', color);
-        showToast('Sidebar color changed');
-    }
-    
-    function createBackup() {
-        const backupData = { 
-            transactions: transactionsData, 
-            budgets: budgetsData, 
-            reports: reportsData, 
-            department_id: DEPARTMENT_ID,
-            timestamp: new Date().toISOString() 
-        };
-        const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `finance_backup_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-        showToast('Backup created successfully');
-        closeModal('backupModal');
-    }
-    
-    function restoreBackup() {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = '.json';
-        input.onchange = (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                try {
-                    const data = JSON.parse(ev.target.result);
-                    showToast('Restore successful! Page will reload...');
-                    setTimeout(() => location.reload(), 1500);
-                } catch(err) { 
-                    showToast('Invalid backup file format', true); 
-                }
-            };
-            reader.readAsText(file);
-        };
-        input.click();
-        closeModal('backupModal');
-    }
+    function changeSidebarColor(color, el) { document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected')); el.classList.add('selected'); document.getElementById('mainSidebar').style.background = `linear-gradient(180deg, ${color} 0%, ${color}cc 100%)`; localStorage.setItem('sidebar_color', color); showToast('Sidebar color changed'); }
+    function createBackup() { const data = { transactions: transactionsData, reports: reportsData, timestamp: new Date().toISOString() }; const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `finance_backup_${new Date().toISOString().slice(0,19)}.json`; a.click(); showToast('Backup created'); closeModal('backupModal'); }
+    function restoreBackup() { showToast('Restore feature - Upload backup JSON file', false); closeModal('backupModal'); }
     
     // ==================== GLOBAL SEARCH ====================
     function performGlobalSearch() {
         const term = document.getElementById('searchInput').value.toLowerCase().trim();
         const dropdown = document.getElementById('searchResultsDropdown');
-        
         if (searchTimeout) clearTimeout(searchTimeout);
         if (term === "") { dropdown.classList.remove('active'); return; }
-        
         searchTimeout = setTimeout(() => {
             let html = '';
-            
-            const transResults = transactionsData.filter(t => 
-                t.source.toLowerCase().includes(term) || 
-                (t.description && t.description.toLowerCase().includes(term))
-            );
-            if (transResults.length) {
-                html += '<div class="p-2 bg-gray-100 text-xs font-semibold"><i class="fas fa-exchange-alt mr-1"></i> TRANSACTIONS</div>';
-                transResults.slice(0, 3).forEach(t => {
-                    html += `<div class="p-3 border-b hover:bg-gray-50 cursor-pointer" onclick="showPageAndHighlight('transactions', ${t.id}, 'trans-row-${t.id}')">
-                        <div class="font-medium">${escapeHtml(t.source)}</div><div class="text-xs text-gray-500">${formatMoney(t.amount)} - ${t.status}</div>
-                    </div>`;
-                });
-            }
-            
-            const reportResults = reportsData.filter(r => 
-                r.title.toLowerCase().includes(term) || r.content.toLowerCase().includes(term)
-            );
-            if (reportResults.length) {
-                html += '<div class="p-2 bg-gray-100 text-xs font-semibold"><i class="fas fa-chart-bar mr-1"></i> REPORTS</div>';
-                reportResults.slice(0, 3).forEach(r => {
-                    html += `<div class="p-3 border-b hover:bg-gray-50 cursor-pointer" onclick="showPageAndHighlight('reports', ${r.id}, 'report-card-${r.id}')">
-                        <div class="font-medium">${escapeHtml(r.title)}</div><div class="text-xs text-gray-500">${r.period}</div>
-                    </div>`;
-                });
-            }
-            
-            const budgetResults = budgetsData.filter(b => 
-                b.category.toLowerCase().includes(term) || 
-                (departmentNames[b.department_id] && departmentNames[b.department_id].toLowerCase().includes(term))
-            );
-            if (budgetResults.length) {
-                html += '<div class="p-2 bg-gray-100 text-xs font-semibold"><i class="fas fa-chart-pie mr-1"></i> BUDGETS</div>';
-                budgetResults.slice(0, 3).forEach(b => {
-                    html += `<div class="p-3 border-b hover:bg-gray-50 cursor-pointer" onclick="showPageAndHighlight('budgets', ${b.id}, 'budget-row-${b.id}')">
-                        <div class="font-medium">${escapeHtml(b.category)} - ${departmentNames[b.department_id] || 'N/A'}</div><div class="text-xs text-gray-500">${formatMoney(b.allocated_amount)}</div>
-                    </div>`;
-                });
-            }
-            
+            const transResults = transactionsData.filter(t => t.source.toLowerCase().includes(term));
+            if (transResults.length) { html += '<div class="p-2 bg-gray-100 text-xs font-semibold"><i class="fas fa-exchange-alt mr-1"></i> TRANSACTIONS</div>'; transResults.slice(0,5).forEach(t => { html += `<div class="search-result-item p-3 border-b hover:bg-gray-50 cursor-pointer" onclick="showPageAndHighlight('transactions', ${t.id})"><div class="font-medium">${escapeHtml(t.source)}</div><div class="text-xs text-gray-500">${formatMoney(t.amount)}</div></div>`; }); }
+            const reportResults = reportsData.filter(r => r.title.toLowerCase().includes(term));
+            if (reportResults.length) { html += '<div class="p-2 bg-gray-100 text-xs font-semibold"><i class="fas fa-chart-line mr-1"></i> REPORTS</div>'; reportResults.slice(0,5).forEach(r => { html += `<div class="search-result-item p-3 border-b hover:bg-gray-50 cursor-pointer" onclick="showPageAndHighlight('reports', ${r.id})"><div class="font-medium">${escapeHtml(r.title)}</div><div class="text-xs text-gray-500">${r.period}</div></div>`; }); }
+            const budgetResults = allBudgets.filter(b => b.category.toLowerCase().includes(term));
+            if (budgetResults.length) { html += '<div class="p-2 bg-gray-100 text-xs font-semibold"><i class="fas fa-wallet mr-1"></i> BUDGETS</div>'; budgetResults.slice(0,5).forEach(b => { html += `<div class="search-result-item p-3 border-b hover:bg-gray-50 cursor-pointer" onclick="showPageAndHighlight('dept-budgets', ${b.department_id})"><div class="font-medium">${escapeHtml(b.category)}</div><div class="text-xs text-gray-500">${departmentNames[b.department_id]}</div></div>`; }); }
             if (!html) html = '<div class="p-4 text-center text-gray-400 text-sm">No results found</div>';
             dropdown.innerHTML = html;
             dropdown.classList.add('active');
         }, 300);
     }
     
-    function showPageAndHighlight(page, id, elementId) {
-        document.getElementById('searchResultsDropdown').classList.remove('active');
-        document.getElementById('searchInput').value = '';
-        showPage(page, id);
-        setTimeout(() => {
-            const element = document.getElementById(elementId);
-            if (element) {
-                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                element.classList.add('search-highlight');
-                setTimeout(() => element.classList.remove('search-highlight'), 2000);
-            }
-        }, 500);
+    function showPageAndHighlight(page, id) { document.getElementById('searchResultsDropdown').classList.remove('active'); document.getElementById('searchInput').value = ''; showPage(page, id); }
+    
+    function showPage(pageId, highlightId = null) {
+        document.querySelectorAll('.section').forEach(s => s.classList.add('hidden'));
+        document.getElementById(`${pageId}Page`).classList.remove('hidden');
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.querySelector(`.nav-item[data-page="${pageId}"]`).classList.add('active');
+        if (pageId === 'dashboard') loadDashboard();
+        else if (pageId === 'transactions') loadTransactions(highlightId);
+        else if (pageId === 'dept-budgets') loadDeptBudgets(highlightId);
+        else if (pageId === 'messages') loadMessages(highlightId);
+        else if (pageId === 'reports') loadReports(highlightId);
+        else if (pageId === 'settings') loadSettings();
     }
     
-    // ==================== INITIALIZATION ====================
+    function toggleSendDropdown(dropdownId) { const dd = document.getElementById(dropdownId); document.querySelectorAll('.send-dropdown-content').forEach(d => { if (d.id !== dropdownId) d.style.display = 'none'; }); if (dd) dd.style.display = dd.style.display === 'block' ? 'none' : 'block'; }
+    document.addEventListener('click', (e) => { if (!e.target.closest('.send-dropdown')) { document.querySelectorAll('.send-dropdown-content').forEach(d => d.style.display = 'none'); } });
+    function initScrollTop() { let btn = document.createElement('div'); btn.className = 'scroll-top'; btn.innerHTML = '<i class="fas fa-arrow-up"></i>'; document.body.appendChild(btn); btn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' }); window.addEventListener('scroll', () => btn.classList.toggle('visible', window.scrollY > 300)); }
+    async function updateConnectionStatus() { const statusDiv = document.getElementById('connectionStatus'); try { const response = await fetch(API_BASE + 'get_departments.php'); const data = await response.json(); if (data.success) { statusDiv.innerHTML = `<i class="fas fa-check-circle"></i> Connected`; statusDiv.classList.remove('error'); } else { statusDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> API Error`; statusDiv.classList.add('error'); } } catch (error) { statusDiv.innerHTML = `<i class="fas fa-plug"></i> Offline`; statusDiv.classList.add('error'); } }
+    
     async function init() {
-        console.log('Initializing Finance Dashboard...');
         await loadDepartmentsForDropdowns();
-        setupTransactionStatusListener();
-        setupAmountInputs();
-        
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', () => showPage(item.getAttribute('data-page')));
-        });
-        
+        await loadAllBudgets();
+        document.querySelectorAll('.nav-item').forEach(item => { item.addEventListener('click', () => showPage(item.getAttribute('data-page'))); });
         document.getElementById('homeBtn')?.addEventListener('click', () => showPage('dashboard'));
-        document.getElementById('mobileMenuBtn')?.addEventListener('click', () => {
-            document.getElementById('mainSidebar').classList.add('mobile-open');
-            document.getElementById('mobileMenuOverlay').classList.remove('hidden');
-        });
-        document.getElementById('logoutBtn')?.addEventListener('click', logout);
-        document.getElementById('darkModeBtn')?.addEventListener('click', () => {
-            document.body.classList.toggle('dark-mode');
-            localStorage.setItem('dark_mode', document.body.classList.contains('dark-mode'));
-            const icon = document.getElementById('darkIcon');
-            icon.classList.toggle('fa-moon');
-            icon.classList.toggle('fa-sun');
-        });
         document.getElementById('searchInput')?.addEventListener('input', performGlobalSearch);
-        
-        const savedColor = localStorage.getItem('sidebar_color');
-        if (savedColor) document.getElementById('mainSidebar').style.background = `linear-gradient(180deg, ${savedColor} 0%, ${savedColor}cc 100%)`;
-        if (localStorage.getItem('dark_mode') === 'true') document.body.classList.add('dark-mode');
-        
-        let scrollBtn = document.createElement('div');
-        scrollBtn.className = 'scroll-top';
-        scrollBtn.innerHTML = '<i class="fas fa-arrow-up"></i>';
-        document.body.appendChild(scrollBtn);
-        scrollBtn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
-        window.addEventListener('scroll', () => scrollBtn.classList.toggle('visible', window.scrollY > 200));
-        
+        document.getElementById('mobileMenuBtn')?.addEventListener('click', () => { document.getElementById('mainSidebar').classList.add('mobile-open'); document.getElementById('mobileMenuOverlay').classList.remove('hidden'); });
+        document.getElementById('logoutBtn')?.addEventListener('click', logout);
+        const savedColor = localStorage.getItem('sidebar_color'); if (savedColor) document.getElementById('mainSidebar').style.background = `linear-gradient(180deg, ${savedColor} 0%, ${savedColor}cc 100%)`;
+        if (localStorage.getItem('dark_mode') === 'true') { document.body.classList.add('dark-mode'); const icon = document.getElementById('darkIcon'); if (icon) { icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); } }
+        initScrollTop();
+        showPage('dashboard');
         updateConnectionStatus();
         setInterval(updateConnectionStatus, 30000);
-        
-        showPage('dashboard');
     }
     
-    // Expose functions globally
-    window.showPage = showPage;
-    window.openModal = openModal;
-    window.closeModal = closeModal;
-    window.toggleSendDropdown = toggleSendDropdown;
-    window.viewTransaction = viewTransaction;
-    window.editTransaction = editTransaction;
-    window.saveTransaction = saveTransaction;
-    window.deleteTransaction = deleteTransaction;
-    window.viewReportDetails = viewReportDetails;
-    window.exportReportToExcel = exportReportToExcel;
-    window.exportReportToPDF = exportReportToPDF;
-    window.saveReport = saveReport;
-    window.deleteReport = deleteReport;
-    window.sendNewMessage = sendNewMessage;
-    window.openChat = openChat;
-    window.sendChatMessage = sendChatMessage;
-    window.deleteConversation = deleteConversation;
-    window.deleteMessage = deleteMessage;
-    window.changeSidebarColor = changeSidebarColor;
-    window.createBackup = createBackup;
-    window.restoreBackup = restoreBackup;
-    window.logout = logout;
-    window.closeMobileSidebar = closeMobileSidebar;
+    window.showPage = showPage; window.openModal = openModal; window.closeModal = closeModal; window.toggleSendDropdown = toggleSendDropdown;
+    window.viewTransaction = viewTransaction; window.editTransaction = editTransaction; window.saveTransaction = saveTransaction; window.deleteTransaction = deleteTransaction;
+    window.exportTransactionsToExcel = exportTransactionsToExcel; window.exportTransactionsToPDF = exportTransactionsToPDF;
+    window.viewReportDetail = viewReportDetail; window.editReportDetail = editReportDetail; window.saveReport = saveReport; window.deleteReportDetail = deleteReportDetail;
+    window.exportSingleReportExcel = exportSingleReportExcel; window.exportSingleReportPDF = exportSingleReportPDF;
+    window.exportAllReportsToExcel = exportAllReportsToExcel; window.exportAllReportsToPDF = exportAllReportsToPDF;
+    window.sendReportToDept = sendReportToDept;
+    window.toggleDeptBudget = toggleDeptBudget;
+    window.sendNewMessage = sendNewMessage; window.openChat = openChat; window.sendChatMessage = sendChatMessage;
+    window.deleteConversation = deleteConversation; window.deleteMessage = deleteMessage;
+    window.changeSidebarColor = changeSidebarColor; window.createBackup = createBackup; window.restoreBackup = restoreBackup;
+    window.logout = logout; window.closeMobileSidebar = closeMobileSidebar;
     
     init();
 </script>
