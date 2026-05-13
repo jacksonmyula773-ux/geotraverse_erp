@@ -177,6 +177,11 @@
         body.dark-mode .send-dropdown-content { background: #1e293b; border-color: #334155; }
         body.dark-mode .send-dropdown-content a { color: #f1f5f9; }
         body.dark-mode .send-dropdown-content a:hover { background: #334155; }
+        
+        .file-upload-area { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s; margin-top: 10px; }
+        .file-upload-area:hover { border-color: #059669; background-color: #ecfdf5; }
+        body.dark-mode .file-upload-area { border-color: #334155; }
+        body.dark-mode .file-upload-area:hover { border-color: #34d399; background-color: #064e3b20; }
     </style>
 </head>
 <body>
@@ -256,6 +261,7 @@
         <div class="form-group"><label>Title <span class="required">*</span></label><input type="text" id="reportTitle" placeholder="Enter report title" required></div>
         <div class="form-group"><label>Period</label><select id="reportPeriod"><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="quarterly">Quarterly</option><option value="annual">Annual</option></select></div>
         <div class="form-group"><label>Content <span class="required">*</span></label><textarea id="reportContent" rows="6" placeholder="Enter report content" required></textarea></div>
+        <div class="form-group"><label>Upload File (Excel/PDF)</label><div class="file-upload-area" onclick="document.getElementById('reportFileInput').click()"><i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i><p>Click to upload Excel or PDF file</p><p class="text-xs text-gray-400 mt-1">Supported: .xlsx, .pdf, .csv</p></div><input type="file" id="reportFileInput" accept=".xlsx,.pdf,.csv" class="hidden"><div id="reportFileNameDisplay" class="hidden mt-2 text-sm text-green-600 bg-green-50 p-2 rounded"></div></div>
         <div class="flex gap-3 pt-2"><button onclick="saveReport()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('reportModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div>
     </div>
 </div>
@@ -290,13 +296,14 @@
 <script>
     // ==================== CONFIGURATION ====================
     const API_BASE = '../backend/api/';
-    const DEPARTMENT_ID = 2;
+    const DEPARTMENT_ID = 2; // Finance Department ID
     
     let searchTimeout = null;
     let revenueChart = null;
     
     let transactionsData = [], reportsData = [], messagesData = [], departmentsList = [], allBudgets = [];
     let currentConversationId = null, currentDepartmentId = null, currentDeptName = null;
+    let currentReportFile = null;
     
     const departmentNames = { 1: "Super Admin", 2: "Finance", 3: "Sales & Marketing", 4: "Manager", 5: "Secretary", 6: "Bricks & Timber", 7: "Aluminium", 8: "Town Planning", 9: "Architectural", 10: "Survey", 11: "Construction", 12: "Hatimiliki" };
     const departmentIcons = { 1: "fa-crown", 2: "fa-coins", 3: "fa-chart-line", 4: "fa-user-tie", 5: "fa-calendar-check", 6: "fa-cubes", 7: "fa-industry", 8: "fa-city", 9: "fa-draw-polygon", 10: "fa-drafting-compass", 11: "fa-hard-hat", 12: "fa-file-contract" };
@@ -318,6 +325,29 @@
             const el = document.getElementById(id);
             if (el) el.addEventListener('input', function() { formatAmountInput(this); });
         });
+    });
+    
+    // Report file upload handler
+    document.getElementById('reportFileInput')?.addEventListener('change', function(e) {
+        if (e.target.files && e.target.files[0]) {
+            currentReportFile = e.target.files[0];
+            const fileName = currentReportFile.name;
+            document.getElementById('reportFileNameDisplay').innerHTML = `<i class="fas fa-file-alt mr-2"></i>${fileName} uploaded`;
+            document.getElementById('reportFileNameDisplay').classList.remove('hidden');
+            
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                let content = ev.target.result;
+                if (fileName.endsWith('.xlsx') || fileName.endsWith('.csv')) {
+                    document.getElementById('reportContent').value = `[Excel/CSV File uploaded: ${fileName}]\nSize: ${(currentReportFile.size / 1024).toFixed(2)} KB\nPlease download to view full content.`;
+                } else if (fileName.endsWith('.pdf')) {
+                    document.getElementById('reportContent').value = `[PDF File uploaded: ${fileName}]\nSize: ${(currentReportFile.size / 1024).toFixed(2)} KB\nPlease download to view full content.`;
+                } else {
+                    document.getElementById('reportContent').value = content;
+                }
+            };
+            reader.readAsText(e.target.files[0]);
+        }
     });
     
     // ==================== API CALLS ====================
@@ -351,24 +381,19 @@
     
     async function loadAllBudgets() {
         const res = await apiCall('get_budgets.php');
-        if (res.success && res.data) allBudgets = res.data;
+        if (res.success && res.data) allBudgets = res.data.filter(b => b.department_id === DEPARTMENT_ID || b.department_id === null);
         else allBudgets = [
             { id: 1, category: "Operations", allocated_amount: 50000000, used_amount: 25000000, year: 2025, month: 5, department_id: 2, department_name: "Finance" },
-            { id: 2, category: "Salaries", allocated_amount: 30000000, used_amount: 15000000, year: 2025, month: 5, department_id: 2, department_name: "Finance" },
-            { id: 3, category: "Marketing", allocated_amount: 20000000, used_amount: 8000000, year: 2025, month: 5, department_id: 3, department_name: "Sales & Marketing" },
-            { id: 4, category: "Events", allocated_amount: 10000000, used_amount: 4000000, year: 2025, month: 5, department_id: 3, department_name: "Sales & Marketing" },
-            { id: 5, category: "Equipment", allocated_amount: 15000000, used_amount: 5000000, year: 2025, month: 5, department_id: 10, department_name: "Survey" },
-            { id: 6, category: "Software", allocated_amount: 8000000, used_amount: 3500000, year: 2025, month: 5, department_id: 9, department_name: "Architectural" },
-            { id: 7, category: "Training", allocated_amount: 8000000, used_amount: 2000000, year: 2025, month: 5, department_id: 4, department_name: "Manager" },
-            { id: 8, category: "Raw Materials", allocated_amount: 30000000, used_amount: 15000000, year: 2025, month: 5, department_id: 6, department_name: "Bricks & Timber" },
-            { id: 9, category: "Aluminium Sheets", allocated_amount: 25000000, used_amount: 8000000, year: 2025, month: 5, department_id: 7, department_name: "Aluminium" },
-            { id: 10, category: "Construction Materials", allocated_amount: 50000000, used_amount: 25000000, year: 2025, month: 5, department_id: 11, department_name: "Construction" },
-            { id: 11, category: "Town Planning", allocated_amount: 30000000, used_amount: 10000000, year: 2025, month: 5, department_id: 8, department_name: "Town Planning" },
-            { id: 12, category: "Title Deeds", allocated_amount: 40000000, used_amount: 15000000, year: 2025, month: 5, department_id: 12, department_name: "Hatimiliki" }
+            { id: 2, category: "Salaries", allocated_amount: 30000000, used_amount: 15000000, year: 2025, month: 5, department_id: 2, department_name: "Finance" }
         ];
     }
     
-    function updateMessageBadge() { const unread = messagesData.reduce((s, c) => s + (c.unread_count || 0), 0); const b = document.getElementById('msgBadge'); if (unread > 0) { b.classList.remove('hidden'); b.innerText = unread; } else b.classList.add('hidden'); }
+    function updateMessageBadge() { 
+        const unread = messagesData.reduce((s, c) => s + (c.unread_count || 0), 0); 
+        const b = document.getElementById('msgBadge'); 
+        if (unread > 0) { b.classList.remove('hidden'); b.innerText = unread; } 
+        else b.classList.add('hidden'); 
+    }
     
     // ==================== DASHBOARD ====================
     async function loadDashboard() {
@@ -550,7 +575,9 @@
                 let remaining = parseFloat(b.allocated_amount || 0) - parseFloat(b.used_amount || 0);
                 let percent = b.allocated_amount > 0 ? (b.used_amount / b.allocated_amount * 100).toFixed(1) : 0;
                 let rowClass = remaining < 0 ? 'text-red-600' : (remaining < b.allocated_amount * 0.2 ? 'text-orange-600' : 'text-green-600');
-                html += `<tr><td>${escapeHtml(b.category)}</td><td class="text-right">${formatMoney(b.allocated_amount)}</td><td class="text-right">${formatMoney(b.used_amount)}</td><td class="text-right ${rowClass}">${formatMoney(remaining)}</td><td><div class="w-24"><div class="w-full bg-gray-200 rounded-full h-1.5"><div class="${percent < 50 ? 'progress-high' : (percent < 80 ? 'progress-medium' : 'progress-low')} h-1.5 rounded-full" style="width: ${Math.min(percent, 100)}%"></div></div><span class="text-[9px]">${percent}%</span></div></td></tr>`;
+                html += `<tr><td class="text-left">${escapeHtml(b.category)}</td><td class="text-right">${formatMoney(b.allocated_amount)}</td><td class="text-right">${formatMoney(b.used_amount)}</td><td class="text-right ${rowClass}">${formatMoney(remaining)}</td>
+                        <td><div class="w-24"><div class="w-full bg-gray-200 rounded-full h-1.5"><div class="${percent < 50 ? 'progress-high' : (percent < 80 ? 'progress-medium' : 'progress-low')} h-1.5 rounded-full" style="width: ${Math.min(percent, 100)}%"></div></div><span class="text-[9px]">${percent}%</span></div></td>
+                        </table>`;
             }
             html += `</tbody></table></div></div></div>`;
         }
@@ -564,27 +591,33 @@
     function exportBudgetsToExcel() { let ws = [['Department', 'Category', 'Allocated', 'Used', 'Remaining', 'Usage %']]; allBudgets.forEach(b => { let remaining = parseFloat(b.allocated_amount || 0) - parseFloat(b.used_amount || 0); let percent = b.allocated_amount > 0 ? (b.used_amount / b.allocated_amount * 100).toFixed(1) : 0; ws.push([departmentNames[b.department_id], b.category, b.allocated_amount, b.used_amount, remaining, percent]); }); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), 'Budgets'); XLSX.writeFile(wb, `budgets_${new Date().toISOString().slice(0,10)}.xlsx`); showToast('Exported to Excel'); }
     function exportBudgetsToPDF() { let element = document.createElement('div'); let rows = ''; for (let b of allBudgets) { let remaining = parseFloat(b.allocated_amount || 0) - parseFloat(b.used_amount || 0); let percent = b.allocated_amount > 0 ? (b.used_amount / b.allocated_amount * 100).toFixed(1) : 0; rows += `<tr><td class="px-2 py-1">${departmentNames[b.department_id]}</td><td class="px-2 py-1">${b.category}</td><td class="px-2 py-1">${formatMoney(b.allocated_amount)}</td><td class="px-2 py-1">${formatMoney(b.used_amount)}</td><td class="px-2 py-1">${formatMoney(remaining)}</td><td class="px-2 py-1">${percent}%</td></tr>`; } element.innerHTML = `<div style="padding:20px"><h1>Department Budgets Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><tr><th>Department</th><th>Category</th><th>Allocated</th><th>Used</th><th>Remaining</th><th>Usage</th></tr>${rows}</table></div>`; html2pdf().set({ margin: 0.5, filename: `budgets_report.pdf` }).from(element).save(); showToast('Exported to PDF'); }
     
-    // ==================== MESSAGES ====================
+    // ==================== MESSAGES (Only user's own messages - Soft Delete) ====================
     async function loadMessages(highlightId = null) {
         const res = await apiCall('get_messages.php');
-        messagesData = res.success ? res.data : [];
+        if (res.success && res.data) {
+            // Filter only messages where Finance department (id=2) is involved
+            messagesData = res.data.filter(conv => conv.department_id === DEPARTMENT_ID);
+        } else {
+            messagesData = [];
+        }
         updateMessageBadge();
         
         let html = `<div class="flex flex-wrap justify-between gap-3 mb-4"><h2 class="text-xl font-bold"><i class="fas fa-envelope text-green-600 mr-2"></i>Messages (${messagesData.length})</h2><button onclick="openModal('msgModal')" class="btn-primary"><i class="fas fa-paper-plane mr-1"></i> New Message</button></div><div class="messages-grid" id="messagesGridContainer"></div>`;
         document.getElementById('messagesPage').innerHTML = html;
         
-        if (messagesData.length === 0) { document.getElementById('messagesGridContainer').innerHTML = '<div class="col-span-3 text-center py-12 text-gray-400 bg-white rounded-xl">No messages</div>'; return; }
+        if (messagesData.length === 0) { document.getElementById('messagesGridContainer').innerHTML = '<div class="col-span-3 text-center py-12 text-gray-400 bg-white rounded-xl">No messages found</div>'; return; }
         
         let msgsHtml = '';
         for (let conv of messagesData) {
             const isUnread = conv.unread_count > 0;
             const preview = conv.last_message ? (conv.last_message.substring(0, 70) + (conv.last_message.length > 70 ? '...' : '')) : 'No messages';
-            const deptId = conv.department_id;
+            const deptId = conv.department_id === DEPARTMENT_ID ? 1 : conv.department_id;
+            const otherDeptName = conv.department_id === DEPARTMENT_ID ? "Super Admin" : conv.department_name;
             const icon = departmentIcons[deptId] || 'fa-building';
             const color = departmentColors[deptId] || '#059669';
-            msgsHtml += `<div class="message-item ${isUnread ? 'message-unread' : ''}" onclick="openChat(${conv.conversation_id}, ${deptId}, '${escapeHtml(conv.department_name)}')">
+            msgsHtml += `<div class="message-item ${isUnread ? 'message-unread' : ''}" onclick="openChat(${conv.conversation_id}, ${deptId}, '${escapeHtml(otherDeptName)}')">
                 <div class="delete-conv-btn" onclick="event.stopPropagation(); deleteConversation(${conv.conversation_id})"><i class="fas fa-trash-alt"></i></div>
-                <div class="message-header"><div class="flex items-center gap-3"><div class="dept-icon" style="background: ${color}20; color: ${color}; border: 1px solid ${color}40"><i class="fas ${icon}"></i></div><div><span class="font-semibold">${escapeHtml(conv.department_name)}</span>${isUnread ? `<span class="bg-red-500 text-white text-[9px] px-1.5 py-0.5 rounded-full ml-1">${conv.unread_count}</span>` : ''}</div></div><span class="text-[9px] text-gray-400">${conv.last_message_time ? new Date(conv.last_message_time).toLocaleString() : ''}</span></div>
+                <div class="message-header"><div class="flex items-center gap-3"><div class="dept-icon" style="background: ${color}20; color: ${color}; border: 1px solid ${color}40"><i class="fas ${icon}"></i></div><div><span class="font-semibold">${escapeHtml(otherDeptName)}</span>${isUnread ? `<span class="bg-red-500 text-white text-[9px] px-1.5 py-0.5 rounded-full ml-1">${conv.unread_count}</span>` : ''}</div></div><span class="text-[9px] text-gray-400">${conv.last_message_time ? new Date(conv.last_message_time).toLocaleString() : ''}</span></div>
                 <div class="message-preview">${escapeHtml(preview)}</div>
             </div>`;
         }
@@ -592,13 +625,87 @@
         if (highlightId) { const el = Array.from(document.querySelectorAll('.message-item')).find(el => el.textContent.includes(highlightId)); if(el) { el.classList.add('search-highlight'); el.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => el.classList.remove('search-highlight'), 2000); } }
     }
     
-    async function deleteConversation(conversationId) { if (confirm('Delete this conversation? This will only hide it from your view.')) { const res = await apiCall('delete_conversation.php', 'POST', { conversation_id: conversationId }); if (res && res.success) { showToast('Conversation deleted from your view'); await loadMessages(); if (currentConversationId === conversationId) { closeModal('chatModal'); currentConversationId = null; } } else showToast(res?.message || 'Failed', true); } }
-    async function deleteMessage(messageId) { if (confirm('Delete this message? It will only be hidden from your view.')) { const res = await apiCall('delete_message.php', 'POST', { message_id: messageId }); if (res && res.success) { showToast('Message deleted from your view'); if (currentConversationId) await openChat(currentConversationId, currentDepartmentId, currentDeptName); await loadMessages(); } else showToast(res?.message || 'Failed', true); } }
-    async function sendNewMessage() { const deptId = document.getElementById('msgTo').value; const msg = document.getElementById('msgContent').value; if (!deptId) { showToast('Select department', true); return; } if (!msg.trim()) { showToast('Enter message', true); return; } if (parseInt(deptId) === 1) { showToast('Finance department cannot send messages to Super Admin', true); return; } const sendBtn = document.querySelector('#msgModal .btn-primary'); const originalText = sendBtn.innerHTML; sendBtn.innerHTML = '<span class="loading-spinner"></span> Sending...'; sendBtn.disabled = true; try { const res = await apiCall('send_message.php', 'POST', { department_id: parseInt(deptId), message: msg.trim() }); if (res && res.success) { showToast('✅ Message sent successfully'); closeModal('msgModal'); document.getElementById('msgContent').value = ''; await loadMessages(); } else { showToast('❌ ' + (res?.message || 'Failed'), true); } } catch (error) { showToast('❌ Network error', true); } finally { sendBtn.innerHTML = originalText; sendBtn.disabled = false; } }
-    async function openChat(conversationId, departmentId, deptName) { currentConversationId = conversationId; currentDepartmentId = departmentId; currentDeptName = deptName; document.getElementById('chatModalTitle').innerHTML = `<i class="fas fa-comments text-green-500 mr-2"></i>Chat with ${deptName}`; const res = await apiCall(`get_conversation.php?conversation_id=${conversationId}`); if (res.success && res.data) { const msgs = res.data.messages || []; let chatHtml = ''; if (msgs.length === 0) chatHtml = '<div class="text-center text-gray-400 py-8">No messages yet</div>'; else { for (let m of msgs) { const isSent = (m.sender_dept === DEPARTMENT_ID); chatHtml += `<div class="chat-message ${isSent ? 'chat-sent' : 'chat-received'}"><div class="chat-bubble"><div>${escapeHtml(m.message)}</div><span class="chat-time">${new Date(m.created_at).toLocaleString()}</span></div><div class="delete-msg-btn" onclick="event.stopPropagation(); deleteMessage(${m.id})"><i class="fas fa-trash-alt"></i></div></div>`; } } document.getElementById('chatMessagesArea').innerHTML = chatHtml; document.getElementById('chatMessagesArea').scrollTop = document.getElementById('chatMessagesArea').scrollHeight; openModal('chatModal'); await loadMessages(); } else { openModal('chatModal'); } }
-    async function sendChatMessage() { let msg = document.getElementById('replyMsg').value; if (!msg.trim()) { showToast('Enter message', true); return; } if (!currentConversationId) { showToast('No conversation', true); return; } let res = await apiCall('send_message.php', 'POST', { conversation_id: currentConversationId, message: msg }); if (res && res.success) { document.getElementById('replyMsg').value = ''; await openChat(currentConversationId, currentDepartmentId, currentDeptName); await loadMessages(); showToast('Sent'); } else showToast(res?.message || 'Failed', true); }
+    async function deleteConversation(conversationId) {
+        if (confirm('Delete this conversation? This will only hide it from your view.')) {
+            const res = await apiCall('delete_conversation.php', 'POST', { conversation_id: conversationId });
+            if (res && res.success) { showToast('Conversation deleted from your view'); await loadMessages(); if (currentConversationId === conversationId) { closeModal('chatModal'); currentConversationId = null; } }
+            else showToast(res?.message || 'Failed', true);
+        }
+    }
     
-    // ==================== REPORTS SECTION (with Dark Content) ====================
+    async function deleteMessage(messageId) {
+        if (confirm('Delete this message? It will only be hidden from your view.')) {
+            const res = await apiCall('delete_message.php', 'POST', { message_id: messageId });
+            if (res && res.success) { showToast('Message deleted from your view'); if (currentConversationId) await openChat(currentConversationId, currentDepartmentId, currentDeptName); await loadMessages(); }
+            else showToast(res?.message || 'Failed', true);
+        }
+    }
+    
+    async function sendNewMessage() {
+        const deptId = document.getElementById('msgTo').value;
+        const msg = document.getElementById('msgContent').value;
+        
+        if (!deptId) { showToast('Select department', true); return; }
+        if (!msg.trim()) { showToast('Enter message', true); return; }
+        
+        // Finance cannot send to Admin (id=1)
+        if (parseInt(deptId) === 1) {
+            showToast('Finance department cannot send messages to Super Admin', true);
+            return;
+        }
+        
+        const sendBtn = document.querySelector('#msgModal .btn-primary');
+        const originalText = sendBtn.innerHTML;
+        sendBtn.innerHTML = '<span class="loading-spinner"></span> Sending...';
+        sendBtn.disabled = true;
+        
+        try {
+            const res = await apiCall('send_message.php', 'POST', { department_id: parseInt(deptId), message: msg.trim() });
+            if (res && res.success) { showToast('✅ Message sent successfully'); closeModal('msgModal'); document.getElementById('msgContent').value = ''; await loadMessages(); }
+            else { showToast('❌ ' + (res?.message || 'Failed'), true); }
+        } catch (error) { showToast('❌ Network error', true); }
+        finally { sendBtn.innerHTML = originalText; sendBtn.disabled = false; }
+    }
+    
+    async function openChat(conversationId, departmentId, deptName) {
+        currentConversationId = conversationId;
+        currentDepartmentId = departmentId;
+        currentDeptName = deptName;
+        document.getElementById('chatModalTitle').innerHTML = `<i class="fas fa-comments text-green-500 mr-2"></i>Chat with ${deptName}`;
+        const res = await apiCall(`get_conversation.php?conversation_id=${conversationId}`);
+        if (res.success && res.data) {
+            const msgs = res.data.messages || [];
+            let chatHtml = '';
+            if (msgs.length === 0) chatHtml = '<div class="text-center text-gray-400 py-8">No messages yet</div>';
+            else {
+                for (let m of msgs) {
+                    const isSent = (m.sender_dept === DEPARTMENT_ID);
+                    chatHtml += `<div class="chat-message ${isSent ? 'chat-sent' : 'chat-received'}">
+                        <div class="chat-bubble">
+                            <div>${escapeHtml(m.message)}</div>
+                            <span class="chat-time">${new Date(m.created_at).toLocaleString()}</span>
+                        </div>
+                        <div class="delete-msg-btn" onclick="event.stopPropagation(); deleteMessage(${m.id})"><i class="fas fa-trash-alt"></i></div>
+                    </div>`;
+                }
+            }
+            document.getElementById('chatMessagesArea').innerHTML = chatHtml;
+            document.getElementById('chatMessagesArea').scrollTop = document.getElementById('chatMessagesArea').scrollHeight;
+            openModal('chatModal');
+            await loadMessages();
+        } else { openModal('chatModal'); }
+    }
+    
+    async function sendChatMessage() {
+        let msg = document.getElementById('replyMsg').value;
+        if (!msg.trim()) { showToast('Enter message', true); return; }
+        if (!currentConversationId) { showToast('No conversation', true); return; }
+        let res = await apiCall('send_message.php', 'POST', { conversation_id: currentConversationId, message: msg });
+        if (res && res.success) { document.getElementById('replyMsg').value = ''; await openChat(currentConversationId, currentDepartmentId, currentDeptName); await loadMessages(); showToast('Sent'); }
+        else showToast(res?.message || 'Failed', true);
+    }
+    
+    // ==================== REPORTS SECTION (with File Upload) ====================
     async function loadReports(highlightId = null) {
         const res = await apiCall('get_reports.php');
         reportsData = res.success ? res.data.filter(r => r.department_id === DEPARTMENT_ID || r.department_id === null) : [];
@@ -636,7 +743,6 @@
     function viewReportDetail(id) { 
         const r = reportsData.find(r => r.id === id); 
         if(r) { 
-            // Dark content styling - text nyeupe kwenye background nyeusi
             document.getElementById('viewReportContent').innerHTML = `<div class="space-y-3">
                 <div><strong class="text-green-400">Period:</strong> <span class="text-gray-300">${r.period}</span></div>
                 <div><strong class="text-green-400">Created:</strong> <span class="text-gray-300">${formatDate(r.created_at)}</span></div>
@@ -660,7 +766,7 @@
         } 
     }
     
-    function editReportDetail(id) { const r = reportsData.find(r => r.id === id); if(r) { document.getElementById('reportId').value = r.id; document.getElementById('reportTitle').value = r.title; document.getElementById('reportPeriod').value = r.period; document.getElementById('reportContent').value = r.content; openModal('reportModal'); } }
+    function editReportDetail(id) { const r = reportsData.find(r => r.id === id); if(r) { document.getElementById('reportId').value = r.id; document.getElementById('reportTitle').value = r.title; document.getElementById('reportPeriod').value = r.period; document.getElementById('reportContent').value = r.content; document.getElementById('reportFileNameDisplay').classList.add('hidden'); currentReportFile = null; openModal('reportModal'); } }
     async function saveReport() { let id = document.getElementById('reportId').value; let data = { title: document.getElementById('reportTitle').value, period: document.getElementById('reportPeriod').value, content: document.getElementById('reportContent').value, department_id: DEPARTMENT_ID }; if(!data.title||!data.content) { showToast('Title and content required',true); return; } let res = id ? await apiCall('update_report.php','POST',{...data,id:parseInt(id)}) : await apiCall('add_report.php','POST',data); if(res.success) { showToast(id ? 'Report updated' : 'Report added'); closeModal('reportModal'); loadReports(); loadDashboard(); } else showToast(res.message || 'Failed', true); }
     async function deleteReportDetail(id) { if(confirm('Delete this report? This will only hide it from your view.')) { let res = await apiCall('delete_report.php','DELETE',{id}); if(res.success) { showToast('Report deleted from your view'); loadReports(); loadDashboard(); } else showToast(res.message || 'Failed', true); } }
     function exportSingleReportExcel(reportId) { const r = reportsData.find(r => r.id === reportId); if(r) { let ws = [['Title', 'Period', 'Content', 'Created']]; ws.push([r.title, r.period, r.content, r.created_at]); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), 'Report'); XLSX.writeFile(wb, `report_${r.id}.xlsx`); showToast('Exported to Excel'); } }
