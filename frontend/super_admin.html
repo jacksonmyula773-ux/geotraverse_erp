@@ -1291,18 +1291,33 @@ async function deleteTransaction(id) { if(confirm('Delete this transaction?')) {
 // ==================== MESSAGES ====================
 async function loadMessages(highlightId = null) {
     try {
-        const userId = 1; // Admin user ID
+        const userId = 1; // Super Admin ID
         const res = await apiCall(`get_conversations.php?user_id=${userId}`);
         console.log('Admin Conversations response:', res);
         
         if (res.success && res.data && Array.isArray(res.data)) {
             messagesData = res.data;
+            console.log('Messages loaded:', messagesData.length, 'conversations');
         } else {
+            console.warn('No conversations data:', res);
             messagesData = [];
         }
     } catch(e) {
         console.error('Error loading messages:', e);
         messagesData = [];
+    }
+    updateMessageBadge();
+    
+    let html = `<div class="flex flex-wrap justify-between items-center gap-3 mb-4">
+        <h2 class="text-xl font-bold"><i class="fas fa-envelope text-blue-600 mr-2"></i>Messages (${messagesData.length})</h2>
+        <button onclick="openModal('msgModal')" class="btn-primary"><i class="fas fa-paper-plane mr-1"></i> New Message</button>
+    </div>
+    <div class="messages-grid" id="messagesGridContainer"></div>`;
+    document.getElementById('messagesPage').innerHTML = html;
+    
+    if (messagesData.length === 0) { 
+        document.getElementById('messagesGridContainer').innerHTML = '<div class="col-span-3 text-center py-12 text-gray-400 bg-white rounded-xl">No messages found. Click "New Message" to start a conversation.</div>'; 
+        return; 
     }
     
     let msgsHtml = '';
@@ -1310,8 +1325,8 @@ async function loadMessages(highlightId = null) {
         const isUnread = conv.unread_count > 0;
         const preview = conv.last_message ? (conv.last_message.substring(0, 70) + (conv.last_message.length > 70 ? '...' : '')) : 'No messages';
         
-        const otherDeptName = conv.other_department_name || "Department";
-        const otherDeptId = conv.other_department_id || 1;
+        let otherDeptName = conv.other_department_name || "Department";
+        let otherDeptId = conv.other_department_id || 1;
         
         const icon = departmentIcons[otherDeptId] || 'fa-building';
         const color = departmentColors[otherDeptId] || '#0f74ba';
@@ -1334,6 +1349,14 @@ async function loadMessages(highlightId = null) {
         </div>`;
     }
     document.getElementById('messagesGridContainer').innerHTML = msgsHtml;
+    if (highlightId) { 
+        const el = Array.from(document.querySelectorAll('.message-item')).find(el => el.textContent.includes(highlightId)); 
+        if(el) { 
+            el.classList.add('search-highlight'); 
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
+            setTimeout(() => el.classList.remove('search-highlight'), 2000); 
+        } 
+    }
 }
 
 async function deleteConversation(conversationId) {
@@ -1583,30 +1606,34 @@ function viewReportDetails(id) {
     }
 }
 
-async function sendReportToDept(reportId, deptId) { 
-    const r = reportsData.find(r => r.id === reportId); 
-    if(r) { 
-        console.log('Sending report:', reportId, 'to department:', deptId);
-        
-        const res = await apiCall('send_report.php', 'POST', { 
-            report_id: reportId, 
-            to_department_id: deptId 
-        }); 
-        
-        console.log('Send report response:', res);
-        
-        if (res && res.success) { 
-            showToast(`Report "${r.title}" sent to ${departmentNames[deptId]}`); 
-            // Update local data
-            r.sent_to_department = deptId;
-            r.status = 'sent';
-            // Reload reports to show updated status
-            await loadReports();
-        } else { 
-            showToast(res?.message || 'Failed to send report', true); 
-        }
-        toggleSendDropdown(`reportSendDropdown-${reportId}`); 
-    } 
+async function sendReportToDept(reportId, deptId) {
+    const r = reportsData.find(r => r.id === reportId);
+    if (!r) {
+        showToast('Report not found', true);
+        return;
+    }
+    
+    console.log('Sending report:', reportId, 'to department:', deptId);
+    
+    const res = await apiCall('send_report.php', 'POST', {
+        report_id: reportId,
+        to_department_id: deptId
+    });
+    
+    console.log('Send report response:', res);
+    
+    if (res && res.success) {
+        showToast(`Report "${r.title}" sent to ${departmentNames[deptId]}`);
+        // Update local data
+        r.sent_to_department = deptId;
+        r.status = 'sent';
+        await loadReports();
+    } else {
+        showToast(res?.message || 'Failed to send report', true);
+    }
+    
+    // Close dropdown
+    toggleSendDropdown(`reportSendDropdown-${reportId}`);
 }
 
 function exportSingleReportExcel(reportId) { 
