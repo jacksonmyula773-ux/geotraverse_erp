@@ -4,30 +4,36 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
+$host = "localhost";
+$db_name = "geotraverse_erp";
+$username = "root";
+$password = "";
+
+try {
+    $pdo = new PDO("mysql:host=" . $host . ";dbname=" . $db_name . ";charset=utf8mb4", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch(PDOException $e) {
+    echo json_encode(["success" => false, "message" => "Database connection failed"]);
     exit();
 }
 
-require_once '../config/database.php';
-
-$data = json_decode(file_get_contents("php://input"), true);
-
-if (!isset($data['report_id']) || !isset($data['to_department_id'])) {
-    sendResponse(false, null, "Report ID and destination department required");
+$input = json_decode(file_get_contents("php://input"), true);
+if (!$input) {
+    echo json_encode(["success" => false, "message" => "Invalid request data"]);
+    exit();
 }
 
-$database = new Database();
-$db = $database->getConnection();
+$report_id = isset($input['report_id']) ? intval($input['report_id']) : 0;
+$to_department_id = isset($input['to_department_id']) ? intval($input['to_department_id']) : 0;
 
-$query = "UPDATE reports SET department_id = :to_dept, sent_from_dept = 1, status = 'sent' WHERE id = :id";
-$stmt = $db->prepare($query);
-$stmt->bindParam(':to_dept', $data['to_department_id']);
-$stmt->bindParam(':id', $data['report_id']);
-
-if ($stmt->execute()) {
-    sendResponse(true, null, "Report sent successfully");
-} else {
-    sendResponse(false, null, "Failed to send report");
+if ($report_id === 0 || $to_department_id === 0) {
+    echo json_encode(["success" => false, "message" => "Missing report_id or to_department_id"]);
+    exit();
 }
+
+// Update the report with sent_to_department
+$update = $pdo->prepare("UPDATE reports SET sent_to_department = ?, status = 'sent' WHERE id = ?");
+$update->execute([$to_department_id, $report_id]);
+
+echo json_encode(["success" => true, "message" => "Report sent successfully"]);
 ?>

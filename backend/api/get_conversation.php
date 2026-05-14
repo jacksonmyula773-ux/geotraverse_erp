@@ -24,7 +24,6 @@ if ($user_id === 0) {
     exit();
 }
 
-// Get conversations where user is involved and messages are not deleted for this user
 $query = "
     SELECT 
         c.id,
