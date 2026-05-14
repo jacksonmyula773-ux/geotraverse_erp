@@ -23,6 +23,8 @@
         .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 10px; color: white; cursor: pointer; transition: all 0.2s; }
         .nav-item:hover { background: rgba(255,255,255,0.1); }
         .nav-item.active { background: rgba(255,255,255,0.15); border-left: 3px solid #60a5fa; }
+        .nav-item .badge { background: #ef4444; color: white; font-size: 10px; border-radius: 20px; padding: 2px 8px; margin-left: auto; min-width: 20px; text-align: center; }
+        .nav-item .badge.hidden { display: none; }
         
         .stat-card { background: white; border-radius: 16px; border: 1px solid #e5e7eb; padding: 20px; transition: all 0.2s; cursor: pointer; }
         .stat-card:hover { transform: translateY(-3px); border-color: #0f74ba; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
@@ -77,22 +79,23 @@
         body.dark-mode .report-card, body.dark-mode .modal-content, body.dark-mode .message-item { background: #1e293b; border-color: #334155; color: #f1f5f9; }
         
         .project-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+        .report-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; }
         .messages-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
         @media (max-width: 1024px) { .messages-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 640px) { .messages-grid { grid-template-columns: 1fr; } }
         
-        .messages-section .message-item { background: white; border: 1px solid #e5e7eb; border-radius: 16px; overflow: hidden; cursor: pointer; transition: all 0.2s; position: relative; }
-        body.dark-mode .messages-section .message-item { background: #1e293b; border-color: #334155; }
-        .messages-section .message-item:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); border-color: #0f74ba; }
-        .messages-section .message-unread { background: #eff6ff; border-left: 4px solid #3b82f6; }
-        body.dark-mode .messages-section .message-unread { background: #0f74ba20; border-left-color: #60a5fa; }
-        .messages-section .message-header { padding: 14px 16px 8px 16px; display: flex; justify-content: space-between; align-items: center; }
-        .messages-section .message-preview { padding: 0 16px 12px 16px; font-size: 13px; color: #6b7280; }
+        .message-item, .report-card { background: white; border: 1px solid #e5e7eb; border-radius: 16px; overflow: hidden; cursor: pointer; transition: all 0.2s; position: relative; }
+        .message-item:hover, .report-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); border-color: #0f74ba; }
+        .message-unread, .report-unviewed { background: #eff6ff; border-left: 4px solid #3b82f6; }
+        body.dark-mode .message-unread, body.dark-mode .report-unviewed { background: #0f74ba20; border-left-color: #60a5fa; }
+        .message-header, .report-header { padding: 14px 16px 8px 16px; display: flex; justify-content: space-between; align-items: center; }
+        .message-preview, .report-preview { padding: 0 16px 12px 16px; font-size: 13px; color: #6b7280; }
         
         .delete-conv-btn { position: absolute; top: 10px; right: 10px; background: #ef4444; color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0.6; transition: all 0.2s; z-index: 15; }
-        .message-item:hover .delete-conv-btn { opacity: 1; }
+        .message-item:hover .delete-conv-btn, .report-card:hover .delete-conv-btn { opacity: 1; }
         .delete-conv-btn:hover { background: #dc2626; transform: scale(1.05); opacity: 1; }
         .dept-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .new-badge { position: absolute; top: -8px; right: -8px; background: #ef4444; color: white; border-radius: 50%; width: 22px; height: 22px; font-size: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; z-index: 10; }
         
         .send-dropdown { position: relative; display: inline-block; }
         .send-dropdown-content { display: none; position: absolute; right: 0; top: 100%; background: white; min-width: 180px; border-radius: 8px; z-index: 100; border: 1px solid #e5e7eb; max-height: 300px; overflow-y: auto; margin-top: 5px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
@@ -228,11 +231,11 @@
             <div class="nav-item active" data-page="dashboard"><i class="fas fa-tachometer-alt w-5"></i><span>Dashboard</span></div>
             <div class="nav-item" data-page="employees"><i class="fas fa-users w-5"></i><span>Employees</span></div>
             <div class="nav-item" data-page="departments"><i class="fas fa-building w-5"></i><span>Departments</span></div>
-            <div class="nav-item" data-page="projects"><i class="fas fa-tasks w-5"></i><span>Projects</span><span id="projectBadge" class="bg-red-500 text-white text-[10px] rounded-full px-2 py-0.5 ml-2 hidden">0</span></div>
+            <div class="nav-item" data-page="projects"><i class="fas fa-tasks w-5"></i><span>Projects</span><span id="projectBadge" class="badge hidden">0</span></div>
             <div class="nav-item" data-page="dailywork"><i class="fas fa-calendar-day w-5"></i><span>Daily Work</span></div>
             <div class="nav-item" data-page="cashflow"><i class="fas fa-exchange-alt w-5"></i><span>Cashflow</span></div>
-            <div class="nav-item" data-page="messages"><i class="fas fa-envelope w-5"></i><span>Messages</span><span id="msgBadge" class="bg-red-500 text-white text-[10px] rounded-full px-2 py-0.5 ml-2 hidden">0</span></div>
-            <div class="nav-item" data-page="reports"><i class="fas fa-chart-line w-5"></i><span>Reports</span><span id="reportBadge" class="bg-red-500 text-white text-[10px] rounded-full px-2 py-0.5 ml-2 hidden">0</span></div>
+            <div class="nav-item" data-page="messages"><i class="fas fa-envelope w-5"></i><span>Messages</span><span id="msgBadge" class="badge hidden">0</span></div>
+            <div class="nav-item" data-page="reports"><i class="fas fa-chart-line w-5"></i><span>Reports</span><span id="reportBadge" class="badge hidden">0</span></div>
             <div class="nav-item" data-page="settings"><i class="fas fa-cog w-5"></i><span>Settings</span></div>
         </nav>
         <div class="p-4 border-t border-white/20">
@@ -286,7 +289,16 @@
 
 <div id="viewTransModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-receipt text-orange-500 mr-2"></i>Transaction Details</h3><div id="viewTransContent"></div><button onclick="closeModal('viewTransModal')" class="w-full bg-gray-200 py-2 rounded mt-3">Close</button></div></div>
 
-<div id="reportModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-chart-line text-purple-500 mr-2"></i>Add Report</h3><input type="hidden" id="reportId"><div class="form-group"><label>Title <span class="required">*</span></label><input type="text" id="reportTitle" placeholder="Enter report title" required></div><div class="form-group"><label>Period</label><select id="reportPeriod"><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="quarterly">Quarterly</option><option value="annual">Annual</option></select></div><div class="form-group"><label>Content <span class="required">*</span></label><textarea id="reportContent" rows="6" placeholder="Enter report content" required></textarea></div><div class="flex gap-3 pt-2"><button onclick="saveReport()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('reportModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
+<div id="reportModal" class="modal">
+    <div class="modal-content">
+        <h3 class="text-xl font-bold mb-4"><i class="fas fa-chart-line text-purple-500 mr-2"></i>Add Report</h3>
+        <input type="hidden" id="reportId">
+        <div class="form-group"><label>Title <span class="required">*</span></label><input type="text" id="reportTitle" placeholder="Enter report title" required></div>
+        <div class="form-group"><label>Period</label><select id="reportPeriod"><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="quarterly">Quarterly</option><option value="annual">Annual</option></select></div>
+        <div class="form-group"><label>Content <span class="required">*</span></label><textarea id="reportContent" rows="6" placeholder="Enter report content" required></textarea></div>
+        <div class="flex gap-3 pt-2"><button onclick="saveReport()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('reportModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div>
+    </div>
+</div>
 
 <div id="viewReportModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-file-alt text-purple-500 mr-2"></i>Report Details</h3><div id="viewReportContent"></div><div id="viewReportButtons" class="detail-buttons"></div><button onclick="closeModal('viewReportModal')" class="w-full bg-gray-200 py-2 rounded mt-3">Close</button></div></div>
 
@@ -493,64 +505,6 @@ async function updateConnectionStatus() {
     }
 }
 
-// ==================== BACKGROUND REFRESH FOR BADGES ====================
-async function refreshBadges() {
-    try {
-        const projRes = await apiCall('get_projects.php');
-        if (projRes.success) {
-            const newUnviewed = projRes.unviewed_count || 0;
-            if (newUnviewed !== unviewedProjectsCount) {
-                unviewedProjectsCount = newUnviewed;
-                updateProjectBadge();
-                if (document.getElementById('projectsPage').classList.contains('hidden') && newUnviewed > 0) {
-                    showToast(`📋 ${newUnviewed} new project${newUnviewed !== 1 ? 's' : ''} received`, false);
-                }
-            }
-            if (projRes.data) projectsData = projRes.data;
-        }
-        
-        const reportRes = await apiCall('get_reports.php');
-        if (reportRes.success) {
-            const newUnviewed = reportRes.unviewed_count || 0;
-            if (newUnviewed !== unviewedReportsCount) {
-                unviewedReportsCount = newUnviewed;
-                updateReportBadge();
-                if (document.getElementById('reportsPage').classList.contains('hidden') && newUnviewed > 0) {
-                    showToast(`📄 ${newUnviewed} new report${newUnviewed !== 1 ? 's' : ''} received`, false);
-                }
-            }
-            if (reportRes.data) reportsData = reportRes.data;
-        }
-        
-        const msgRes = await apiCall('get_conversations.php?user_id=1');
-        if (msgRes.success && msgRes.data) {
-            const unreadCount = msgRes.data.reduce((sum, c) => sum + (c.unread_count || 0), 0);
-            const badge = document.getElementById('msgBadge');
-            const oldUnread = parseInt(badge.innerText) || 0;
-            if (unreadCount !== oldUnread) {
-                if (unreadCount > 0) { badge.classList.remove('hidden'); badge.innerText = unreadCount; }
-                else badge.classList.add('hidden');
-                if (document.getElementById('messagesPage').classList.contains('hidden') && unreadCount > oldUnread) {
-                    showToast(`💬 ${unreadCount - oldUnread} new message${(unreadCount - oldUnread) !== 1 ? 's' : ''} received`, false);
-                }
-            }
-            messagesData = msgRes.data;
-        }
-    } catch(e) { console.error('Badge refresh error:', e); }
-}
-
-function updateProjectBadge() {
-    const badge = document.getElementById('projectBadge');
-    if (unviewedProjectsCount > 0) { badge.classList.remove('hidden'); badge.innerText = unviewedProjectsCount; }
-    else badge.classList.add('hidden');
-}
-
-function updateReportBadge() {
-    const badge = document.getElementById('reportBadge');
-    if (unviewedReportsCount > 0) { badge.classList.remove('hidden'); badge.innerText = unviewedReportsCount; }
-    else badge.classList.add('hidden');
-}
-
 // ==================== DEPARTMENTS FOR DROPDOWNS ====================
 async function loadDepartmentsForDropdowns() {
     try {
@@ -627,11 +581,30 @@ async function markAllProjectsViewed() {
 async function markAllReportsViewed() {
     for (let r of reportsData) {
         if (r.is_viewed_by_admin === 0 && r.department_id !== 1) {
-            await apiCall('mark_report_viewed.php', 'POST', { report_id: r.id });
+            await apiCall('mark_report_viewed.php', 'POST', { report_id: r.id, is_admin: 1 });
         }
     }
     unviewedReportsCount = 0;
     updateReportBadge();
+}
+
+function updateProjectBadge() {
+    const badge = document.getElementById('projectBadge');
+    if (unviewedProjectsCount > 0) { badge.classList.remove('hidden'); badge.innerText = unviewedProjectsCount; }
+    else badge.classList.add('hidden');
+}
+
+function updateReportBadge() {
+    const badge = document.getElementById('reportBadge');
+    if (unviewedReportsCount > 0) { badge.classList.remove('hidden'); badge.innerText = unviewedReportsCount; }
+    else badge.classList.add('hidden');
+}
+
+function updateMessageBadge() {
+    const unreadCount = messagesData.reduce((sum, c) => sum + (c.unread_count || 0), 0);
+    const badge = document.getElementById('msgBadge');
+    if (unreadCount > 0) { badge.classList.remove('hidden'); badge.innerText = unreadCount; }
+    else badge.classList.add('hidden');
 }
 
 // ==================== DASHBOARD ====================
@@ -712,7 +685,7 @@ async function loadEmployees(highlightId = null) {
             <td class="p-3"><div class="flex gap-2"><button onclick="viewEmployee(${e.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="editEmployee(${e.id})" class="action-btn edit"><i class="fas fa-edit"></i></button><button onclick="deleteEmployee(${e.id})" class="action-btn delete"><i class="fas fa-trash"></i></button></div></td>
         </tr>`; 
     });
-    html += `</tbody></table></div>`;
+    html += `</tbody>}</div>`;
     document.getElementById('employeesPage').innerHTML = html;
     if (highlightId) document.getElementById(`emp-row-${highlightId}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
@@ -856,52 +829,17 @@ function exportSingleProjectPDF(projectId) {
     const startDate = p.start_date ? new Date(p.start_date).toLocaleDateString('en-GB') : 'Not specified';
     const endDate = p.end_date ? new Date(p.end_date).toLocaleDateString('en-GB') : 'Not specified';
     
-    const printContent = `<!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>${escapeHtml(p.name)} - Project Report</title>
-        <style>
-            body { font-family: Arial, sans-serif; padding: 40px; max-width: 800px; margin: 0 auto; }
-            h1 { color: #0f74ba; text-align: center; border-bottom: 3px solid #0f74ba; padding-bottom: 15px; }
-            .image-section { text-align: center; margin: 20px 0; }
-            .image-section img { max-width: 100%; max-height: 200px; border: 1px solid #ddd; border-radius: 8px; }
-            table { width: 100%; border-collapse: collapse; margin: 15px 0; border: 1px solid #ddd; }
-            th, td { border: 1px solid #ddd; padding: 8px 12px; text-align: left; vertical-align: top; }
-            th { background: #f5f5f5; width: 35%; }
-            .status-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; }
-            .progress-bar { background: #e5e7eb; border-radius: 10px; height: 8px; width: 150px; margin-top: 5px; }
-            .progress-fill { background: #0f74ba; height: 8px; border-radius: 10px; width: ${progressWidth}%; }
-            .footer { text-align: center; font-size: 10px; color: #999; margin-top: 30px; padding-top: 10px; border-top: 1px solid #ddd; }
-            @media print { body { padding: 20px; } .no-print { display: none; } }
-        </style>
-    </head>
-    <body>
-        <h1>${escapeHtml(p.name)}</h1>
-        <p style="text-align:center;color:#666;">Project Report - Generated: ${new Date().toLocaleString()}</p>
-        <div class="image-section">
-            ${imageUrl ? `<img src="${imageUrl}" alt="Project Image" onerror="this.style.display='none'">` : '<p style="color:#999;text-align:center;">No Image Available</p>'}
-        </div>
-        <table>
-            <tr><th>Project ID:</th><td>#${p.id}</td></tr>
-            <tr><th>Project Name:</th><td>${escapeHtml(p.name)}</td></tr>
-            <tr><th>Client Name:</th><td>${escapeHtml(p.client_name || 'N/A')}</td></tr>
-            <tr><th>Amount:</th><td style="color:#059669; font-weight:bold;">${formatMoney(p.amount)}</td></tr>
-            <tr><th>Status:</th><td><span class="status-badge" style="background:${statusBg}; color:${statusColor};">${p.status}</span></td></tr>
-            <tr><th>Progress:</th><td><div class="progress-bar"><div class="progress-fill"></div></div>${progressWidth}% Complete</td></tr>
-            <tr><th>Location:</th><td>${escapeHtml(p.location || 'N/A')}</td></tr>
-            <tr><th>Start Date:</th><td>${startDate}</td></tr>
-            <tr><th>End Date:</th><td>${endDate}</td></tr>
-            <tr><th>Description:</th><td>${escapeHtml(p.description || 'No description provided')}</td></tr>
-        </table>
-        <div class="footer">
-            <p>GeoTraverse ERP System - Official Project Document</p>
-        </div>
-        <div class="no-print" style="text-align: center; margin-top: 20px;">
-            <button onclick="window.print()" style="padding: 10px 20px; background: #0f74ba; color: white; border: none; border-radius: 5px; cursor: pointer;">Save as PDF</button>
-        </div>
-    </body>
-    </html>`;
+    const printContent = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${escapeHtml(p.name)} - Project Report</title><style>body{font-family:Arial,sans-serif;padding:40px;max-width:800px;margin:0 auto;}h1{color:#0f74ba;text-align:center;border-bottom:3px solid #0f74ba;padding-bottom:15px;}.image-section{text-align:center;margin:20px 0;}.image-section img{max-width:100%;max-height:200px;border:1px solid #ddd;border-radius:8px;}table{width:100%;border-collapse:collapse;margin:15px 0;border:1px solid #ddd;}th,td{border:1px solid #ddd;padding:8px 12px;text-align:left;vertical-align:top;}th{background:#f5f5f5;width:35%;}.status-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;}.progress-bar{background:#e5e7eb;border-radius:10px;height:8px;width:150px;margin-top:5px;}.progress-fill{background:#0f74ba;height:8px;border-radius:10px;width:${progressWidth}%;}.footer{text-align:center;font-size:10px;color:#999;margin-top:30px;padding-top:10px;border-top:1px solid #ddd;}@media print{body{padding:20px;}.no-print{display:none;}}</style></head><body><h1>${escapeHtml(p.name)}</h1><p style="text-align:center;color:#666;">Project Report - Generated: ${new Date().toLocaleString()}</p><div class="image-section">${imageUrl ? `<img src="${imageUrl}" alt="Project Image" onerror="this.style.display='none'">` : '<p style="color:#999;text-align:center;">No Image Available</p>'}</div><tr><tr><th>Project ID:</th><td>#${p.id}</td</tr
+                <tr><th>Project Name:</th><td>${escapeHtml(p.name)}</td</tr
+                <tr><th>Client Name:</th><td>${escapeHtml(p.client_name || 'N/A')}</td</tr
+                <tr><th>Amount:</th><td style="color:#059669; font-weight:bold;">${formatMoney(p.amount)}</td</tr
+                <tr><th>Status:</th><td><span class="status-badge" style="background:${statusBg}; color:${statusColor};">${p.status}</span></td</tr
+                <tr><th>Progress:</th><td><div class="progress-bar"><div class="progress-fill"></div></div>${progressWidth}% Complete</td</tr
+                <tr><th>Location:</th><td>${escapeHtml(p.location || 'N/A')}</td</tr
+                <tr><th>Start Date:</th><td>${startDate}</td</tr
+                <tr><th>End Date:</th><td>${endDate}</td</tr
+                <tr><th>Description:</th><td>${escapeHtml(p.description || 'No description provided')}</td</tr
+            80<table><div class="footer"><p>GeoTraverse ERP System - Official Project Document</p></div><div class="no-print" style="text-align:center;margin-top:20px;"><button onclick="window.print()" style="padding:10px 20px;background:#0f74ba;color:white;border:none;border-radius:5px;cursor:pointer;">Save as PDF</button></div></body></html>`;
     
     const printWindow = window.open('', '_blank');
     printWindow.document.write(printContent);
@@ -1019,7 +957,7 @@ async function saveProject() {
     }
 }
 
-// ==================== SOFT DELETE PROJECT (FIXED) ====================
+// ==================== SOFT DELETE PROJECT ====================
 async function deleteProject(id) { 
     if(confirm('Delete this project? It will be hidden from your view.')) { 
         let res = await apiCall('delete_project.php', 'POST', { project_id: id, user_id: 1, is_admin: 1 }); 
@@ -1048,7 +986,9 @@ async function loadDailyWork(highlightId = null) {
     
     dailyworkData.forEach(w => { 
         let profit = (parseFloat(w.income) || 0) - (parseFloat(w.expenses) || 0);
-        html += `<tr id="daily-row-${w.id}"><td class="p-3">${w.date}</td><td class="p-3"><span class="dept-badge dept-badge-${w.department_id || 1}">${departmentNames[w.department_id] || w.department_id}</span></td><td class="p-3 font-medium">${escapeHtml(w.project_name)}</td><td class="p-3 text-right text-green-600">${formatMoney(w.income)}</td><td class="p-3 text-right text-red-600">${formatMoney(w.expenses)}</td><td class="p-3 text-right ${profit >= 0 ? 'text-green-600' : 'text-red-600'} font-semibold">${formatMoney(profit)}</td><td class="p-3 text-center"><span class="status-badge ${w.status === 'paid' ? 'status-paid' : w.status === 'partial' ? 'status-partial' : 'status-pending'}">${w.status}</span></td><td class="p-3 text-center"><div class="flex gap-1 justify-center"><button onclick="viewDailyWork(${w.id})" class="action-btn view p-1"><i class="fas fa-eye"></i></button><button onclick="editDailyWork(${w.id})" class="action-btn edit p-1"><i class="fas fa-edit"></i></button><button onclick="deleteDailyWork(${w.id})" class="action-btn delete p-1"><i class="fas fa-trash"></i></button></div></td></td>`; 
+        html += `<tr id="daily-row-${w.id}"><td class="p-3">${w.date}</td><td class="p-3"><span class="dept-badge dept-badge-${w.department_id || 1}">${departmentNames[w.department_id] || w.department_id}</span></td><td class="p-3 font-medium">${escapeHtml(w.project_name)}</td><td class="p-3 text-right text-green-600">${formatMoney(w.income)}</td><td class="p-3 text-right text-red-600">${formatMoney(w.expenses)}</td><td class="p-3 text-right ${profit >= 0 ? 'text-green-600' : 'text-red-600'} font-semibold">${formatMoney(profit)}</td><td class="p-3 text-center"><span class="status-badge ${w.status === 'paid' ? 'status-paid' : w.status === 'partial' ? 'status-partial' : 'status-pending'}">${w.status}</span></td><td class="p-3 text-center"><div class="flex gap-1 justify-center"><button onclick="viewDailyWork(${w.id})" class="action-btn view p-1"><i class="fas fa-eye"></i></button><button onclick="editDailyWork(${w.id})" class="action-btn edit p-1"><i class="fas fa-edit"></i></button><button onclick="deleteDailyWork(${w.id})" class="action-btn delete p-1"><i class="fas fa-trash"></i></button></div></tr
+
+`;
     });
     html += `</tbody>}</div></div>`;
     document.getElementById('dailyworkPage').innerHTML = html;
@@ -1084,7 +1024,9 @@ async function loadCashflow(highlightId = null) {
     <div class="bg-white rounded-xl shadow-sm border overflow-hidden"><div class="overflow-x-auto"><table class="min-w-full"><thead><tr class="bg-gray-50 border-b"><th class="p-3 text-left">Date</th><th class="p-3 text-left">Type</th><th class="p-3 text-left">Source</th><th class="p-3 text-right">Amount</th><th class="p-3 text-left">Status</th><th class="p-3 text-center">Actions</th></tr></thead><tbody>`;
     
     for (let t of transactionsData) { 
-        html += `<tr id="trans-row-${t.id}" class="${t.type==='income' ? 'income-row' : 'expense-row'} border-b hover:bg-gray-50 transition"><td class="p-3">${t.transaction_date}</td><td class="p-3"><span class="status-badge ${t.type==='income' ? 'status-paid' : 'status-partial'}"><i class="fas ${t.type==='income' ? 'fa-arrow-up' : 'fa-arrow-down'} mr-1"></i>${t.type}</span></td><td class="p-3 font-medium">${escapeHtml(t.source)}</td><td class="p-3 text-right ${t.type==='income' ? 'text-green-600' : 'text-red-600'} font-bold">${formatMoney(t.amount)}</td><td class="p-3"><span class="status-badge ${t.status==='paid' ? 'status-paid' : t.status==='partial' ? 'status-partial' : 'status-pending'}">${t.status}</span></td><td class="p-3 text-center"><div class="flex gap-2 justify-center"><button onclick="viewTransaction(${t.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="editTransaction(${t.id})" class="action-btn edit"><i class="fas fa-edit"></i></button><button onclick="deleteTransaction(${t.id})" class="action-btn delete"><i class="fas fa-trash"></i></button></div></td></tr>`; 
+        html += `<tr id="trans-row-${t.id}" class="${t.type==='income' ? 'income-row' : 'expense-row'} border-b hover:bg-gray-50 transition"><td class="p-3">${t.transaction_date}</td><td class="p-3"><span class="status-badge ${t.type==='income' ? 'status-paid' : 'status-partial'}"><i class="fas ${t.type==='income' ? 'fa-arrow-up' : 'fa-arrow-down'} mr-1"></i>${t.type}</span></td><td class="p-3 font-medium">${escapeHtml(t.source)}</td><td class="p-3 text-right ${t.type==='income' ? 'text-green-600' : 'text-red-600'} font-bold">${formatMoney(t.amount)}</td><td class="p-3"><span class="status-badge ${t.status==='paid' ? 'status-paid' : t.status==='partial' ? 'status-partial' : 'status-pending'}">${t.status}</span></td><td class="p-3 text-center"><div class="flex gap-2 justify-center"><button onclick="viewTransaction(${t.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="editTransaction(${t.id})" class="action-btn edit"><i class="fas fa-edit"></i></button><button onclick="deleteTransaction(${t.id})" class="action-btn delete"><i class="fas fa-trash"></i></button></div></tr
+
+`;
     }
     html += `</tbody>}</div></div>`;
     document.getElementById('cashflowPage').innerHTML = html;
@@ -1100,7 +1042,10 @@ async function deleteTransaction(id) { if(confirm('Delete this transaction?')) {
 // ==================== MESSAGES ====================
 async function loadMessages(highlightId = null) {
     try {
-        const res = await apiCall('get_conversations.php?user_id=1');
+        const userId = 1; // Admin user ID
+        const res = await apiCall(`get_conversations.php?user_id=${userId}`);
+        console.log('Admin Conversations response:', res);
+        
         if (res.success && res.data && Array.isArray(res.data)) {
             messagesData = res.data;
         } else {
@@ -1110,49 +1055,45 @@ async function loadMessages(highlightId = null) {
         console.error('Error loading messages:', e);
         messagesData = [];
     }
+    updateMessageBadge();
     
-    const unreadCount = messagesData.reduce((sum, c) => sum + (c.unread_count || 0), 0);
-    const badge = document.getElementById('msgBadge');
-    if (unreadCount > 0) { badge.classList.remove('hidden'); badge.innerText = unreadCount; }
-    else badge.classList.add('hidden');
-    
-    let html = `<div class="flex flex-wrap justify-between items-center gap-3 mb-4"><h2 class="text-xl font-bold"><i class="fas fa-envelope text-blue-600 mr-2"></i>Messages (${messagesData.length})</h2><button onclick="openModal('msgModal')" class="btn-primary"><i class="fas fa-paper-plane mr-1"></i> New Message</button></div><div class="messages-grid" id="messagesGridContainer"></div>`;
+    let html = `<div class="flex flex-wrap justify-between items-center gap-3 mb-4">
+        <h2 class="text-xl font-bold"><i class="fas fa-envelope text-blue-600 mr-2"></i>Messages (${messagesData.length})</h2>
+        <button onclick="openModal('msgModal')" class="btn-primary"><i class="fas fa-paper-plane mr-1"></i> New Message</button>
+    </div>
+    <div class="messages-grid" id="messagesGridContainer"></div>`;
     document.getElementById('messagesPage').innerHTML = html;
     
-    if (messagesData.length === 0) { document.getElementById('messagesGridContainer').innerHTML = '<div class="col-span-3 text-center py-12 text-gray-400 bg-white rounded-xl">No messages found</div>'; return; }
+    if (messagesData.length === 0) { 
+        document.getElementById('messagesGridContainer').innerHTML = '<div class="col-span-3 text-center py-12 text-gray-400 bg-white rounded-xl">No messages found. Click "New Message" to start a conversation.</div>'; 
+        return; 
+    }
     
     let msgsHtml = '';
     for (let conv of messagesData) {
         const isUnread = conv.unread_count > 0;
         const preview = conv.last_message ? (conv.last_message.substring(0, 70) + (conv.last_message.length > 70 ? '...' : '')) : 'No messages';
-        let deptId = 1;
-        let deptName = "Super Admin";
         
-        if (conv.user_department_id === 1 || conv.admin_department_id === 1) {
-            if (conv.user_department_id === 2) {
-                deptId = 2;
-                deptName = "Finance";
-            } else if (conv.admin_department_id === 2) {
-                deptId = 2;
-                deptName = "Finance";
-            } else if (conv.user_department_id && conv.user_department_id !== 1) {
-                deptId = conv.user_department_id;
-                deptName = conv.user_department_name || departmentNames[deptId] || 'Department';
-            } else if (conv.admin_department_id && conv.admin_department_id !== 1) {
-                deptId = conv.admin_department_id;
-                deptName = conv.admin_department_name || departmentNames[deptId] || 'Department';
-            }
-        } else {
-            deptId = conv.user_department_id || conv.admin_department_id || 1;
-            deptName = conv.user_department_name || conv.admin_department_name || departmentNames[deptId] || 'Department';
-        }
+        const otherDeptName = conv.other_department_name || "Department";
+        const otherDeptId = conv.other_department_id || 1;
         
-        const icon = departmentIcons[deptId] || 'fa-building';
-        const color = departmentColors[deptId] || '#0f74ba';
+        const icon = departmentIcons[otherDeptId] || 'fa-building';
+        const color = departmentColors[otherDeptId] || '#0f74ba';
         
-        msgsHtml += `<div class="message-item ${isUnread ? 'message-unread' : ''}" onclick="openChat(${conv.id})">
-            <div class="delete-conv-btn" onclick="event.stopPropagation(); deleteConversation(${conv.id})"><i class="fas fa-trash-alt"></i></div>
-            <div class="message-header"><div class="flex items-center gap-3"><div class="dept-icon" style="background: ${color}20; color: ${color}; border: 1px solid ${color}40"><i class="fas ${icon}"></i></div><div><span class="font-semibold">${escapeHtml(deptName)}</span>${isUnread ? `<span class="bg-red-500 text-white text-[9px] px-1.5 py-0.5 rounded-full ml-1">${conv.unread_count}</span>` : ''}</div></div><span class="text-[9px] text-gray-400">${conv.last_message_time ? new Date(conv.last_message_time).toLocaleString() : ''}</span></div>
+        msgsHtml += `<div class="message-item ${isUnread ? 'message-unread' : ''}" onclick="openChat(${conv.conversation_id})">
+            <div class="delete-conv-btn" onclick="event.stopPropagation(); deleteConversation(${conv.conversation_id})"><i class="fas fa-trash-alt"></i></div>
+            <div class="message-header">
+                <div class="flex items-center gap-3">
+                    <div class="dept-icon" style="background: ${color}20; color: ${color}; border: 1px solid ${color}40">
+                        <i class="fas ${icon}"></i>
+                    </div>
+                    <div>
+                        <span class="font-semibold">${escapeHtml(otherDeptName)}</span>
+                        ${isUnread ? `<span class="bg-red-500 text-white text-[9px] px-1.5 py-0.5 rounded-full ml-1">${conv.unread_count}</span>` : ''}
+                    </div>
+                </div>
+                <span class="text-[9px] text-gray-400">${conv.last_message_time ? new Date(conv.last_message_time).toLocaleString() : ''}</span>
+            </div>
             <div class="message-preview">${escapeHtml(preview)}</div>
         </div>`;
     }
@@ -1217,42 +1158,31 @@ async function sendNewMessage() {
         } else { 
             showToast('❌ ' + (res?.message || 'Failed'), true); 
         }
-    } catch (error) { 
-        console.error('Error:', error);
-        showToast('❌ Network error', true); 
-    }
-    finally { 
-        sendBtn.innerHTML = originalText; 
-        sendBtn.disabled = false; 
-    }
+    } catch (error) { showToast('❌ Network error', true); }
+    finally { sendBtn.innerHTML = originalText; sendBtn.disabled = false; }
 }
 
 async function openChat(conversationId) { 
     currentConversationId = conversationId;
-    const conv = messagesData.find(c => c.id === conversationId);
-    let deptName = "Department";
-    if (conv) {
-        if (conv.user_department_id === 1 || conv.admin_department_id === 1) {
-            if (conv.user_department_id === 2) deptName = "Finance";
-            else if (conv.admin_department_id === 2) deptName = "Finance";
-            else if (conv.user_department_id && conv.user_department_id !== 1) deptName = conv.user_department_name || departmentNames[conv.user_department_id] || 'Department';
-            else if (conv.admin_department_id && conv.admin_department_id !== 1) deptName = conv.admin_department_name || departmentNames[conv.admin_department_id] || 'Department';
-            else deptName = "Super Admin";
-        } else {
-            deptName = conv.user_department_name || conv.admin_department_name || departmentNames[conv.user_department_id || conv.admin_department_id || 1] || 'Department';
-        }
-    }
-    document.getElementById('chatModalTitle').innerHTML = `<i class="fas fa-comments text-blue-500 mr-2"></i>Chat with ${deptName}`;
     
-    const res = await apiCall(`get_conversation.php?conversation_id=${conversationId}`);
+    // Get conversation details from messagesData
+    const conv = messagesData.find(c => c.conversation_id === conversationId);
+    const otherDeptName = conv ? conv.other_department_name : "Department";
+    
+    document.getElementById('chatModalTitle').innerHTML = `<i class="fas fa-comments text-blue-500 mr-2"></i>Chat with ${escapeHtml(otherDeptName)}`;
+    
+    const res = await apiCall(`get_messages.php?conversation_id=${conversationId}&user_id=1`);
+    console.log('Messages response:', res);
+    
     if (res.success && res.data) {
-        const msgs = res.data.messages || [];
+        const msgs = res.data;
         let chatHtml = '';
+        
         if (msgs.length === 0) {
             chatHtml = '<div class="text-center text-gray-400 py-8">No messages yet</div>';
         } else {
             for (let m of msgs) {
-                const isSent = (m.sender_type === 'admin');
+                const isSent = (m.message_type === 'sent');
                 chatHtml += `
                     <div class="chat-message-wrapper ${isSent ? 'justify-end' : 'justify-start'}">
                         <div class="chat-message ${isSent ? 'chat-sent' : 'chat-received'}">
@@ -1270,7 +1200,7 @@ async function openChat(conversationId) {
         document.getElementById('chatMessagesArea').innerHTML = chatHtml;
         document.getElementById('chatMessagesArea').scrollTop = document.getElementById('chatMessagesArea').scrollHeight;
         openModal('chatModal');
-        loadMessages();
+        await loadMessages();
     } else { 
         openModal('chatModal'); 
     }
@@ -1295,33 +1225,73 @@ async function sendChatMessage() {
     }
 }
 
-// ==================== REPORTS ====================
+// ==================== REPORTS (BEAUTIFUL DESIGN) ====================
 async function loadReports(highlightId = null) {
     const res = await apiCall('get_reports.php');
     reportsData = res.success ? res.data.sort((a,b) => b.id - a.id) : [];
     unviewedReportsCount = res.unviewed_count || 0;
     updateReportBadge();
     
-    document.getElementById('reportsPage').innerHTML = `<div class="flex justify-between flex-wrap gap-3 mb-4"><h2 class="text-xl font-bold"><i class="fas fa-chart-line text-purple-500 mr-2"></i>Reports (${reportsData.length})</h2><button onclick="openModal('reportModal')" class="btn-primary"><i class="fas fa-plus mr-1"></i> Add Report</button></div><div class="project-grid" id="reportsGrid"></div>`;
+    let html = `<div class="flex flex-wrap justify-between items-center gap-3 mb-4">
+        <h2 class="text-xl font-bold"><i class="fas fa-chart-line text-purple-600 mr-2"></i>Reports (${reportsData.length})</h2>
+        <div class="flex gap-2 flex-wrap">
+            <button onclick="openModal('reportModal')" class="btn-primary"><i class="fas fa-plus mr-1"></i> Add Report</button>
+            <button onclick="exportAllReportsToExcel()" class="btn-success"><i class="fas fa-file-excel mr-1"></i> Excel All</button>
+            <button onclick="exportAllReportsToPDF()" class="btn-danger"><i class="fas fa-file-pdf mr-1"></i> PDF All</button>
+        </div>
+    </div>
+    <div class="report-grid" id="reportsGrid"></div>`;
+    document.getElementById('reportsPage').innerHTML = html;
     
-    if (reportsData.length === 0) { document.getElementById('reportsGrid').innerHTML = '<div class="col-span-2 text-center py-8 text-gray-400">No reports found</div>'; return; }
+    if (reportsData.length === 0) { 
+        document.getElementById('reportsGrid').innerHTML = '<div class="col-span-2 text-center py-8 text-gray-400 bg-white rounded-xl">No reports found. Click "Add Report" to create one.</div>'; 
+        return; 
+    }
     
     let reportsHtml = '';
     for (let r of reportsData) {
-        const isUnviewed = r.is_viewed_by_admin === 0 && r.department_id !== 1;
-        reportsHtml += `<div class="report-card relative" id="report-card-${r.id}" onclick="viewReportDetails(${r.id})">
+        const isUnviewed = (r.is_viewed_by_admin === 0 || r.is_viewed_by_admin === null) && r.department_id !== 1;
+        const deptIcon = departmentIcons[r.department_id] || 'fa-building';
+        const deptColor = departmentColors[r.department_id] || '#0f74ba';
+        
+        reportsHtml += `<div class="report-card ${isUnviewed ? 'report-unviewed' : ''}" id="report-card-${r.id}" onclick="viewReportDetails(${r.id})">
             ${isUnviewed ? '<div class="new-badge" onclick="event.stopPropagation(); markReportAsViewed(' + r.id + ')">!</div>' : ''}
-            <div class="flex justify-between items-start"><h4 class="font-semibold">${escapeHtml(r.title)}</h4><span class="text-xs ${r.status==='sent'?'text-green-600':'text-yellow-600'}">${r.status}</span></div>
-            <p class="text-xs text-gray-500 mt-1">${r.period} · ${formatDate(r.created_at)}</p>
-            <div class="text-xs text-gray-600 mt-1">${escapeHtml(r.content.substring(0,80))}${r.content.length>80?'...':''}</div>
-            <div class="flex gap-2 mt-3"><button onclick="event.stopPropagation(); viewReportDetails(${r.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="event.stopPropagation(); editReport(${r.id})" class="action-btn edit"><i class="fas fa-edit"></i></button><button onclick="event.stopPropagation(); deleteReport(${r.id})" class="action-btn delete"><i class="fas fa-trash"></i></button></div>
+            <div class="flex justify-between items-start mb-2">
+                <div class="flex items-center gap-2">
+                    <div class="dept-icon w-8 h-8 rounded-lg flex items-center justify-center" style="background: ${deptColor}20; color: ${deptColor}">
+                        <i class="fas ${deptIcon} text-sm"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-sm">${escapeHtml(r.title)}</h4>
+                        <p class="text-xs text-gray-500">${departmentNames[r.department_id] || 'Admin'} · ${r.period}</p>
+                    </div>
+                </div>
+                <span class="status-badge ${r.status === 'sent' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'} text-xs">${r.status === 'sent' ? 'Sent' : 'Draft'}</span>
+            </div>
+            <div class="report-preview text-xs text-gray-600 line-clamp-2 mt-2">${escapeHtml(r.content.substring(0, 120))}${r.content.length > 120 ? '...' : ''}</div>
+            <div class="flex justify-between items-center mt-3 pt-2 border-t border-gray-100">
+                <span class="text-xs text-gray-400"><i class="far fa-calendar-alt mr-1"></i>${formatDate(r.created_at)}</span>
+                <div class="flex gap-2">
+                    <button onclick="event.stopPropagation(); viewReportDetails(${r.id})" class="action-btn view px-2 py-1 text-xs"><i class="fas fa-eye"></i></button>
+                    <button onclick="event.stopPropagation(); editReport(${r.id})" class="action-btn edit px-2 py-1 text-xs"><i class="fas fa-edit"></i></button>
+                    <button onclick="event.stopPropagation(); deleteReport(${r.id})" class="action-btn delete px-2 py-1 text-xs"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>
         </div>`;
     }
     document.getElementById('reportsGrid').innerHTML = reportsHtml;
+    if (highlightId) { 
+        const el = document.getElementById(`report-card-${highlightId}`); 
+        if(el) { 
+            el.classList.add('search-highlight'); 
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
+            setTimeout(() => el.classList.remove('search-highlight'), 2000); 
+        } 
+    }
 }
 
 async function markReportAsViewed(reportId) {
-    const res = await apiCall('mark_report_viewed.php', 'POST', { report_id: reportId });
+    const res = await apiCall('mark_report_viewed.php', 'POST', { report_id: reportId, is_admin: 1 });
     if (res.success) { 
         unviewedReportsCount = Math.max(0, unviewedReportsCount - 1); 
         updateReportBadge();
@@ -1338,26 +1308,106 @@ function viewReportDetails(id) {
     if (r) {
         if (r.is_viewed_by_admin === 0 && r.department_id !== 1) markReportAsViewed(id);
         document.getElementById('viewReportContent').innerHTML = `
-            <p class="report-meta"><strong>Department:</strong> ${departmentNames[r.department_id] || 'Admin'}</p>
-            <p class="report-meta"><strong>Period:</strong> ${r.period}</p>
-            <p class="report-meta"><strong>Created:</strong> ${formatDate(r.created_at)}</p>
+            <div class="report-meta"><strong>Department:</strong> ${departmentNames[r.department_id] || 'Admin'}</div>
+            <div class="report-meta"><strong>Period:</strong> ${r.period}</div>
+            <div class="report-meta"><strong>Created:</strong> ${formatDate(r.created_at)}</div>
+            <div class="report-meta"><strong>Status:</strong> ${r.status === 'sent' ? 'Sent' : 'Draft'}</div>
             <div class="report-content-view">${escapeHtml(r.content)}</div>
         `;
         
         let deptOptions = '';
         departmentsList.forEach(d => { deptOptions += `<a onclick="sendReportToDept(${r.id}, ${d.id})">${escapeHtml(d.name)}</a>`; });
-        document.getElementById('viewReportButtons').innerHTML = `<button onclick="exportSingleReportExcel(${r.id})" class="btn-success text-white px-3 py-1.5 rounded text-sm"><i class="fas fa-file-excel"></i> Excel</button><button onclick="exportSingleReportPDF(${r.id})" class="btn-danger text-white px-3 py-1.5 rounded text-sm"><i class="fas fa-file-pdf"></i> PDF</button><div class="send-dropdown"><button class="btn-warning text-white px-3 py-1.5 rounded text-sm" onclick="toggleSendDropdown('reportSendDropdown-${r.id}')"><i class="fas fa-paper-plane"></i> Send to Department</button><div id="reportSendDropdown-${r.id}" class="send-dropdown-content">${deptOptions}</div></div>`;
+        document.getElementById('viewReportButtons').innerHTML = `
+            <button onclick="exportSingleReportExcel(${r.id})" class="btn-success text-white px-3 py-1.5 rounded text-sm"><i class="fas fa-file-excel"></i> Excel</button>
+            <button onclick="exportSingleReportPDF(${r.id})" class="btn-danger text-white px-3 py-1.5 rounded text-sm"><i class="fas fa-file-pdf"></i> PDF</button>
+            <div class="send-dropdown"><button class="btn-warning text-white px-3 py-1.5 rounded text-sm" onclick="toggleSendDropdown('reportSendDropdown-${r.id}')"><i class="fas fa-paper-plane"></i> Send to Department</button>
+            <div id="reportSendDropdown-${r.id}" class="send-dropdown-content">${deptOptions}</div></div>
+        `;
         openModal('viewReportModal');
     }
 }
 
-async function sendReportToDept(reportId, deptId) { const r = reportsData.find(r => r.id === reportId); if(r) { const res = await apiCall('send_report.php', 'POST', { report_id: reportId, to_department_id: deptId }); if (res.success) showToast(`Report sent to ${departmentNames[deptId]}`); else showToast('Failed', true); toggleSendDropdown(`reportSendDropdown-${reportId}`); } }
-function exportSingleReportExcel(reportId) { const r = reportsData.find(r => r.id === reportId); if(r) { let ws = [['Title', 'Period', 'Content', 'Created']]; ws.push([r.title, r.period, r.content, r.created_at]); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), 'Report'); XLSX.writeFile(wb, `report_${r.id}.xlsx`); showToast('Exported to Excel'); } }
-function exportSingleReportPDF(reportId) { const r = reportsData.find(r => r.id === reportId); if(r) { let element = document.createElement('div'); element.innerHTML = `<div style="padding:20px"><h1>${escapeHtml(r.title)}</h1><p><strong>Period:</strong> ${r.period}</p><p><strong>Created:</strong> ${formatDate(r.created_at)}</p><hr/><div class="bg-white p-3 rounded whitespace-pre-wrap">${escapeHtml(r.content)}</div><p>Generated: ${new Date().toLocaleString()}</p></div>`; html2pdf().set({ margin: 0.5, filename: `report_${r.id}.pdf` }).from(element).save(); showToast('Exported to PDF'); } }
-function editReport(id) { const r = reportsData.find(r=>r.id===id); if(r) { document.getElementById('reportId').value = r.id; document.getElementById('reportTitle').value = r.title; document.getElementById('reportPeriod').value = r.period; document.getElementById('reportContent').value = r.content; openModal('reportModal'); } }
-async function saveReport() { let id = document.getElementById('reportId').value; let data = { title: document.getElementById('reportTitle').value, period: document.getElementById('reportPeriod').value, content: document.getElementById('reportContent').value, department_id: 1 }; if(!data.title||!data.content) { showToast('Title and content required',true); return; } let res = id ? await apiCall('update_report.php','POST',{...data,id:parseInt(id)}) : await apiCall('add_report.php','POST',data); if(res.success) { showToast(id ? 'Report updated' : 'Report added'); closeModal('reportModal'); loadReports(); loadDashboard(); } else showToast(res.message || 'Failed', true); }
+async function sendReportToDept(reportId, deptId) { 
+    const r = reportsData.find(r => r.id === reportId); 
+    if(r) { 
+        const res = await apiCall('send_report.php', 'POST', { report_id: reportId, to_department_id: deptId }); 
+        if (res.success) showToast(`Report sent to ${departmentNames[deptId]}`); 
+        else showToast('Failed', true); 
+        toggleSendDropdown(`reportSendDropdown-${reportId}`); 
+    } 
+}
 
-// ==================== SOFT DELETE REPORT (FIXED) ====================
+function exportSingleReportExcel(reportId) { 
+    const r = reportsData.find(r => r.id === reportId); 
+    if(r) { 
+        let ws = [['Title', 'Period', 'Content', 'Created', 'Department']];
+        ws.push([r.title, r.period, r.content, r.created_at, departmentNames[r.department_id]]);
+        let wb = XLSX.utils.book_new(); 
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), 'Report'); 
+        XLSX.writeFile(wb, `report_${r.id}.xlsx`); 
+        showToast('Exported to Excel'); 
+    } 
+}
+
+function exportSingleReportPDF(reportId) { 
+    const r = reportsData.find(r => r.id === reportId); 
+    if(r) { 
+        let element = document.createElement('div'); 
+        element.innerHTML = `<div style="padding:20px"><h1 style="color:#0f74ba">${escapeHtml(r.title)}</h1><p><strong>Period:</strong> ${r.period}</p><p><strong>Created:</strong> ${formatDate(r.created_at)}</p><p><strong>Department:</strong> ${departmentNames[r.department_id] || 'Admin'}</p><hr/><div class="bg-gray-100 p-3 rounded whitespace-pre-wrap">${escapeHtml(r.content)}</div><p>Generated: ${new Date().toLocaleString()}</p></div>`; 
+        html2pdf().set({ margin: 0.5, filename: `report_${r.id}.pdf` }).from(element).save(); 
+        showToast('Exported to PDF'); 
+    } 
+}
+
+function exportAllReportsToExcel() { 
+    let ws = [['ID', 'Title', 'Period', 'Content', 'Created', 'Department', 'Status']]; 
+    reportsData.forEach(r => ws.push([r.id, r.title, r.period, r.content, r.created_at, departmentNames[r.department_id], r.status])); 
+    let wb = XLSX.utils.book_new(); 
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), 'Reports'); 
+    XLSX.writeFile(wb, `reports_${new Date().toISOString().slice(0,10)}.xlsx`); 
+    showToast('All reports exported to Excel'); 
+}
+
+function exportAllReportsToPDF() { 
+    let element = document.createElement('div'); 
+    let reportsHtml = reportsData.map(r => `<div style="margin-bottom:20px; border-bottom:1px solid #ddd; padding-bottom:15px;"><h3 style="color:#0f74ba">${escapeHtml(r.title)}</h3><p><strong>Period:</strong> ${r.period}</p><p><strong>Created:</strong> ${formatDate(r.created_at)}</p><p><strong>Department:</strong> ${departmentNames[r.department_id] || 'Admin'}</p><div class="bg-gray-100 p-2 rounded" style="background:#f5f5f5;">${escapeHtml(r.content)}</div></div>`).join(''); 
+    element.innerHTML = `<div style="padding:20px"><h1 style="color:#0f74ba; text-align:center;">All Reports</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/>${reportsHtml}</div>`; 
+    html2pdf().set({ margin: 0.5, filename: `all_reports.pdf` }).from(element).save(); 
+    showToast('All reports exported to PDF'); 
+}
+
+function editReport(id) { 
+    const r = reportsData.find(r=>r.id===id); 
+    if(r) { 
+        document.getElementById('reportId').value = r.id; 
+        document.getElementById('reportTitle').value = r.title; 
+        document.getElementById('reportPeriod').value = r.period; 
+        document.getElementById('reportContent').value = r.content; 
+        openModal('reportModal'); 
+    } 
+}
+
+async function saveReport() { 
+    let id = document.getElementById('reportId').value; 
+    let data = { 
+        title: document.getElementById('reportTitle').value, 
+        period: document.getElementById('reportPeriod').value, 
+        content: document.getElementById('reportContent').value, 
+        department_id: 1 
+    }; 
+    if(!data.title||!data.content) { showToast('Title and content required',true); return; } 
+    let res = id ? await apiCall('update_report.php','POST',{...data,id:parseInt(id)}) : await apiCall('add_report.php','POST',data); 
+    if(res.success) { 
+        showToast(id ? 'Report updated' : 'Report added'); 
+        closeModal('reportModal'); 
+        loadReports(); 
+        loadDashboard(); 
+    } else { 
+        showToast(res.message || 'Failed', true); 
+    } 
+}
+
+// ==================== SOFT DELETE REPORT ====================
 async function deleteReport(id) { 
     if(confirm('Delete this report? It will be hidden from your view.')) { 
         let res = await apiCall('delete_report.php', 'POST', { report_id: id, user_id: 1, is_admin: 1 }); 
@@ -1431,8 +1481,42 @@ async function init() {
     showPage('dashboard');
     updateConnectionStatus();
     setInterval(updateConnectionStatus, 30000);
-    refreshBadges();
-    setInterval(refreshBadges, 30000);
+    
+    // Auto refresh badges
+    setInterval(async () => {
+        if (document.getElementById('reportsPage').classList.contains('hidden')) {
+            const reportRes = await apiCall('get_reports.php');
+            if (reportRes.success) {
+                const newUnviewed = reportRes.unviewed_count || 0;
+                if (newUnviewed !== unviewedReportsCount) {
+                    unviewedReportsCount = newUnviewed;
+                    updateReportBadge();
+                }
+            }
+        }
+        if (document.getElementById('messagesPage').classList.contains('hidden')) {
+            const msgRes = await apiCall('get_conversations.php?user_id=1');
+            if (msgRes.success && msgRes.data) {
+                const unreadCount = msgRes.data.reduce((sum, c) => sum + (c.unread_count || 0), 0);
+                const badge = document.getElementById('msgBadge');
+                const oldUnread = parseInt(badge.innerText) || 0;
+                if (unreadCount !== oldUnread) {
+                    if (unreadCount > 0) { badge.classList.remove('hidden'); badge.innerText = unreadCount; }
+                    else badge.classList.add('hidden');
+                }
+            }
+        }
+        if (document.getElementById('projectsPage').classList.contains('hidden')) {
+            const projRes = await apiCall('get_projects.php');
+            if (projRes.success) {
+                const newUnviewed = projRes.unviewed_count || 0;
+                if (newUnviewed !== unviewedProjectsCount) {
+                    unviewedProjectsCount = newUnviewed;
+                    updateProjectBadge();
+                }
+            }
+        }
+    }, 30000);
 }
 
 window.showPage = showPage; window.openModal = openModal; window.closeModal = closeModal; window.togglePassword = togglePassword; window.toggleSendDropdown = toggleSendDropdown;
@@ -1448,6 +1532,7 @@ window.exportCashflowToExcel = exportCashflowToExcel; window.exportCashflowToPDF
 window.sendNewMessage = sendNewMessage; window.openChat = openChat; window.sendChatMessage = sendChatMessage;
 window.deleteConversation = deleteConversation; window.deleteMessage = deleteMessage;
 window.viewReportDetails = viewReportDetails; window.exportSingleReportExcel = exportSingleReportExcel; window.exportSingleReportPDF = exportSingleReportPDF;
+window.exportAllReportsToExcel = exportAllReportsToExcel; window.exportAllReportsToPDF = exportAllReportsToPDF;
 window.editReport = editReport; window.saveReport = saveReport; window.deleteReport = deleteReport; window.markReportAsViewed = markReportAsViewed; window.sendReportToDept = sendReportToDept;
 window.changePassword = changePassword; window.changeSidebarColor = changeSidebarColor; window.createBackup = createBackup; window.restoreBackup = restoreBackup;
 window.logout = logout; window.closeMobileSidebar = closeMobileSidebar; window.openDepartmentDashboard = openDepartmentDashboard;

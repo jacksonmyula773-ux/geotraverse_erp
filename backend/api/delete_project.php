@@ -43,11 +43,9 @@ $pdo->exec("ALTER TABLE projects ADD COLUMN IF NOT EXISTS deleted_by_department 
 $pdo->exec("ALTER TABLE projects ADD COLUMN IF NOT EXISTS deleted_at DATETIME NULL");
 
 if ($is_admin === 1) {
-    // Admin delete - only set deleted_by_admin = 1 (project disappears for Admin only)
     $update = $pdo->prepare("UPDATE projects SET deleted_by_admin = 1, deleted_at = NOW() WHERE id = ?");
     $update->execute([$project_id]);
 } else {
-    // Department delete - set deleted_by_department = 1 (disappears for department only)
     $update = $pdo->prepare("UPDATE projects SET deleted_by_department = 1, deleted_at = NOW() WHERE id = ?");
     $update->execute([$project_id]);
 }

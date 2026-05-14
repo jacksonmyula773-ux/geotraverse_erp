@@ -1,46 +1,51 @@
 <?php
-header("Content-Type: application/json");
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type");
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
 
-require_once "../config/database.php";
-
-$database = new Database();
-$conn = $database->getConnection();
-
-$data = json_decode(file_get_contents("php://input"), true);
-
-$conversation_id = isset($data['conversation_id']) ? intval($data['conversation_id']) : 0;
-$user_id = isset($data['user_id']) ? intval($data['user_id']) : 0;
-
-if ($conversation_id === 0) {
-    echo json_encode(["success" => false, "message" => "Missing conversation_id"]);
-    exit;
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
 }
 
-if ($user_id === 0) {
-    session_start();
-    if (isset($_SESSION['user_id'])) {
-        $user_id = $_SESSION['user_id'];
-    } else {
-        echo json_encode(["success" => false, "message" => "Missing user_id"]);
-        exit;
-    }
+$host = "localhost";
+$db_name = "geotraverse_erp";
+$username = "root";
+$password = "";
+
+try {
+    $pdo = new PDO("mysql:host=" . $host . ";dbname=" . $db_name . ";charset=utf8mb4", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch(PDOException $e) {
+    echo json_encode(["success" => false, "message" => "Database connection failed"]);
+    exit();
 }
 
-// Soft delete all messages for this user
-$stmt1 = $conn->prepare("UPDATE messages SET sender_deleted = 1, deleted_at = NOW() 
+$input = json_decode(file_get_contents("php://input"), true);
+if (!$input) {
+    echo json_encode(["success" => false, "message" => "Invalid request data"]);
+    exit();
+}
+
+$conversation_id = isset($input['conversation_id']) ? intval($input['conversation_id']) : 0;
+$user_id = isset($input['user_id']) ? intval($input['user_id']) : 0;
+
+if ($conversation_id === 0 || $user_id === 0) {
+    echo json_encode(["success" => false, "message" => "Missing conversation_id or user_id"]);
+    exit();
+}
+
+// Soft delete all messages in this conversation for this user only
+// Delete as sender
+$update1 = $pdo->prepare("UPDATE messages SET sender_deleted = 1, deleted_at = NOW() 
                          WHERE conversation_id = ? AND sender_id = ?");
-$stmt1->bind_param("ii", $conversation_id, $user_id);
-$stmt1->execute();
+$update1->execute([$conversation_id, $user_id]);
 
-$stmt2 = $conn->prepare("UPDATE messages SET receiver_deleted = 1, deleted_at = NOW() 
+// Delete as receiver
+$update2 = $pdo->prepare("UPDATE messages SET receiver_deleted = 1, deleted_at = NOW() 
                          WHERE conversation_id = ? AND receiver_id = ?");
-$stmt2->bind_param("ii", $conversation_id, $user_id);
-$stmt2->execute();
+$update2->execute([$conversation_id, $user_id]);
 
-echo json_encode(["success" => true, "message" => "Conversation deleted successfully"]);
-
-$conn->close();
+echo json_encode(["success" => true, "message" => "Conversation deleted from your view"]);
 ?>

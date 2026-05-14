@@ -17,51 +17,28 @@ try {
     exit();
 }
 
-$department_id = isset($_GET['department_id']) ? intval($_GET['department_id']) : 0;
-$user_id = isset($_GET['user_id']) ? intval($_GET['user_id']) : 0;
-
-if ($department_id > 0) {
-    // For department: Show reports where:
-    // 1. department_id = this department (reports created by this department)
-    // 2. OR sent_to_department = this department (reports sent to this department)
-    // AND NOT deleted by this department
-    $query = "SELECT r.*, d.name as department_name 
-              FROM reports r
-              LEFT JOIN departments d ON r.department_id = d.id
-              WHERE (r.department_id = ? OR r.sent_to_department = ?)
-              AND (r.deleted_by_department = 0 OR r.deleted_by_department IS NULL)
-              ORDER BY r.id DESC";
-    $stmt = $pdo->prepare($query);
-    $stmt->execute([$department_id, $department_id]);
-    
-    // Count unviewed reports for this department
-    $unviewedQuery = "SELECT COUNT(*) as unviewed FROM reports 
-                      WHERE (department_id = ? OR sent_to_department = ?)
-                      AND (is_viewed_by_department = 0 OR is_viewed_by_department IS NULL)
-                      AND (deleted_by_department = 0 OR deleted_by_department IS NULL)";
-    $unviewedStmt = $pdo->prepare($unviewedQuery);
-    $unviewedStmt->execute([$department_id, $department_id]);
-    $unviewedCount = $unviewedStmt->fetch(PDO::FETCH_ASSOC)['unviewed'];
-} else {
-    // For Admin: show reports where NOT deleted_by_admin
-    $query = "SELECT r.*, d.name as department_name 
-              FROM reports r
-              LEFT JOIN departments d ON r.department_id = d.id
-              WHERE (r.deleted_by_admin = 0 OR r.deleted_by_admin IS NULL)
-              ORDER BY r.id DESC";
-    $stmt = $pdo->prepare($query);
-    $stmt->execute();
-    
-    $unviewedQuery = "SELECT COUNT(*) as unviewed FROM reports 
-                      WHERE (is_viewed_by_admin = 0 OR is_viewed_by_admin IS NULL)
-                      AND department_id != 1
-                      AND (deleted_by_admin = 0 OR deleted_by_admin IS NULL)";
-    $unviewedStmt = $pdo->prepare($unviewedQuery);
-    $unviewedStmt->execute();
-    $unviewedCount = $unviewedStmt->fetch(PDO::FETCH_ASSOC)['unviewed'];
-}
-
+// Admin sees reports where:
+// 1. department_id = 1 (created by admin)
+// 2. OR sent_to_department = 1 (sent to admin)
+// AND NOT deleted by admin
+$query = "SELECT r.*, d.name as department_name 
+          FROM reports r
+          LEFT JOIN departments d ON r.department_id = d.id
+          WHERE (r.department_id = 1 OR r.sent_to_department = 1)
+          AND (r.deleted_by_admin = 0 OR r.deleted_by_admin IS NULL)
+          ORDER BY r.id DESC";
+$stmt = $pdo->prepare($query);
+$stmt->execute();
 $reports = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Count unviewed reports for admin
+$unviewedQuery = "SELECT COUNT(*) as unviewed FROM reports 
+                  WHERE (is_viewed_by_admin = 0 OR is_viewed_by_admin IS NULL)
+                  AND department_id != 1
+                  AND (deleted_by_admin = 0 OR deleted_by_admin IS NULL)";
+$unviewedStmt = $pdo->prepare($unviewedQuery);
+$unviewedStmt->execute();
+$unviewedCount = $unviewedStmt->fetch(PDO::FETCH_ASSOC)['unviewed'];
 
 echo json_encode(["success" => true, "data" => $reports, "unviewed_count" => (int)$unviewedCount]);
 ?>

@@ -43,14 +43,25 @@ $pdo->exec("ALTER TABLE reports ADD COLUMN IF NOT EXISTS deleted_by_department T
 $pdo->exec("ALTER TABLE reports ADD COLUMN IF NOT EXISTS deleted_at DATETIME NULL");
 
 if ($is_admin === 1) {
-    // Admin delete - only set deleted_by_admin
+    // Admin soft delete - only hides for Admin
     $update = $pdo->prepare("UPDATE reports SET deleted_by_admin = 1, deleted_at = NOW() WHERE id = ?");
     $update->execute([$report_id]);
+    echo json_encode(["success" => true, "message" => "Report deleted from admin view"]);
 } else {
-    // Department delete - set deleted_by_department (only hides for this department)
-    $update = $pdo->prepare("UPDATE reports SET deleted_by_department = 1, deleted_at = NOW() WHERE id = ?");
-    $update->execute([$report_id]);
+    // Get user's department
+    $userDeptQuery = $pdo->prepare("SELECT department_id FROM users WHERE id = ?");
+    $userDeptQuery->execute([$user_id]);
+    $user = $userDeptQuery->fetch(PDO::FETCH_ASSOC);
+    
+    if (!$user) {
+        echo json_encode(["success" => false, "message" => "User not found"]);
+        exit();
+    }
+    
+    // Department soft delete - only hides for this department
+    $update = $pdo->prepare("UPDATE reports SET deleted_by_department = 1, deleted_at = NOW() WHERE id = ? AND (department_id = ? OR sent_to_department = ?)");
+    $update->execute([$report_id, $user['department_id'], $user['department_id']]);
+    
+    echo json_encode(["success" => true, "message" => "Report deleted from your view"]);
 }
-
-echo json_encode(["success" => true, "message" => "Report deleted from your view"]);
 ?>

@@ -28,8 +28,10 @@ if (!$input) {
     exit();
 }
 
-$sender_id = isset($input['sender_id']) ? intval($input['sender_id']) : 0;
+// Accept both sender_id and user_id
+$sender_id = isset($input['sender_id']) ? intval($input['sender_id']) : (isset($input['user_id']) ? intval($input['user_id']) : 0);
 $receiver_department_id = isset($input['receiver_department_id']) ? intval($input['receiver_department_id']) : 0;
+$department_id = isset($input['department_id']) ? intval($input['department_id']) : 0; // For Admin
 $conversation_id = isset($input['conversation_id']) ? intval($input['conversation_id']) : 0;
 $message = isset($input['message']) ? trim($input['message']) : '';
 $subject = isset($input['subject']) ? $input['subject'] : 'New Message';
@@ -54,19 +56,36 @@ if (!$sender) {
     exit();
 }
 
-$sender_dept_id = $sender['department_id'];
+$target_department = $receiver_department_id > 0 ? $receiver_department_id : $department_id;
 
-// If sending to department (new conversation)
-if ($receiver_department_id > 0 && $conversation_id === 0) {
+// If we have a conversation_id, use it
+if ($conversation_id > 0) {
+    // Get receiver from existing conversation
+    $getConv = $pdo->prepare("SELECT user_id, admin_id FROM conversations WHERE id = ?");
+    $getConv->execute([$conversation_id]);
+    $conv = $getConv->fetch(PDO::FETCH_ASSOC);
+    
+    if (!$conv) {
+        echo json_encode(["success" => false, "message" => "Conversation not found"]);
+        exit();
+    }
+    
+    $receiver_id = ($conv['user_id'] == $sender_id) ? $conv['admin_id'] : $conv['user_id'];
+    
+    // Update conversation timestamp
+    $updateConv = $pdo->prepare("UPDATE conversations SET updated_at = NOW() WHERE id = ?");
+    $updateConv->execute([$conversation_id]);
+} 
+else if ($target_department > 0) {
     // Prevent sending to self
-    if ($sender_dept_id == $receiver_department_id) {
+    if ($sender['department_id'] == $target_department) {
         echo json_encode(["success" => false, "message" => "You cannot send message to your own department"]);
         exit();
     }
     
-    // Find a user in the receiver department (any active user)
+    // Find a user in the receiver department
     $receiverQuery = $pdo->prepare("SELECT id FROM users WHERE department_id = ? AND is_active = 1 LIMIT 1");
-    $receiverQuery->execute([$receiver_department_id]);
+    $receiverQuery->execute([$target_department]);
     $receiver = $receiverQuery->fetch(PDO::FETCH_ASSOC);
     
     if (!$receiver) {
@@ -76,7 +95,7 @@ if ($receiver_department_id > 0 && $conversation_id === 0) {
     
     $receiver_id = $receiver['id'];
     
-    // Check if conversation exists between these two users
+    // Check if conversation exists
     $convCheck = $pdo->prepare("
         SELECT id FROM conversations 
         WHERE (user_id = ? AND admin_id = ?) OR (user_id = ? AND admin_id = ?)
@@ -95,22 +114,8 @@ if ($receiver_department_id > 0 && $conversation_id === 0) {
         $conversation_id = $pdo->lastInsertId();
     }
 } 
-else if ($conversation_id > 0) {
-    // Get receiver from existing conversation
-    $getConv = $pdo->prepare("SELECT user_id, admin_id FROM conversations WHERE id = ?");
-    $getConv->execute([$conversation_id]);
-    $conv = $getConv->fetch(PDO::FETCH_ASSOC);
-    
-    if (!$conv) {
-        echo json_encode(["success" => false, "message" => "Conversation not found"]);
-        exit();
-    }
-    
-    // Determine receiver (the other person in conversation)
-    $receiver_id = ($conv['user_id'] == $sender_id) ? $conv['admin_id'] : $conv['user_id'];
-} 
 else {
-    echo json_encode(["success" => false, "message" => "Either receiver_department_id or conversation_id required"]);
+    echo json_encode(["success" => false, "message" => "Please select a department to send message"]);
     exit();
 }
 

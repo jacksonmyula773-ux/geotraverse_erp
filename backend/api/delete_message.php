@@ -29,10 +29,10 @@ if (!$input) {
 }
 
 $message_id = isset($input['message_id']) ? intval($input['message_id']) : 0;
-$user_id = isset($input['user_id']) ? intval($input['user_id']) : 1;
+$user_id = isset($input['user_id']) ? intval($input['user_id']) : 0;
 
-if ($message_id === 0) {
-    echo json_encode(["success" => false, "message" => "Missing message_id"]);
+if ($message_id === 0 || $user_id === 0) {
+    echo json_encode(["success" => false, "message" => "Missing message_id or user_id"]);
     exit();
 }
 
@@ -47,16 +47,17 @@ if (!$msg) {
 }
 
 if ($msg['sender_id'] == $user_id) {
+    // User is sender - soft delete from sender side only
     $update = $pdo->prepare("UPDATE messages SET sender_deleted = 1, deleted_at = NOW() WHERE id = ?");
     $update->execute([$message_id]);
+    echo json_encode(["success" => true, "message" => "Message deleted from your view (sender)"]);
 } elseif ($msg['receiver_id'] == $user_id) {
+    // User is receiver - soft delete from receiver side only
     $update = $pdo->prepare("UPDATE messages SET receiver_deleted = 1, deleted_at = NOW() WHERE id = ?");
     $update->execute([$message_id]);
+    echo json_encode(["success" => true, "message" => "Message deleted from your view (receiver)"]);
 } else {
     echo json_encode(["success" => false, "message" => "Unauthorized"]);
     exit();
 }
-
-echo json_encode(["success" => true, "message" => "Message deleted successfully"]);
-exit();
 ?>

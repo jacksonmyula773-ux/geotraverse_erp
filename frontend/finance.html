@@ -640,14 +640,18 @@ async function loadMessages(highlightId = null) {
     const res = await apiCall(`get_conversations.php?user_id=${userId}`);
     console.log('Conversations response:', res);
     
-    if (res.success && res.data) {
+    if (res.success && res.data && Array.isArray(res.data)) {
         messagesData = res.data;
     } else {
         messagesData = [];
     }
     updateMessageBadge();
     
-    let html = `<div class="flex flex-wrap justify-between gap-3 mb-4"><h2 class="text-xl font-bold"><i class="fas fa-envelope text-green-600 mr-2"></i>Messages (${messagesData.length})</h2><button onclick="openModal('msgModal')" class="btn-primary"><i class="fas fa-paper-plane mr-1"></i> New Message</button></div><div class="messages-grid" id="messagesGridContainer"></div>`;
+    let html = `<div class="flex flex-wrap justify-between gap-3 mb-4">
+        <h2 class="text-xl font-bold"><i class="fas fa-envelope text-green-600 mr-2"></i>Messages (${messagesData.length})</h2>
+        <button onclick="openModal('msgModal')" class="btn-primary"><i class="fas fa-paper-plane mr-1"></i> New Message</button>
+    </div>
+    <div class="messages-grid" id="messagesGridContainer"></div>`;
     document.getElementById('messagesPage').innerHTML = html;
     
     if (messagesData.length === 0) { 
@@ -660,27 +664,31 @@ async function loadMessages(highlightId = null) {
         const isUnread = conv.unread_count > 0;
         const preview = conv.last_message ? (conv.last_message.substring(0, 70) + (conv.last_message.length > 70 ? '...' : '')) : 'No messages';
         
-        let otherDeptName = "Department";
-        let otherDeptId = 0;
-        if (conv.user_department_id === DEPARTMENT_ID) {
-            otherDeptName = conv.admin_department_name || "Super Admin";
-            otherDeptId = conv.admin_department_id || 1;
-        } else {
-            otherDeptName = conv.user_department_name || conv.user_name || "Department";
-            otherDeptId = conv.user_department_id || 1;
-        }
+        // Get other department name
+        let otherDeptName = conv.other_department_name || "Super Admin";
+        let otherDeptId = conv.other_department_id || 1;
         
         const icon = departmentIcons[otherDeptId] || 'fa-building';
         const color = departmentColors[otherDeptId] || '#059669';
         
-        msgsHtml += `<div class="message-item ${isUnread ? 'message-unread' : ''}" onclick="openChat(${conv.id})">
-            <div class="delete-conv-btn" onclick="event.stopPropagation(); deleteConversation(${conv.id})"><i class="fas fa-trash-alt"></i></div>
-            <div class="message-header"><div class="flex items-center gap-3"><div class="dept-icon" style="background: ${color}20; color: ${color}; border: 1px solid ${color}40"><i class="fas ${icon}"></i></div><div><span class="font-semibold">${escapeHtml(otherDeptName)}</span>${isUnread ? `<span class="bg-red-500 text-white text-[9px] px-1.5 py-0.5 rounded-full ml-1">${conv.unread_count}</span>` : ''}</div></div><span class="text-[9px] text-gray-400">${conv.last_message_time ? new Date(conv.last_message_time).toLocaleString() : ''}</span></div>
+        msgsHtml += `<div class="message-item ${isUnread ? 'message-unread' : ''}" onclick="openChat(${conv.conversation_id})">
+            <div class="delete-conv-btn" onclick="event.stopPropagation(); deleteConversation(${conv.conversation_id})"><i class="fas fa-trash-alt"></i></div>
+            <div class="message-header">
+                <div class="flex items-center gap-3">
+                    <div class="dept-icon" style="background: ${color}20; color: ${color}; border: 1px solid ${color}40">
+                        <i class="fas ${icon}"></i>
+                    </div>
+                    <div>
+                        <span class="font-semibold">${escapeHtml(otherDeptName)}</span>
+                        ${isUnread ? `<span class="bg-red-500 text-white text-[9px] px-1.5 py-0.5 rounded-full ml-1">${conv.unread_count}</span>` : ''}
+                    </div>
+                </div>
+                <span class="text-[9px] text-gray-400">${conv.last_message_time ? new Date(conv.last_message_time).toLocaleString() : ''}</span>
+            </div>
             <div class="message-preview">${escapeHtml(preview)}</div>
         </div>`;
     }
     document.getElementById('messagesGridContainer').innerHTML = msgsHtml;
-    if (highlightId) { const el = Array.from(document.querySelectorAll('.message-item')).find(el => el.textContent.includes(highlightId)); if(el) { el.classList.add('search-highlight'); el.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => el.classList.remove('search-highlight'), 2000); } }
 }
 
 async function deleteConversation(conversationId) {
