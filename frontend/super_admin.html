@@ -732,14 +732,27 @@ async function loadDepartmentsPage() {
 
 // ==================== PROJECTS ====================
 async function loadProjects(highlightId = null) {
-    const res = await apiCall('get_projects.php');
-    projectsData = res.success ? res.data.sort((a,b) => b.id - a.id) : [];
-    unviewedProjectsCount = res.unviewed_count || 0;
+    // For Super Admin (department_id = 1)
+    const departmentId = 1;
+    const res = await apiCall(`get_projects.php?department_id=${departmentId}`);
+    
+    console.log('Projects API response for Super Admin:', res);
+    
+    if (res.success && res.data) {
+        projectsData = res.data.sort((a,b) => b.id - a.id);
+        unviewedProjectsCount = res.unviewed_count || 0;
+    } else {
+        projectsData = [];
+        unviewedProjectsCount = 0;
+    }
     updateProjectBadge();
     
     document.getElementById('projectsPage').innerHTML = `<div class="flex justify-between flex-wrap gap-3 mb-4"><h2 class="text-xl font-bold"><i class="fas fa-tasks text-green-600 mr-2"></i>Projects (${projectsData.length})</h2><button onclick="openAddProjectModal()" class="btn-primary"><i class="fas fa-plus mr-1"></i> Add Project</button></div><div class="project-grid" id="projectsGrid"></div>`;
     
-    if (projectsData.length === 0) { document.getElementById('projectsGrid').innerHTML = '<div class="col-span-3 text-center py-8 text-gray-400">No projects found</div>'; return; }
+    if (projectsData.length === 0) { 
+        document.getElementById('projectsGrid').innerHTML = '<div class="col-span-3 text-center py-8 text-gray-400">No projects found</div>'; 
+        return; 
+    }
     
     let projectsHtml = '';
     for (let p of projectsData) {
@@ -1227,9 +1240,19 @@ async function sendChatMessage() {
 
 // ==================== REPORTS (BEAUTIFUL DESIGN) ====================
 async function loadReports(highlightId = null) {
-    const res = await apiCall('get_reports.php');
-    reportsData = res.success ? res.data.sort((a,b) => b.id - a.id) : [];
-    unviewedReportsCount = res.unviewed_count || 0;
+    // For Super Admin (department_id = 1)
+    const departmentId = 1;
+    const res = await apiCall(`get_reports.php?department_id=${departmentId}`);
+    
+    console.log('Reports API response for Super Admin:', res);
+    
+    if (res.success && res.data) {
+        reportsData = res.data.sort((a,b) => b.id - a.id);
+        unviewedReportsCount = res.unviewed_count || 0;
+    } else {
+        reportsData = [];
+        unviewedReportsCount = 0;
+    }
     updateReportBadge();
     
     let html = `<div class="flex flex-wrap justify-between items-center gap-3 mb-4">
@@ -1330,9 +1353,25 @@ function viewReportDetails(id) {
 async function sendReportToDept(reportId, deptId) { 
     const r = reportsData.find(r => r.id === reportId); 
     if(r) { 
-        const res = await apiCall('send_report.php', 'POST', { report_id: reportId, to_department_id: deptId }); 
-        if (res.success) showToast(`Report sent to ${departmentNames[deptId]}`); 
-        else showToast('Failed', true); 
+        console.log('Sending report:', reportId, 'to department:', deptId);
+        
+        const res = await apiCall('send_report.php', 'POST', { 
+            report_id: reportId, 
+            to_department_id: deptId 
+        }); 
+        
+        console.log('Send report response:', res);
+        
+        if (res && res.success) { 
+            showToast(`Report "${r.title}" sent to ${departmentNames[deptId]}`); 
+            // Update local data
+            r.sent_to_department = deptId;
+            r.status = 'sent';
+            // Reload reports to show updated status
+            await loadReports();
+        } else { 
+            showToast(res?.message || 'Failed to send report', true); 
+        }
         toggleSendDropdown(`reportSendDropdown-${reportId}`); 
     } 
 }

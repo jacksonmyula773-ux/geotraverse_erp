@@ -1,34 +1,59 @@
 <?php
-// backend/api/add_report.php
-require_once '../config/database.php';
+error_reporting(0);
+ini_set('display_errors', 0);
 
-$data = json_decode(file_get_contents("php://input"), true);
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
 
-if (!isset($data['title']) || empty($data['title']) || !isset($data['content']) || empty($data['content'])) {
-    sendResponse(false, null, "Title and content required");
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
 }
 
-$database = new Database();
-$db = $database->getConnection();
+$host = "localhost";
+$db_name = "geotraverse_erp";
+$username = "root";
+$password = "";
 
-$title = $data['title'];
-$period = $data['period'] ?? 'monthly';
-$content = $data['content'];
-$status = $data['status'] ?? 'draft';
-$department_id = $data['department_id'] ?? 1;
+try {
+    $pdo = new PDO("mysql:host=" . $host . ";dbname=" . $db_name . ";charset=utf8mb4", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch(PDOException $e) {
+    echo json_encode(["success" => false, "message" => "Database connection failed: " . $e->getMessage()]);
+    exit();
+}
 
-$query = "INSERT INTO reports (title, period, content, status, department_id) 
-          VALUES (:title, :period, :content, :status, :department_id)";
-$stmt = $db->prepare($query);
-$stmt->bindParam(':title', $title);
-$stmt->bindParam(':period', $period);
-$stmt->bindParam(':content', $content);
-$stmt->bindParam(':status', $status);
-$stmt->bindParam(':department_id', $department_id);
+$input = json_decode(file_get_contents("php://input"), true);
+if (!$input) {
+    echo json_encode(["success" => false, "message" => "Invalid request data"]);
+    exit();
+}
 
-if ($stmt->execute()) {
-    sendResponse(true, ['id' => $db->lastInsertId()], "Report added successfully");
+$title = isset($input['title']) ? trim($input['title']) : '';
+$period = isset($input['period']) ? $input['period'] : 'monthly';
+$content = isset($input['content']) ? $input['content'] : '';
+$department_id = isset($input['department_id']) ? intval($input['department_id']) : 1;
+
+if (empty($title) || empty($content)) {
+    echo json_encode(["success" => false, "message" => "Title and content are required"]);
+    exit();
+}
+
+// Ensure columns exist
+$pdo->exec("ALTER TABLE reports ADD COLUMN IF NOT EXISTS is_viewed_by_admin TINYINT DEFAULT 0");
+$pdo->exec("ALTER TABLE reports ADD COLUMN IF NOT EXISTS is_viewed_by_department TINYINT DEFAULT 0");
+
+// For Super Admin (department_id = 1), set is_viewed_by_admin = 1 (already viewed)
+// For other departments, set is_viewed_by_department = 1
+if ($department_id == 1) {
+    $insert = $pdo->prepare("INSERT INTO reports (title, period, content, department_id, status, created_at, is_viewed_by_admin) VALUES (?, ?, ?, ?, 'draft', NOW(), 1)");
+    $insert->execute([$title, $period, $content, $department_id]);
 } else {
-    sendResponse(false, null, "Failed to add report");
+    $insert = $pdo->prepare("INSERT INTO reports (title, period, content, department_id, status, created_at, is_viewed_by_department) VALUES (?, ?, ?, ?, 'draft', NOW(), 1)");
+    $insert->execute([$title, $period, $content, $department_id]);
 }
+
+echo json_encode(["success" => true, "message" => "Report added successfully", "id" => $pdo->lastInsertId()]);
 ?>

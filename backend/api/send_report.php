@@ -1,8 +1,16 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST, OPTIONS');
+header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
 
 $host = "localhost";
 $db_name = "geotraverse_erp";
@@ -31,16 +39,34 @@ if ($report_id === 0 || $to_department_id === 0) {
     exit();
 }
 
-// First, check if sent_to_department column exists
-$checkColumn = $pdo->query("SHOW COLUMNS FROM reports LIKE 'sent_to_department'");
-if ($checkColumn->rowCount() == 0) {
-    $pdo->exec("ALTER TABLE reports ADD COLUMN sent_to_department INT DEFAULT NULL");
-    $pdo->exec("ALTER TABLE reports ADD COLUMN is_viewed_by_department TINYINT DEFAULT 0");
+// Ensure columns exist
+$pdo->exec("ALTER TABLE reports ADD COLUMN IF NOT EXISTS sent_to_department INT DEFAULT NULL");
+$pdo->exec("ALTER TABLE reports ADD COLUMN IF NOT EXISTS is_viewed_by_department TINYINT DEFAULT 0");
+
+// Check if report exists
+$checkQuery = $pdo->prepare("SELECT id, title, department_id, sent_to_department FROM reports WHERE id = ?");
+$checkQuery->execute([$report_id]);
+$report = $checkQuery->fetch(PDO::FETCH_ASSOC);
+
+if (!$report) {
+    echo json_encode(["success" => false, "message" => "Report not found"]);
+    exit();
 }
 
-// Update the report - send to department
+// Update report with sent_to_department
 $update = $pdo->prepare("UPDATE reports SET sent_to_department = ?, status = 'sent', is_viewed_by_department = 0 WHERE id = ?");
 $update->execute([$to_department_id, $report_id]);
 
-echo json_encode(["success" => true, "message" => "Report sent successfully to " . $to_department_id]);
+// Verify update worked
+$verifyQuery = $pdo->prepare("SELECT sent_to_department FROM reports WHERE id = ?");
+$verifyQuery->execute([$report_id]);
+$updated = $verifyQuery->fetch(PDO::FETCH_ASSOC);
+
+echo json_encode([
+    "success" => true, 
+    "message" => "Report sent successfully",
+    "report_id" => $report_id,
+    "to_department_id" => $to_department_id,
+    "sent_to_department" => $updated ? $updated['sent_to_department'] : null
+]);
 ?>

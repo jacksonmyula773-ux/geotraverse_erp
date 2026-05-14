@@ -417,6 +417,102 @@ async function loadDepartmentsForDropdowns() {
     }
 }
 
+// Add this function to load departments for send report dropdown
+async function loadDepartmentsForSendReport() {
+    const userId = await getCurrentUserId();
+    let url = 'get_departments.php';
+    if (userId) {
+        url += `?user_id=${userId}`;
+    }
+    
+    const res = await apiCall(url);
+    let departments = [];
+    
+    if (res.success && res.data) {
+        // Finance should see ALL departments EXCEPT Finance itself (ID=2)
+        departments = res.data.filter(d => d.id !== DEPARTMENT_ID);
+    } else {
+        departments = [
+            { id: 1, name: "Super Admin" },
+            { id: 3, name: "Sales & Marketing" }, { id: 4, name: "Manager" },
+            { id: 5, name: "Secretary" }, { id: 6, name: "Bricks & Timber" },
+            { id: 7, name: "Aluminium" }, { id: 8, name: "Town Planning" },
+            { id: 9, name: "Architectural" }, { id: 10, name: "Survey" },
+            { id: 11, name: "Construction" }, { id: 12, name: "Hatimiliki" }
+        ];
+    }
+    
+    // Store for later use
+    window.sendReportDepartments = departments;
+    
+    // Update any send report dropdowns that might be opened
+    const dropdowns = document.querySelectorAll('.send-dropdown-content');
+    dropdowns.forEach(dropdown => {
+        if (dropdown.id && dropdown.id.includes('reportSendDropdown')) {
+            let options = '';
+            departments.forEach(d => {
+                options += `<a onclick="sendReportToDept(${dropdown.id.split('-')[1]}, ${d.id})">${escapeHtml(d.name)}</a>`;
+            });
+            dropdown.innerHTML = options;
+        }
+    });
+}
+
+// Update viewReportDetails function to use loaded departments
+function viewReportDetails(id) {
+    const r = reportsData.find(r => r.id === id);
+    if (r) {
+        if (r.is_viewed_by_admin === 0 && r.department_id !== 1) markReportAsViewed(id);
+        
+        document.getElementById('viewReportContent').innerHTML = `
+            <div class="report-meta"><strong>Department:</strong> ${departmentNames[r.department_id] || 'Admin'}</div>
+            <div class="report-meta"><strong>Period:</strong> ${r.period}</div>
+            <div class="report-meta"><strong>Created:</strong> ${formatDate(r.created_at)}</div>
+            <div class="report-meta"><strong>Status:</strong> ${r.status === 'sent' ? 'Sent' : 'Draft'}</div>
+            <div class="report-content-view">${escapeHtml(r.content)}</div>
+        `;
+        
+        // Use stored departments or load them
+        let deptOptions = '';
+        if (window.sendReportDepartments) {
+            window.sendReportDepartments.forEach(d => {
+                deptOptions += `<a onclick="sendReportToDept(${r.id}, ${d.id})">${escapeHtml(d.name)}</a>`;
+            });
+        } else {
+            // Fallback: show loading and fetch
+            deptOptions = '<a>Loading departments...</a>';
+            loadDepartmentsForSendReport().then(() => {
+                if (window.sendReportDepartments) {
+                    const newOptions = window.sendReportDepartments.map(d => `<a onclick="sendReportToDept(${r.id}, ${d.id})">${escapeHtml(d.name)}</a>`).join('');
+                    document.getElementById(`reportSendDropdown-${r.id}`).innerHTML = newOptions;
+                }
+            });
+        }
+        
+        document.getElementById('viewReportButtons').innerHTML = `
+            <button onclick="exportSingleReportExcel(${r.id})" class="btn-success text-white px-3 py-1.5 rounded text-sm"><i class="fas fa-file-excel"></i> Excel</button>
+            <button onclick="exportSingleReportPDF(${r.id})" class="btn-danger text-white px-3 py-1.5 rounded text-sm"><i class="fas fa-file-pdf"></i> PDF</button>
+            <div class="send-dropdown">
+                <button class="btn-warning text-white px-3 py-1.5 rounded text-sm" onclick="toggleSendDropdown('reportSendDropdown-${r.id}')">
+                    <i class="fas fa-paper-plane"></i> Send to Department
+                </button>
+                <div id="reportSendDropdown-${r.id}" class="send-dropdown-content">${deptOptions}</div>
+            </div>
+        `;
+        openModal('viewReportModal');
+    }
+}
+
+// Update init function to load departments for send report
+async function init() {
+    await loadDepartmentsForDropdowns();
+    await loadDepartmentsForSendReport(); // Add this line
+    await loadAllBudgets();
+    await getCurrentUserId();
+    
+    // Rest of init function...
+}
+
 async function loadAllBudgets() {
     const res = await apiCall('get_budgets.php');
     if (res.success && res.data) allBudgets = res.data;
@@ -867,14 +963,28 @@ async function sendChatMessage() {
 // ==================== REPORTS SECTION (FIXED WITH NOTIFICATION BADGE) ====================
 async function loadReports(highlightId = null) {
     const userId = await getCurrentUserId();
-    const res = await apiCall(`get_reports.php?department_id=${DEPARTMENT_ID}&user_id=${userId}`);
+    console.log('Finance - Loading reports for user ID:', userId);
     
-    console.log('Reports API response:', res);
+    const departmentId = DEPARTMENT_ID; // 2
     
-    if (res.success) {
+    const url = `get_reports.php?department_id=${departmentId}&user_id=${userId}`;
+    console.log('Fetching reports from:', url);
+    
+    const res = await apiCall(url);
+    console.log('Reports API response for Finance:', res);
+    
+    if (res.success && res.data) {
         reportsData = res.data;
+        console.log('Reports loaded successfully:', reportsData.length, 'reports');
+        
+        // Log each report for debugging
+        reportsData.forEach(r => {
+            console.log(`Report: ID=${r.id}, Title=${r.title}, Dept=${r.department_id}, SentTo=${r.sent_to_department}`);
+        });
+        
         unviewedReportsCount = res.unviewed_count || 0;
     } else {
+        console.warn('No reports data or error:', res);
         reportsData = [];
         unviewedReportsCount = 0;
     }
@@ -899,19 +1009,44 @@ async function loadReports(highlightId = null) {
     let reportsHtml = '';
     for (let r of reportsData) {
         const isUnviewed = (r.is_viewed_by_department === 0 || r.is_viewed_by_department === null);
-        reportsHtml += `<div class="report-card ${isUnviewed ? 'report-unviewed' : ''}" id="report-card-${r.id}">
+        const deptIcon = departmentIcons[r.department_id] || 'fa-building';
+        const deptColor = departmentColors[r.department_id] || '#059669';
+        const deptName = departmentNames[r.department_id] || 'Department';
+        
+        reportsHtml += `<div class="report-card ${isUnviewed ? 'report-unviewed' : ''}" id="report-card-${r.id}" onclick="viewReportDetail(${r.id})">
             ${isUnviewed ? '<div class="new-badge" onclick="event.stopPropagation(); markReportAsViewed(' + r.id + ')">!</div>' : ''}
-            <div class="flex justify-between items-start"><h4 class="font-semibold text-sm">${escapeHtml(r.title)}</h4><span class="text-xs ${r.status==='sent'?'text-green-600':'text-yellow-600'}">${r.status}</span></div>
-            <p class="text-xs text-gray-500 mt-1">${r.period} · ${formatDate(r.created_at)}</p>
-            <div class="text-xs text-gray-600 mt-1">${escapeHtml(r.content.substring(0,100))}${r.content.length>100?'...':''}</div>
-            <div class="flex gap-2 mt-3">
-                <button onclick="viewReportDetail(${r.id})" class="action-btn view"><i class="fas fa-eye mr-1"></i>View</button>
-                <button onclick="editReportDetail(${r.id})" class="action-btn edit"><i class="fas fa-edit mr-1"></i>Edit</button>
-                <button onclick="deleteReportDetail(${r.id})" class="action-btn delete"><i class="fas fa-trash mr-1"></i>Delete</button>
+            <div class="flex justify-between items-start mb-2">
+                <div class="flex items-center gap-2">
+                    <div class="dept-icon w-8 h-8 rounded-lg flex items-center justify-center" style="background: ${deptColor}20; color: ${deptColor}">
+                        <i class="fas ${deptIcon} text-sm"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-sm">${escapeHtml(r.title)}</h4>
+                        <p class="text-xs text-gray-500">${deptName} · ${r.period}</p>
+                    </div>
+                </div>
+                <span class="status-badge ${r.status === 'sent' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'} text-xs">${r.status === 'sent' ? 'Sent' : 'Draft'}</span>
+            </div>
+            <div class="report-preview text-xs text-gray-600 line-clamp-2 mt-2">${escapeHtml(r.content.substring(0, 120))}${r.content.length > 120 ? '...' : ''}</div>
+            <div class="flex justify-between items-center mt-3 pt-2 border-t border-gray-100">
+                <span class="text-xs text-gray-400"><i class="far fa-calendar-alt mr-1"></i>${formatDate(r.created_at)}</span>
+                <div class="flex gap-2">
+                    <button onclick="event.stopPropagation(); viewReportDetail(${r.id})" class="action-btn view px-2 py-1 text-xs"><i class="fas fa-eye"></i></button>
+                    <button onclick="event.stopPropagation(); editReportDetail(${r.id})" class="action-btn edit px-2 py-1 text-xs"><i class="fas fa-edit"></i></button>
+                    <button onclick="event.stopPropagation(); deleteReportDetail(${r.id})" class="action-btn delete px-2 py-1 text-xs"><i class="fas fa-trash"></i></button>
+                </div>
             </div>
         </div>`;
     }
     document.getElementById('reportsGrid').innerHTML = reportsHtml;
+    if (highlightId) { 
+        const el = document.getElementById(`report-card-${highlightId}`); 
+        if(el) { 
+            el.classList.add('search-highlight'); 
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
+            setTimeout(() => el.classList.remove('search-highlight'), 2000); 
+        } 
+    }
 }
 async function markReportAsViewed(reportId) {
     const userId = await getCurrentUserId();
@@ -960,19 +1095,26 @@ async function saveReport() { let id = document.getElementById('reportId').value
 
 async function deleteReportDetail(id) { 
     const userId = await getCurrentUserId(); 
-    if(confirm('Delete this report? It will only be hidden from your view.')) { 
-        const res = await apiCall('delete_report.php','POST',{
+    const departmentId = DEPARTMENT_ID;
+    
+    if(confirm('Delete this report? It will be hidden from your view only. The other party will still see it.')) { 
+        const res = await apiCall('delete_report.php', 'POST', {
             report_id: id, 
-            user_id: userId, 
+            user_id: userId,
+            department_id: departmentId,
             is_admin: 0
         }); 
-        if(res.success) { 
+        
+        console.log('Delete report response:', res);
+        
+        if(res && res.success) { 
             showToast('Report deleted from your view'); 
+            // Remove from local array to update UI immediately
             reportsData = reportsData.filter(r => r.id !== id);
-            loadReports(); 
-            loadDashboard(); 
+            await loadReports(); 
+            await loadDashboard(); 
         } else { 
-            showToast(res.message || 'Failed', true); 
+            showToast(res?.message || 'Failed to delete', true); 
         }
     } 
 }
@@ -1035,7 +1177,52 @@ function showPage(pageId, highlightId = null) {
     else if (pageId === 'settings') loadSettings();
 }
 
-function toggleSendDropdown(dropdownId) { const dd = document.getElementById(dropdownId); document.querySelectorAll('.send-dropdown-content').forEach(d => { if (d.id !== dropdownId) d.style.display = 'none'; }); if (dd) dd.style.display = dd.style.display === 'block' ? 'none' : 'block'; }
+function toggleSendDropdown(dropdownId) {
+    const dropdown = document.getElementById(dropdownId);
+    // Close all other dropdowns
+    document.querySelectorAll('.send-dropdown-content').forEach(d => {
+        if (d.id !== dropdownId) d.style.display = 'none';
+    });
+    // Toggle current dropdown
+    if (dropdown) {
+        if (dropdown.style.display === 'block') {
+            dropdown.style.display = 'none';
+        } else {
+            // Refresh departments before showing
+            refreshSendReportDepartments(dropdownId);
+            dropdown.style.display = 'block';
+        }
+    }
+}
+
+async function refreshSendReportDepartments(dropdownId) {
+    const userId = await getCurrentUserId();
+    const res = await apiCall(`get_departments.php?user_id=${userId}`);
+    let departments = [];
+    
+    if (res.success && res.data) {
+        departments = res.data.filter(d => d.id !== DEPARTMENT_ID);
+    } else {
+        departments = [
+            { id: 1, name: "Super Admin" }, { id: 3, name: "Sales & Marketing" },
+            { id: 4, name: "Manager" }, { id: 5, name: "Secretary" },
+            { id: 6, name: "Bricks & Timber" }, { id: 7, name: "Aluminium" },
+            { id: 8, name: "Town Planning" }, { id: 9, name: "Architectural" },
+            { id: 10, name: "Survey" }, { id: 11, name: "Construction" },
+            { id: 12, name: "Hatimiliki" }
+        ];
+    }
+    
+    const reportId = dropdownId.split('-')[1];
+    const dropdown = document.getElementById(dropdownId);
+    if (dropdown) {
+        let options = '';
+        departments.forEach(d => {
+            options += `<a onclick="sendReportToDept(${reportId}, ${d.id})">${escapeHtml(d.name)}</a>`;
+        });
+        dropdown.innerHTML = options;
+    }
+}
 document.addEventListener('click', (e) => { if (!e.target.closest('.send-dropdown')) { document.querySelectorAll('.send-dropdown-content').forEach(d => d.style.display = 'none'); } });
 function initScrollTop() { let btn = document.createElement('div'); btn.className = 'scroll-top'; btn.innerHTML = '<i class="fas fa-arrow-up"></i>'; document.body.appendChild(btn); btn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' }); window.addEventListener('scroll', () => btn.classList.toggle('visible', window.scrollY > 300)); }
 async function updateConnectionStatus() { const statusDiv = document.getElementById('connectionStatus'); try { const response = await fetch(API_BASE + 'get_departments.php'); const data = await response.json(); if (data.success) { statusDiv.innerHTML = `<i class="fas fa-check-circle"></i> Connected`; statusDiv.classList.remove('error'); } else { statusDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> API Error`; statusDiv.classList.add('error'); } } catch (error) { statusDiv.innerHTML = `<i class="fas fa-plug"></i> Offline`; statusDiv.classList.add('error'); } }
