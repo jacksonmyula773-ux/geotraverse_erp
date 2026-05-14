@@ -591,30 +591,52 @@ async function markAllReportsViewed() {
 
 function updateProjectBadge() {
     const badge = document.getElementById('projectBadge');
-    if (unviewedProjectsCount > 0) { badge.classList.remove('hidden'); badge.innerText = unviewedProjectsCount; }
-    else badge.classList.add('hidden');
+    if (badge) {
+        if (unviewedProjectsCount > 0) { 
+            badge.classList.remove('hidden'); 
+            badge.innerText = unviewedProjectsCount > 99 ? '99+' : unviewedProjectsCount;
+        } else { 
+            badge.classList.add('hidden'); 
+        }
+    }
 }
 
 function updateReportBadge() {
     const badge = document.getElementById('reportBadge');
-    if (unviewedReportsCount > 0) { badge.classList.remove('hidden'); badge.innerText = unviewedReportsCount; }
-    else badge.classList.add('hidden');
+    if (badge) {
+        if (unviewedReportsCount > 0) { 
+            badge.classList.remove('hidden'); 
+            badge.innerText = unviewedReportsCount > 99 ? '99+' : unviewedReportsCount;
+        } else { 
+            badge.classList.add('hidden'); 
+        }
+    }
 }
 
 function updateMessageBadge() {
     const unreadCount = messagesData.reduce((sum, c) => sum + (c.unread_count || 0), 0);
     const badge = document.getElementById('msgBadge');
-    if (unreadCount > 0) { badge.classList.remove('hidden'); badge.innerText = unreadCount; }
-    else badge.classList.add('hidden');
+    if (badge) {
+        if (unreadCount > 0) { 
+            badge.classList.remove('hidden'); 
+            badge.innerText = unreadCount > 99 ? '99+' : unreadCount;
+        } else { 
+            badge.classList.add('hidden'); 
+        }
+    }
 }
 
 // ==================== DASHBOARD ====================
 async function loadDashboard() {
-    document.getElementById('dashboardPage').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div><span class="ml-3">Loading...</span></div>';
+    document.getElementById('dashboardPage').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading-spinner"></div><span class="ml-3">Loading dashboard...</span></div>';
     
-    const [emp, proj, dw, trans] = await Promise.all([
-        apiCall('get_employees.php'), apiCall('get_projects.php'), 
-        apiCall('get_dailywork.php'), apiCall('get_transactions.php')
+    // Load all required data
+    const [emp, proj, dw, trans, msg] = await Promise.all([
+        apiCall('get_employees.php'),
+        apiCall('get_projects.php?department_id=1'),
+        apiCall('get_dailywork.php'),
+        apiCall('get_transactions.php'),
+        apiCall('get_conversations.php?user_id=1')
     ]);
     
     employeesData = emp.success ? emp.data : [];
@@ -623,8 +645,16 @@ async function loadDashboard() {
     dailyworkData = dw.success ? dw.data : [];
     transactionsData = trans.success ? trans.data : [];
     
-    updateProjectBadge();
+    if (msg.success && msg.data) {
+        messagesData = msg.data;
+    } else {
+        messagesData = [];
+    }
     
+    updateProjectBadge();
+    updateMessageBadge();
+    
+    // Calculate financials
     let totalIncome = 0, totalExpense = 0;
     transactionsData.forEach(t => { 
         if (t.status === 'paid') {
@@ -633,25 +663,106 @@ async function loadDashboard() {
         }
     });
     let netProfit = totalIncome - totalExpense;
+    
+    // Project status counts
     let pending = projectsData.filter(p => p.status === 'pending').length;
     let inProgress = projectsData.filter(p => p.status === 'in_progress').length;
     let completed = projectsData.filter(p => p.status === 'completed').length;
     
+    // Unread messages count
+    let unreadMessages = messagesData.reduce((sum, c) => sum + (c.unread_count || 0), 0);
+    
     document.getElementById('dashboardPage').innerHTML = `
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-5">
-            <div class="stat-card cursor-pointer" onclick="showPage('employees')"><div class="flex justify-between items-center"><div><p class="text-gray-500 text-xs uppercase">Employees</p><p class="text-2xl font-bold text-blue-600">${employeesData.length}</p></div><i class="fas fa-users text-blue-500 text-2xl"></i></div></div>
-            <div class="stat-card cursor-pointer" onclick="showPage('projects')"><div class="flex justify-between items-center"><div><p class="text-gray-500 text-xs uppercase">Projects</p><p class="text-2xl font-bold text-green-600">${projectsData.length}</p>${unviewedProjectsCount > 0 ? `<span class="text-xs text-red-500 ml-2">+${unviewedProjectsCount} new</span>` : ''}</div><i class="fas fa-tasks text-green-500 text-2xl"></i></div></div>
-            <div class="stat-card cursor-pointer" onclick="showPage('cashflow')"><div class="flex justify-between items-center"><div><p class="text-gray-500 text-xs uppercase">Net Profit</p><p class="text-2xl font-bold ${netProfit >= 0 ? 'text-green-600' : 'text-red-600'}">${formatMoney(netProfit)}</p></div><i class="fas fa-chart-line text-blue-500 text-2xl"></i></div></div>
-            <div class="stat-card cursor-pointer" onclick="showPage('messages')"><div class="flex justify-between items-center"><div><p class="text-gray-500 text-xs uppercase">Messages</p><p class="text-2xl font-bold text-blue-600">${messagesData.length}</p></div><i class="fas fa-envelope text-blue-500 text-2xl"></i></div></div>
+            <div class="stat-card cursor-pointer" onclick="showPage('employees')">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="text-gray-500 text-xs uppercase tracking-wider">Employees</p>
+                        <p class="text-2xl font-bold text-blue-600">${employeesData.length}</p>
+                    </div>
+                    <i class="fas fa-users text-blue-500 text-2xl"></i>
+                </div>
+            </div>
+            <div class="stat-card cursor-pointer" onclick="showPage('projects')">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="text-gray-500 text-xs uppercase tracking-wider">Projects</p>
+                        <p class="text-2xl font-bold text-green-600">${projectsData.length}</p>
+                        ${unviewedProjectsCount > 0 ? `<span class="text-xs text-red-500 ml-2">+${unviewedProjectsCount} new</span>` : ''}
+                    </div>
+                    <i class="fas fa-tasks text-green-500 text-2xl"></i>
+                </div>
+            </div>
+            <div class="stat-card cursor-pointer" onclick="showPage('cashflow')">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="text-gray-500 text-xs uppercase tracking-wider">Net Profit</p>
+                        <p class="text-2xl font-bold ${netProfit >= 0 ? 'text-green-600' : 'text-red-600'}">${formatMoney(netProfit)}</p>
+                    </div>
+                    <i class="fas fa-chart-line text-blue-500 text-2xl"></i>
+                </div>
+            </div>
+            <div class="stat-card cursor-pointer" onclick="showPage('messages')">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="text-gray-500 text-xs uppercase tracking-wider">Messages</p>
+                        <p class="text-2xl font-bold text-blue-600">${messagesData.length}</p>
+                        ${unreadMessages > 0 ? `<span class="text-xs text-red-500 ml-2">${unreadMessages} unread</span>` : ''}
+                    </div>
+                    <i class="fas fa-envelope text-blue-500 text-2xl"></i>
+                </div>
+            </div>
         </div>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-            <div class="bg-white rounded-xl p-5 shadow-sm border"><h3 class="font-semibold mb-3"><i class="fas fa-chart-pie text-blue-500 mr-2"></i>Project Status</h3><canvas id="statusChart" height="200"></canvas></div>
-            <div class="bg-white rounded-xl p-5 shadow-sm border"><h3 class="font-semibold mb-3"><i class="fas fa-bolt text-orange-500 mr-2"></i>Quick Actions</h3><div class="grid grid-cols-2 gap-3"><button onclick="openModal('empModal')" class="bg-blue-600 text-white py-2 rounded text-sm"><i class="fas fa-user-plus mr-2"></i>Add Employee</button><button onclick="openAddProjectModal()" class="bg-green-600 text-white py-2 rounded text-sm"><i class="fas fa-plus mr-2"></i>Add Project</button><button onclick="openModal('dailyworkModal')" class="bg-purple-600 text-white py-2 rounded text-sm"><i class="fas fa-tasks mr-2"></i>Add Daily Work</button><button onclick="openModal('transModal')" class="bg-orange-600 text-white py-2 rounded text-sm"><i class="fas fa-coins mr-2"></i>Add Transaction</button><button onclick="openModal('msgModal')" class="bg-indigo-600 text-white py-2 rounded text-sm"><i class="fas fa-paper-plane mr-2"></i>Send Message</button><button onclick="openModal('reportModal')" class="bg-rose-600 text-white py-2 rounded text-sm"><i class="fas fa-chart-bar mr-2"></i>Add Report</button></div></div>
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+                <h3 class="font-semibold mb-3 flex items-center"><i class="fas fa-chart-pie text-blue-500 mr-2"></i>Project Status</h3>
+                <canvas id="statusChart" height="200"></canvas>
+                <div class="flex justify-center gap-4 mt-3 text-sm">
+                    <div class="flex items-center"><span class="w-3 h-3 rounded-full bg-yellow-500 mr-1"></span> Pending: ${pending}</div>
+                    <div class="flex items-center"><span class="w-3 h-3 rounded-full bg-blue-500 mr-1"></span> In Progress: ${inProgress}</div>
+                    <div class="flex items-center"><span class="w-3 h-3 rounded-full bg-green-500 mr-1"></span> Completed: ${completed}</div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+                <h3 class="font-semibold mb-3 flex items-center"><i class="fas fa-bolt text-orange-500 mr-2"></i>Quick Actions</h3>
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="openModal('empModal')" class="bg-blue-600 text-white py-2 rounded-lg text-sm hover:bg-blue-700 transition"><i class="fas fa-user-plus mr-2"></i>Add Employee</button>
+                    <button onclick="openAddProjectModal()" class="bg-green-600 text-white py-2 rounded-lg text-sm hover:bg-green-700 transition"><i class="fas fa-plus mr-2"></i>Add Project</button>
+                    <button onclick="openModal('dailyworkModal')" class="bg-purple-600 text-white py-2 rounded-lg text-sm hover:bg-purple-700 transition"><i class="fas fa-tasks mr-2"></i>Add Daily Work</button>
+                    <button onclick="openModal('transModal')" class="bg-orange-600 text-white py-2 rounded-lg text-sm hover:bg-orange-700 transition"><i class="fas fa-coins mr-2"></i>Add Transaction</button>
+                    <button onclick="openModal('msgModal')" class="bg-indigo-600 text-white py-2 rounded-lg text-sm hover:bg-indigo-700 transition"><i class="fas fa-paper-plane mr-2"></i>Send Message</button>
+                    <button onclick="openModal('reportModal')" class="bg-rose-600 text-white py-2 rounded-lg text-sm hover:bg-rose-700 transition"><i class="fas fa-chart-bar mr-2"></i>Add Report</button>
+                </div>
+            </div>
         </div>
     `;
     
+    // Create chart
     const ctx = document.getElementById('statusChart')?.getContext('2d');
-    if (ctx) { if (statusChart) statusChart.destroy(); statusChart = new Chart(ctx, { type: 'doughnut', data: { labels: ['Pending', 'In Progress', 'Completed'], datasets: [{ data: [pending, inProgress, completed], backgroundColor: ['#f59e0b', '#3b82f6', '#10b981'] }] }, options: { responsive: true } }); }
+    if (ctx) { 
+        if (statusChart) statusChart.destroy(); 
+        statusChart = new Chart(ctx, { 
+            type: 'doughnut', 
+            data: { 
+                labels: ['Pending', 'In Progress', 'Completed'], 
+                datasets: [{ 
+                    data: [pending, inProgress, completed], 
+                    backgroundColor: ['#f59e0b', '#3b82f6', '#10b981'],
+                    borderWidth: 0
+                }] 
+            }, 
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { boxWidth: 12, font: { size: 11 } }
+                    }
+                }
+            } 
+        }); 
+    }
 }
 
 // ==================== EMPLOYEES ====================
@@ -733,11 +844,10 @@ async function loadDepartmentsPage() {
 
 // ==================== PROJECTS ====================
 async function loadProjects(highlightId = null) {
-    // For Super Admin (department_id = 1)
-    const departmentId = 1;
+    const departmentId = 1; // Super Admin
     const res = await apiCall(`get_projects.php?department_id=${departmentId}`);
     
-    console.log('Projects API response for Super Admin:', res);
+    console.log('Projects API response:', res);
     
     if (res.success && res.data) {
         projectsData = res.data.sort((a,b) => b.id - a.id);
@@ -748,10 +858,16 @@ async function loadProjects(highlightId = null) {
     }
     updateProjectBadge();
     
-    document.getElementById('projectsPage').innerHTML = `<div class="flex justify-between flex-wrap gap-3 mb-4"><h2 class="text-xl font-bold"><i class="fas fa-tasks text-green-600 mr-2"></i>Projects (${projectsData.length})</h2><button onclick="openAddProjectModal()" class="btn-primary"><i class="fas fa-plus mr-1"></i> Add Project</button></div><div class="project-grid" id="projectsGrid"></div>`;
+    // Simple HTML structure
+    let html = `<div class="flex justify-between flex-wrap gap-3 mb-4">
+        <h2 class="text-xl font-bold"><i class="fas fa-tasks text-green-600 mr-2"></i>Projects (${projectsData.length})</h2>
+        <button onclick="openAddProjectModal()" class="btn-primary"><i class="fas fa-plus mr-1"></i> Add Project</button>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="projectsGrid"></div>`;
+    document.getElementById('projectsPage').innerHTML = html;
     
     if (projectsData.length === 0) { 
-        document.getElementById('projectsGrid').innerHTML = '<div class="col-span-3 text-center py-8 text-gray-400">No projects found</div>'; 
+        document.getElementById('projectsGrid').innerHTML = '<div class="col-span-3 text-center py-12 text-gray-400 bg-white rounded-xl">No projects found</div>'; 
         return; 
     }
     
@@ -760,21 +876,67 @@ async function loadProjects(highlightId = null) {
         const isUnviewed = p.is_viewed_by_admin === 0 && p.department_id !== 1;
         let imageUrl = null;
         if (p.image && p.image !== '') {
-            if (p.image.startsWith('http')) imageUrl = p.image;
-            else if (p.image.startsWith('assets/')) imageUrl = '/geotraverse/frontend/' + p.image;
-            else imageUrl = '/geotraverse/frontend/assets/uploads/projects/' + p.image;
+            if (p.image.startsWith('http')) {
+                imageUrl = p.image;
+            } else if (p.image.startsWith('assets/')) {
+                imageUrl = '/geotraverse/frontend/' + p.image;
+            } else {
+                imageUrl = '/geotraverse/frontend/assets/uploads/projects/' + p.image;
+            }
         }
-        projectsHtml += `<div class="project-card relative" id="proj-card-${p.id}" onclick="viewProjectDetails(${p.id})">
-            ${isUnviewed ? '<div class="new-badge" onclick="event.stopPropagation(); markProjectAsViewed(' + p.id + ')">!</div>' : ''}
-            ${imageUrl ? `<img src="${imageUrl}?t=${new Date().getTime()}" class="project-image" onclick="event.stopPropagation(); showFullImage('${imageUrl}')">` : '<div class="no-image"><i class="fas fa-image text-2xl"></i></div>'}
-            <div class="flex justify-between items-start"><h4 class="font-semibold">${escapeHtml(p.name)}</h4><span class="status-badge ${p.status === 'pending' ? 'status-pending' : p.status === 'in_progress' ? 'status-progress' : 'status-completed'}">${p.status}</span></div>
-            <p class="text-sm text-gray-500 mt-1">Client: ${escapeHtml(p.client_name || 'N/A')}</p><p class="text-lg font-bold text-blue-600 mt-1">${formatMoney(p.amount)}</p>
-            <div class="mt-2"><div class="flex justify-between text-xs"><span>Progress</span><span>${p.progress || 0}%</span></div><div class="w-full bg-gray-200 rounded-full h-1.5"><div class="bg-blue-600 h-1.5 rounded-full" style="width:${p.progress || 0}%"></div></div></div>
-            <div class="flex gap-2 mt-3"><button onclick="event.stopPropagation(); viewProjectDetails(${p.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="event.stopPropagation(); editProject(${p.id})" class="action-btn edit"><i class="fas fa-edit"></i></button><button onclick="event.stopPropagation(); deleteProject(${p.id})" class="action-btn delete"><i class="fas fa-trash"></i></button></div>
-        </div>`;
+        
+        projectsHtml += `
+            <div class="bg-white rounded-xl border border-gray-200 hover:shadow-lg transition-all cursor-pointer relative overflow-hidden" 
+                 id="proj-card-${p.id}" 
+                 onclick="viewProjectDetails(${p.id})">
+                
+                ${isUnviewed ? '<div class="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold z-10 shadow-md">!</div>' : ''}
+                
+                <!-- Project Image -->
+                <div class="h-40 overflow-hidden bg-gray-100">
+                    ${imageUrl ? `<img src="${imageUrl}?t=${new Date().getTime()}" class="w-full h-full object-cover" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23f3f4f6%22/%3E%3Ctext x=%2250%22 y=%2255%22 text-anchor=%22middle%22 fill=%22%239ca3af%22%3ENo Image%3C/text%3E%3C/svg%3E'">` : '<div class="w-full h-full flex items-center justify-center text-gray-400"><i class="fas fa-image text-4xl"></i></div>'}
+                </div>
+                
+                <!-- Project Info -->
+                <div class="p-4">
+                    <div class="flex justify-between items-start mb-2">
+                        <h4 class="font-semibold text-sm truncate flex-1" title="${escapeHtml(p.name)}">${escapeHtml(p.name)}</h4>
+                        <span class="status-badge ${p.status === 'pending' ? 'status-pending' : p.status === 'in_progress' ? 'status-progress' : 'status-completed'} text-xs px-2 py-1 rounded-full ml-2 whitespace-nowrap">${p.status}</span>
+                    </div>
+                    <p class="text-xs text-gray-500 mb-1">Client: ${escapeHtml(p.client_name || 'N/A')}</p>
+                    <p class="text-sm font-bold text-blue-600 mb-2">${formatMoney(p.amount)}</p>
+                    
+                    <!-- Progress Bar -->
+                    <div class="mt-2">
+                        <div class="flex justify-between text-xs mb-1">
+                            <span>Progress</span>
+                            <span>${p.progress || 0}%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-1.5">
+                            <div class="bg-blue-600 h-1.5 rounded-full" style="width:${p.progress || 0}%"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="flex gap-2 mt-3 pt-2 border-t border-gray-100">
+                        <button onclick="event.stopPropagation(); viewProjectDetails(${p.id})" class="action-btn view text-xs px-2 py-1 rounded flex-1"><i class="fas fa-eye mr-1"></i> View</button>
+                        <button onclick="event.stopPropagation(); editProject(${p.id})" class="action-btn edit text-xs px-2 py-1 rounded flex-1"><i class="fas fa-edit mr-1"></i> Edit</button>
+                        <button onclick="event.stopPropagation(); deleteProject(${p.id})" class="action-btn delete text-xs px-2 py-1 rounded flex-1"><i class="fas fa-trash mr-1"></i> Delete</button>
+                    </div>
+                </div>
+            </div>
+        `;
     }
     document.getElementById('projectsGrid').innerHTML = projectsHtml;
-    if (highlightId) document.getElementById(`proj-card-${highlightId}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    
+    if (highlightId) { 
+        const el = document.getElementById(`proj-card-${highlightId}`); 
+        if(el) { 
+            el.classList.add('ring-2', 'ring-yellow-400', 'shadow-lg'); 
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
+            setTimeout(() => el.classList.remove('ring-2', 'ring-yellow-400'), 2000); 
+        } 
+    }
 }
 
 async function markProjectAsViewed(projectId) {
@@ -899,11 +1061,15 @@ function editProject(id) {
         document.getElementById('projStatus').value = p.status; 
         document.getElementById('projProgress').value = p.progress; 
         document.getElementById('projDept').value = p.department_id; 
-        if(p.image && p.image !== '') { 
+        
+        // Handle image preview
+        if(p.image && p.image !== '' && p.image !== null) { 
             let imgUrl = p.image;
-            if(!imgUrl.startsWith('http') && !imgUrl.startsWith('assets/')) {
+            // Check if it's a filename or full URL
+            if(!imgUrl.startsWith('http') && !imgUrl.startsWith('data:') && !imgUrl.startsWith('assets/')) {
                 imgUrl = '/geotraverse/frontend/assets/uploads/projects/' + imgUrl;
             }
+            console.log('Loading image URL:', imgUrl);
             document.getElementById('projImagePreview').src = imgUrl; 
             document.getElementById('projImagePreviewContainer').classList.remove('hidden'); 
             document.getElementById('projImageUploadArea').classList.add('hidden'); 
@@ -911,6 +1077,11 @@ function editProject(id) {
             document.getElementById('projImagePreviewContainer').classList.add('hidden');
             document.getElementById('projImageUploadArea').classList.remove('hidden');
         }
+        
+        // Clear file input
+        document.getElementById('projImageFile').value = '';
+        currentProjectImageFile = null;
+        
         openModal('projModal'); 
     } 
 }
@@ -937,9 +1108,24 @@ function removeProjectImage() {
 
 function getImageAsBase64(file) { 
     return new Promise((resolve) => { 
-        if(!file) resolve(''); 
+        if(!file || !(file instanceof File)) { 
+            resolve(''); 
+            return;
+        }
+        
+        // Check file size (max 2MB)
+        if(file.size > 2 * 1024 * 1024) {
+            showToast('Image too large. Max 2MB', true);
+            resolve('');
+            return;
+        }
+        
         let reader = new FileReader(); 
         reader.onload = () => resolve(reader.result); 
+        reader.onerror = () => {
+            showToast('Error reading image', true);
+            resolve('');
+        };
         reader.readAsDataURL(file); 
     }); 
 }
@@ -947,8 +1133,13 @@ function getImageAsBase64(file) {
 async function saveProject() { 
     let id = document.getElementById('projId').value; 
     let name = document.getElementById('projName').value.trim(); 
-    if(!name) { showToast('Project name required',true); return; } 
+    if(!name) { 
+        showToast('Project name required', true); 
+        return; 
+    } 
+    
     let img = await getImageAsBase64(currentProjectImageFile); 
+    
     let data = { 
         name: name, 
         client_name: document.getElementById('projClient').value, 
@@ -956,30 +1147,74 @@ async function saveProject() {
         location: document.getElementById('projLocation').value, 
         description: document.getElementById('projDesc').value, 
         status: document.getElementById('projStatus').value, 
-        progress: parseInt(document.getElementById('projProgress').value)||0, 
-        department_id: parseInt(document.getElementById('projDept').value)||1, 
-        image: img 
+        progress: parseInt(document.getElementById('projProgress').value) || 0, 
+        department_id: parseInt(document.getElementById('projDept').value) || 1, 
+        image: img || ''  // Make sure image is sent even if empty
     }; 
-    let res = id ? await apiCall('update_project.php','POST',{...data,id:parseInt(id)}) : await apiCall('add_project.php','POST',data); 
-    if(res.success) { 
-        showToast(id ? 'Project updated' : 'Project added'); 
-        closeModal('projModal'); 
-        loadProjects(); 
-        loadDashboard(); 
-    } else { 
-        showToast(res.message || 'Failed to save project', true); 
+    
+    // Log data for debugging
+    console.log('Saving project data:', { ...data, image: img ? 'base64...' : 'no image' });
+    
+    const sendBtn = document.querySelector('#projModal .btn-primary');
+    const originalText = sendBtn.innerHTML;
+    sendBtn.innerHTML = '<span class="loading-spinner"></span> Saving...';
+    sendBtn.disabled = true;
+    
+    try {
+        let res = id ? await apiCall('update_project.php', 'POST', { ...data, id: parseInt(id) }) : await apiCall('add_project.php', 'POST', data); 
+        
+        console.log('Save project response:', res);
+        
+        if(res && res.success) { 
+            showToast(id ? 'Project updated' : 'Project added'); 
+            closeModal('projModal'); 
+            // Reset form
+            document.getElementById('projId').value = '';
+            document.getElementById('projName').value = '';
+            document.getElementById('projClient').value = '';
+            document.getElementById('projAmount').value = '';
+            document.getElementById('projLocation').value = '';
+            document.getElementById('projDesc').value = '';
+            document.getElementById('projStatus').value = 'pending';
+            document.getElementById('projProgress').value = '0';
+            document.getElementById('projDept').value = '';
+            document.getElementById('projImagePreviewContainer').classList.add('hidden');
+            document.getElementById('projImageUploadArea').classList.remove('hidden');
+            document.getElementById('projImageFile').value = '';
+            currentProjectImageFile = null;
+            
+            await loadProjects(); 
+            await loadDashboard(); 
+        } else { 
+            showToast(res?.message || 'Failed to save project', true); 
+        }
+    } catch(error) {
+        console.error('Save error:', error);
+        showToast('Network error: ' + error.message, true);
+    } finally {
+        sendBtn.innerHTML = originalText;
+        sendBtn.disabled = false;
     }
 }
 
 // ==================== SOFT DELETE PROJECT ====================
 async function deleteProject(id) { 
-    if(confirm('Delete this project? It will be hidden from your view.')) { 
-        let res = await apiCall('delete_project.php', 'POST', { project_id: id, user_id: 1, is_admin: 1 }); 
+    const departmentId = 1; // Super Admin
+    if(confirm('Delete this project? It will be hidden from your view only.')) { 
+        const res = await apiCall('delete_project.php', 'POST', { 
+            project_id: id, 
+            user_id: 1,
+            department_id: departmentId,
+            is_admin: 1 
+        }); 
+        
+        console.log('Delete project response:', res);
+        
         if(res.success) { 
             showToast('Project deleted from your view'); 
             projectsData = projectsData.filter(p => p.id !== id);
-            loadProjects(); 
-            loadDashboard(); 
+            await loadProjects(); 
+            await loadDashboard(); 
         } else { 
             showToast(res.message || 'Failed to delete', true); 
         }
@@ -1068,19 +1303,6 @@ async function loadMessages(highlightId = null) {
     } catch(e) {
         console.error('Error loading messages:', e);
         messagesData = [];
-    }
-    updateMessageBadge();
-    
-    let html = `<div class="flex flex-wrap justify-between items-center gap-3 mb-4">
-        <h2 class="text-xl font-bold"><i class="fas fa-envelope text-blue-600 mr-2"></i>Messages (${messagesData.length})</h2>
-        <button onclick="openModal('msgModal')" class="btn-primary"><i class="fas fa-paper-plane mr-1"></i> New Message</button>
-    </div>
-    <div class="messages-grid" id="messagesGridContainer"></div>`;
-    document.getElementById('messagesPage').innerHTML = html;
-    
-    if (messagesData.length === 0) { 
-        document.getElementById('messagesGridContainer').innerHTML = '<div class="col-span-3 text-center py-12 text-gray-400 bg-white rounded-xl">No messages found. Click "New Message" to start a conversation.</div>'; 
-        return; 
     }
     
     let msgsHtml = '';

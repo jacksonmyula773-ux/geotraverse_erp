@@ -21,7 +21,7 @@ try {
     $pdo = new PDO("mysql:host=" . $host . ";dbname=" . $db_name . ";charset=utf8mb4", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch(PDOException $e) {
-    echo json_encode(["success" => false, "message" => "Database connection failed", "data" => [], "unviewed_count" => 0]);
+    echo json_encode(["success" => false, "message" => "Database connection failed", "data" => []]);
     exit();
 }
 
@@ -37,7 +37,7 @@ if ($user_id > 0 && $department_id === 0) {
 }
 
 if ($department_id === 0) {
-    echo json_encode(["success" => false, "message" => "Department ID required", "data" => [], "unviewed_count" => 0]);
+    echo json_encode(["success" => false, "message" => "Department ID required", "data" => []]);
     exit();
 }
 
@@ -52,13 +52,16 @@ if ($department_id == 1) {
     $stmt->execute();
     $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
-    $unviewedQuery = "SELECT COUNT(*) as unviewed FROM projects 
-                      WHERE (is_viewed_by_admin = 0 OR is_viewed_by_admin IS NULL)
-                      AND department_id != 1
-                      AND (deleted_by_admin = 0 OR deleted_by_admin IS NULL)";
-    $unviewedStmt = $pdo->prepare($unviewedQuery);
-    $unviewedStmt->execute();
-    $unviewedCount = $unviewedStmt->fetch(PDO::FETCH_ASSOC)['unviewed'];
+    $unviewedCount = 0;
+    if (!empty($projects)) {
+        $unviewedQuery = "SELECT COUNT(*) as unviewed FROM projects 
+                          WHERE (is_viewed_by_admin = 0 OR is_viewed_by_admin IS NULL)
+                          AND department_id != 1
+                          AND (deleted_by_admin = 0 OR deleted_by_admin IS NULL)";
+        $unviewedStmt = $pdo->prepare($unviewedQuery);
+        $unviewedStmt->execute();
+        $unviewedCount = $unviewedStmt->fetch(PDO::FETCH_ASSOC)['unviewed'];
+    }
 } 
 // OTHER DEPARTMENTS - see projects created by them OR sent to them
 else {
