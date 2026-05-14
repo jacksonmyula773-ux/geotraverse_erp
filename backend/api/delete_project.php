@@ -18,7 +18,7 @@ try {
     $pdo = new PDO("mysql:host=" . $host . ";dbname=" . $db_name . ";charset=utf8mb4", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch(PDOException $e) {
-    echo json_encode(["success" => false, "message" => "Database connection failed"]);
+    echo json_encode(["success" => false, "message" => "Database connection failed: " . $e->getMessage()]);
     exit();
 }
 
@@ -37,14 +37,20 @@ if ($project_id === 0) {
     exit();
 }
 
+// Ensure columns exist
+$pdo->exec("ALTER TABLE projects ADD COLUMN IF NOT EXISTS deleted_by_admin TINYINT DEFAULT 0");
+$pdo->exec("ALTER TABLE projects ADD COLUMN IF NOT EXISTS deleted_by_department TINYINT DEFAULT 0");
+$pdo->exec("ALTER TABLE projects ADD COLUMN IF NOT EXISTS deleted_at DATETIME NULL");
+
 if ($is_admin === 1) {
+    // Admin delete - only set deleted_by_admin = 1 (project disappears for Admin only)
     $update = $pdo->prepare("UPDATE projects SET deleted_by_admin = 1, deleted_at = NOW() WHERE id = ?");
     $update->execute([$project_id]);
 } else {
+    // Department delete - set deleted_by_department = 1 (disappears for department only)
     $update = $pdo->prepare("UPDATE projects SET deleted_by_department = 1, deleted_at = NOW() WHERE id = ?");
     $update->execute([$project_id]);
 }
 
-echo json_encode(["success" => true, "message" => "Project deleted successfully"]);
-exit();
+echo json_encode(["success" => true, "message" => "Project deleted from your view"]);
 ?>

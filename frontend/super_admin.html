@@ -186,6 +186,26 @@
         .employees-table th, .employees-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #e5e7eb; }
         .employees-table th { background: #f8fafc; font-weight: 600; }
         body.dark-mode .employees-table th { background: #1e293b; border-bottom-color: #334155; }
+        
+        .report-content-view {
+            background: #1a1a2e;
+            color: #ffffff;
+            padding: 16px;
+            border-radius: 12px;
+            margin-top: 12px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        .report-meta {
+            color: #000000;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        body.dark-mode .report-meta {
+            color: #ffffff;
+        }
     </style>
 </head>
 <body>
@@ -428,15 +448,19 @@ async function apiCall(endpoint, method = 'GET', data = null) {
             opts.body = JSON.stringify(data);
         }
         
+        console.log('API Call:', method, url, data);
         const res = await fetch(url, opts); 
         const contentType = res.headers.get('content-type');
         if (!contentType || !contentType.includes('application/json')) {
-            console.error('Non-JSON response');
-            return { success: false, message: 'Server error', data: [] };
+            const text = await res.text();
+            console.error('Non-JSON response:', text.substring(0, 500));
+            return { success: false, message: 'Server returned non-JSON response', data: [] };
         }
         
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return await res.json(); 
+        const json = await res.json();
+        console.log('API Response:', endpoint, json);
+        return json;
     } catch(e) { 
         console.error('API Error:', endpoint, e);
         return { success: false, message: e.message, data: [] }; 
@@ -478,10 +502,11 @@ async function refreshBadges() {
             if (newUnviewed !== unviewedProjectsCount) {
                 unviewedProjectsCount = newUnviewed;
                 updateProjectBadge();
-                if (document.getElementById('projectsPage').classList.contains('hidden')) {
-                    showToast(`📋 ${unviewedProjectsCount} new project${unviewedProjectsCount !== 1 ? 's' : ''} received`, false);
+                if (document.getElementById('projectsPage').classList.contains('hidden') && newUnviewed > 0) {
+                    showToast(`📋 ${newUnviewed} new project${newUnviewed !== 1 ? 's' : ''} received`, false);
                 }
             }
+            if (projRes.data) projectsData = projRes.data;
         }
         
         const reportRes = await apiCall('get_reports.php');
@@ -490,10 +515,11 @@ async function refreshBadges() {
             if (newUnviewed !== unviewedReportsCount) {
                 unviewedReportsCount = newUnviewed;
                 updateReportBadge();
-                if (document.getElementById('reportsPage').classList.contains('hidden')) {
-                    showToast(`📄 ${unviewedReportsCount} new report${unviewedReportsCount !== 1 ? 's' : ''} received`, false);
+                if (document.getElementById('reportsPage').classList.contains('hidden') && newUnviewed > 0) {
+                    showToast(`📄 ${newUnviewed} new report${newUnviewed !== 1 ? 's' : ''} received`, false);
                 }
             }
+            if (reportRes.data) reportsData = reportRes.data;
         }
         
         const msgRes = await apiCall('get_conversations.php?user_id=1');
@@ -508,6 +534,7 @@ async function refreshBadges() {
                     showToast(`💬 ${unreadCount - oldUnread} new message${(unreadCount - oldUnread) !== 1 ? 's' : ''} received`, false);
                 }
             }
+            messagesData = msgRes.data;
         }
     } catch(e) { console.error('Badge refresh error:', e); }
 }
@@ -683,7 +710,7 @@ async function loadEmployees(highlightId = null) {
             <td class="p-3"><span class="status-badge ${getRoleBadgeClass(e.role)}">${e.role || 'Staff'}</span></td>
             <td class="p-3 text-green-600 font-semibold">${formatMoney(e.salary)}</td>
             <td class="p-3"><div class="flex gap-2"><button onclick="viewEmployee(${e.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="editEmployee(${e.id})" class="action-btn edit"><i class="fas fa-edit"></i></button><button onclick="deleteEmployee(${e.id})" class="action-btn delete"><i class="fas fa-trash"></i></button></div></td>
-         </tr>`; 
+        </tr>`; 
     });
     html += `</tbody></table></div>`;
     document.getElementById('employeesPage').innerHTML = html;
@@ -806,6 +833,7 @@ function exportSingleProjectExcel(projectId) {
         showToast('Exported to Excel'); 
     } 
 }
+
 function exportSingleProjectPDF(projectId) { 
     const p = projectsData.find(p => p.id === projectId);
     if (!p) { showToast('Project not found', true); return; }
@@ -991,7 +1019,7 @@ async function saveProject() {
     }
 }
 
-// ==================== SOFT DELETE PROJECT ====================
+// ==================== SOFT DELETE PROJECT (FIXED) ====================
 async function deleteProject(id) { 
     if(confirm('Delete this project? It will be hidden from your view.')) { 
         let res = await apiCall('delete_project.php', 'POST', { project_id: id, user_id: 1, is_admin: 1 }); 
@@ -1020,9 +1048,9 @@ async function loadDailyWork(highlightId = null) {
     
     dailyworkData.forEach(w => { 
         let profit = (parseFloat(w.income) || 0) - (parseFloat(w.expenses) || 0);
-        html += `<tr id="daily-row-${w.id}"><td class="p-3">${w.date}</td><td class="p-3"><span class="dept-badge dept-badge-${w.department_id || 1}">${departmentNames[w.department_id] || w.department_id}</span></td><td class="p-3 font-medium">${escapeHtml(w.project_name)}</td><td class="p-3 text-right text-green-600">${formatMoney(w.income)}</td><td class="p-3 text-right text-red-600">${formatMoney(w.expenses)}</td><td class="p-3 text-right ${profit >= 0 ? 'text-green-600' : 'text-red-600'} font-semibold">${formatMoney(profit)}</td><td class="p-3 text-center"><span class="status-badge ${w.status === 'paid' ? 'status-paid' : w.status === 'partial' ? 'status-partial' : 'status-pending'}">${w.status}</span></td><td class="p-3 text-center"><div class="flex gap-1 justify-center"><button onclick="viewDailyWork(${w.id})" class="action-btn view p-1"><i class="fas fa-eye"></i></button><button onclick="editDailyWork(${w.id})" class="action-btn edit p-1"><i class="fas fa-edit"></i></button><button onclick="deleteDailyWork(${w.id})" class="action-btn delete p-1"><i class="fas fa-trash"></i></button></div></td></tr>`; 
+        html += `<tr id="daily-row-${w.id}"><td class="p-3">${w.date}</td><td class="p-3"><span class="dept-badge dept-badge-${w.department_id || 1}">${departmentNames[w.department_id] || w.department_id}</span></td><td class="p-3 font-medium">${escapeHtml(w.project_name)}</td><td class="p-3 text-right text-green-600">${formatMoney(w.income)}</td><td class="p-3 text-right text-red-600">${formatMoney(w.expenses)}</td><td class="p-3 text-right ${profit >= 0 ? 'text-green-600' : 'text-red-600'} font-semibold">${formatMoney(profit)}</td><td class="p-3 text-center"><span class="status-badge ${w.status === 'paid' ? 'status-paid' : w.status === 'partial' ? 'status-partial' : 'status-pending'}">${w.status}</span></td><td class="p-3 text-center"><div class="flex gap-1 justify-center"><button onclick="viewDailyWork(${w.id})" class="action-btn view p-1"><i class="fas fa-eye"></i></button><button onclick="editDailyWork(${w.id})" class="action-btn edit p-1"><i class="fas fa-edit"></i></button><button onclick="deleteDailyWork(${w.id})" class="action-btn delete p-1"><i class="fas fa-trash"></i></button></div></td></td>`; 
     });
-    html += `</tbody></table></div></div>`;
+    html += `</tbody>}</div></div>`;
     document.getElementById('dailyworkPage').innerHTML = html;
 }
 
@@ -1058,7 +1086,7 @@ async function loadCashflow(highlightId = null) {
     for (let t of transactionsData) { 
         html += `<tr id="trans-row-${t.id}" class="${t.type==='income' ? 'income-row' : 'expense-row'} border-b hover:bg-gray-50 transition"><td class="p-3">${t.transaction_date}</td><td class="p-3"><span class="status-badge ${t.type==='income' ? 'status-paid' : 'status-partial'}"><i class="fas ${t.type==='income' ? 'fa-arrow-up' : 'fa-arrow-down'} mr-1"></i>${t.type}</span></td><td class="p-3 font-medium">${escapeHtml(t.source)}</td><td class="p-3 text-right ${t.type==='income' ? 'text-green-600' : 'text-red-600'} font-bold">${formatMoney(t.amount)}</td><td class="p-3"><span class="status-badge ${t.status==='paid' ? 'status-paid' : t.status==='partial' ? 'status-partial' : 'status-pending'}">${t.status}</span></td><td class="p-3 text-center"><div class="flex gap-2 justify-center"><button onclick="viewTransaction(${t.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="editTransaction(${t.id})" class="action-btn edit"><i class="fas fa-edit"></i></button><button onclick="deleteTransaction(${t.id})" class="action-btn delete"><i class="fas fa-trash"></i></button></div></td></tr>`; 
     }
-    html += `</tbody></table></div></div>`;
+    html += `</tbody>}</div></div>`;
     document.getElementById('cashflowPage').innerHTML = html;
 }
 
@@ -1097,13 +1125,33 @@ async function loadMessages(highlightId = null) {
     for (let conv of messagesData) {
         const isUnread = conv.unread_count > 0;
         const preview = conv.last_message ? (conv.last_message.substring(0, 70) + (conv.last_message.length > 70 ? '...' : '')) : 'No messages';
-        const deptId = conv.department_id || 1;
+        let deptId = 1;
+        let deptName = "Super Admin";
+        
+        if (conv.user_department_id === 1 || conv.admin_department_id === 1) {
+            if (conv.user_department_id === 2) {
+                deptId = 2;
+                deptName = "Finance";
+            } else if (conv.admin_department_id === 2) {
+                deptId = 2;
+                deptName = "Finance";
+            } else if (conv.user_department_id && conv.user_department_id !== 1) {
+                deptId = conv.user_department_id;
+                deptName = conv.user_department_name || departmentNames[deptId] || 'Department';
+            } else if (conv.admin_department_id && conv.admin_department_id !== 1) {
+                deptId = conv.admin_department_id;
+                deptName = conv.admin_department_name || departmentNames[deptId] || 'Department';
+            }
+        } else {
+            deptId = conv.user_department_id || conv.admin_department_id || 1;
+            deptName = conv.user_department_name || conv.admin_department_name || departmentNames[deptId] || 'Department';
+        }
+        
         const icon = departmentIcons[deptId] || 'fa-building';
         const color = departmentColors[deptId] || '#0f74ba';
-        const deptName = conv.department_name || departmentNames[deptId] || 'Department';
         
-        msgsHtml += `<div class="message-item ${isUnread ? 'message-unread' : ''}" onclick="openChat(${conv.conversation_id})">
-            <div class="delete-conv-btn" onclick="event.stopPropagation(); deleteConversation(${conv.conversation_id})"><i class="fas fa-trash-alt"></i></div>
+        msgsHtml += `<div class="message-item ${isUnread ? 'message-unread' : ''}" onclick="openChat(${conv.id})">
+            <div class="delete-conv-btn" onclick="event.stopPropagation(); deleteConversation(${conv.id})"><i class="fas fa-trash-alt"></i></div>
             <div class="message-header"><div class="flex items-center gap-3"><div class="dept-icon" style="background: ${color}20; color: ${color}; border: 1px solid ${color}40"><i class="fas ${icon}"></i></div><div><span class="font-semibold">${escapeHtml(deptName)}</span>${isUnread ? `<span class="bg-red-500 text-white text-[9px] px-1.5 py-0.5 rounded-full ml-1">${conv.unread_count}</span>` : ''}</div></div><span class="text-[9px] text-gray-400">${conv.last_message_time ? new Date(conv.last_message_time).toLocaleString() : ''}</span></div>
             <div class="message-preview">${escapeHtml(preview)}</div>
         </div>`;
@@ -1116,7 +1164,7 @@ async function deleteConversation(conversationId) {
         const res = await apiCall('delete_conversation.php', 'POST', { conversation_id: conversationId, user_id: 1 });
         if (res && res.success) { 
             showToast('Conversation deleted'); 
-            messagesData = messagesData.filter(c => c.conversation_id !== conversationId);
+            messagesData = messagesData.filter(c => c.id !== conversationId);
             loadMessages(); 
             if (currentConversationId === conversationId) { 
                 closeModal('chatModal'); 
@@ -1154,7 +1202,13 @@ async function sendNewMessage() {
     sendBtn.disabled = true;
     
     try {
-        const res = await apiCall('send_message.php', 'POST', { user_id: 1, department_id: parseInt(departmentId), message: msg.trim() });
+        const res = await apiCall('send_message.php', 'POST', { 
+            user_id: 1,
+            department_id: parseInt(departmentId), 
+            message: msg.trim(),
+            subject: 'New Message from Super Admin'
+        });
+        
         if (res && res.success) { 
             showToast('✅ Message sent!'); 
             closeModal('msgModal'); 
@@ -1163,14 +1217,31 @@ async function sendNewMessage() {
         } else { 
             showToast('❌ ' + (res?.message || 'Failed'), true); 
         }
-    } catch (error) { showToast('❌ Network error', true); }
-    finally { sendBtn.innerHTML = originalText; sendBtn.disabled = false; }
+    } catch (error) { 
+        console.error('Error:', error);
+        showToast('❌ Network error', true); 
+    }
+    finally { 
+        sendBtn.innerHTML = originalText; 
+        sendBtn.disabled = false; 
+    }
 }
 
 async function openChat(conversationId) { 
     currentConversationId = conversationId;
-    const conv = messagesData.find(c => c.conversation_id === conversationId);
-    const deptName = conv ? (conv.department_name || 'Department') : 'Department';
+    const conv = messagesData.find(c => c.id === conversationId);
+    let deptName = "Department";
+    if (conv) {
+        if (conv.user_department_id === 1 || conv.admin_department_id === 1) {
+            if (conv.user_department_id === 2) deptName = "Finance";
+            else if (conv.admin_department_id === 2) deptName = "Finance";
+            else if (conv.user_department_id && conv.user_department_id !== 1) deptName = conv.user_department_name || departmentNames[conv.user_department_id] || 'Department';
+            else if (conv.admin_department_id && conv.admin_department_id !== 1) deptName = conv.admin_department_name || departmentNames[conv.admin_department_id] || 'Department';
+            else deptName = "Super Admin";
+        } else {
+            deptName = conv.user_department_name || conv.admin_department_name || departmentNames[conv.user_department_id || conv.admin_department_id || 1] || 'Department';
+        }
+    }
     document.getElementById('chatModalTitle').innerHTML = `<i class="fas fa-comments text-blue-500 mr-2"></i>Chat with ${deptName}`;
     
     const res = await apiCall(`get_conversation.php?conversation_id=${conversationId}`);
@@ -1186,6 +1257,7 @@ async function openChat(conversationId) {
                     <div class="chat-message-wrapper ${isSent ? 'justify-end' : 'justify-start'}">
                         <div class="chat-message ${isSent ? 'chat-sent' : 'chat-received'}">
                             <div class="chat-bubble">
+                                ${!isSent ? `<div class="text-xs opacity-75 mb-1 font-semibold">${escapeHtml(m.sender_department || m.sender_name)}</div>` : ''}
                                 <div>${escapeHtml(m.message)}</div>
                                 <span class="chat-time">${new Date(m.created_at).toLocaleString()}</span>
                             </div>
@@ -1208,7 +1280,11 @@ async function sendChatMessage() {
     let msg = document.getElementById('replyMsg').value;
     if (!msg.trim()) { showToast('Enter a message', true); return; }
     if (!currentConversationId) { showToast('No conversation', true); return; }
-    let res = await apiCall('send_message.php', 'POST', { user_id: 1, conversation_id: currentConversationId, message: msg });
+    let res = await apiCall('send_message.php', 'POST', { 
+        user_id: 1, 
+        conversation_id: currentConversationId, 
+        message: msg 
+    });
     if (res && res.success) { 
         document.getElementById('replyMsg').value = ''; 
         openChat(currentConversationId); 
@@ -1261,12 +1337,14 @@ function viewReportDetails(id) {
     const r = reportsData.find(r => r.id === id);
     if (r) {
         if (r.is_viewed_by_admin === 0 && r.department_id !== 1) markReportAsViewed(id);
-document.getElementById('viewReportContent').innerHTML = `
-    <p style="color: #000000 !important; font-weight: 500;"><strong>Department:</strong> ${departmentNames[r.department_id] || 'Admin'}</p>
-    <p style="color: #000000 !important; font-weight: 500;"><strong>Period:</strong> ${r.period}</p>
-    <p style="color: #000000 !important; font-weight: 500;"><strong>Created:</strong> ${formatDate(r.created_at)}</p>
-    <div style="background: #1a1a2e; color: #ffffff; padding: 16px; border-radius: 12px; margin-top: 12px; white-space: pre-wrap; border: 1px solid #333;">${escapeHtml(r.content)}</div>
-`; let deptOptions = '';
+        document.getElementById('viewReportContent').innerHTML = `
+            <p class="report-meta"><strong>Department:</strong> ${departmentNames[r.department_id] || 'Admin'}</p>
+            <p class="report-meta"><strong>Period:</strong> ${r.period}</p>
+            <p class="report-meta"><strong>Created:</strong> ${formatDate(r.created_at)}</p>
+            <div class="report-content-view">${escapeHtml(r.content)}</div>
+        `;
+        
+        let deptOptions = '';
         departmentsList.forEach(d => { deptOptions += `<a onclick="sendReportToDept(${r.id}, ${d.id})">${escapeHtml(d.name)}</a>`; });
         document.getElementById('viewReportButtons').innerHTML = `<button onclick="exportSingleReportExcel(${r.id})" class="btn-success text-white px-3 py-1.5 rounded text-sm"><i class="fas fa-file-excel"></i> Excel</button><button onclick="exportSingleReportPDF(${r.id})" class="btn-danger text-white px-3 py-1.5 rounded text-sm"><i class="fas fa-file-pdf"></i> PDF</button><div class="send-dropdown"><button class="btn-warning text-white px-3 py-1.5 rounded text-sm" onclick="toggleSendDropdown('reportSendDropdown-${r.id}')"><i class="fas fa-paper-plane"></i> Send to Department</button><div id="reportSendDropdown-${r.id}" class="send-dropdown-content">${deptOptions}</div></div>`;
         openModal('viewReportModal');
@@ -1279,7 +1357,7 @@ function exportSingleReportPDF(reportId) { const r = reportsData.find(r => r.id 
 function editReport(id) { const r = reportsData.find(r=>r.id===id); if(r) { document.getElementById('reportId').value = r.id; document.getElementById('reportTitle').value = r.title; document.getElementById('reportPeriod').value = r.period; document.getElementById('reportContent').value = r.content; openModal('reportModal'); } }
 async function saveReport() { let id = document.getElementById('reportId').value; let data = { title: document.getElementById('reportTitle').value, period: document.getElementById('reportPeriod').value, content: document.getElementById('reportContent').value, department_id: 1 }; if(!data.title||!data.content) { showToast('Title and content required',true); return; } let res = id ? await apiCall('update_report.php','POST',{...data,id:parseInt(id)}) : await apiCall('add_report.php','POST',data); if(res.success) { showToast(id ? 'Report updated' : 'Report added'); closeModal('reportModal'); loadReports(); loadDashboard(); } else showToast(res.message || 'Failed', true); }
 
-// ==================== SOFT DELETE REPORT ====================
+// ==================== SOFT DELETE REPORT (FIXED) ====================
 async function deleteReport(id) { 
     if(confirm('Delete this report? It will be hidden from your view.')) { 
         let res = await apiCall('delete_report.php', 'POST', { report_id: id, user_id: 1, is_admin: 1 }); 

@@ -18,18 +18,19 @@ try {
 }
 
 $conversation_id = isset($_GET['conversation_id']) ? intval($_GET['conversation_id']) : 0;
-$user_id = isset($_GET['user_id']) ? intval($_GET['user_id']) : 1;
+$user_id = isset($_GET['user_id']) ? intval($_GET['user_id']) : 0;
 
-if ($conversation_id === 0) {
-    echo json_encode(["success" => false, "message" => "Missing conversation_id", "data" => []]);
+if ($conversation_id === 0 || $user_id === 0) {
+    echo json_encode(["success" => false, "message" => "Missing parameters", "data" => []]);
     exit();
 }
 
-// Mark messages as read
+// Mark messages as read for this user
 $markRead = $pdo->prepare("UPDATE messages SET is_read = 1, read_at = NOW() 
                           WHERE conversation_id = ? AND receiver_id = ? AND is_read = 0");
 $markRead->execute([$conversation_id, $user_id]);
 
+// Get messages that are not deleted for this user
 $query = "
     SELECT 
         m.id,
@@ -38,22 +39,28 @@ $query = "
         m.receiver_id,
         m.message,
         m.is_read,
+        m.read_at,
+        m.status,
         m.created_at,
+        m.sender_deleted,
+        m.receiver_deleted,
         u_sender.name as sender_name,
         d_sender.name as sender_department,
-        CASE WHEN m.sender_id = ? THEN 'admin' ELSE 'user' END as sender_type
+        u_receiver.name as receiver_name,
+        d_receiver.name as receiver_department
     FROM messages m
     JOIN users u_sender ON m.sender_id = u_sender.id
     LEFT JOIN departments d_sender ON u_sender.department_id = d_sender.id
+    JOIN users u_receiver ON m.receiver_id = u_receiver.id
+    LEFT JOIN departments d_receiver ON u_receiver.department_id = d_receiver.id
     WHERE m.conversation_id = ?
     AND ((m.sender_id = ? AND m.sender_deleted = 0) OR (m.receiver_id = ? AND m.receiver_deleted = 0))
     ORDER BY m.created_at ASC
 ";
 
 $stmt = $pdo->prepare($query);
-$stmt->execute([$user_id, $conversation_id, $user_id, $user_id]);
+$stmt->execute([$conversation_id, $user_id, $user_id]);
 $messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 echo json_encode(["success" => true, "data" => $messages]);
-exit();
 ?>

@@ -18,7 +18,7 @@ try {
     $pdo = new PDO("mysql:host=" . $host . ";dbname=" . $db_name . ";charset=utf8mb4", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch(PDOException $e) {
-    echo json_encode(["success" => false, "message" => "Database connection failed"]);
+    echo json_encode(["success" => false, "message" => "Database connection failed: " . $e->getMessage()]);
     exit();
 }
 
@@ -29,22 +29,28 @@ if (!$input) {
 }
 
 $report_id = isset($input['report_id']) ? intval($input['report_id']) : (isset($input['id']) ? intval($input['id']) : 0);
-$user_id = isset($input['user_id']) ? intval($input['user_id']) : 1;
-$is_admin = isset($input['is_admin']) ? intval($input['is_admin']) : 1;
+$user_id = isset($input['user_id']) ? intval($input['user_id']) : 0;
+$is_admin = isset($input['is_admin']) ? intval($input['is_admin']) : 0;
 
 if ($report_id === 0) {
     echo json_encode(["success" => false, "message" => "Missing report_id"]);
     exit();
 }
 
+// Ensure columns exist
+$pdo->exec("ALTER TABLE reports ADD COLUMN IF NOT EXISTS deleted_by_admin TINYINT DEFAULT 0");
+$pdo->exec("ALTER TABLE reports ADD COLUMN IF NOT EXISTS deleted_by_department TINYINT DEFAULT 0");
+$pdo->exec("ALTER TABLE reports ADD COLUMN IF NOT EXISTS deleted_at DATETIME NULL");
+
 if ($is_admin === 1) {
+    // Admin delete - only set deleted_by_admin
     $update = $pdo->prepare("UPDATE reports SET deleted_by_admin = 1, deleted_at = NOW() WHERE id = ?");
     $update->execute([$report_id]);
 } else {
+    // Department delete - set deleted_by_department (only hides for this department)
     $update = $pdo->prepare("UPDATE reports SET deleted_by_department = 1, deleted_at = NOW() WHERE id = ?");
     $update->execute([$report_id]);
 }
 
-echo json_encode(["success" => true, "message" => "Report deleted successfully"]);
-exit();
+echo json_encode(["success" => true, "message" => "Report deleted from your view"]);
 ?>

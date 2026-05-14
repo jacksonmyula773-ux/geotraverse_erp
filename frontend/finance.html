@@ -343,27 +343,35 @@
     async function getCurrentUserId() {
         if (currentUserId) return currentUserId;
         
-        // Try to get from session via API
-        const res = await apiCall('get_current_user.php');
-        if (res && res.success && res.data && res.data.id) {
-            currentUserId = res.data.id;
-            console.log('Got user ID from session:', currentUserId);
-            return currentUserId;
-        }
-        
-        // Fallback: Get first user from Finance department
-        const usersRes = await apiCall('get_employees.php');
-        if (usersRes.success && usersRes.data) {
-            const financeUser = usersRes.data.find(u => u.department_id === DEPARTMENT_ID && u.is_active === 1);
-            if (financeUser) {
-                currentUserId = financeUser.id;
-                console.log('Found Finance user:', currentUserId);
+        try {
+            const res = await apiCall('get_current_user.php');
+            if (res && res.success && res.data && res.data.id) {
+                currentUserId = res.data.id;
+                console.log('Got user ID from session:', currentUserId);
                 return currentUserId;
             }
+        } catch(e) {
+            console.warn('Could not get user from session:', e);
+        }
+        
+        try {
+            const usersRes = await apiCall('get_employees.php');
+            if (usersRes.success && usersRes.data) {
+                const financeUser = usersRes.data.find(u => u.department_id === DEPARTMENT_ID && u.is_active === 1);
+                if (financeUser) {
+                    currentUserId = financeUser.id;
+                    console.log('Found Finance user:', currentUserId);
+                    return currentUserId;
+                }
+            }
+        } catch(e) {
+            console.warn('Could not find finance user:', e);
         }
         
         console.error('Could not find user ID');
-        return 2; // Default fallback
+        showToast('Please login again', true);
+        setTimeout(() => { window.location.href = 'login_system.html'; }, 2000);
+        return null;
     }
     
     async function logout() { if (confirm('Logout?')) { localStorage.clear(); sessionStorage.clear(); window.location.href = 'login_system.html'; } }
@@ -480,7 +488,7 @@
             let pending = (t.type === 'income' && t.status !== 'paid') ? amount - paid : 0;
             let rowClass = t.status === 'pending' ? 'pending-row' : (t.status === 'partial' ? 'partial-row' : '');
             html += `<tr id="trans-row-${t.id}" class="${t.type === 'income' ? 'income-row' : 'expense-row'} ${rowClass} border-b">
-                <td>${t.transaction_date}</td>
+                <tr>${t.transaction_date}</td>
                 <td><span class="status-badge ${t.type === 'income' ? 'status-paid' : 'status-partial'}">${t.type}</span></td>
                 <td class="font-medium">${escapeHtml(t.source)}</td>
                 <td class="text-right ${t.type === 'income' ? 'text-green-600' : 'text-red-600'} font-bold">${formatMoney(amount)}</td>
@@ -579,10 +587,10 @@
                 let percent = b.allocated_amount > 0 ? (b.used_amount / b.allocated_amount * 100).toFixed(1) : 0;
                 let rowClass = remaining < 0 ? 'text-red-600' : (remaining < b.allocated_amount * 0.2 ? 'text-orange-600' : 'text-green-600');
                 html += `<tr><td class="text-left">${escapeHtml(b.category)}</td><td class="text-right">${formatMoney(b.allocated_amount)}</td><td class="text-right">${formatMoney(b.used_amount)}</td><td class="text-right ${rowClass}">${formatMoney(remaining)}</td>
-                         <td><div class="w-24"><div class="w-full bg-gray-200 rounded-full h-1.5"><div class="${percent < 50 ? 'progress-high' : (percent < 80 ? 'progress-medium' : 'progress-low')} h-1.5 rounded-full" style="width: ${Math.min(percent, 100)}%"></div></div><span class="text-[9px]">${percent}%</span></div></td>
+                          <td><div class="w-24"><div class="w-full bg-gray-200 rounded-full h-1.5"><div class="${percent < 50 ? 'progress-high' : (percent < 80 ? 'progress-medium' : 'progress-low')} h-1.5 rounded-full" style="width: ${Math.min(percent, 100)}%"></div></div><span class="text-[9px]">${percent}%</span></div></td>
                         </tr>`;
             }
-            html += `</tbody></table></div></div></div>`;
+            html += `</tbody>}</div></div></div>`;
         }
         html += `</div><div class="mt-5 flex gap-2"><button onclick="exportBudgetsToExcel()" class="btn-success"><i class="fas fa-file-excel mr-1"></i> Excel All</button><button onclick="exportBudgetsToPDF()" class="btn-danger"><i class="fas fa-file-pdf mr-1"></i> PDF All</button></div>`;
         
@@ -592,9 +600,9 @@
     
     function toggleDeptBudget(deptId) { const content = document.getElementById(`dept-content-${deptId}`); const icon = document.getElementById(`dept-icon-${deptId}`); if (content.classList.contains('hidden')) { content.classList.remove('hidden'); icon.style.transform = 'rotate(180deg)'; } else { content.classList.add('hidden'); icon.style.transform = 'rotate(0deg)'; } }
     function exportBudgetsToExcel() { let ws = [['Department', 'Category', 'Allocated', 'Used', 'Remaining', 'Usage %']]; allBudgets.forEach(b => { let remaining = parseFloat(b.allocated_amount || 0) - parseFloat(b.used_amount || 0); let percent = b.allocated_amount > 0 ? (b.used_amount / b.allocated_amount * 100).toFixed(1) : 0; ws.push([departmentNames[b.department_id], b.category, b.allocated_amount, b.used_amount, remaining, percent]); }); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), 'Budgets'); XLSX.writeFile(wb, `budgets_${new Date().toISOString().slice(0,10)}.xlsx`); showToast('Exported to Excel'); }
-    function exportBudgetsToPDF() { let element = document.createElement('div'); let rows = ''; for (let b of allBudgets) { let remaining = parseFloat(b.allocated_amount || 0) - parseFloat(b.used_amount || 0); let percent = b.allocated_amount > 0 ? (b.used_amount / b.allocated_amount * 100).toFixed(1) : 0; rows += `<tr><td class="px-2 py-1">${departmentNames[b.department_id]}</td><td class="px-2 py-1">${b.category}</td><td class="px-2 py-1">${formatMoney(b.allocated_amount)}</td><td class="px-2 py-1">${formatMoney(b.used_amount)}</td><td class="px-2 py-1">${formatMoney(remaining)}</td><td class="px-2 py-1">${percent}%</td></tr>`; } element.innerHTML = `<div style="padding:20px"><h1>Department Budgets Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><tr><th>Department</th><th>Category</th><th>Allocated</th><th>Used</th><th>Remaining</th><th>Usage</th></tr>${rows}?</div>`; html2pdf().set({ margin: 0.5, filename: `budgets_report.pdf` }).from(element).save(); showToast('Exported to PDF'); }
+    function exportBudgetsToPDF() { let element = document.createElement('div'); let rows = ''; for (let b of allBudgets) { let remaining = parseFloat(b.allocated_amount || 0) - parseFloat(b.used_amount || 0); let percent = b.allocated_amount > 0 ? (b.used_amount / b.allocated_amount * 100).toFixed(1) : 0; rows += `<tr><td class="px-2 py-1">${departmentNames[b.department_id]}</td><td class="px-2 py-1">${b.category}</td><td class="px-2 py-1">${formatMoney(b.allocated_amount)}</td><td class="px-2 py-1">${formatMoney(b.used_amount)}</td><td class="px-2 py-1">${formatMoney(remaining)}</td><td class="px-2 py-1">${percent}%</td></tr>`; } element.innerHTML = `<div style="padding:20px"><h1>Department Budgets Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><thead><tr><th>Department</th><th>Category</th><th>Allocated</th><th>Used</th><th>Remaining</th><th>Usage</th></tr></thead><tbody>${rows}</tbody></table></div>`; html2pdf().set({ margin: 0.5, filename: `budgets_report.pdf` }).from(element).save(); showToast('Exported to PDF'); }
     
-    // ==================== MESSAGES (FULLY FIXED) ====================
+    // ==================== MESSAGES (FIXED WITH SOFT DELETE) ====================
     async function loadMessages(highlightId = null) {
         const userId = await getCurrentUserId();
         if (!userId) {
@@ -651,8 +659,17 @@
         
         if (confirm('Delete this conversation? This will only hide it from your view.')) {
             const res = await apiCall('delete_conversation.php', 'POST', { conversation_id: conversationId, user_id: userId });
-            if (res && res.success) { showToast('Conversation deleted from your view'); await loadMessages(); if (currentConversationId === conversationId) { closeModal('chatModal'); currentConversationId = null; } }
-            else showToast(res?.message || 'Failed', true);
+            if (res && res.success) { 
+                showToast('Conversation deleted from your view'); 
+                messagesData = messagesData.filter(c => c.id !== conversationId);
+                await loadMessages(); 
+                if (currentConversationId === conversationId) { 
+                    closeModal('chatModal'); 
+                    currentConversationId = null; 
+                } 
+            } else { 
+                showToast(res?.message || 'Failed', true); 
+            }
         }
     }
     
@@ -662,8 +679,13 @@
         
         if (confirm('Delete this message? It will only be hidden from your view.')) {
             const res = await apiCall('delete_message.php', 'POST', { message_id: messageId, user_id: userId });
-            if (res && res.success) { showToast('Message deleted from your view'); if (currentConversationId) await loadChatMessages(currentConversationId); await loadMessages(); }
-            else showToast(res?.message || 'Failed', true);
+            if (res && res.success) { 
+                showToast('Message deleted from your view'); 
+                if (currentConversationId) await loadChatMessages(currentConversationId); 
+                await loadMessages(); 
+            } else { 
+                showToast(res?.message || 'Failed', true); 
+            }
         }
     }
     
@@ -689,8 +711,14 @@
                 message: msg.trim(),
                 subject: 'Message from Finance'
             });
-            if (res && res.success) { showToast('✅ Message sent successfully'); closeModal('msgModal'); document.getElementById('msgContent').value = ''; await loadMessages(); }
-            else { showToast('❌ ' + (res?.message || 'Failed'), true); }
+            if (res && res.success) { 
+                showToast('✅ Message sent successfully'); 
+                closeModal('msgModal'); 
+                document.getElementById('msgContent').value = ''; 
+                await loadMessages(); 
+            } else { 
+                showToast('❌ ' + (res?.message || 'Failed'), true); 
+            }
         } catch (error) { showToast('❌ Network error', true); }
         finally { sendBtn.innerHTML = originalText; sendBtn.disabled = false; }
     }
@@ -711,7 +739,6 @@
             const msgs = res.data;
             let chatHtml = '';
             
-            // Get other department name for title
             const conv = messagesData.find(c => c.id === conversationId);
             let otherDeptName = "Department";
             if (conv) {
@@ -749,7 +776,6 @@
                 chatArea.scrollTop = chatArea.scrollHeight;
             }
             
-            // Mark messages as read
             await apiCall('mark_messages_read.php', 'POST', { conversation_id: conversationId, user_id: userId });
             await loadMessages();
         } else {
@@ -788,41 +814,71 @@
         finally { sendBtn.innerHTML = originalText; sendBtn.disabled = false; }
     }
     
-    // ==================== REPORTS SECTION ====================
-    async function loadReports(highlightId = null) {
-        const res = await apiCall('get_reports.php');
-        reportsData = res.success ? res.data.filter(r => r.department_id === DEPARTMENT_ID || r.department_id === null) : [];
-        
-        let html = `<div class="flex flex-wrap justify-between items-center gap-3 mb-4">
-            <h2 class="text-xl font-bold"><i class="fas fa-chart-line text-purple-600 mr-2"></i>Reports (${reportsData.length})</h2>
-            <div class="flex gap-2 flex-wrap">
-                <button onclick="openModal('reportModal')" class="btn-primary"><i class="fas fa-plus mr-1"></i> Add Report</button>
-                <button onclick="exportAllReportsToExcel()" class="btn-success"><i class="fas fa-file-excel mr-1"></i> Excel All</button>
-                <button onclick="exportAllReportsToPDF()" class="btn-danger"><i class="fas fa-file-pdf mr-1"></i> PDF All</button>
-            </div>
+// ==================== REPORTS SECTION (FIXED) ====================
+async function loadReports(highlightId = null) {
+    // IMPORTANT: Pass department_id to get ONLY reports for Finance department
+    const res = await apiCall(`get_reports.php?department_id=${DEPARTMENT_ID}`);
+    reportsData = res.success ? res.data : [];
+    
+    let html = `<div class="flex flex-wrap justify-between items-center gap-3 mb-4">
+        <h2 class="text-xl font-bold"><i class="fas fa-chart-line text-purple-600 mr-2"></i>Reports (${reportsData.length})</h2>
+        <div class="flex gap-2 flex-wrap">
+            <button onclick="openModal('reportModal')" class="btn-primary"><i class="fas fa-plus mr-1"></i> Add Report</button>
+            <button onclick="exportAllReportsToExcel()" class="btn-success"><i class="fas fa-file-excel mr-1"></i> Excel All</button>
+            <button onclick="exportAllReportsToPDF()" class="btn-danger"><i class="fas fa-file-pdf mr-1"></i> PDF All</button>
         </div>
-        <div class="report-grid" id="reportsGrid"></div>`;
-        document.getElementById('reportsPage').innerHTML = html;
-        
-        if (reportsData.length === 0) { document.getElementById('reportsGrid').innerHTML = '<div class="col-span-2 text-center py-8 text-gray-400">No reports found</div>'; return; }
-        
-        let reportsHtml = '';
-        for (let r of reportsData) {
-            reportsHtml += `<div class="report-card" id="report-card-${r.id}">
-                <div class="flex justify-between items-start"><h4 class="font-semibold text-sm">${escapeHtml(r.title)}</h4><span class="text-xs ${r.status==='sent'?'text-green-600':'text-yellow-600'}">${r.status}</span></div>
-                <p class="text-xs text-gray-500 mt-1">${r.period} · ${formatDate(r.created_at)}</p>
-                <div class="text-xs text-gray-600 mt-1">${escapeHtml(r.content.substring(0,100))}${r.content.length>100?'...':''}</div>
-                <div class="flex gap-2 mt-3">
-                    <button onclick="viewReportDetail(${r.id})" class="action-btn view"><i class="fas fa-eye mr-1"></i>View</button>
-                    <button onclick="editReportDetail(${r.id})" class="action-btn edit"><i class="fas fa-edit mr-1"></i>Edit</button>
-                    <button onclick="deleteReportDetail(${r.id})" class="action-btn delete"><i class="fas fa-trash mr-1"></i>Delete</button>
-                </div>
-            </div>`;
-        }
-        document.getElementById('reportsGrid').innerHTML = reportsHtml;
-        if (highlightId) { const el = document.getElementById(`report-card-${highlightId}`); if(el) { el.classList.add('search-highlight'); el.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => el.classList.remove('search-highlight'), 2000); } }
+    </div>
+    <div class="report-grid" id="reportsGrid"></div>`;
+    document.getElementById('reportsPage').innerHTML = html;
+    
+    if (reportsData.length === 0) { 
+        document.getElementById('reportsGrid').innerHTML = '<div class="col-span-2 text-center py-8 text-gray-400">No reports found</div>'; 
+        return; 
     }
     
+    let reportsHtml = '';
+    for (let r of reportsData) {
+        reportsHtml += `<div class="report-card" id="report-card-${r.id}">
+            <div class="flex justify-between items-start"><h4 class="font-semibold text-sm">${escapeHtml(r.title)}</h4><span class="text-xs ${r.status==='sent'?'text-green-600':'text-yellow-600'}">${r.status}</span></div>
+            <p class="text-xs text-gray-500 mt-1">${r.period} · ${formatDate(r.created_at)}</p>
+            <div class="text-xs text-gray-600 mt-1">${escapeHtml(r.content.substring(0,100))}${r.content.length>100?'...':''}</div>
+            <div class="flex gap-2 mt-3">
+                <button onclick="viewReportDetail(${r.id})" class="action-btn view"><i class="fas fa-eye mr-1"></i>View</button>
+                <button onclick="editReportDetail(${r.id})" class="action-btn edit"><i class="fas fa-edit mr-1"></i>Edit</button>
+                <button onclick="deleteReportDetail(${r.id})" class="action-btn delete"><i class="fas fa-trash mr-1"></i>Delete</button>
+            </div>
+        </div>`;
+    }
+    document.getElementById('reportsGrid').innerHTML = reportsHtml;
+    if (highlightId) { 
+        const el = document.getElementById(`report-card-${highlightId}`); 
+        if(el) { 
+            el.classList.add('search-highlight'); 
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
+            setTimeout(() => el.classList.remove('search-highlight'), 2000); 
+        } 
+    }
+}
+
+async function deleteReportDetail(id) { 
+    const userId = await getCurrentUserId(); 
+    if(confirm('Delete this report? It will only be hidden from your view.')) { 
+        const res = await apiCall('delete_report.php','POST',{
+            report_id: id, 
+            user_id: userId, 
+            is_admin: 0  // 0 = department delete (Finance)
+        }); 
+        if(res.success) { 
+            showToast('Report deleted from your view'); 
+            // Remove from local array and reload
+            reportsData = reportsData.filter(r => r.id !== id);
+            loadReports(); 
+            loadDashboard(); 
+        } else { 
+            showToast(res.message || 'Failed to delete', true); 
+        }
+    } 
+}    
     function viewReportDetail(id) { 
         const r = reportsData.find(r => r.id === id); 
         if(r) { 
@@ -851,7 +907,26 @@
     
     function editReportDetail(id) { const r = reportsData.find(r => r.id === id); if(r) { document.getElementById('reportId').value = r.id; document.getElementById('reportTitle').value = r.title; document.getElementById('reportPeriod').value = r.period; document.getElementById('reportContent').value = r.content; document.getElementById('reportFileNameDisplay').classList.add('hidden'); currentReportFile = null; openModal('reportModal'); } }
     async function saveReport() { let id = document.getElementById('reportId').value; let data = { title: document.getElementById('reportTitle').value, period: document.getElementById('reportPeriod').value, content: document.getElementById('reportContent').value, department_id: DEPARTMENT_ID }; if(!data.title||!data.content) { showToast('Title and content required',true); return; } let res = id ? await apiCall('update_report.php','POST',{...data,id:parseInt(id)}) : await apiCall('add_report.php','POST',data); if(res.success) { showToast(id ? 'Report updated' : 'Report added'); closeModal('reportModal'); loadReports(); loadDashboard(); } else showToast(res.message || 'Failed', true); }
-    async function deleteReportDetail(id) { const userId = await getCurrentUserId(); if(confirm('Delete this report? This will only hide it from your view.')) { let res = await apiCall('delete_report.php','POST',{report_id: id, user_id: userId, is_admin: 0}); if(res.success) { showToast('Report deleted from your view'); loadReports(); loadDashboard(); } else showToast(res.message || 'Failed', true); } }
+    
+    async function deleteReportDetail(id) { 
+        const userId = await getCurrentUserId(); 
+        if(confirm('Delete this report? It will only be hidden from your view.')) { 
+            const res = await apiCall('delete_report.php','POST',{
+                report_id: id, 
+                user_id: userId, 
+                is_admin: 0
+            }); 
+            if(res.success) { 
+                showToast('Report deleted from your view'); 
+                reportsData = reportsData.filter(r => r.id !== id);
+                loadReports(); 
+                loadDashboard(); 
+            } else { 
+                showToast(res.message || 'Failed', true); 
+            }
+        } 
+    }
+    
     function exportSingleReportExcel(reportId) { const r = reportsData.find(r => r.id === reportId); if(r) { let ws = [['Title', 'Period', 'Content', 'Created']]; ws.push([r.title, r.period, r.content, r.created_at]); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), 'Report'); XLSX.writeFile(wb, `report_${r.id}.xlsx`); showToast('Exported to Excel'); } }
     function exportSingleReportPDF(reportId) { const r = reportsData.find(r => r.id === reportId); if(r) { let element = document.createElement('div'); element.innerHTML = `<div style="padding:20px"><h1 style="color:#059669">${escapeHtml(r.title)}</h1><p><strong>Period:</strong> ${r.period}</p><p><strong>Created:</strong> ${formatDate(r.created_at)}</p><hr/><div class="bg-gray-100 p-3 rounded whitespace-pre-wrap" style="background:#1e1e2f; color:#f1f5f9;">${escapeHtml(r.content)}</div><p>Generated: ${new Date().toLocaleString()}</p></div>`; html2pdf().set({ margin: 0.5, filename: `report_${r.id}.pdf` }).from(element).save(); showToast('Exported to PDF'); } }
     function exportAllReportsToExcel() { let ws = [['ID', 'Title', 'Period', 'Content', 'Created']]; reportsData.forEach(r => ws.push([r.id, r.title, r.period, r.content, r.created_at])); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), 'Reports'); XLSX.writeFile(wb, `reports_${new Date().toISOString().slice(0,10)}.xlsx`); showToast('All reports exported to Excel'); }

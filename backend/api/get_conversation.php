@@ -1,13 +1,8 @@
 <?php
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST, OPTIONS');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
-
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
-}
 
 $host = "localhost";
 $db_name = "geotraverse_erp";
@@ -18,33 +13,58 @@ try {
     $pdo = new PDO("mysql:host=" . $host . ";dbname=" . $db_name . ";charset=utf8mb4", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch(PDOException $e) {
-    echo json_encode(["success" => false, "message" => "Database connection failed"]);
+    echo json_encode(["success" => false, "message" => "Database connection failed", "data" => []]);
     exit();
 }
 
-$input = json_decode(file_get_contents("php://input"), true);
-if (!$input) {
-    echo json_encode(["success" => false, "message" => "Invalid request data"]);
+$user_id = isset($_GET['user_id']) ? intval($_GET['user_id']) : 0;
+
+if ($user_id === 0) {
+    echo json_encode(["success" => false, "message" => "Missing user_id", "data" => []]);
     exit();
 }
 
-$conversation_id = isset($input['conversation_id']) ? intval($input['conversation_id']) : 0;
-$user_id = isset($input['user_id']) ? intval($input['user_id']) : 1;
+// Get conversations where user is involved and messages are not deleted for this user
+$query = "
+    SELECT 
+        c.id,
+        c.subject,
+        c.created_at,
+        c.updated_at,
+        c.user_id,
+        c.admin_id,
+        u1.name as user_name,
+        u1.department_id as user_department_id,
+        d1.name as user_department_name,
+        u2.name as admin_name,
+        u2.department_id as admin_department_id,
+        d2.name as admin_department_name,
+        (SELECT message FROM messages 
+         WHERE conversation_id = c.id 
+         AND ((sender_id = ? AND sender_deleted = 0) OR (receiver_id = ? AND receiver_deleted = 0))
+         ORDER BY created_at DESC LIMIT 1) as last_message,
+        (SELECT created_at FROM messages 
+         WHERE conversation_id = c.id 
+         AND ((sender_id = ? AND sender_deleted = 0) OR (receiver_id = ? AND receiver_deleted = 0))
+         ORDER BY created_at DESC LIMIT 1) as last_message_time,
+        (SELECT COUNT(*) FROM messages 
+         WHERE conversation_id = c.id 
+         AND receiver_id = ? 
+         AND is_read = 0 
+         AND receiver_deleted = 0) as unread_count
+    FROM conversations c
+    LEFT JOIN users u1 ON c.user_id = u1.id
+    LEFT JOIN departments d1 ON u1.department_id = d1.id
+    LEFT JOIN users u2 ON c.admin_id = u2.id
+    LEFT JOIN departments d2 ON u2.department_id = d2.id
+    WHERE (c.user_id = ? OR c.admin_id = ?)
+    AND c.status = 'active'
+    ORDER BY c.updated_at DESC
+";
 
-if ($conversation_id === 0) {
-    echo json_encode(["success" => false, "message" => "Missing conversation_id"]);
-    exit();
-}
+$stmt = $pdo->prepare($query);
+$stmt->execute([$user_id, $user_id, $user_id, $user_id, $user_id, $user_id, $user_id]);
+$conversations = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Soft delete all messages in this conversation for this user
-$update1 = $pdo->prepare("UPDATE messages SET sender_deleted = 1, deleted_at = NOW() 
-                         WHERE conversation_id = ? AND sender_id = ?");
-$update1->execute([$conversation_id, $user_id]);
-
-$update2 = $pdo->prepare("UPDATE messages SET receiver_deleted = 1, deleted_at = NOW() 
-                         WHERE conversation_id = ? AND receiver_id = ?");
-$update2->execute([$conversation_id, $user_id]);
-
-echo json_encode(["success" => true, "message" => "Conversation deleted successfully"]);
-exit();
+echo json_encode(["success" => true, "data" => $conversations]);
 ?>
