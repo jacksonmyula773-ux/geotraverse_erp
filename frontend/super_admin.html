@@ -209,6 +209,7 @@
         body.dark-mode .report-meta {
             color: #ffffff;
         }
+        
     </style>
 </head>
 <body>
@@ -1240,11 +1241,8 @@ async function sendChatMessage() {
 
 // ==================== REPORTS (BEAUTIFUL DESIGN) ====================
 async function loadReports(highlightId = null) {
-    // For Super Admin (department_id = 1)
     const departmentId = 1;
     const res = await apiCall(`get_reports.php?department_id=${departmentId}`);
-    
-    console.log('Reports API response for Super Admin:', res);
     
     if (res.success && res.data) {
         reportsData = res.data.sort((a,b) => b.id - a.id);
@@ -1263,11 +1261,11 @@ async function loadReports(highlightId = null) {
             <button onclick="exportAllReportsToPDF()" class="btn-danger"><i class="fas fa-file-pdf mr-1"></i> PDF All</button>
         </div>
     </div>
-    <div class="report-grid" id="reportsGrid"></div>`;
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="reportsGrid"></div>`;
     document.getElementById('reportsPage').innerHTML = html;
     
     if (reportsData.length === 0) { 
-        document.getElementById('reportsGrid').innerHTML = '<div class="col-span-2 text-center py-8 text-gray-400 bg-white rounded-xl">No reports found. Click "Add Report" to create one.</div>'; 
+        document.getElementById('reportsGrid').innerHTML = '<div class="col-span-3 text-center py-12 text-gray-400 bg-white rounded-xl">No reports found</div>'; 
         return; 
     }
     
@@ -1276,28 +1274,41 @@ async function loadReports(highlightId = null) {
         const isUnviewed = (r.is_viewed_by_admin === 0 || r.is_viewed_by_admin === null) && r.department_id !== 1;
         const deptIcon = departmentIcons[r.department_id] || 'fa-building';
         const deptColor = departmentColors[r.department_id] || '#0f74ba';
+        const deptName = departmentNames[r.department_id] || 'Department';
         
-        reportsHtml += `<div class="report-card ${isUnviewed ? 'report-unviewed' : ''}" id="report-card-${r.id}" onclick="viewReportDetails(${r.id})">
-            ${isUnviewed ? '<div class="new-badge" onclick="event.stopPropagation(); markReportAsViewed(' + r.id + ')">!</div>' : ''}
-            <div class="flex justify-between items-start mb-2">
-                <div class="flex items-center gap-2">
-                    <div class="dept-icon w-8 h-8 rounded-lg flex items-center justify-center" style="background: ${deptColor}20; color: ${deptColor}">
+        reportsHtml += `<div class="bg-white rounded-xl border border-gray-200 hover:shadow-lg transition-all cursor-pointer relative ${isUnviewed ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''}" 
+             style="min-height: 20px; display: flex; flex-direction: column;"
+             id="report-card-${r.id}" 
+             onclick="viewReportDetails(${r.id})">
+            
+            ${isUnviewed ? '<div class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold z-10 shadow-md">!</div>' : ''}
+            
+            <div class="flex justify-between items-start p-4 pb-2">
+                <div class="flex items-center gap-2 flex-1">
+                    <div class="dept-icon w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background: ${deptColor}20; color: ${deptColor}">
                         <i class="fas ${deptIcon} text-sm"></i>
                     </div>
-                    <div>
-                        <h4 class="font-semibold text-sm">${escapeHtml(r.title)}</h4>
-                        <p class="text-xs text-gray-500">${departmentNames[r.department_id] || 'Admin'} · ${r.period}</p>
+                    <div class="flex-1 min-w-0">
+                        <h4 class="font-semibold text-sm truncate" title="${escapeHtml(r.title)}">${escapeHtml(r.title)}</h4>
+                        <p class="text-xs text-gray-500">${deptName} · ${r.period}</p>
                     </div>
                 </div>
-                <span class="status-badge ${r.status === 'sent' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'} text-xs">${r.status === 'sent' ? 'Sent' : 'Draft'}</span>
+                <span class="status-badge ${r.status === 'sent' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'} text-xs px-2 py-1 rounded-full flex-shrink-0 ml-2">${r.status === 'sent' ? 'Sent' : 'Draft'}</span>
             </div>
-            <div class="report-preview text-xs text-gray-600 line-clamp-2 mt-2">${escapeHtml(r.content.substring(0, 120))}${r.content.length > 120 ? '...' : ''}</div>
-            <div class="flex justify-between items-center mt-3 pt-2 border-t border-gray-100">
+            
+            <!-- CONTENT PREVIEW - LINE CLAMP 3 (KATA BAADA YA MISTARI 3) -->
+            <div class="px-4 py-2 flex-1">
+                <div class="text-xs text-gray-600 leading-relaxed" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; word-wrap: break-word;">
+                    ${escapeHtml(r.content)}
+                </div>
+            </div>
+            
+            <div class="flex justify-between items-center px-4 py-3 mt-2 border-t border-gray-100">
                 <span class="text-xs text-gray-400"><i class="far fa-calendar-alt mr-1"></i>${formatDate(r.created_at)}</span>
                 <div class="flex gap-2">
-                    <button onclick="event.stopPropagation(); viewReportDetails(${r.id})" class="action-btn view px-2 py-1 text-xs"><i class="fas fa-eye"></i></button>
-                    <button onclick="event.stopPropagation(); editReport(${r.id})" class="action-btn edit px-2 py-1 text-xs"><i class="fas fa-edit"></i></button>
-                    <button onclick="event.stopPropagation(); deleteReport(${r.id})" class="action-btn delete px-2 py-1 text-xs"><i class="fas fa-trash"></i></button>
+                    <button onclick="event.stopPropagation(); viewReportDetails(${r.id})" class="action-btn view text-xs px-2 py-1 rounded" title="View"><i class="fas fa-eye"></i></button>
+                    <button onclick="event.stopPropagation(); editReport(${r.id})" class="action-btn edit text-xs px-2 py-1 rounded" title="Edit"><i class="fas fa-edit"></i></button>
+                    <button onclick="event.stopPropagation(); deleteReport(${r.id})" class="action-btn delete text-xs px-2 py-1 rounded" title="Delete"><i class="fas fa-trash"></i></button>
                 </div>
             </div>
         </div>`;
@@ -1306,9 +1317,9 @@ async function loadReports(highlightId = null) {
     if (highlightId) { 
         const el = document.getElementById(`report-card-${highlightId}`); 
         if(el) { 
-            el.classList.add('search-highlight'); 
+            el.classList.add('ring-2', 'ring-yellow-400', 'shadow-lg'); 
             el.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
-            setTimeout(() => el.classList.remove('search-highlight'), 2000); 
+            setTimeout(() => el.classList.remove('ring-2', 'ring-yellow-400'), 2000); 
         } 
     }
 }
