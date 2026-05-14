@@ -392,20 +392,28 @@ async function logout() { if (confirm('Logout?')) { if(refreshInterval) clearInt
 
 async function loadDepartmentsForDropdowns() {
     const res = await apiCall('get_departments.php');
+    let departments = [];
+    
     if (res.success && res.data) {
-        departmentsList = res.data.filter(d => d.id !== DEPARTMENT_ID);
+        departments = res.data.filter(d => d.id !== DEPARTMENT_ID);
     } else {
-        departmentsList = [
-            { id: 1, name: "Super Admin" }, { id: 3, name: "Sales & Marketing" }, { id: 4, name: "Manager" },
-            { id: 5, name: "Secretary" }, { id: 6, name: "Bricks & Timber" }, { id: 7, name: "Aluminium" },
-            { id: 8, name: "Town Planning" }, { id: 9, name: "Architectural" }, { id: 10, name: "Survey" },
+        departments = [
+            { id: 3, name: "Sales & Marketing" }, { id: 4, name: "Manager" },
+            { id: 5, name: "Secretary" }, { id: 6, name: "Bricks & Timber" },
+            { id: 7, name: "Aluminium" }, { id: 8, name: "Town Planning" },
+            { id: 9, name: "Architectural" }, { id: 10, name: "Survey" },
             { id: 11, name: "Construction" }, { id: 12, name: "Hatimiliki" }
         ];
     }
     
+    // Add "Super Admin" as a special option (not from departments table)
+    // Super Admin will be handled separately in send_message.php
     const msgTo = document.getElementById('msgTo');
     if (msgTo) {
-        msgTo.innerHTML = '<option value="">Select Department</option>' + departmentsList.map(d => `<option value="${d.id}">${escapeHtml(d.name)}</option>`).join('');
+        msgTo.innerHTML = '<option value="">Select Department</option>' + 
+            '<option value="1" style="background:#f0f0f0; font-weight:bold;">👑 Super Admin</option>' +
+            '<option disabled>──────────</option>' +
+            departments.map(d => `<option value="${d.id}">${escapeHtml(d.name)}</option>`).join('');
     }
 }
 
