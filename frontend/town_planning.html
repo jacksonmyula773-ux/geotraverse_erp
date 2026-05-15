@@ -28,24 +28,52 @@
         .nav-item.active i { color: #a5b4fc; }
         .nav-item:hover:not(.active) { background: rgba(255,255,255,0.08); }
         
-        .stat-card { transition: all 0.3s ease; background: white; border-radius: 20px; border: 1px solid #e5e7eb; cursor: pointer; }
+        .stat-card { transition: all 0.3s ease; background: white; border-radius: 20px; border: 1px solid #e5e7eb; cursor: pointer; text-align: center; padding: 20px; }
         .stat-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -12px rgba(0,0,0,0.15); border-color: #4338ca; }
+        .stat-number { font-size: 28px; font-weight: 700; margin-top: 8px; margin-bottom: 4px; }
+        .stat-label { font-size: 12px; font-weight: 500; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-icon { width: 48px; height: 48px; border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto; }
         
-        .btn-primary { background: linear-gradient(135deg, #4338ca, #3730a3); transition: all 0.2s; }
-        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 5px 15px rgba(67,56,202,0.3); }
+        .btn-primary { background: linear-gradient(135deg, #4338ca, #3730a3); transition: all 0.2s; padding: 10px 18px; border-radius: 10px; border: none; cursor: pointer; font-weight: 500; color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(67,56,202,0.4); }
+        .btn-success { background: linear-gradient(135deg, #10b981, #059669); transition: all 0.2s; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 500; color: white; }
+        .btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); transition: all 0.2s; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 500; color: white; }
+        .btn-warning { background: linear-gradient(135deg, #f59e0b, #d97706); transition: all 0.2s; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 500; color: white; }
+        .btn-purple { background: linear-gradient(135deg, #8b5cf6, #7c3aed); transition: all 0.2s; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 500; color: white; }
+        .btn-add { background: #4338ca; color: white; }
+        .btn-add:hover { background: #3730a3; transform: translateY(-2px); }
+        .btn-excel { background: #10b981; color: white; }
+        .btn-excel:hover { background: #059669; transform: translateY(-2px); }
+        .btn-pdf { background: #ef4444; color: white; }
+        .btn-pdf:hover { background: #dc2626; transform: translateY(-2px); }
+        .btn-send { background: #8b5cf6; color: white; }
+        .btn-send:hover { background: #7c3aed; transform: translateY(-2px); }
+        .btn-view { background: #3b82f6; color: white; }
+        .btn-view:hover { background: #2563eb; transform: translateY(-2px); }
+        .btn-edit { background: #f59e0b; color: white; }
+        .btn-edit:hover { background: #d97706; transform: translateY(-2px); }
+        .btn-delete { background: #ef4444; color: white; }
+        .btn-delete:hover { background: #dc2626; transform: translateY(-2px); }
         
-        .toast-notification { position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, #4338ca, #3730a3); color: white; padding: 10px 16px; border-radius: 10px; z-index: 1000; animation: slideInRight 0.3s ease; font-size: 12px; }
-        .toast-notification.error { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .toast-notification { position: fixed; bottom: 20px; right: 20px; background: #10b981; color: white; padding: 10px 16px; border-radius: 10px; z-index: 1000; animation: slideInRight 0.3s ease; font-size: 12px; }
+        .toast-notification.error { background: #ef4444; }
         
         .main-content { margin-left: 280px; }
-        @media (max-width: 768px) { .sidebar { left: -280px; transition: left 0.3s; } .sidebar.mobile-open { left: 0; } .mobile-menu-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 99; display: none; } .mobile-menu-overlay.open { display: block; } .main-content { margin-left: 0; } }
+        @media (max-width: 768px) { .sidebar { left: -280px; } .sidebar.mobile-open { left: 0; } .main-content { margin-left: 0; } }
         
         .scroll-top { position: fixed; bottom: 20px; right: 20px; background: #4338ca; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: all 0.3s; z-index: 99; color: white; }
         .scroll-top.visible { opacity: 1; }
         
-        .color-option { transition: all 0.2s; cursor: pointer; border: 2px solid transparent; width: 36px; height: 36px; border-radius: 50%; }
-        .color-option:hover { transform: scale(1.05); }
+        .color-option { transition: all 0.2s; cursor: pointer; border: 2px solid transparent; width: 36px; height: 36px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin: 5px; }
+        .color-option:hover { transform: scale(1.1); }
         .color-option.selected { border-color: white; box-shadow: 0 0 0 2px #333; }
+        
+        .status-pending { background: #fef3c7; color: #d97706; }
+        .status-progress { background: #dbeafe; color: #2563eb; }
+        .status-completed { background: #d1fae5; color: #059669; }
+        .status-approved { background: #e9d5ff; color: #7e22ce; }
+        .status-paid { background: #d1fae5; color: #059669; }
+        .status-partial { background: #fef3c7; color: #d97706; }
         
         .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
         table { font-size: 13px; width: 100%; }
@@ -79,7 +107,7 @@
         body.dark-mode .search-result-item { border-bottom-color: #334155; }
         body.dark-mode .search-result-item:hover { background-color: #334155; }
         
-        .dropdown-content { position: absolute; right: 0; margin-top: 4px; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 100; min-width: 160px; border: 1px solid #e5e7eb; max-height: 300px; overflow-y: auto; }
+        .dropdown-content { position: absolute; right: 0; margin-top: 4px; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 100; min-width: 180px; border: 1px solid #e5e7eb; max-height: 300px; overflow-y: auto; }
         .dropdown-content button { display: flex; align-items: center; gap: 8px; padding: 8px 12px; font-size: 12px; width: 100%; text-align: left; }
         .dropdown-content button:hover { background-color: #f3f4f6; }
         body.dark-mode .dropdown-content { background-color: #1e293b; border-color: #334155; }
@@ -93,10 +121,10 @@
         .dark-mode .income-row { background-color: #064e3b20; }
         .dark-mode .expense-row { background-color: #7f1d1d20; }
         
-        .project-card { transition: all 0.2s; cursor: pointer; border-radius: 12px; overflow: hidden; border: 1px solid #e5e7eb; background: white; }
+        .project-card { transition: all 0.2s; cursor: pointer; border-radius: 12px; overflow: hidden; border: 1px solid #e5e7eb; background: white; position: relative; }
         .project-card:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
         .project-image { width: 100%; height: 160px; object-fit: cover; }
-        .no-image { width: 100%; height: 160px; background: #f3f4f6; display: flex; align-items: center; justify-content: center; color: #9ca3af; }
+        .no-image { width: 100%; height: 160px; background: #f3f4f6; display: flex; align-items: center; justify-content: center; color: #9ca3af; flex-direction: column; }
         
         .image-upload-area { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s; }
         .image-upload-area:hover { border-color: #4338ca; background-color: #eef2ff; }
@@ -124,6 +152,8 @@
         .chat-time { font-size: 10px; opacity: 0.7; margin-top: 4px; display: block; }
         .delete-msg-btn { background: #ef4444; color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 11px; margin-left: 8px; flex-shrink: 0; opacity: 0; transition: all 0.2s; }
         .chat-message-wrapper:hover .delete-msg-btn { opacity: 0.7; }
+        .chat-input-area { display: flex; gap: 10px; margin-top: 12px; }
+        .chat-input-area textarea { flex: 1; margin: 0; resize: none; }
         
         .report-content-view { background: #f3f4f6; padding: 16px; border-radius: 12px; white-space: pre-wrap; font-family: monospace; font-size: 13px; max-height: 300px; overflow-y: auto; }
         body.dark-mode .report-content-view { background: #0f172a; color: #e2e8f0; }
@@ -144,30 +174,16 @@
         .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 14px; font-size: 14px; border: 1.5px solid #e5e7eb; border-radius: 10px; background: white; transition: all 0.2s; }
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #4338ca; box-shadow: 0 0 0 3px rgba(67,56,202,0.1); }
         body.dark-mode .form-group input, body.dark-mode .form-group select, body.dark-mode .form-group textarea { background: #0f172a; border-color: #334155; color: #f1f5f9; }
-        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; display: inline-block; }
-        .loading-spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid #e5e7eb; border-top-color: #4338ca; border-radius: 50%; animation: spin 0.8s linear infinite; vertical-align: middle; margin-right: 5px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .amount-input { text-align: left; }
+        .search-highlight { background: #fef3c7 !important; border-left: 4px solid #f59e0b !important; transition: all 0.3s; }
+        body.dark-mode .search-highlight { background: #78350f !important; border-left-color: #fbbf24 !important; }
         
         .auto-refresh-badge { position: fixed; bottom: 10px; left: 10px; background: #1f2937; color: #60a5fa; padding: 4px 12px; border-radius: 20px; font-size: 10px; z-index: 9999; display: flex; align-items: center; gap: 6px; }
         .connection-status { position: fixed; bottom: 10px; right: 10px; background: #1f2937; color: #10b981; padding: 6px 12px; border-radius: 8px; font-size: 10px; z-index: 9999; display: flex; align-items: center; gap: 8px; }
         
-        .search-highlight { background: #fef3c7 !important; border-left: 4px solid #f59e0b !important; transition: all 0.3s; }
-        body.dark-mode .search-highlight { background: #78350f !important; border-left-color: #fbbf24 !important; }
-        
-        .btn-excel { background: #10b981; color: white; }
-        .btn-excel:hover { background: #059669; transform: translateY(-2px); }
-        .btn-pdf { background: #ef4444; color: white; }
-        .btn-pdf:hover { background: #dc2626; transform: translateY(-2px); }
-        .btn-send { background: #8b5cf6; color: white; }
-        .btn-send:hover { background: #7c3aed; transform: translateY(-2px); }
-        .btn-view { background: #3b82f6; color: white; }
-        .btn-view:hover { background: #2563eb; transform: translateY(-2px); }
-        .btn-edit { background: #f59e0b; color: white; }
-        .btn-edit:hover { background: #d97706; transform: translateY(-2px); }
-        .btn-delete { background: #ef4444; color: white; }
-        .btn-delete:hover { background: #dc2626; transform: translateY(-2px); }
-        .btn-add { background: #4338ca; color: white; }
-        .btn-add:hover { background: #3730a3; transform: translateY(-2px); }
+        .loading-spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid #e5e7eb; border-top-color: #4338ca; border-radius: 50%; animation: spin 0.8s linear infinite; vertical-align: middle; margin-right: 5px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -234,16 +250,14 @@
 </div>
 
 <!-- Add Project Modal with Image Upload -->
-<div id="projectModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-plus-circle text-indigo-600 mr-2"></i>Add Project</h3><input type="hidden" id="editProjectId"><div class="form-group"><label>Project Name *</label><input type="text" id="projectName" class="w-full"></div><div class="form-group"><label>Client Name</label><input type="text" id="projectClient" class="w-full"></div><div class="form-group"><label>Amount (TZS)</label><input type="number" id="projectAmount" class="w-full"></div><div class="form-group"><label>Location</label><input type="text" id="projectLocation" class="w-full"></div><div class="form-group"><label>Description</label><textarea id="projectDesc" rows="2" class="w-full"></textarea></div><div class="form-group"><label>Status</label><select id="projectStatus" class="w-full"><option value="pending">Pending</option><option value="in_progress">In Progress</option><option value="completed">Completed</option></select></div><div class="form-group"><label>Progress (%)</label><input type="number" id="projectProgress" class="w-full" min="0" max="100"></div><div class="form-group"><label>Start Date</label><input type="date" id="projectStartDate" class="w-full"></div><div class="form-group"><label>End Date</label><input type="date" id="projectEndDate" class="w-full"></div>
+<div id="projectModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-plus-circle text-indigo-600 mr-2"></i>Add Project</h3><input type="hidden" id="editProjectId"><div class="form-group"><label>Project Name *</label><input type="text" id="projectName" class="w-full"></div><div class="form-group"><label>Client Name</label><input type="text" id="projectClient" class="w-full"></div><div class="form-group"><label>Amount (TZS)</label><input type="text" id="projectAmount" class="w-full amount-input"></div><div class="form-group"><label>Location</label><input type="text" id="projectLocation" class="w-full"></div><div class="form-group"><label>Description</label><textarea id="projectDesc" rows="2" class="w-full"></textarea></div><div class="form-group"><label>Status</label><select id="projectStatus" class="w-full"><option value="pending">Pending</option><option value="in_progress">In Progress</option><option value="completed">Completed</option></select></div><div class="form-group"><label>Progress (%)</label><input type="number" id="projectProgress" class="w-full" min="0" max="100"></div><div class="form-group"><label>Start Date</label><input type="date" id="projectStartDate" class="w-full"></div><div class="form-group"><label>End Date</label><input type="date" id="projectEndDate" class="w-full"></div>
 <div class="form-group"><label>Project Image</label><div id="projImageUploadArea" class="image-upload-area" onclick="document.getElementById('projImageFile').click()"><i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i><p>Click to upload image (JPG, PNG, GIF, max 2MB)</p></div><input type="file" id="projImageFile" accept="image/*" class="hidden"><div id="projImagePreviewContainer" class="hidden mt-2"><img id="projImagePreview" class="w-full h-28 object-cover rounded-lg border"><button type="button" onclick="removeProjectImage()" class="mt-1 text-red-500 text-sm w-full py-1 bg-red-50 rounded">Remove Image</button></div></div>
 <div class="flex gap-3 pt-2"><button onclick="saveProject()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('projectModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
 
 <div id="viewProjectModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Project Details</h3><div id="viewProjectContent"></div><div id="viewProjButtons" class="detail-buttons"></div><button onclick="closeModal('viewProjectModal')" class="w-full bg-gray-200 py-2 rounded mt-3">Close</button></div></div>
 
-<div id="sendProjectModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-paper-plane text-indigo-600 mr-2"></i>Send Project</h3><input type="hidden" id="sendProjectId"><div class="form-group"><label>Department</label><select id="sendToDept" class="w-full"></select></div><div class="form-group"><label>Message</label><textarea id="sendProjectMessage" rows="3" class="w-full"></textarea></div><div class="flex gap-3 pt-2"><button onclick="confirmSendProject()" class="flex-1 btn-primary">Send</button><button onclick="closeModal('sendProjectModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
-
 <!-- Add Budget Transaction Modal -->
-<div id="budgetModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-wallet text-indigo-600 mr-2"></i>Add Transaction</h3><input type="hidden" id="editBudgetId"><div class="form-group"><label>Type</label><select id="budgetType" class="w-full"><option value="income">Income</option><option value="expense">Expense</option></select></div><div class="form-group"><label>Source/Category</label><input type="text" id="budgetSource" class="w-full"></div><div class="form-group"><label>Amount (TZS)</label><input type="number" id="budgetAmount" class="w-full"></div><div class="form-group"><label>Date</label><input type="date" id="budgetDate" class="w-full"></div><div class="form-group"><label>Description</label><textarea id="budgetDescription" rows="2" class="w-full"></textarea></div><div class="flex gap-3 pt-2"><button onclick="saveBudget()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('budgetModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
+<div id="budgetModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-wallet text-indigo-600 mr-2"></i>Add Transaction</h3><input type="hidden" id="editBudgetId"><div class="form-group"><label>Type</label><select id="budgetType" class="w-full"><option value="income">Income</option><option value="expense">Expense</option></select></div><div class="form-group"><label>Source/Category</label><input type="text" id="budgetSource" class="w-full"></div><div class="form-group"><label>Amount (TZS)</label><input type="text" id="budgetAmount" class="w-full amount-input"></div><div class="form-group"><label>Date</label><input type="date" id="budgetDate" class="w-full"></div><div class="form-group"><label>Description</label><textarea id="budgetDescription" rows="2" class="w-full"></textarea></div><div class="flex gap-3 pt-2"><button onclick="saveBudget()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('budgetModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
 
 <div id="viewBudgetModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Budget Details</h3><div id="viewBudgetContent"></div><button onclick="closeModal('viewBudgetModal')" class="w-full bg-gray-200 py-2 rounded mt-3">Close</button></div></div>
 
@@ -283,9 +297,26 @@ let refreshInterval = null, countdownSeconds = 5, countdownInterval = null;
 let currentProjectImageFile = null, currentEditProjectId = null;
 let activityLogs = [{ action: "Town Planning Dashboard initialized", created_at: new Date().toISOString() }];
 
+// ==================== MONEY FORMAT FUNCTION ====================
+function formatCurrency(amt) { 
+    let num = parseFloat(amt) || 0; 
+    return "TZS " + num.toLocaleString('en-US'); 
+}
+
+function parseAmount(str) { 
+    return parseFloat(String(str).replace(/,/g, '')) || 0; 
+}
+
+function formatAmountInput(input) {
+    let value = input.value.replace(/,/g, '');
+    if (!isNaN(value) && value !== '') {
+        let num = parseFloat(value);
+        if (!isNaN(num)) input.value = num.toLocaleString('en-US');
+    }
+}
+
 // Helper functions
 function showToast(msg, isError) { let t = document.createElement("div"); t.className = "toast-notification" + (isError ? " error" : ""); t.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-circle' : 'fa-check-circle'} mr-1"></i>${msg}`; document.body.appendChild(t); setTimeout(() => t.remove(), 3000); }
-function formatCurrency(amt) { return "TZS " + (parseFloat(amt) || 0).toLocaleString(); }
 function formatDate(dateStr) { if (!dateStr) return "N/A"; return new Date(dateStr).toLocaleDateString("en-GB"); }
 function escapeHtml(text) { if (!text) return ""; return text.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); }
 function addLog(action) { activityLogs.unshift({ action: action, created_at: new Date().toISOString() }); if (activityLogs.length > 100) activityLogs.pop(); }
@@ -294,6 +325,28 @@ function goToMainWebsite() { window.location.href = "index.html"; }
 function openModal(id) { document.getElementById(id).style.display = 'flex'; document.body.style.overflow = 'hidden'; }
 function closeModal(id) { document.getElementById(id).style.display = 'none'; document.body.style.overflow = 'auto'; }
 function showFullImage(src) { window.open(src, '_blank'); }
+
+// ==================== CLOSE MODAL ON OUTSIDE CLICK ====================
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('modal')) {
+        closeModal(e.target.id);
+    }
+    if (!e.target.closest('.send-dropdown')) {
+        document.querySelectorAll('.send-dropdown-content').forEach(d => d.style.display = 'none');
+    }
+});
+
+// Add event listeners for amount inputs
+document.addEventListener('DOMContentLoaded', function() {
+    const amountInputs = ['projectAmount', 'budgetAmount'];
+    amountInputs.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('input', function() { formatAmountInput(this); });
+            if (el.value) formatAmountInput(el);
+        }
+    });
+});
 
 // API Calls
 async function apiCall(endpoint, method = 'GET', data = null) {
@@ -313,14 +366,14 @@ async function loadDepartments() {
         const res = await apiCall('get_departments.php');
         if (res.success && res.data) {
             const depts = res.data.filter(d => d.id !== DEPARTMENT_ID);
-            ['chatRecipientSelect', 'sendToDept'].forEach(id => {
+            ['chatRecipientSelect'].forEach(id => {
                 const select = document.getElementById(id);
                 if (select) select.innerHTML = '<option value="">Select Department</option>' + depts.map(d => `<option value="${d.id}">${escapeHtml(d.name)}</option>`).join('');
             });
         }
     } catch(e) {
         const depts = allDepartments.filter(d => d.id !== DEPARTMENT_ID);
-        ['chatRecipientSelect', 'sendToDept'].forEach(id => {
+        ['chatRecipientSelect'].forEach(id => {
             const select = document.getElementById(id);
             if (select) select.innerHTML = '<option value="">Select Department</option>' + depts.map(d => `<option value="${d.id}">${escapeHtml(d.name)}</option>`).join('');
         });
@@ -404,30 +457,30 @@ async function renderDashboard() {
     let pending = projectsData.filter(p => p.status === "pending").length;
     
     let html = `<div class="mb-4"><h2 class="text-xl font-bold text-gray-800">Town Planning Dashboard</h2><p class="text-xs text-gray-500">Urban Planning & Financial Management</p></div>
-        <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-5">
-            <div class="stat-card p-3 cursor-pointer" onclick="showSection('projects')"><div><p class="text-gray-400 text-[9px] uppercase">Projects</p><p class="text-2xl font-bold text-indigo-600">${totalProjects}</p></div></div>
-            <div class="stat-card p-3 cursor-pointer" onclick="showSection('budget')"><div><p class="text-gray-400 text-[9px] uppercase">Total Income</p><p class="text-lg font-bold text-green-600">${formatCurrency(totalIncome).substring(0,12)}</p></div></div>
-            <div class="stat-card p-3 cursor-pointer" onclick="showSection('budget')"><div><p class="text-gray-400 text-[9px] uppercase">Total Expenses</p><p class="text-lg font-bold text-red-600">${formatCurrency(totalExpenses).substring(0,12)}</p></div></div>
-            <div class="stat-card p-3 cursor-pointer" onclick="showSection('budget')"><div><p class="text-gray-400 text-[9px] uppercase">Net Profit</p><p class="text-lg font-bold text-${netProfit>=0?'green':'red'}-600">${formatCurrency(netProfit).substring(0,12)}</p></div></div>
-            <div class="stat-card p-3 cursor-pointer" onclick="showSection('messages')"><div><p class="text-gray-400 text-[9px] uppercase">Unread</p><p class="text-2xl font-bold text-red-600">${unreadMsgs}</p></div></div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-5">
+            <div class="stat-card p-4 cursor-pointer" onclick="showSection('projects')"><div class="stat-icon bg-indigo-100 text-indigo-600 mx-auto"><i class="fas fa-tasks text-xl"></i></div><p class="stat-label">Projects</p><p class="stat-number text-indigo-600">${totalProjects}</p></div>
+            <div class="stat-card p-4 cursor-pointer" onclick="showSection('budget')"><div class="stat-icon bg-green-100 text-green-600 mx-auto"><i class="fas fa-arrow-down text-xl"></i></div><p class="stat-label">Income</p><p class="stat-number text-green-600">${formatCurrency(totalIncome)}</p></div>
+            <div class="stat-card p-4 cursor-pointer" onclick="showSection('budget')"><div class="stat-icon bg-red-100 text-red-600 mx-auto"><i class="fas fa-arrow-up text-xl"></i></div><p class="stat-label">Expenses</p><p class="stat-number text-red-600">${formatCurrency(totalExpenses)}</p></div>
+            <div class="stat-card p-4 cursor-pointer" onclick="showSection('budget')"><div class="stat-icon bg-${netProfit>=0?'green':'red'}-100 text-${netProfit>=0?'green':'red'}-600 mx-auto"><i class="fas fa-chart-line text-xl"></i></div><p class="stat-label">Net Profit</p><p class="stat-number text-${netProfit>=0?'green':'red'}-600">${formatCurrency(netProfit)}</p></div>
+            <div class="stat-card p-4 cursor-pointer" onclick="showSection('messages')"><div class="stat-icon bg-red-100 text-red-600 mx-auto"><i class="fas fa-envelope text-xl"></i></div><p class="stat-label">Unread</p><p class="stat-number text-red-600">${unreadMsgs}</p></div>
         </div>
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-5">
-            <div class="bg-white rounded-xl p-3 shadow-sm"><h3 class="text-xs font-semibold mb-2">Project Status</h3><canvas id="statusChart" height="140"></canvas></div>
-            <div class="bg-white rounded-xl p-3 shadow-sm"><h3 class="text-xs font-semibold mb-2">Budget Overview</h3><canvas id="budgetChart" height="140"></canvas></div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-5">
+            <div class="bg-white rounded-xl p-5 shadow-sm"><h3 class="font-semibold mb-4"><i class="fas fa-chart-pie text-indigo-600 mr-2"></i>Project Status</h3><canvas id="statusChart" height="200"></canvas></div>
+            <div class="bg-white rounded-xl p-5 shadow-sm"><h3 class="font-semibold mb-4"><i class="fas fa-chart-bar text-green-600 mr-2"></i>Budget Overview</h3><canvas id="budgetChart" height="200"></canvas></div>
         </div>
         <div class="grid grid-cols-3 gap-3 mb-5">
             <button onclick="showSection('projects')" class="bg-green-600 text-white py-2 rounded-lg text-sm"><i class="fas fa-plus-circle mr-2"></i>Add Project</button>
             <button onclick="showSection('budget')" class="bg-blue-600 text-white py-2 rounded-lg text-sm"><i class="fas fa-plus-circle mr-2"></i>Add Transaction</button>
             <button onclick="openModal('startChatModal')" class="bg-purple-600 text-white py-2 rounded-lg text-sm"><i class="fas fa-paper-plane mr-2"></i>Send Message</button>
         </div>
-        <div class="bg-white rounded-xl p-3 shadow-sm"><div id="activityFeed" class="space-y-1 max-h-32 overflow-y-auto">${activityLogs.slice(0,5).map(l => `<div class="text-[10px] py-1 border-b">${escapeHtml(l.action)} <span class="float-right text-gray-400">${new Date(l.created_at).toLocaleString()}</span></div>`).join('')}</div></div>`;
+        <div class="bg-white rounded-xl p-5 shadow-sm"><div id="activityFeed" class="space-y-1 max-h-32 overflow-y-auto">${activityLogs.slice(0,5).map(l => `<div class="text-[10px] py-1 border-b flex justify-between"><span>${escapeHtml(l.action)}</span><span class="text-gray-400">${new Date(l.created_at).toLocaleString()}</span></div>`).join('')}</div></div>`;
     document.getElementById("dashboardSection").innerHTML = html;
     
     let ctx1 = document.getElementById("statusChart")?.getContext("2d");
-    if (ctx1) new Chart(ctx1, { type: "doughnut", data: { labels: ["In Progress", "Completed", "Pending"], datasets: [{ data: [inProgress, completed, pending], backgroundColor: ["#f59e0b", "#10b981", "#ef4444"] }] }, options: { responsive: true, maintainAspectRatio: true } });
+    if (ctx1) new Chart(ctx1, { type: "doughnut", data: { labels: ["In Progress", "Completed", "Pending"], datasets: [{ data: [inProgress, completed, pending], backgroundColor: ["#f59e0b", "#10b981", "#ef4444"] }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom' } } } });
     
     let ctx2 = document.getElementById("budgetChart")?.getContext("2d");
-    if (ctx2) new Chart(ctx2, { type: "bar", data: { labels: ["Income", "Expenses"], datasets: [{ label: "Amount (TZS M)", data: [totalIncome/1000000, totalExpenses/1000000], backgroundColor: ["#10b981", "#ef4444"] }] }, options: { responsive: true, maintainAspectRatio: true } });
+    if (ctx2) new Chart(ctx2, { type: "bar", data: { labels: ["Income", "Expenses"], datasets: [{ label: "Amount (TZS M)", data: [totalIncome/1000000, totalExpenses/1000000], backgroundColor: ["#10b981", "#ef4444"], borderRadius: 8 }] }, options: { responsive: true, maintainAspectRatio: true } });
     
     updateBadges();
 }
@@ -452,7 +505,7 @@ async function renderProjects(highlightId = null) {
     for(let p of paginated) {
         let isHighlighted = highlightId && p.id === highlightId;
         let imageUrl = p.image ? (p.image.startsWith('http') ? p.image : UPLOADS_PATH + p.image) : null;
-        let imageHtml = imageUrl ? `<img src="${imageUrl}" class="project-image" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23f3f4f6%22/%3E%3Ctext x=%2250%22 y=%2255%22 text-anchor=%22middle%22 fill=%22%239ca3af%22%3ENo Image%3C/text%3E%3C/svg%3E'">` : `<div class="no-image"><i class="fas fa-image text-4xl"></i></div>`;
+        let imageHtml = imageUrl ? `<img src="${imageUrl}" class="project-image" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23f3f4f6%22/%3E%3Ctext x=%2250%22 y=%2255%22 text-anchor=%22middle%22 fill=%22%239ca3af%22%3ENo Image%3C/text%3E%3C/svg%3E'">` : `<div class="no-image"><i class="fas fa-image text-4xl"></i><p class="text-xs mt-1">No Image</p></div>`;
         gridHtml += `<div class="project-card bg-white rounded-xl overflow-hidden shadow-sm border ${isHighlighted ? 'search-highlight' : ''}" id="proj-card-${p.id}">
             ${imageHtml}
             <div class="p-3"><div class="flex justify-between items-start"><h4 class="font-bold text-sm">${escapeHtml(p.name)}</h4><span class="px-1.5 py-0.5 text-[8px] rounded-full ${p.status==='completed'?'status-completed':p.status==='in_progress'?'status-progress':'status-pending'}">${p.status}</span></div>
@@ -487,7 +540,7 @@ function viewProjectDetails(id) {
     let p = projectsData.find(p => p.id === id); 
     if(p) { 
         let imageUrl = p.image ? (p.image.startsWith('http') ? p.image : UPLOADS_PATH + p.image) : null;
-        let imageHtml = imageUrl ? `<img src="${imageUrl}" class="w-full h-48 object-cover rounded-lg mb-3 cursor-pointer" onclick="showFullImage('${imageUrl}')">` : `<div class="no-image w-full h-48 mb-3"><i class="fas fa-image text-4xl"></i></div>`;
+        let imageHtml = imageUrl ? `<img src="${imageUrl}" class="w-full h-48 object-cover rounded-lg mb-3 cursor-pointer" onclick="showFullImage('${imageUrl}')">` : `<div class="no-image w-full h-48 mb-3 flex flex-col items-center justify-center bg-gray-100 rounded-lg"><i class="fas fa-image text-4xl text-gray-400"></i><p class="text-sm text-gray-400 mt-2">No Image</p></div>`;
         document.getElementById('viewProjectContent').innerHTML = `${imageHtml}<div class="space-y-2"><p><strong>Name:</strong> ${escapeHtml(p.name)}</p><p><strong>Client:</strong> ${escapeHtml(p.client_name||'N/A')}</p><p><strong>Amount:</strong> ${formatCurrency(p.amount)}</p><p><strong>Status:</strong> ${p.status}</p><p><strong>Progress:</strong> ${p.progress}%</p><p><strong>Location:</strong> ${escapeHtml(p.location||'N/A')}</p><p><strong>Start Date:</strong> ${p.start_date||'N/A'}</p><p><strong>End Date:</strong> ${p.end_date||'N/A'}</p><p><strong>Description:</strong> ${escapeHtml(p.description||'N/A')}</p></div>`; 
         let deptOptions = ''; allDepartments.forEach(d => { deptOptions += `<a onclick="sendProjectToDepartment(${p.id}, ${d.id}, '${escapeHtml(p.name)}')">${escapeHtml(d.name)}</a>`; }); 
         document.getElementById('viewProjButtons').innerHTML = `
@@ -514,7 +567,7 @@ function editProject(id) {
         document.getElementById('editProjectId').value = p.id; 
         document.getElementById('projectName').value = p.name; 
         document.getElementById('projectClient').value = p.client_name||''; 
-        document.getElementById('projectAmount').value = p.amount; 
+        document.getElementById('projectAmount').value = p.amount.toLocaleString('en-US'); 
         document.getElementById('projectLocation').value = p.location||''; 
         document.getElementById('projectDesc').value = p.description||''; 
         document.getElementById('projectStatus').value = p.status; 
@@ -540,7 +593,7 @@ async function saveProject() {
     let data = { 
         name: document.getElementById('projectName').value, 
         client_name: document.getElementById('projectClient').value, 
-        amount: parseFloat(document.getElementById('projectAmount').value)||0, 
+        amount: parseAmount(document.getElementById('projectAmount').value), 
         location: document.getElementById('projectLocation').value, 
         description: document.getElementById('projectDesc').value, 
         status: document.getElementById('projectStatus').value, 
@@ -589,32 +642,68 @@ function exportSingleProjectExcel(projectId) {
     showToast("Exported to Excel"); 
 }
 function exportSingleProjectPDF(projectId) { 
-    let p = projectsData.find(p=>p.id===projectId); 
+    let p = projectsData.find(p => p.id === projectId); 
     if(!p) return; 
     let imageUrl = p.image ? (p.image.startsWith('http') ? p.image : UPLOADS_PATH + p.image) : null;
-    let imageHtml = imageUrl ? `<div style="text-align:center; margin:15px 0;"><img src="${imageUrl}" style="max-width:100%; max-height:200px; border:1px solid #ddd; border-radius:8px;"></div>` : '';
+    let imageHtml = imageUrl ? `<div style="text-align:center; margin:15px 0;"><img src="${imageUrl}" style="max-width:100%; max-height:200px; border:1px solid #ddd; border-radius:8px;"></div>` : '<div style="text-align:center; margin:15px 0; color:#999;">No Image Available</div>';
+    
     const printWindow = window.open('', '_blank');
     printWindow.document.write(`
         <!DOCTYPE html>
         <html>
-        <head><title>${escapeHtml(p.name)} - Project Report</title>
-        <style>body{font-family:Arial;padding:40px;max-width:800px;margin:0 auto;border:2px solid #4338ca;} h1{color:#4338ca;text-align:center;} table{width:100%;border-collapse:collapse;margin:20px 0;} th,td{border:1px solid #ddd;padding:8px;text-align:left;} .footer{text-align:center;margin-top:30px;font-size:10px;color:#999;}</style>
+        <head>
+            <title>${escapeHtml(p.name)} - Project Report</title>
+            <style>
+                body { font-family: 'Inter', Arial, sans-serif; padding: 40px; max-width: 800px; margin: 0 auto; border: 2px solid #4338ca; }
+                h1 { color: #4338ca; text-align: center; border-bottom: 3px solid #4338ca; padding-bottom: 15px; margin-bottom: 20px; }
+                .image-section { text-align: center; margin: 20px 0; }
+                .image-section img { max-width: 100%; max-height: 250px; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+                table { width: 100%; border-collapse: collapse; margin: 20px 0; border: 1px solid #4338ca; }
+                th, td { border: 1px solid #4338ca; padding: 12px; vertical-align: top; }
+                th { background: #f3f4f6; width: 35%; font-weight: 600; color: #4338ca; }
+                td { background: white; }
+                .status-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; }
+                .status-pending { background: #fef3c7; color: #d97706; }
+                .status-progress { background: #dbeafe; color: #2563eb; }
+                .status-completed { background: #d1fae5; color: #059669; }
+                .progress-bar { background: #e5e7eb; border-radius: 10px; height: 8px; width: 100%; margin-top: 5px; }
+                .progress-fill { background: #4338ca; height: 8px; border-radius: 10px; width: ${p.progress || 0}%; }
+                .footer { text-align: center; font-size: 10px; color: #666; margin-top: 30px; padding-top: 15px; border-top: 1px solid #ddd; }
+                .no-print { text-align: center; margin-top: 20px; }
+                .no-print button { background: #4338ca; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 14px; }
+                .no-print button:hover { background: #3730a3; }
+                @media print {
+                    .no-print { display: none; }
+                    body { border: none; padding: 20px; }
+                }
+            </style>
         </head>
-        <body><h1>${escapeHtml(p.name)}</h1>${imageHtml}<table>
-            <tr><th>Client</th><td>${escapeHtml(p.client_name||'N/A')}</td</tr
-            <tr><th>Amount</th><td>${formatCurrency(p.amount)}</td</tr
-            <tr><th>Status</th><td>${p.status}</td</tr
-            <tr><th>Progress</th><td>${p.progress}%</td</tr
-            <tr><th>Location</th><td>${escapeHtml(p.location||'N/A')}</td</tr
-            <tr><th>Start Date</th><td>${p.start_date||'N/A'}</td</tr
-            <tr><th>End Date</th><td>${p.end_date||'N/A'}</td</tr
-            </tr><th>Description</th><td>${escapeHtml(p.description||'No description')}</td</tr
-        </table>
-        <div class="footer">Generated: ${new Date().toLocaleString()} | GeoTraverse ERP System</div>
-        </body></html>
+        <body>
+            <h1>${escapeHtml(p.name)}</h1>
+            <div class="image-section">${imageHtml}</div>
+            <div style="overflow-x: auto;">
+                <table>
+                    <tr><th>Project ID:</th><td>#${p.id}</td></tr>
+                    <tr><th>Client Name:</th><td>${escapeHtml(p.client_name || 'N/A')}</td></tr>
+                    <tr><th>Amount:</th><td style="font-weight:bold; color:#059669;">${formatCurrency(p.amount)}</td></tr>
+                    <tr><th>Status:</th><td><span class="status-badge ${p.status === 'pending' ? 'status-pending' : p.status === 'in_progress' ? 'status-progress' : 'status-completed'}">${p.status}</span></td></tr>
+                    <tr><th>Progress:</th><td><div class="progress-bar"><div class="progress-fill"></div></div>${p.progress || 0}% Complete</td></tr>
+                    <tr><th>Location:</th><td>${escapeHtml(p.location || 'N/A')}</td></tr>
+                    <tr><th>Start Date:</th><td>${p.start_date || 'Not specified'}</td></tr>
+                    <tr><th>End Date:</th><td>${p.end_date || 'Not specified'}</td></tr>
+                    <tr><th>Description:</th><td>${escapeHtml(p.description || 'No description provided')}</td></tr>
+                </table>
+            </div>
+            <div class="footer">Generated: ${new Date().toLocaleString()} | GeoTraverse ERP System</div>
+            <div class="no-print">
+                <button onclick="window.print(); setTimeout(function(){ window.close(); }, 1000);"><i class="fas fa-print"></i> Save as PDF / Print</button>
+                <button onclick="window.close();" style="background:#6b7280; margin-left:10px;"><i class="fas fa-times"></i> Close</button>
+            </div>
+        </body>
+        </html>
     `);
     printWindow.document.close();
-    printWindow.print();
+    showToast("PDF preview opened in new tab - click Print to save");
 }
 function exportProjectsToExcel() { 
     let ws=[["Name","Client","Amount","Status","Progress","Location","Start Date","End Date","Description"]]; 
@@ -628,16 +717,17 @@ function exportProjectsToPDF() {
     let printWindow = window.open('', '_blank');
     let projectsHtml = projectsData.map(p => {
         let imageUrl = p.image ? (p.image.startsWith('http') ? p.image : UPLOADS_PATH + p.image) : null;
-        let imageHtml = imageUrl ? `<div style="text-align:center; margin:10px 0;"><img src="${imageUrl}" style="max-width:100%; max-height:150px;"></div>` : '';
+        let imageHtml = imageUrl ? `<div style="text-align:center; margin:10px 0;"><img src="${imageUrl}" style="max-width:100%; max-height:150px; border:1px solid #ddd; border-radius:6px;"></div>` : '';
         return `<div style="margin-bottom:30px; border-bottom:1px solid #ddd; padding-bottom:20px;">${imageHtml}<h3 style="color:#4338ca;">${escapeHtml(p.name)}</h3>
-            <table style="width:100%; border-collapse:collapse;"><tr><th>Client</th><td>${escapeHtml(p.client_name||'N/A')}</td</tr
-            <tr><th>Amount</th><td>${formatCurrency(p.amount)}</td</tr
-            <tr><th>Status</th><td>${p.status}</td</tr
-            <tr><th>Progress</th><td>${p.progress}%</td</tr
-            <tr><th>Location</th><td>${escapeHtml(p.location||'N/A')}</td</tr
+            <table style="width:100%; border-collapse:collapse; border:1px solid #4338ca;">
+                <tr><th style="border:1px solid #4338ca; padding:8px; background:#f3f4f6;">Client</th><td style="border:1px solid #4338ca; padding:8px;">${escapeHtml(p.client_name||'N/A')}</td></tr>
+                <tr><th style="border:1px solid #4338ca; padding:8px; background:#f3f4f6;">Amount</th><td style="border:1px solid #4338ca; padding:8px; color:#059669; font-weight:bold;">${formatCurrency(p.amount)}</td></tr>
+                <tr><th style="border:1px solid #4338ca; padding:8px; background:#f3f4f6;">Status</th><td style="border:1px solid #4338ca; padding:8px;">${p.status}</td></tr>
+                <tr><th style="border:1px solid #4338ca; padding:8px; background:#f3f4f6;">Progress</th><td style="border:1px solid #4338ca; padding:8px;">${p.progress}%</td></tr>
+                <tr><th style="border:1px solid #4338ca; padding:8px; background:#f3f4f6;">Location</th><td style="border:1px solid #4338ca; padding:8px;">${escapeHtml(p.location||'N/A')}</td></tr>
             </table></div>`;
     }).join('');
-    printWindow.document.write(`<!DOCTYPE html><html><head><title>Projects Report</title><style>body{font-family:Arial;padding:40px;max-width:1000px;margin:0 auto;border:2px solid #4338ca;} h1{color:#4338ca;text-align:center;} table{width:100%;border-collapse:collapse;} th,td{border:1px solid #ddd;padding:8px;text-align:left;}</style></head><body><h1>Projects Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/>${projectsHtml}<div class="footer" style="text-align:center;margin-top:30px;">GeoTraverse ERP System</div></body></html>`);
+    printWindow.document.write(`<!DOCTYPE html><html><head><title>Projects Report</title><style>body{font-family:Arial;padding:40px;max-width:1000px;margin:0 auto;border:2px solid #4338ca;} h1{color:#4338ca;text-align:center;} table{width:100%;border-collapse:collapse;} th,td{border:1px solid #4338ca;padding:8px;text-align:left;} .footer{text-align:center;margin-top:30px;font-size:10px;}</style></head><body><h1>Projects Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/>${projectsHtml}<div class="footer">GeoTraverse ERP System</div></body></html>`);
     printWindow.document.close();
     printWindow.print();
 }
@@ -656,17 +746,17 @@ async function renderBudget(highlightId = null) {
     let filtered = budgetsData.filter(b => b.source?.toLowerCase().includes(searchTerm));
     let paginated = filtered.slice((currentBudgetPage-1)*budgetRowsPerPage, currentBudgetPage*budgetRowsPerPage);
     let html = `<div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold"><i class="fas fa-wallet text-indigo-600 mr-2"></i>Budget (${budgetsData.length})</h2><div class="flex gap-2"><button onclick="openModal('budgetModal')" class="btn-add text-white px-4 py-2 rounded-xl text-sm"><i class="fas fa-plus mr-1"></i>Add Transaction</button><button onclick="exportBudgetToExcel()" class="btn-excel text-white px-3 py-1.5 rounded text-xs"><i class="fas fa-file-excel mr-1"></i> Excel All</button><button onclick="exportBudgetToPDF()" class="btn-pdf text-white px-3 py-1.5 rounded text-xs"><i class="fas fa-file-pdf mr-1"></i> PDF All</button></div></div>
-        <div class="grid grid-cols-3 gap-3 mb-4"><div class="bg-green-50 p-2 text-center"><p class="text-[9px]">Income</p><p class="font-bold text-green-600">${formatCurrency(totalIncome)}</p></div><div class="bg-red-50 p-2 text-center"><p class="text-[9px]">Expenses</p><p class="font-bold text-red-600">${formatCurrency(totalExpenses)}</p></div><div class="bg-blue-50 p-2 text-center"><p class="text-[9px]">Remaining</p><p class="font-bold text-blue-600">${formatCurrency(totalIncome-totalExpenses)}</p></div></div>
-        <div class="bg-white rounded-xl p-3"><div class="table-responsive"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th>Date</th><th>Type</th><th>Source</th><th>Amount</th><th>Description</th><th>Actions</th></tr></thead><tbody>`;
+        <div class="grid grid-cols-3 gap-3 mb-4"><div class="bg-green-50 p-3 text-center rounded-xl"><p class="text-[9px] text-gray-500">Income</p><p class="font-bold text-green-600">${formatCurrency(totalIncome)}</p></div><div class="bg-red-50 p-3 text-center rounded-xl"><p class="text-[9px] text-gray-500">Expenses</p><p class="font-bold text-red-600">${formatCurrency(totalExpenses)}</p></div><div class="bg-blue-50 p-3 text-center rounded-xl"><p class="text-[9px] text-gray-500">Remaining</p><p class="font-bold text-blue-600">${formatCurrency(totalIncome-totalExpenses)}</p></div></div>
+        <div class="bg-white rounded-xl p-3"><div class="table-responsive"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th class="p-2">Date</th><th class="p-2">Type</th><th class="p-2">Source</th><th class="p-2">Amount</th><th class="p-2">Description</th><th class="p-2 text-center">Actions</th></tr></thead><tbody>`;
     if (paginated.length === 0) {
         html += `<tr><td colspan="6" class="text-center py-8 text-gray-400">No transactions found. Click "Add Transaction" to create one.</td</tr`;
     } else {
         for(let b of paginated) {
             let isHighlighted = highlightId && b.id === highlightId;
-            html += `<tr class="border-b ${b.type==='income'?'income-row':'expense-row'} ${isHighlighted ? 'search-highlight' : ''}" id="budget-row-${b.id}"><td class="p-2">${b.transaction_date}</td><td class="p-2"><span class="px-1.5 py-0.5 rounded-full text-[9px] ${b.type==='income'?'bg-green-100 text-green-700':'bg-red-100 text-red-700'}">${b.type}</span></td><td class="p-2">${escapeHtml(b.source)}</td</tr
-            <td class="p-2 ${b.type==='income'?'text-green-600':'text-red-600'}">${formatCurrency(b.amount)}</td
-            <td class="p-2 text-xs max-w-[150px] truncate">${escapeHtml((b.description||'').substring(0,40))}</td
-            <td class="p-2"><div class="flex gap-1"><button onclick="viewBudgetItem(${b.id})" class="btn-view text-white text-xs px-2 py-1 rounded"><i class="fas fa-eye"></i></button><button onclick="editBudgetItem(${b.id})" class="btn-edit text-white text-xs px-2 py-1 rounded"><i class="fas fa-edit"></i></button><button onclick="deleteBudgetItem(${b.id})" class="btn-delete text-white text-xs px-2 py-1 rounded"><i class="fas fa-trash"></i></button><div class="relative"><button onclick="toggleBudgetExportDropdown(${b.id})" class="btn-send text-white text-xs px-2 py-1 rounded"><i class="fas fa-download"></i></button><div id="budgetExportDropdown-${b.id}" class="dropdown-content hidden"><button onclick="exportSingleBudget(${b.id}, 'excel')"><i class="fas fa-file-excel"></i> Excel</button><button onclick="exportSingleBudget(${b.id}, 'pdf')"><i class="fas fa-file-pdf"></i> PDF</button></div></div></div></td</tr`;
+            html += `<tr class="border-b ${b.type==='income'?'income-row':'expense-row'} ${isHighlighted ? 'search-highlight' : ''}" id="budget-row-${b.id}"><td class="p-2">${b.transaction_date}</td><td class="p-2"><span class="px-1.5 py-0.5 rounded-full text-[9px] ${b.type==='income'?'bg-green-100 text-green-700':'bg-red-100 text-red-700'}">${b.type}</span><td><td class="p-2">${escapeHtml(b.source)}</td</tr
+            <td class="p-2 ${b.type==='income'?'text-green-600':'text-red-600'} font-semibold">${formatCurrency(b.amount)}</td
+            <td class="p-2 text-xs text-gray-500 max-w-[150px] truncate" title="${escapeHtml(b.description||'')}">${escapeHtml((b.description||'').substring(0,40))}</td
+            <td class="p-2 text-center"><div class="flex gap-1 justify-center"><button onclick="viewBudgetItem(${b.id})" class="btn-view text-white text-xs px-2 py-1 rounded"><i class="fas fa-eye"></i></button><button onclick="editBudgetItem(${b.id})" class="btn-edit text-white text-xs px-2 py-1 rounded"><i class="fas fa-edit"></i></button><button onclick="deleteBudgetItem(${b.id})" class="btn-delete text-white text-xs px-2 py-1 rounded"><i class="fas fa-trash"></i></button><div class="relative"><button onclick="toggleBudgetExportDropdown(${b.id})" class="btn-send text-white text-xs px-2 py-1 rounded"><i class="fas fa-download"></i></button><div id="budgetExportDropdown-${b.id}" class="dropdown-content hidden"><button onclick="exportSingleBudget(${b.id}, 'excel')"><i class="fas fa-file-excel"></i> Excel</button><button onclick="exportSingleBudget(${b.id}, 'pdf')"><i class="fas fa-file-pdf"></i> PDF</button></div></div></div></td</tr`;
         }
     }
     html += `</tbody>}</div>`;
@@ -676,13 +766,13 @@ async function renderBudget(highlightId = null) {
 }
 function changeBudgetPage(page) { if (page > 0 && page <= Math.ceil(budgetsData.length / budgetRowsPerPage)) { currentBudgetPage = page; renderBudget(); } }
 function viewBudgetItem(id) { let b = budgetsData.find(b=>b.id===id); if(b) alert(`Transaction: ${b.source}\nType: ${b.type}\nAmount: ${formatCurrency(b.amount)}\nDate: ${b.transaction_date}\nDesc: ${b.description||'-'}`); }
-function editBudgetItem(id) { let b = budgetsData.find(b=>b.id===id); if(b) { document.getElementById("editBudgetId").value = b.id; document.getElementById("budgetType").value = b.type; document.getElementById("budgetSource").value = b.source; document.getElementById("budgetAmount").value = b.amount; document.getElementById("budgetDate").value = b.transaction_date; document.getElementById("budgetDescription").value = b.description||''; openModal('budgetModal'); } }
-async function saveBudget() { let id = document.getElementById("editBudgetId").value; let data = { type: document.getElementById("budgetType").value, source: document.getElementById("budgetSource").value, amount: parseFloat(document.getElementById("budgetAmount").value)||0, transaction_date: document.getElementById("budgetDate").value, description: document.getElementById("budgetDescription").value, status: 'paid' }; if(!data.source||!data.amount){ showToast("Source and amount required",true); return; } let res = id ? await updateBudgetAPI(parseInt(id), data) : await addBudgetAPI(data); if(res.success) { showToast(id?"Transaction updated":"Transaction added"); addLog(`Budget ${id?"updated":"added"}: ${data.source}`); closeModal('budgetModal'); renderBudget(); renderDashboard(); } else showToast(res.message || "Failed", true); }
+function editBudgetItem(id) { let b = budgetsData.find(b=>b.id===id); if(b) { document.getElementById("editBudgetId").value = b.id; document.getElementById("budgetType").value = b.type; document.getElementById("budgetSource").value = b.source; document.getElementById("budgetAmount").value = b.amount.toLocaleString('en-US'); document.getElementById("budgetDate").value = b.transaction_date; document.getElementById("budgetDescription").value = b.description||''; openModal('budgetModal'); } }
+async function saveBudget() { let id = document.getElementById("editBudgetId").value; let data = { type: document.getElementById("budgetType").value, source: document.getElementById("budgetSource").value, amount: parseAmount(document.getElementById("budgetAmount").value), transaction_date: document.getElementById("budgetDate").value, description: document.getElementById("budgetDescription").value, status: 'paid' }; if(!data.source||!data.amount){ showToast("Source and amount required",true); return; } let res = id ? await updateBudgetAPI(parseInt(id), data) : await addBudgetAPI(data); if(res.success) { showToast(id?"Transaction updated":"Transaction added"); addLog(`Budget ${id?"updated":"added"}: ${data.source}`); closeModal('budgetModal'); renderBudget(); renderDashboard(); } else showToast(res.message || "Failed", true); }
 async function deleteBudgetItem(id) { if(confirm("Delete this transaction?")) { let res = await deleteBudgetAPI(id); if(res.success) { showToast("Transaction deleted"); addLog(`Budget deleted: ID ${id}`); renderBudget(); renderDashboard(); } else showToast(res.message || "Failed", true); } }
-function exportSingleBudget(budgetId, format) { let b = budgetsData.find(b=>b.id===budgetId); if(!b) return; let filename = `${b.source.replace(/[^a-z0-9]/gi,'_')}_${new Date().toISOString().slice(0,10)}`; if(format==='excel') { let ws=[["Date","Type","Source","Amount","Description"]]; ws.push([b.transaction_date,b.type,b.source,b.amount,b.description||'']); let wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(ws),"Transaction"); XLSX.writeFile(wb,`${filename}.xlsx`); } else { let printWindow = window.open('', '_blank'); printWindow.document.write(`<!DOCTYPE html><html><head><title>${escapeHtml(b.source)} - Transaction</title><style>body{font-family:Arial;padding:40px;max-width:800px;margin:0 auto;border:2px solid #4338ca;}</style></head><body><h1>${escapeHtml(b.source)}</h1><p><strong>Date:</strong> ${b.transaction_date}</p><p><strong>Type:</strong> ${b.type}</p><p><strong>Amount:</strong> ${formatCurrency(b.amount)}</p><p><strong>Description:</strong> ${escapeHtml(b.description||'-')}</p><div class="footer">Generated: ${new Date().toLocaleString()}</div></body></html>`); printWindow.document.close(); printWindow.print(); } showToast(`Exported to ${format}`); let dd=document.getElementById(`budgetExportDropdown-${budgetId}`); if(dd)dd.classList.add("hidden"); }
+function exportSingleBudget(budgetId, format) { let b = budgetsData.find(b=>b.id===budgetId); if(!b) return; let filename = `${b.source.replace(/[^a-z0-9]/gi,'_')}_${new Date().toISOString().slice(0,10)}`; if(format==='excel') { let ws=[["Date","Type","Source","Amount","Description"]]; ws.push([b.transaction_date,b.type,b.source,b.amount,b.description||'']); let wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(ws),"Transaction"); XLSX.writeFile(wb,`${filename}.xlsx`); } else { let printWindow = window.open('', '_blank'); printWindow.document.write(`<!DOCTYPE html><html><head><title>${escapeHtml(b.source)} - Transaction</title><style>body{font-family:Arial;padding:40px;max-width:800px;margin:0 auto;border:2px solid #4338ca;} h1{color:#4338ca;text-align:center;}</style></head><body><h1>${escapeHtml(b.source)}</h1><p><strong>Date:</strong> ${b.transaction_date}</p><p><strong>Type:</strong> ${b.type}</p><p><strong>Amount:</strong> ${formatCurrency(b.amount)}</p><p><strong>Description:</strong> ${escapeHtml(b.description||'-')}</p><div class="footer">Generated: ${new Date().toLocaleString()}</div></body></html>`); printWindow.document.close(); printWindow.print(); } showToast(`Exported to ${format}`); let dd=document.getElementById(`budgetExportDropdown-${budgetId}`); if(dd)dd.classList.add("hidden"); }
 function toggleBudgetExportDropdown(budgetId) { let dd=document.getElementById(`budgetExportDropdown-${budgetId}`); document.querySelectorAll('[id^="budgetExportDropdown-"]').forEach(d=>{if(d.id!==`budgetExportDropdown-${budgetId}`)d.classList.add("hidden");}); if(dd)dd.classList.toggle("hidden"); }
 function exportBudgetToExcel() { let ws=[["Date","Type","Source","Amount","Description"]]; budgetsData.forEach(b=>ws.push([b.transaction_date,b.type,b.source,b.amount,b.description||''])); let wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(ws),"Budget"); XLSX.writeFile(wb,`budget_${new Date().toISOString().slice(0,10)}.xlsx`); showToast("Budget exported to Excel"); }
-function exportBudgetToPDF() { let printWindow = window.open('', '_blank'); let rows = budgetsData.map(b => `<tr><td class="px-2 py-1">${b.transaction_date}</td><td class="px-2 py-1">${b.type}</td><td class="px-2 py-1">${b.source}</td><td class="px-2 py-1">${formatCurrency(b.amount)}</td</tr`).join(''); printWindow.document.write(`<!DOCTYPE html><html><head><title>Budget Report</title><style>body{font-family:Arial;padding:40px;max-width:1000px;margin:0 auto;border:2px solid #4338ca;} h1{color:#4338ca;text-align:center;} table{width:100%;border-collapse:collapse;} th,td{border:1px solid #ddd;padding:8px;text-align:left;}</style></head><body><h1>Budget Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table><thead><tr><th>Date</th><th>Type</th><th>Source</th><th>Amount</th></tr></thead><tbody>${rows}</tbody></table><div class="footer" style="text-align:center;margin-top:30px;">GeoTraverse ERP System</div></body></html>`); printWindow.document.close(); printWindow.print(); }
+function exportBudgetToPDF() { let printWindow = window.open('', '_blank'); let rows = budgetsData.map(b => `<tr><td class="px-2 py-1">${b.transaction_date}</td><td class="px-2 py-1">${b.type}</td><td class="px-2 py-1">${b.source}</td><td class="px-2 py-1">${formatCurrency(b.amount)}</td</tr`).join(''); printWindow.document.write(`<!DOCTYPE html><html><head><title>Budget Report</title><style>body{font-family:Arial;padding:40px;max-width:1000px;margin:0 auto;border:2px solid #4338ca;} h1{color:#4338ca;text-align:center;} table{width:100%;border-collapse:collapse;} th,td{border:1px solid #4338ca;padding:8px;text-align:left;}</style></head><body><h1>Budget Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table><thead><tr><th>Date</th><th>Type</th><th>Source</th><th>Amount</th></tr></thead><tbody>${rows}</tbody>}</div></body></html>`); printWindow.document.close(); printWindow.print(); }
 
 // ==================== MESSAGES API FUNCTIONS ====================
 async function fetchMessages() { const res = await apiCall(`get_conversations.php?department_id=${DEPARTMENT_ID}`); if (res.success && res.data) conversationsList = res.data; else conversationsList = []; updateMessageBadge(); return conversationsList; }
@@ -814,13 +904,13 @@ function exportAllReportsToPDF() {
 // ==================== SETTINGS ====================
 function renderSettings() {
     let logsHtml = activityLogs.slice(0, 15).map(l => `<div class="text-[10px] border-b py-1"><span>${escapeHtml(l.action)}</span><span class="float-right text-gray-400">${new Date(l.created_at).toLocaleString()}</span></div>`).join('');
-    let colors = [{ name: 'Indigo', value: '#4338ca' }, { name: 'Purple', value: '#7c3aed' }, { name: 'Blue', value: '#2563eb' }, { name: 'Green', value: '#065f46' }, { name: 'Orange', value: '#ea580c' }, { name: 'Red', value: '#dc2626' }];
+    let colors = [{ name: 'Indigo', value: '#4338ca' }, { name: 'Purple', value: '#7c3aed' }, { name: 'Blue', value: '#2563eb' }, { name: 'Green', value: '#065f46' }, { name: 'Orange', value: '#ea580c' }, { name: 'Red', value: '#dc2626' }, { name: 'Teal', value: '#0d9488' }, { name: 'Pink', value: '#db2777' }];
     let html = `<h2 class="text-xl font-bold mb-4"><i class="fas fa-cog mr-2"></i>Settings</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="bg-white rounded-xl p-4 shadow-sm"><h3 class="font-semibold text-sm mb-2"><i class="fas fa-palette mr-2 text-indigo-600"></i>Sidebar Color</h3><div class="flex gap-2 flex-wrap">${colors.map(c => `<div class="color-option" style="background:${c.value}" onclick="changeColor('${c.value}', this)"></div>`).join('')}</div></div>
             <div class="bg-white rounded-xl p-4 shadow-sm"><h3 class="font-semibold text-sm mb-2"><i class="fas fa-database mr-2 text-green-600"></i>Backup & Restore</h3><div class="flex gap-2"><button onclick="openModal('backupRestoreModal')" class="flex-1 bg-green-600 text-white py-2 rounded text-xs">Backup</button><button onclick="restoreBackup()" class="flex-1 bg-orange-600 text-white py-2 rounded text-xs">Restore</button></div></div>
             <div class="bg-white rounded-xl p-4 shadow-sm"><h3 class="font-semibold text-sm mb-2"><i class="fas fa-history mr-2 text-blue-600"></i>Activity Logs</h3><div class="max-h-32 overflow-y-auto text-xs border rounded-lg p-2 bg-gray-50">${logsHtml}</div><button onclick="clearLogs()" class="w-full mt-2 bg-red-600 text-white py-1.5 rounded text-xs">Clear Logs</button></div>
-            <div class="bg-white rounded-xl p-4 shadow-sm"><h3 class="font-semibold text-sm mb-2"><i class="fas fa-info-circle mr-2 text-purple-600"></i>System Info</h3><p class="text-xs"><strong>Version:</strong> 2.0.0</p><p class="text-xs mt-1"><strong>Projects:</strong> ${projectsData.length}</p><p class="text-xs mt-1"><strong>Transactions:</strong> ${budgetsData.length}</p></div>
+            <div class="bg-white rounded-xl p-4 shadow-sm"><h3 class="font-semibold text-sm mb-2"><i class="fas fa-info-circle mr-2 text-purple-600"></i>System Info</h3><p class="text-xs"><strong>Version:</strong> 2.0.0</p><p class="text-xs mt-1"><strong>Projects:</strong> ${projectsData.length}</p><p class="text-xs mt-1"><strong>Transactions:</strong> ${budgetsData.length}</p><p class="text-xs mt-1"><strong>Reports:</strong> ${reportsList.length}</p></div>
         </div>`;
     document.getElementById("settingsSection").innerHTML = html;
 }
@@ -866,7 +956,6 @@ function searchAndHighlight(section, id, elementId) {
 }
 document.addEventListener("click", (e) => { let inp = document.getElementById("globalSearchInput"); let dd = document.getElementById("searchResultsDropdown"); if (inp && dd && !inp.contains(e.target) && !dd.contains(e.target)) dd.classList.remove("active"); });
 function toggleSendDropdown(dropdownId) { const dropdown = document.getElementById(dropdownId); document.querySelectorAll('.send-dropdown-content').forEach(d => { if (d.id !== dropdownId) d.style.display = 'none'; }); if (dropdown) dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block'; }
-document.addEventListener('click', (e) => { if (!e.target.closest('.send-dropdown')) document.querySelectorAll('.send-dropdown-content').forEach(d => d.style.display = 'none'); });
 
 function showSection(sectionId, highlightId = null) {
     let sections = ["dashboardSection","projectsSection","budgetSection","messagesSection","reportsSection","settingsSection"];

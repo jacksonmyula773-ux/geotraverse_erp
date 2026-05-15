@@ -28,23 +28,44 @@
         .nav-item.active i { color: #fbbf24; }
         .nav-item:hover:not(.active) { background: rgba(255,255,255,0.08); }
         
-        .stat-card { transition: all 0.3s ease; background: white; border-radius: 20px; border: 1px solid #e5e7eb; cursor: pointer; }
+        .stat-card { transition: all 0.3s ease; background: white; border-radius: 20px; border: 1px solid #e5e7eb; cursor: pointer; text-align: center; padding: 20px; }
         .stat-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -12px rgba(0,0,0,0.15); border-color: #b45309; }
+        .stat-number { font-size: 28px; font-weight: 700; margin-top: 8px; margin-bottom: 4px; }
+        .stat-label { font-size: 12px; font-weight: 500; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-icon { width: 48px; height: 48px; border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto; }
         
-        .btn-primary { background: linear-gradient(135deg, #b45309, #92400e); transition: all 0.2s; }
-        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 5px 15px rgba(180,83,9,0.3); }
+        .btn-primary { background: linear-gradient(135deg, #b45309, #92400e); transition: all 0.2s; padding: 10px 18px; border-radius: 10px; border: none; cursor: pointer; font-weight: 500; color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(180,83,9,0.4); }
+        .btn-success { background: linear-gradient(135deg, #10b981, #059669); transition: all 0.2s; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 500; color: white; }
+        .btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); transition: all 0.2s; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 500; color: white; }
+        .btn-warning { background: linear-gradient(135deg, #f59e0b, #d97706); transition: all 0.2s; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 500; color: white; }
+        .btn-purple { background: linear-gradient(135deg, #8b5cf6, #7c3aed); transition: all 0.2s; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 500; color: white; }
+        .btn-add { background: #b45309; color: white; }
+        .btn-add:hover { background: #92400e; transform: translateY(-2px); }
+        .btn-excel { background: #10b981; color: white; }
+        .btn-excel:hover { background: #059669; transform: translateY(-2px); }
+        .btn-pdf { background: #ef4444; color: white; }
+        .btn-pdf:hover { background: #dc2626; transform: translateY(-2px); }
+        .btn-send { background: #8b5cf6; color: white; }
+        .btn-send:hover { background: #7c3aed; transform: translateY(-2px); }
+        .btn-view { background: #3b82f6; color: white; }
+        .btn-view:hover { background: #2563eb; transform: translateY(-2px); }
+        .btn-edit { background: #f59e0b; color: white; }
+        .btn-edit:hover { background: #d97706; transform: translateY(-2px); }
+        .btn-delete { background: #ef4444; color: white; }
+        .btn-delete:hover { background: #dc2626; transform: translateY(-2px); }
         
-        .toast-notification { position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, #b45309, #92400e); color: white; padding: 10px 16px; border-radius: 10px; z-index: 1000; animation: slideInRight 0.3s ease; font-size: 12px; }
-        .toast-notification.error { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .toast-notification { position: fixed; bottom: 20px; right: 20px; background: #10b981; color: white; padding: 10px 16px; border-radius: 10px; z-index: 1000; animation: slideInRight 0.3s ease; font-size: 12px; }
+        .toast-notification.error { background: #ef4444; }
         
         .main-content { margin-left: 280px; }
-        @media (max-width: 768px) { .sidebar { left: -280px; transition: left 0.3s; } .sidebar.mobile-open { left: 0; } .mobile-menu-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 99; display: none; } .mobile-menu-overlay.open { display: block; } .main-content { margin-left: 0; } }
+        @media (max-width: 768px) { .sidebar { left: -280px; } .sidebar.mobile-open { left: 0; } .main-content { margin-left: 0; } }
         
         .scroll-top { position: fixed; bottom: 20px; right: 20px; background: #b45309; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: all 0.3s; z-index: 99; color: white; }
         .scroll-top.visible { opacity: 1; }
         
-        .color-option { transition: all 0.2s; cursor: pointer; border: 2px solid transparent; width: 36px; height: 36px; border-radius: 50%; }
-        .color-option:hover { transform: scale(1.05); }
+        .color-option { transition: all 0.2s; cursor: pointer; border: 2px solid transparent; width: 36px; height: 36px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin: 5px; }
+        .color-option:hover { transform: scale(1.1); }
         .color-option.selected { border-color: white; box-shadow: 0 0 0 2px #333; }
         
         .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
@@ -60,7 +81,7 @@
         
         .search-results-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: white; border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); z-index: 50; max-height: 400px; overflow-y: auto; display: none; }
         .search-results-dropdown.active { display: block; }
-        .search-result-item { padding: 10px 14px; border-bottom: 1px solid #e5e7eb; cursor: pointer; transition: background 0.2s; font-size: 13px; }
+        .search-result-item { padding: 12px 16px; border-bottom: 1px solid #e5e7eb; cursor: pointer; transition: background 0.2s; font-size: 13px; }
         .search-result-item:hover { background-color: #f3f4f6; }
         
         body.dark-mode { background: #0f172a; }
@@ -79,7 +100,7 @@
         body.dark-mode .search-result-item { border-bottom-color: #334155; }
         body.dark-mode .search-result-item:hover { background-color: #334155; }
         
-        .dropdown-content { position: absolute; right: 0; margin-top: 4px; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 100; min-width: 160px; border: 1px solid #e5e7eb; max-height: 300px; overflow-y: auto; }
+        .dropdown-content { position: absolute; right: 0; margin-top: 4px; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 100; min-width: 180px; border: 1px solid #e5e7eb; max-height: 300px; overflow-y: auto; }
         .dropdown-content button { display: flex; align-items: center; gap: 8px; padding: 8px 12px; font-size: 12px; width: 100%; text-align: left; }
         .dropdown-content button:hover { background-color: #f3f4f6; }
         body.dark-mode .dropdown-content { background-color: #1e293b; border-color: #334155; }
@@ -116,6 +137,8 @@
         .chat-time { font-size: 10px; opacity: 0.7; margin-top: 4px; display: block; }
         .delete-msg-btn { background: #ef4444; color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 11px; margin-left: 8px; flex-shrink: 0; opacity: 0; transition: all 0.2s; }
         .chat-message-wrapper:hover .delete-msg-btn { opacity: 0.7; }
+        .chat-input-area { display: flex; gap: 10px; margin-top: 12px; }
+        .chat-input-area textarea { flex: 1; margin: 0; resize: none; }
         
         .report-content-view { background: #f3f4f6; padding: 16px; border-radius: 12px; white-space: pre-wrap; font-family: monospace; font-size: 13px; max-height: 300px; overflow-y: auto; }
         body.dark-mode .report-content-view { background: #0f172a; color: #e2e8f0; }
@@ -136,33 +159,16 @@
         .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 14px; font-size: 14px; border: 1.5px solid #e5e7eb; border-radius: 10px; background: white; transition: all 0.2s; }
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #b45309; box-shadow: 0 0 0 3px rgba(180,83,9,0.1); }
         body.dark-mode .form-group input, body.dark-mode .form-group select, body.dark-mode .form-group textarea { background: #0f172a; border-color: #334155; color: #f1f5f9; }
-        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; display: inline-block; }
-        .status-paid { background: #d1fae5; color: #059669; }
-        .status-partial { background: #fef3c7; color: #d97706; }
-        .status-pending { background: #fee2e2; color: #dc2626; }
-        .status-progress { background: #dbeafe; color: #2563eb; }
-        .status-completed { background: #d1fae5; color: #059669; }
-        .loading-spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid #e5e7eb; border-top-color: #b45309; border-radius: 50%; animation: spin 0.8s linear infinite; vertical-align: middle; margin-right: 5px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .amount-input { text-align: left; }
+        .search-highlight { background: #fef3c7 !important; border-left: 4px solid #f59e0b !important; transition: all 0.3s; }
+        body.dark-mode .search-highlight { background: #78350f !important; border-left-color: #fbbf24 !important; }
         
         .auto-refresh-badge { position: fixed; bottom: 10px; left: 10px; background: #1f2937; color: #60a5fa; padding: 4px 12px; border-radius: 20px; font-size: 10px; z-index: 9999; display: flex; align-items: center; gap: 6px; }
         .connection-status { position: fixed; bottom: 10px; right: 10px; background: #1f2937; color: #10b981; padding: 6px 12px; border-radius: 8px; font-size: 10px; z-index: 9999; display: flex; align-items: center; gap: 8px; }
         
-        .search-highlight { background: #fef3c7 !important; border-left: 4px solid #f59e0b !important; transition: all 0.3s; }
-        body.dark-mode .search-highlight { background: #78350f !important; border-left-color: #fbbf24 !important; }
-        
-        .btn-excel { background: #10b981; color: white; }
-        .btn-excel:hover { background: #059669; transform: translateY(-2px); }
-        .btn-pdf { background: #ef4444; color: white; }
-        .btn-pdf:hover { background: #dc2626; transform: translateY(-2px); }
-        .btn-send { background: #8b5cf6; color: white; }
-        .btn-send:hover { background: #7c3aed; transform: translateY(-2px); }
-        .btn-view { background: #3b82f6; color: white; }
-        .btn-view:hover { background: #2563eb; transform: translateY(-2px); }
-        .btn-edit { background: #f59e0b; color: white; }
-        .btn-edit:hover { background: #d97706; transform: translateY(-2px); }
-        .btn-delete { background: #ef4444; color: white; }
-        .btn-delete:hover { background: #dc2626; transform: translateY(-2px); }
+        .loading-spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid #e5e7eb; border-top-color: #b45309; border-radius: 50%; animation: spin 0.8s linear infinite; vertical-align: middle; margin-right: 5px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -229,12 +235,12 @@
 </div>
 
 <!-- Add Production Modal -->
-<div id="productionModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-cubes text-amber-600 mr-2"></i>Add Production Record</h3><input type="hidden" id="editProductionId"><div class="form-group"><label>Date</label><input type="date" id="prodDate" class="w-full"></div><div class="form-group"><label>Description</label><input type="text" id="prodDescription" class="w-full"></div><div class="form-group"><label>Quantity Produced</label><input type="number" id="prodQuantity" class="w-full"></div><div class="form-group"><label>Quantity Sold</label><input type="number" id="prodSold" class="w-full"></div><div class="form-group"><label>Income (TZS)</label><input type="number" id="prodIncome" class="w-full"></div><div class="form-group"><label>Expenses (TZS)</label><input type="number" id="prodExpenses" class="w-full"></div><div class="flex gap-3 pt-2"><button onclick="saveProduction()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('productionModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
+<div id="productionModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-cubes text-amber-600 mr-2"></i>Add Production Record</h3><input type="hidden" id="editProductionId"><div class="form-group"><label>Date</label><input type="date" id="prodDate" class="w-full"></div><div class="form-group"><label>Description</label><input type="text" id="prodDescription" class="w-full"></div><div class="form-group"><label>Quantity Produced</label><input type="number" id="prodQuantity" class="w-full"></div><div class="form-group"><label>Quantity Sold</label><input type="number" id="prodSold" class="w-full"></div><div class="form-group"><label>Income (TZS)</label><input type="text" id="prodIncome" class="w-full amount-input"></div><div class="form-group"><label>Expenses (TZS)</label><input type="text" id="prodExpenses" class="w-full amount-input"></div><div class="flex gap-3 pt-2"><button onclick="saveProduction()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('productionModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
 
 <div id="viewProductionModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Production Details</h3><div id="viewProductionContent"></div><button onclick="closeModal('viewProductionModal')" class="w-full bg-gray-200 py-2 rounded mt-3">Close</button></div></div>
 
 <!-- Add Budget Transaction Modal -->
-<div id="budgetModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-wallet text-amber-600 mr-2"></i>Add Transaction</h3><input type="hidden" id="editBudgetId"><div class="form-group"><label>Type</label><select id="budgetType" class="w-full"><option value="income">Income</option><option value="expense">Expense</option></select></div><div class="form-group"><label>Source/Category</label><input type="text" id="budgetSource" class="w-full"></div><div class="form-group"><label>Amount (TZS)</label><input type="number" id="budgetAmount" class="w-full"></div><div class="form-group"><label>Date</label><input type="date" id="budgetDate" class="w-full"></div><div class="form-group"><label>Description</label><textarea id="budgetDescription" rows="2" class="w-full"></textarea></div><div class="flex gap-3 pt-2"><button onclick="saveBudget()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('budgetModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
+<div id="budgetModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-wallet text-amber-600 mr-2"></i>Add Transaction</h3><input type="hidden" id="editBudgetId"><div class="form-group"><label>Type</label><select id="budgetType" class="w-full"><option value="income">Income</option><option value="expense">Expense</option></select></div><div class="form-group"><label>Source/Category</label><input type="text" id="budgetSource" class="w-full"></div><div class="form-group"><label>Amount (TZS)</label><input type="text" id="budgetAmount" class="w-full amount-input"></div><div class="form-group"><label>Date</label><input type="date" id="budgetDate" class="w-full"></div><div class="form-group"><label>Description</label><textarea id="budgetDescription" rows="2" class="w-full"></textarea></div><div class="flex gap-3 pt-2"><button onclick="saveBudget()" class="flex-1 btn-primary">Save</button><button onclick="closeModal('budgetModal')" class="flex-1 bg-gray-200 py-2 rounded">Cancel</button></div></div></div>
 
 <div id="viewBudgetModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Budget Details</h3><div id="viewBudgetContent"></div><button onclick="closeModal('viewBudgetModal')" class="w-full bg-gray-200 py-2 rounded mt-3">Close</button></div></div>
 
@@ -278,9 +284,26 @@ let searchTimeout = null;
 let refreshInterval = null, countdownSeconds = 5, countdownInterval = null;
 let activityLogs = [{ action: "Bricks & Timber Dashboard initialized", created_at: new Date().toISOString() }];
 
+// ==================== MONEY FORMAT FUNCTION ====================
+function formatCurrency(amt) { 
+    let num = parseFloat(amt) || 0; 
+    return "TZS " + num.toLocaleString('en-US'); 
+}
+
+function parseAmount(str) { 
+    return parseFloat(String(str).replace(/,/g, '')) || 0; 
+}
+
+function formatAmountInput(input) {
+    let value = input.value.replace(/,/g, '');
+    if (!isNaN(value) && value !== '') {
+        let num = parseFloat(value);
+        if (!isNaN(num)) input.value = num.toLocaleString('en-US');
+    }
+}
+
 // Helper functions
 function showToast(msg, isError) { let t = document.createElement("div"); t.className = "toast-notification" + (isError ? " error" : ""); t.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-circle' : 'fa-check-circle'} mr-1"></i>${msg}`; document.body.appendChild(t); setTimeout(() => t.remove(), 3000); }
-function formatCurrency(amt) { return "TZS " + (parseFloat(amt) || 0).toLocaleString(); }
 function formatDate(dateStr) { if (!dateStr) return "N/A"; return new Date(dateStr).toLocaleDateString("en-GB"); }
 function escapeHtml(text) { if (!text) return ""; return text.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); }
 function addLog(action) { activityLogs.unshift({ action: action, created_at: new Date().toISOString() }); if (activityLogs.length > 100) activityLogs.pop(); }
@@ -288,6 +311,28 @@ function closeMobileSidebar() { document.getElementById("mainSidebar").classList
 function goToMainWebsite() { window.location.href = "index.html"; }
 function openModal(id) { document.getElementById(id).style.display = 'flex'; document.body.style.overflow = 'hidden'; }
 function closeModal(id) { document.getElementById(id).style.display = 'none'; document.body.style.overflow = 'auto'; }
+
+// ==================== CLOSE MODAL ON OUTSIDE CLICK ====================
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('modal')) {
+        closeModal(e.target.id);
+    }
+    if (!e.target.closest('.send-dropdown')) {
+        document.querySelectorAll('.send-dropdown-content').forEach(d => d.style.display = 'none');
+    }
+});
+
+// Add event listeners for amount inputs
+document.addEventListener('DOMContentLoaded', function() {
+    const amountInputs = ['prodIncome', 'prodExpenses', 'budgetAmount'];
+    amountInputs.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('input', function() { formatAmountInput(this); });
+            if (el.value) formatAmountInput(el);
+        }
+    });
+});
 
 // API Calls
 async function apiCall(endpoint, method = 'GET', data = null) {
@@ -349,29 +394,29 @@ async function renderDashboard() {
     let unreadMsgs = getUnreadMessagesCount();
     
     let html = `<div class="mb-4"><h2 class="text-xl font-bold text-gray-800">Bricks & Timber Dashboard</h2><p class="text-xs text-gray-500">Production & Financial Management</p></div>
-        <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-5">
-            <div class="stat-card p-3 cursor-pointer" onclick="showSection('production')"><div><p class="text-gray-400 text-[9px] uppercase">Production</p><p class="text-2xl font-bold text-amber-600">${totalProductions}</p></div></div>
-            <div class="stat-card p-3 cursor-pointer" onclick="showSection('budget')"><div><p class="text-gray-400 text-[9px] uppercase">Total Income</p><p class="text-lg font-bold text-green-600">${formatCurrency(totalIncome).substring(0,12)}</p></div></div>
-            <div class="stat-card p-3 cursor-pointer" onclick="showSection('budget')"><div><p class="text-gray-400 text-[9px] uppercase">Total Expenses</p><p class="text-lg font-bold text-red-600">${formatCurrency(totalExpenses).substring(0,12)}</p></div></div>
-            <div class="stat-card p-3 cursor-pointer" onclick="showSection('budget')"><div><p class="text-gray-400 text-[9px] uppercase">Net Profit</p><p class="text-lg font-bold text-${netProfit>=0?'green':'red'}-600">${formatCurrency(netProfit).substring(0,12)}</p></div></div>
-            <div class="stat-card p-3 cursor-pointer" onclick="showSection('messages')"><div><p class="text-gray-400 text-[9px] uppercase">Unread</p><p class="text-2xl font-bold text-red-600">${unreadMsgs}</p></div></div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-5">
+            <div class="stat-card p-4 cursor-pointer" onclick="showSection('production')"><div class="stat-icon bg-amber-100 text-amber-600 mx-auto"><i class="fas fa-cubes text-xl"></i></div><p class="stat-label">Production</p><p class="stat-number text-amber-600">${totalProductions}</p><p class="text-xs text-gray-400">Total records</p></div>
+            <div class="stat-card p-4 cursor-pointer" onclick="showSection('budget')"><div class="stat-icon bg-green-100 text-green-600 mx-auto"><i class="fas fa-arrow-down text-xl"></i></div><p class="stat-label">Income</p><p class="stat-number text-green-600">${formatCurrency(totalIncome)}</p></div>
+            <div class="stat-card p-4 cursor-pointer" onclick="showSection('budget')"><div class="stat-icon bg-red-100 text-red-600 mx-auto"><i class="fas fa-arrow-up text-xl"></i></div><p class="stat-label">Expenses</p><p class="stat-number text-red-600">${formatCurrency(totalExpenses)}</p></div>
+            <div class="stat-card p-4 cursor-pointer" onclick="showSection('budget')"><div class="stat-icon bg-${netProfit>=0?'green':'red'}-100 text-${netProfit>=0?'green':'red'}-600 mx-auto"><i class="fas fa-chart-line text-xl"></i></div><p class="stat-label">Net Profit</p><p class="stat-number text-${netProfit>=0?'green':'red'}-600">${formatCurrency(netProfit)}</p></div>
+            <div class="stat-card p-4 cursor-pointer" onclick="showSection('messages')"><div class="stat-icon bg-red-100 text-red-600 mx-auto"><i class="fas fa-envelope text-xl"></i></div><p class="stat-label">Unread</p><p class="stat-number text-red-600">${unreadMsgs}</p></div>
         </div>
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-5">
-            <div class="bg-white rounded-xl p-3 shadow-sm"><h3 class="text-xs font-semibold mb-2">Production Overview</h3><canvas id="productionChart" height="140"></canvas></div>
-            <div class="bg-white rounded-xl p-3 shadow-sm"><h3 class="text-xs font-semibold mb-2">Budget Overview</h3><canvas id="budgetChart" height="140"></canvas></div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-5">
+            <div class="bg-white rounded-xl p-5 shadow-sm"><h3 class="font-semibold mb-4"><i class="fas fa-chart-bar text-amber-600 mr-2"></i>Production Overview</h3><canvas id="productionChart" height="200"></canvas></div>
+            <div class="bg-white rounded-xl p-5 shadow-sm"><h3 class="font-semibold mb-4"><i class="fas fa-chart-pie text-green-600 mr-2"></i>Budget Overview</h3><canvas id="budgetChart" height="200"></canvas></div>
         </div>
         <div class="grid grid-cols-2 gap-3 mb-5">
-            <button onclick="showSection('production')" class="bg-amber-600 text-white py-2 rounded-lg text-sm"><i class="fas fa-plus-circle mr-2"></i>Add Production</button>
-            <button onclick="showSection('budget')" class="bg-blue-600 text-white py-2 rounded-lg text-sm"><i class="fas fa-plus-circle mr-2"></i>Add Transaction</button>
+            <button onclick="showSection('production')" class="bg-amber-600 text-white py-2.5 rounded-lg text-sm"><i class="fas fa-plus-circle mr-2"></i>Add Production</button>
+            <button onclick="showSection('budget')" class="bg-blue-600 text-white py-2.5 rounded-lg text-sm"><i class="fas fa-plus-circle mr-2"></i>Add Transaction</button>
         </div>
-        <div class="bg-white rounded-xl p-3 shadow-sm"><div id="activityFeed" class="space-y-1 max-h-32 overflow-y-auto">${activityLogs.slice(0,5).map(l => `<div class="text-[10px] py-1 border-b">${escapeHtml(l.action)} <span class="float-right text-gray-400">${new Date(l.created_at).toLocaleString()}</span></div>`).join('')}</div></div>`;
+        <div class="bg-white rounded-xl p-5 shadow-sm"><div id="activityFeed" class="space-y-1 max-h-32 overflow-y-auto">${activityLogs.slice(0,5).map(l => `<div class="text-[10px] py-1 border-b flex justify-between"><span>${escapeHtml(l.action)}</span><span class="text-gray-400">${new Date(l.created_at).toLocaleString()}</span></div>`).join('')}</div></div>`;
     document.getElementById("dashboardSection").innerHTML = html;
     
     let ctx1 = document.getElementById("productionChart")?.getContext("2d");
-    if (ctx1) new Chart(ctx1, { type: "bar", data: { labels: productionsData.map(p => p.project_name?.substring(0,15) || 'No Data'), datasets: [{ label: "Profit (TZS M)", data: productionsData.map(p => ((p.income||0)-(p.expenses||0))/1000000), backgroundColor: "#b45309" }] }, options: { responsive: true, maintainAspectRatio: true } });
+    if (ctx1) new Chart(ctx1, { type: "bar", data: { labels: productionsData.map(p => p.project_name?.substring(0,15) || 'No Data'), datasets: [{ label: "Profit (TZS M)", data: productionsData.map(p => ((p.income||0)-(p.expenses||0))/1000000), backgroundColor: "#b45309", borderRadius: 8 }] }, options: { responsive: true, maintainAspectRatio: true } });
     
     let ctx2 = document.getElementById("budgetChart")?.getContext("2d");
-    if (ctx2) new Chart(ctx2, { type: "doughnut", data: { labels: ["Income", "Expenses"], datasets: [{ data: [totalIncome, totalExpenses], backgroundColor: ["#10b981", "#ef4444"] }] }, options: { responsive: true, maintainAspectRatio: true } });
+    if (ctx2) new Chart(ctx2, { type: "doughnut", data: { labels: ["Income", "Expenses"], datasets: [{ data: [totalIncome, totalExpenses], backgroundColor: ["#10b981", "#ef4444"] }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom' } } } });
     
     updateBadges();
 }
@@ -379,7 +424,6 @@ function updateBadges() { document.getElementById("msgBadge").innerText = getUnr
 
 // ==================== PRODUCTION API FUNCTIONS ====================
 async function fetchProductions() { 
-    // Using API but return empty array initially - data will be added via CRUD
     const res = await apiCall(`get_dailywork.php?department_id=${DEPARTMENT_ID}`); 
     if (res.success && res.data && res.data.length > 0) productionsData = res.data.sort((a,b) => new Date(b.date) - new Date(a.date)); 
     else productionsData = []; 
@@ -393,20 +437,20 @@ async function renderProduction(highlightId = null) {
     let searchTerm = document.getElementById("globalSearchInput")?.value.toLowerCase() || "";
     let filtered = productionsData.filter(p => p.project_name?.toLowerCase().includes(searchTerm));
     let paginated = filtered.slice((currentProductionPage-1)*productionRowsPerPage, currentProductionPage*productionRowsPerPage);
-    let html = `<div class="flex justify-between items-center mb-4 flex-wrap gap-2"><h2 class="text-xl font-bold"><i class="fas fa-cubes text-amber-600 mr-2"></i>Production Records</h2><div class="flex gap-2"><button onclick="openModal('productionModal')" class="btn-primary text-white px-4 py-2 rounded-xl text-sm"><i class="fas fa-plus mr-1"></i>Add Production</button><button onclick="exportProductionToExcel()" class="btn-excel text-white px-3 py-1.5 rounded text-xs"><i class="fas fa-file-excel mr-1"></i> Excel All</button><button onclick="exportProductionToPDF()" class="btn-pdf text-white px-3 py-1.5 rounded text-xs"><i class="fas fa-file-pdf mr-1"></i> PDF All</button></div></div>
-        <div class="bg-white rounded-xl shadow-sm p-3"><div class="table-responsive"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th>Date</th><th>Description</th><th>Quantity</th><th>Income</th><th>Expenses</th><th>Profit</th><th>Actions</th></tr></thead><tbody>`;
+    let html = `<div class="flex justify-between items-center mb-4 flex-wrap gap-2"><h2 class="text-xl font-bold"><i class="fas fa-cubes text-amber-600 mr-2"></i>Production Records (${productionsData.length})</h2><div class="flex gap-2"><button onclick="openModal('productionModal')" class="btn-add text-white px-4 py-2 rounded-xl text-sm"><i class="fas fa-plus mr-1"></i>Add Production</button><button onclick="exportProductionToExcel()" class="btn-excel text-white px-3 py-1.5 rounded text-xs"><i class="fas fa-file-excel mr-1"></i> Excel All</button><button onclick="exportProductionToPDF()" class="btn-pdf text-white px-3 py-1.5 rounded text-xs"><i class="fas fa-file-pdf mr-1"></i> PDF All</button></div></div>
+        <div class="bg-white rounded-xl shadow-sm p-3"><div class="table-responsive"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th class="p-2">Date</th><th class="p-2">Description</th><th class="p-2 text-center">Quantity</th><th class="p-2 text-right">Income</th><th class="p-2 text-right">Expenses</th><th class="p-2 text-right">Profit</th><th class="p-2 text-center">Actions</th></tr></thead><tbody>`;
     if (paginated.length === 0) {
-        html += `<tr><td colspan="7" class="text-center py-8 text-gray-400">No production records found. Click "Add Production" to create one.</td></tr>`;
+        html += `<tr><td colspan="7" class="text-center py-8 text-gray-400">No production records found. Click "Add Production" to create one.</td></td>`;
     } else {
         for (let p of paginated) {
             let profit = (parseFloat(p.income)||0) - (parseFloat(p.expenses)||0);
             let isHighlighted = highlightId && p.id === highlightId;
             html += `<tr class="border-b ${isHighlighted ? 'search-highlight' : ''}" id="prod-row-${p.id}"><td class="p-2">${p.date}</td><td class="p-2">${escapeHtml(p.project_name)}</td</tr
-            <td class="p-2">${parseInt(p.income)/25000||0}</td</tr
-            <td class="p-2 text-green-600">${formatCurrency(p.income)}</td</tr
-            <td class="p-2 text-red-600">${formatCurrency(p.expenses)}</td</tr
-            <td class="p-2 ${profit>=0?'text-green-600':'text-red-600'}">${formatCurrency(profit)}</td</tr
-            <td class="p-2"><div class="flex gap-1"><button onclick="viewProduction(${p.id})" class="btn-view text-white text-xs px-2 py-1 rounded"><i class="fas fa-eye"></i></button><button onclick="editProduction(${p.id})" class="btn-edit text-white text-xs px-2 py-1 rounded"><i class="fas fa-edit"></i></button><button onclick="deleteProduction(${p.id})" class="btn-delete text-white text-xs px-2 py-1 rounded"><i class="fas fa-trash"></i></button><div class="relative"><button onclick="toggleProductionExportDropdown(${p.id})" class="btn-send text-white text-xs px-2 py-1 rounded"><i class="fas fa-download"></i></button><div id="productionExportDropdown-${p.id}" class="dropdown-content hidden"><button onclick="exportSingleProduction(${p.id}, 'excel')"><i class="fas fa-file-excel"></i> Excel</button><button onclick="exportSingleProduction(${p.id}, 'pdf')"><i class="fas fa-file-pdf"></i> PDF</button></div></div></div></td</tr`;
+            <td class="p-2 text-center">${parseInt(p.income)/25000||0}</td</tr
+            <td class="p-2 text-right text-green-600 font-semibold">${formatCurrency(p.income)}</td</tr
+            <td class="p-2 text-right text-red-600">${formatCurrency(p.expenses)}</td</tr
+            <td class="p-2 text-right ${profit>=0?'text-green-600':'text-red-600'} font-bold">${formatCurrency(profit)}</td</tr
+            <td class="p-2 text-center"><div class="flex gap-1 justify-center"><button onclick="viewProduction(${p.id})" class="btn-view text-white text-xs px-2 py-1 rounded"><i class="fas fa-eye"></i></button><button onclick="editProduction(${p.id})" class="btn-edit text-white text-xs px-2 py-1 rounded"><i class="fas fa-edit"></i></button><button onclick="deleteProduction(${p.id})" class="btn-delete text-white text-xs px-2 py-1 rounded"><i class="fas fa-trash"></i></button><div class="relative"><button onclick="toggleProductionExportDropdown(${p.id})" class="btn-send text-white text-xs px-2 py-1 rounded"><i class="fas fa-download"></i></button><div id="productionExportDropdown-${p.id}" class="dropdown-content hidden"><button onclick="exportSingleProduction(${p.id}, 'excel')"><i class="fas fa-file-excel"></i> Excel</button><button onclick="exportSingleProduction(${p.id}, 'pdf')"><i class="fas fa-file-pdf"></i> PDF</button></div></div></div></td</tr`;
         }
     }
     html += `</tbody>}</div>`;
@@ -416,13 +460,13 @@ async function renderProduction(highlightId = null) {
 }
 function changeProductionPage(page) { if (page > 0 && page <= Math.ceil(productionsData.length / productionRowsPerPage)) { currentProductionPage = page; renderProduction(); } }
 function viewProduction(id) { let p = productionsData.find(p=>p.id===id); if(p) { document.getElementById("viewProductionContent").innerHTML = `<div class="space-y-2"><p><strong>Date:</strong> ${p.date}</p><p><strong>Description:</strong> ${escapeHtml(p.project_name)}</p><p><strong>Quantity:</strong> ${parseInt(p.income)/25000||0}</p><p><strong>Income:</strong> ${formatCurrency(p.income)}</p><p><strong>Expenses:</strong> ${formatCurrency(p.expenses)}</p><p><strong>Profit:</strong> ${formatCurrency((p.income||0)-(p.expenses||0))}</p></div>`; openModal('viewProductionModal'); } }
-function editProduction(id) { let p = productionsData.find(p=>p.id===id); if(p) { document.getElementById("editProductionId").value = p.id; document.getElementById("prodDate").value = p.date; document.getElementById("prodDescription").value = p.project_name; document.getElementById("prodIncome").value = p.income; document.getElementById("prodExpenses").value = p.expenses; document.getElementById("prodQuantity").value = parseInt(p.income)/25000; document.getElementById("prodSold").value = parseInt(p.paid_amount)/25000; openModal('productionModal'); } }
-async function saveProduction() { let id = document.getElementById("editProductionId").value; let data = { date: document.getElementById("prodDate").value, project_name: document.getElementById("prodDescription").value, income: parseFloat(document.getElementById("prodIncome").value)||0, expenses: parseFloat(document.getElementById("prodExpenses").value)||0, paid_amount: parseFloat(document.getElementById("prodSold").value)*25000||0, status: 'paid' }; if(!data.project_name) { showToast("Description required",true); return; } let res = id ? await updateProductionAPI(parseInt(id), data) : await addProductionAPI(data); if(res.success) { showToast(id?"Production updated":"Production added"); addLog(`Production ${id?"updated":"added"}: ${data.project_name}`); closeModal('productionModal'); renderProduction(); renderDashboard(); } else showToast(res.message || "Failed", true); }
+function editProduction(id) { let p = productionsData.find(p=>p.id===id); if(p) { document.getElementById("editProductionId").value = p.id; document.getElementById("prodDate").value = p.date; document.getElementById("prodDescription").value = p.project_name; document.getElementById("prodIncome").value = formatCurrency(p.income).replace('TZS ', ''); document.getElementById("prodExpenses").value = formatCurrency(p.expenses).replace('TZS ', ''); document.getElementById("prodQuantity").value = parseInt(p.income)/25000; document.getElementById("prodSold").value = parseInt(p.paid_amount)/25000; openModal('productionModal'); } }
+async function saveProduction() { let id = document.getElementById("editProductionId").value; let data = { date: document.getElementById("prodDate").value, project_name: document.getElementById("prodDescription").value, income: parseAmount(document.getElementById("prodIncome").value), expenses: parseAmount(document.getElementById("prodExpenses").value), paid_amount: parseFloat(document.getElementById("prodSold").value)*25000||0, status: 'paid' }; if(!data.project_name) { showToast("Description required",true); return; } let res = id ? await updateProductionAPI(parseInt(id), data) : await addProductionAPI(data); if(res.success) { showToast(id?"Production updated":"Production added"); addLog(`Production ${id?"updated":"added"}: ${data.project_name}`); closeModal('productionModal'); renderProduction(); renderDashboard(); } else showToast(res.message || "Failed", true); }
 async function deleteProduction(id) { if(confirm("Delete this production record?")) { let res = await deleteProductionAPI(id); if(res.success) { showToast("Production deleted"); addLog(`Production deleted: ID ${id}`); renderProduction(); renderDashboard(); } else showToast(res.message || "Failed", true); } }
-function exportSingleProduction(prodId, format) { let p = productionsData.find(p=>p.id===prodId); if(!p) return; let filename = `${p.project_name.replace(/[^a-z0-9]/gi,'_')}_${new Date().toISOString().slice(0,10)}`; if(format==='excel') { let ws=[["Date","Description","Quantity","Income","Expenses","Profit"]]; ws.push([p.date,p.project_name,parseInt(p.income)/25000,p.income,p.expenses,(p.income||0)-(p.expenses||0)]); let wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(ws),"Production"); XLSX.writeFile(wb,`${filename}.xlsx`); } else { let printWindow = window.open('', '_blank'); printWindow.document.write(`<!DOCTYPE html><html><head><title>${escapeHtml(p.project_name)} - Production Report</title><style>body{font-family:Arial;padding:40px;max-width:800px;margin:0 auto;border:2px solid black;} h1{color:#b45309;text-align:center;} table{width:100%;border-collapse:collapse;} th,td{border:1px solid #ddd;padding:8px;text-align:left;}</style></head><body><h1>${escapeHtml(p.project_name)}</h1><p><strong>Date:</strong> ${p.date}</p><p><strong>Quantity:</strong> ${parseInt(p.income)/25000}</p><p><strong>Income:</strong> ${formatCurrency(p.income)}</p><p><strong>Expenses:</strong> ${formatCurrency(p.expenses)}</p><p><strong>Profit:</strong> ${formatCurrency((p.income||0)-(p.expenses||0))}</p><div class="footer">Generated: ${new Date().toLocaleString()} | GeoTraverse ERP System</div></body></html>`); printWindow.document.close(); printWindow.print(); } showToast(`Exported to ${format}`); let dd=document.getElementById(`productionExportDropdown-${prodId}`); if(dd)dd.classList.add("hidden"); }
+function exportSingleProduction(prodId, format) { let p = productionsData.find(p=>p.id===prodId); if(!p) return; let filename = `${p.project_name.replace(/[^a-z0-9]/gi,'_')}_${new Date().toISOString().slice(0,10)}`; if(format==='excel') { let ws=[["Date","Description","Quantity","Income","Expenses","Profit"]]; ws.push([p.date,p.project_name,parseInt(p.income)/25000,p.income,p.expenses,(p.income||0)-(p.expenses||0)]); let wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(ws),"Production"); XLSX.writeFile(wb,`${filename}.xlsx`); } else { let printWindow = window.open('', '_blank'); printWindow.document.write(`<!DOCTYPE html><html><head><title>${escapeHtml(p.project_name)} - Production Report</title><style>body{font-family:Arial;padding:40px;max-width:800px;margin:0 auto;border:2px solid #b45309;} h1{color:#b45309;text-align:center;} table{width:100%;border-collapse:collapse;} th,td{border:1px solid #ddd;padding:8px;text-align:left;}</style></head><body><h1>${escapeHtml(p.project_name)}</h1><p><strong>Date:</strong> ${p.date}</p><p><strong>Quantity:</strong> ${parseInt(p.income)/25000}</p><p><strong>Income:</strong> ${formatCurrency(p.income)}</p><p><strong>Expenses:</strong> ${formatCurrency(p.expenses)}</p><p><strong>Profit:</strong> ${formatCurrency((p.income||0)-(p.expenses||0))}</p><div class="footer">Generated: ${new Date().toLocaleString()} | GeoTraverse ERP System</div></body></html>`); printWindow.document.close(); printWindow.print(); } showToast(`Exported to ${format}`); let dd=document.getElementById(`productionExportDropdown-${prodId}`); if(dd)dd.classList.add("hidden"); }
 function toggleProductionExportDropdown(prodId) { let dd=document.getElementById(`productionExportDropdown-${prodId}`); document.querySelectorAll('[id^="productionExportDropdown-"]').forEach(d=>{if(d.id!==`productionExportDropdown-${prodId}`)d.classList.add("hidden");}); if(dd)dd.classList.toggle("hidden"); }
 function exportProductionToExcel() { let ws=[["Date","Description","Quantity","Income","Expenses","Profit"]]; productionsData.forEach(p=>ws.push([p.date,p.project_name,parseInt(p.income)/25000,p.income,p.expenses,(p.income||0)-(p.expenses||0)])); let wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(ws),"Production"); XLSX.writeFile(wb,`production_${new Date().toISOString().slice(0,10)}.xlsx`); showToast("Production exported to Excel"); }
-function exportProductionToPDF() { let printWindow = window.open('', '_blank'); let rows = productionsData.map(p => `<tr><td class="px-2 py-1">${p.date}</td><td class="px-2 py-1">${p.project_name}</td><td class="px-2 py-1">${parseInt(p.income)/25000}</td><td class="px-2 py-1">${formatCurrency(p.income)}</td><td class="px-2 py-1">${formatCurrency(p.expenses)}</td><td class="px-2 py-1">${formatCurrency((p.income||0)-(p.expenses||0))}</td></tr`).join(''); printWindow.document.write(`<!DOCTYPE html><html><head><title>Production Report</title><style>body{font-family:Arial;padding:40px;max-width:1000px;margin:0 auto;border:2px solid black;} h1{color:#b45309;text-align:center;} table{width:100%;border-collapse:collapse;} th,td{border:1px solid #ddd;padding:8px;text-align:left;}</style></head><body><h1>Production Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table><thead><tr><th>Date</th><th>Description</th><th>Quantity</th><th>Income</th><th>Expenses</th><th>Profit</th></tr></thead><tbody>${rows}</tbody></table><div class="footer" style="text-align:center;margin-top:30px;">GeoTraverse ERP System</div></body></html>`); printWindow.document.close(); printWindow.print(); }
+function exportProductionToPDF() { let printWindow = window.open('', '_blank'); let rows = productionsData.map(p => `<tr><td class="px-2 py-1">${p.date}</td><td class="px-2 py-1">${p.project_name}</td><td class="px-2 py-1">${parseInt(p.income)/25000}</td><td class="px-2 py-1">${formatCurrency(p.income)}</td><td class="px-2 py-1">${formatCurrency(p.expenses)}</td><td class="px-2 py-1">${formatCurrency((p.income||0)-(p.expenses||0))}<tr>`).join(''); printWindow.document.write(`<!DOCTYPE html><html><head><title>Production Report</title><style>body{font-family:Arial;padding:40px;max-width:1000px;margin:0 auto;border:2px solid #b45309;} h1{color:#b45309;text-align:center;} table{width:100%;border-collapse:collapse;} th,td{border:1px solid #ddd;padding:8px;text-align:left;}</style></head><body><h1>Production Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table><thead><tr><th>Date</th><th>Description</th><th>Quantity</th><th>Income</th><th>Expenses</th><th>Profit</th></tr></thead><tbody>${rows}</tbody></table><div class="footer" style="text-align:center;margin-top:30px;">GeoTraverse ERP System</div></body></html>`); printWindow.document.close(); printWindow.print(); }
 
 // ==================== BUDGET API FUNCTIONS ====================
 async function fetchBudgets() { 
@@ -441,17 +485,17 @@ async function renderBudget(highlightId = null) {
     let searchTerm = document.getElementById("globalSearchInput")?.value.toLowerCase() || "";
     let filtered = budgetsData.filter(b => b.source?.toLowerCase().includes(searchTerm));
     let paginated = filtered.slice((currentBudgetPage-1)*budgetRowsPerPage, currentBudgetPage*budgetRowsPerPage);
-    let html = `<div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold"><i class="fas fa-wallet text-amber-600 mr-2"></i>Budget (${budgetsData.length})</h2><div class="flex gap-2"><button onclick="openModal('budgetModal')" class="btn-primary text-white px-4 py-2 rounded-xl text-sm"><i class="fas fa-plus mr-1"></i>Add Transaction</button><button onclick="exportBudgetToExcel()" class="btn-excel text-white px-3 py-1.5 rounded text-xs"><i class="fas fa-file-excel mr-1"></i> Excel All</button><button onclick="exportBudgetToPDF()" class="btn-pdf text-white px-3 py-1.5 rounded text-xs"><i class="fas fa-file-pdf mr-1"></i> PDF All</button></div></div>
-        <div class="grid grid-cols-3 gap-3 mb-4"><div class="bg-green-50 p-2 text-center"><p class="text-[9px]">Income</p><p class="font-bold text-green-600">${formatCurrency(totalIncome)}</p></div><div class="bg-red-50 p-2 text-center"><p class="text-[9px]">Expenses</p><p class="font-bold text-red-600">${formatCurrency(totalExpenses)}</p></div><div class="bg-blue-50 p-2 text-center"><p class="text-[9px]">Remaining</p><p class="font-bold text-blue-600">${formatCurrency(totalIncome-totalExpenses)}</p></div></div>
-        <div class="bg-white rounded-xl p-3"><div class="table-responsive"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th>Date</th><th>Type</th><th>Source</th><th>Amount</th><th>Actions</th></tr></thead><tbody>`;
+    let html = `<div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold"><i class="fas fa-wallet text-amber-600 mr-2"></i>Budget (${budgetsData.length})</h2><div class="flex gap-2"><button onclick="openModal('budgetModal')" class="btn-add text-white px-4 py-2 rounded-xl text-sm"><i class="fas fa-plus mr-1"></i>Add Transaction</button><button onclick="exportBudgetToExcel()" class="btn-excel text-white px-3 py-1.5 rounded text-xs"><i class="fas fa-file-excel mr-1"></i> Excel All</button><button onclick="exportBudgetToPDF()" class="btn-pdf text-white px-3 py-1.5 rounded text-xs"><i class="fas fa-file-pdf mr-1"></i> PDF All</button></div></div>
+        <div class="grid grid-cols-3 gap-3 mb-4"><div class="bg-green-50 p-3 text-center rounded-xl"><p class="text-[9px] text-gray-500">Income</p><p class="font-bold text-green-600">${formatCurrency(totalIncome)}</p></div><div class="bg-red-50 p-3 text-center rounded-xl"><p class="text-[9px] text-gray-500">Expenses</p><p class="font-bold text-red-600">${formatCurrency(totalExpenses)}</p></div><div class="bg-blue-50 p-3 text-center rounded-xl"><p class="text-[9px] text-gray-500">Remaining</p><p class="font-bold text-blue-600">${formatCurrency(totalIncome-totalExpenses)}</p></div></div>
+        <div class="bg-white rounded-xl p-3"><div class="table-responsive"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th class="p-2">Date</th><th class="p-2">Type</th><th class="p-2">Source</th><th class="p-2 text-right">Amount</th><th class="p-2 text-center">Actions</th></tr></thead><tbody>`;
     if (paginated.length === 0) {
         html += `<tr><td colspan="5" class="text-center py-8 text-gray-400">No transactions found. Click "Add Transaction" to create one.</td></tr>`;
     } else {
         for(let b of paginated) {
             let isHighlighted = highlightId && b.id === highlightId;
             html += `<tr class="border-b ${b.type==='income'?'income-row':'expense-row'} ${isHighlighted ? 'search-highlight' : ''}" id="budget-row-${b.id}"><td class="p-2">${b.transaction_date}</td><td class="p-2"><span class="px-1.5 py-0.5 rounded-full text-[9px] ${b.type==='income'?'bg-green-100 text-green-700':'bg-red-100 text-red-700'}">${b.type}</span></td><td class="p-2">${escapeHtml(b.source)}</td</tr
-            <td class="p-2 ${b.type==='income'?'text-green-600':'text-red-600'}">${formatCurrency(b.amount)}</td
-            <td class="p-2"><div class="flex gap-1"><button onclick="viewBudgetItem(${b.id})" class="btn-view text-white text-xs px-2 py-1 rounded"><i class="fas fa-eye"></i></button><button onclick="editBudgetItem(${b.id})" class="btn-edit text-white text-xs px-2 py-1 rounded"><i class="fas fa-edit"></i></button><button onclick="deleteBudgetItem(${b.id})" class="btn-delete text-white text-xs px-2 py-1 rounded"><i class="fas fa-trash"></i></button><div class="relative"><button onclick="toggleBudgetExportDropdown(${b.id})" class="btn-send text-white text-xs px-2 py-1 rounded"><i class="fas fa-download"></i></button><div id="budgetExportDropdown-${b.id}" class="dropdown-content hidden"><button onclick="exportSingleBudget(${b.id}, 'excel')"><i class="fas fa-file-excel"></i> Excel</button><button onclick="exportSingleBudget(${b.id}, 'pdf')"><i class="fas fa-file-pdf"></i> PDF</button></div></div></div></td</tr`;
+            <td class="p-2 text-right ${b.type==='income'?'text-green-600':'text-red-600'} font-semibold">${formatCurrency(b.amount)}</td
+            <td class="p-2 text-center"><div class="flex gap-1 justify-center"><button onclick="viewBudgetItem(${b.id})" class="btn-view text-white text-xs px-2 py-1 rounded"><i class="fas fa-eye"></i></button><button onclick="editBudgetItem(${b.id})" class="btn-edit text-white text-xs px-2 py-1 rounded"><i class="fas fa-edit"></i></button><button onclick="deleteBudgetItem(${b.id})" class="btn-delete text-white text-xs px-2 py-1 rounded"><i class="fas fa-trash"></i></button><div class="relative"><button onclick="toggleBudgetExportDropdown(${b.id})" class="btn-send text-white text-xs px-2 py-1 rounded"><i class="fas fa-download"></i></button><div id="budgetExportDropdown-${b.id}" class="dropdown-content hidden"><button onclick="exportSingleBudget(${b.id}, 'excel')"><i class="fas fa-file-excel"></i> Excel</button><button onclick="exportSingleBudget(${b.id}, 'pdf')"><i class="fas fa-file-pdf"></i> PDF</button></div></div></div></td</tr`;
         }
     }
     html += `</tbody>}</div>`;
@@ -461,13 +505,13 @@ async function renderBudget(highlightId = null) {
 }
 function changeBudgetPage(page) { if (page > 0 && page <= Math.ceil(budgetsData.length / budgetRowsPerPage)) { currentBudgetPage = page; renderBudget(); } }
 function viewBudgetItem(id) { let b = budgetsData.find(b=>b.id===id); if(b) alert(`Transaction: ${b.source}\nType: ${b.type}\nAmount: ${formatCurrency(b.amount)}\nDate: ${b.transaction_date}\nDesc: ${b.description||'-'}`); }
-function editBudgetItem(id) { let b = budgetsData.find(b=>b.id===id); if(b) { document.getElementById("editBudgetId").value = b.id; document.getElementById("budgetType").value = b.type; document.getElementById("budgetSource").value = b.source; document.getElementById("budgetAmount").value = b.amount; document.getElementById("budgetDate").value = b.transaction_date; document.getElementById("budgetDescription").value = b.description||''; openModal('budgetModal'); } }
-async function saveBudget() { let id = document.getElementById("editBudgetId").value; let data = { type: document.getElementById("budgetType").value, source: document.getElementById("budgetSource").value, amount: parseFloat(document.getElementById("budgetAmount").value)||0, transaction_date: document.getElementById("budgetDate").value, description: document.getElementById("budgetDescription").value, status: 'paid' }; if(!data.source||!data.amount){ showToast("Source and amount required",true); return; } let res = id ? await updateBudgetAPI(parseInt(id), data) : await addBudgetAPI(data); if(res.success) { showToast(id?"Transaction updated":"Transaction added"); addLog(`Budget ${id?"updated":"added"}: ${data.source}`); closeModal('budgetModal'); renderBudget(); renderDashboard(); } else showToast(res.message || "Failed", true); }
+function editBudgetItem(id) { let b = budgetsData.find(b=>b.id===id); if(b) { document.getElementById("editBudgetId").value = b.id; document.getElementById("budgetType").value = b.type; document.getElementById("budgetSource").value = b.source; document.getElementById("budgetAmount").value = formatCurrency(b.amount).replace('TZS ', ''); document.getElementById("budgetDate").value = b.transaction_date; document.getElementById("budgetDescription").value = b.description||''; openModal('budgetModal'); } }
+async function saveBudget() { let id = document.getElementById("editBudgetId").value; let data = { type: document.getElementById("budgetType").value, source: document.getElementById("budgetSource").value, amount: parseAmount(document.getElementById("budgetAmount").value), transaction_date: document.getElementById("budgetDate").value, description: document.getElementById("budgetDescription").value, status: 'paid' }; if(!data.source||!data.amount){ showToast("Source and amount required",true); return; } let res = id ? await updateBudgetAPI(parseInt(id), data) : await addBudgetAPI(data); if(res.success) { showToast(id?"Transaction updated":"Transaction added"); addLog(`Budget ${id?"updated":"added"}: ${data.source}`); closeModal('budgetModal'); renderBudget(); renderDashboard(); } else showToast(res.message || "Failed", true); }
 async function deleteBudgetItem(id) { if(confirm("Delete this transaction?")) { let res = await deleteBudgetAPI(id); if(res.success) { showToast("Transaction deleted"); addLog(`Budget deleted: ID ${id}`); renderBudget(); renderDashboard(); } else showToast(res.message || "Failed", true); } }
-function exportSingleBudget(budgetId, format) { let b = budgetsData.find(b=>b.id===budgetId); if(!b) return; let filename = `${b.source.replace(/[^a-z0-9]/gi,'_')}_${new Date().toISOString().slice(0,10)}`; if(format==='excel') { let ws=[["Date","Type","Source","Amount","Description"]]; ws.push([b.transaction_date,b.type,b.source,b.amount,b.description||'']); let wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(ws),"Transaction"); XLSX.writeFile(wb,`${filename}.xlsx`); } else { let printWindow = window.open('', '_blank'); printWindow.document.write(`<!DOCTYPE html><html><head><title>${escapeHtml(b.source)} - Transaction</title><style>body{font-family:Arial;padding:40px;max-width:800px;margin:0 auto;border:2px solid black;}</style></head><body><h1>${escapeHtml(b.source)}</h1><p><strong>Date:</strong> ${b.transaction_date}</p><p><strong>Type:</strong> ${b.type}</p><p><strong>Amount:</strong> ${formatCurrency(b.amount)}</p><p><strong>Description:</strong> ${escapeHtml(b.description||'-')}</p><div class="footer">Generated: ${new Date().toLocaleString()}</div></body></html>`); printWindow.document.close(); printWindow.print(); } showToast(`Exported to ${format}`); let dd=document.getElementById(`budgetExportDropdown-${budgetId}`); if(dd)dd.classList.add("hidden"); }
+function exportSingleBudget(budgetId, format) { let b = budgetsData.find(b=>b.id===budgetId); if(!b) return; let filename = `${b.source.replace(/[^a-z0-9]/gi,'_')}_${new Date().toISOString().slice(0,10)}`; if(format==='excel') { let ws=[["Date","Type","Source","Amount","Description"]]; ws.push([b.transaction_date,b.type,b.source,b.amount,b.description||'']); let wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(ws),"Transaction"); XLSX.writeFile(wb,`${filename}.xlsx`); } else { let printWindow = window.open('', '_blank'); printWindow.document.write(`<!DOCTYPE html><html><head><title>${escapeHtml(b.source)} - Transaction</title><style>body{font-family:Arial;padding:40px;max-width:800px;margin:0 auto;border:2px solid #b45309;}</style></head><body><h1>${escapeHtml(b.source)}</h1><p><strong>Date:</strong> ${b.transaction_date}</p><p><strong>Type:</strong> ${b.type}</p><p><strong>Amount:</strong> ${formatCurrency(b.amount)}</p><p><strong>Description:</strong> ${escapeHtml(b.description||'-')}</p><div class="footer">Generated: ${new Date().toLocaleString()}</div></body></html>`); printWindow.document.close(); printWindow.print(); } showToast(`Exported to ${format}`); let dd=document.getElementById(`budgetExportDropdown-${budgetId}`); if(dd)dd.classList.add("hidden"); }
 function toggleBudgetExportDropdown(budgetId) { let dd=document.getElementById(`budgetExportDropdown-${budgetId}`); document.querySelectorAll('[id^="budgetExportDropdown-"]').forEach(d=>{if(d.id!==`budgetExportDropdown-${budgetId}`)d.classList.add("hidden");}); if(dd)dd.classList.toggle("hidden"); }
 function exportBudgetToExcel() { let ws=[["Date","Type","Source","Amount","Description"]]; budgetsData.forEach(b=>ws.push([b.transaction_date,b.type,b.source,b.amount,b.description||''])); let wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(ws),"Budget"); XLSX.writeFile(wb,`budget_${new Date().toISOString().slice(0,10)}.xlsx`); showToast("Budget exported to Excel"); }
-function exportBudgetToPDF() { let printWindow = window.open('', '_blank'); let rows = budgetsData.map(b => `<tr><td class="px-2 py-1">${b.transaction_date}</td><td class="px-2 py-1">${b.type}</td><td class="px-2 py-1">${b.source}</td><td class="px-2 py-1">${formatCurrency(b.amount)}</td</tr`).join(''); printWindow.document.write(`<!DOCTYPE html><html><head><title>Budget Report</title><style>body{font-family:Arial;padding:40px;max-width:1000px;margin:0 auto;border:2px solid black;} h1{color:#b45309;text-align:center;} table{width:100%;border-collapse:collapse;} th,td{border:1px solid #ddd;padding:8px;text-align:left;}</style></head><body><h1>Budget Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table><thead><tr><th>Date</th><th>Type</th><th>Source</th><th>Amount</th></tr></thead><tbody>${rows}</tbody></table><div class="footer" style="text-align:center;margin-top:30px;">GeoTraverse ERP System</div></body></html>`); printWindow.document.close(); printWindow.print(); }
+function exportBudgetToPDF() { let printWindow = window.open('', '_blank'); let rows = budgetsData.map(b => `<tr><td class="px-2 py-1">${b.transaction_date}</td><td class="px-2 py-1">${b.type}</td><td class="px-2 py-1">${b.source}</td><td class="px-2 py-1">${formatCurrency(b.amount)}</td</tr`).join(''); printWindow.document.write(`<!DOCTYPE html><html><head><title>Budget Report</title><style>body{font-family:Arial;padding:40px;max-width:1000px;margin:0 auto;border:2px solid #b45309;} h1{color:#b45309;text-align:center;} table{width:100%;border-collapse:collapse;} th,td{border:1px solid #ddd;padding:8px;text-align:left;}</style></head><body><h1>Budget Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table><thead><tr><th>Date</th><th>Type</th><th>Source</th><th>Amount</th></tr></thead><tbody>${rows}</tbody></table><div class="footer" style="text-align:center;margin-top:30px;">GeoTraverse ERP System</div></body></html>`); printWindow.document.close(); printWindow.print(); }
 
 // ==================== MESSAGES API FUNCTIONS ====================
 async function fetchMessages() { const res = await apiCall(`get_conversations.php?department_id=${DEPARTMENT_ID}`); if (res.success && res.data) conversationsList = res.data; else conversationsList = []; updateMessageBadge(); return conversationsList; }
@@ -479,7 +523,7 @@ async function markMessageRead(messageId) { return await apiCall('mark_message_r
 
 async function renderMessages(highlightId = null) {
     await fetchMessages();
-    let html = `<div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold"><i class="fas fa-envelope text-amber-600 mr-2"></i>Messages</h2><button onclick="openModal('startChatModal')" class="btn-primary text-white px-4 py-2 rounded-xl text-sm">+ New Chat</button></div><div class="messages-grid" id="messagesGridContainer"></div>`;
+    let html = `<div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold"><i class="fas fa-envelope text-amber-600 mr-2"></i>Messages</h2><button onclick="openModal('startChatModal')" class="btn-add text-white px-4 py-2 rounded-xl text-sm">+ New Chat</button></div><div class="messages-grid" id="messagesGridContainer"></div>`;
     document.getElementById("messagesSection").innerHTML = html;
     if (conversationsList.length === 0) { document.getElementById("messagesGridContainer").innerHTML = '<div class="col-span-3 text-center py-12 text-gray-400">No messages. Start a new chat!</div>'; return; }
     let gridHtml = '';
@@ -532,7 +576,7 @@ async function renderReports(highlightId = null) {
     await fetchReports();
     let searchTerm = document.getElementById("globalSearchInput")?.value.toLowerCase() || "";
     let filtered = reportsList.filter(r => r.title?.toLowerCase().includes(searchTerm));
-    let html = `<div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold"><i class="fas fa-chart-bar text-amber-600 mr-2"></i>Reports (${reportsList.length})</h2><div class="flex gap-2"><button onclick="openModal('addReportModal')" class="btn-primary text-white px-4 py-2 rounded-xl text-sm"><i class="fas fa-plus mr-1"></i>Add Report</button><button onclick="exportAllReportsToExcel()" class="btn-excel text-white px-3 py-1.5 rounded text-xs"><i class="fas fa-file-excel mr-1"></i> Excel All</button><button onclick="exportAllReportsToPDF()" class="btn-pdf text-white px-3 py-1.5 rounded text-xs"><i class="fas fa-file-pdf mr-1"></i> PDF All</button></div></div>
+    let html = `<div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold"><i class="fas fa-chart-bar text-amber-600 mr-2"></i>Reports (${reportsList.length})</h2><div class="flex gap-2"><button onclick="openModal('addReportModal')" class="btn-add text-white px-4 py-2 rounded-xl text-sm"><i class="fas fa-plus mr-1"></i>Add Report</button><button onclick="exportAllReportsToExcel()" class="btn-excel text-white px-3 py-1.5 rounded text-xs"><i class="fas fa-file-excel mr-1"></i> Excel All</button><button onclick="exportAllReportsToPDF()" class="btn-pdf text-white px-3 py-1.5 rounded text-xs"><i class="fas fa-file-pdf mr-1"></i> PDF All</button></div></div>
         <div class="reports-grid" id="reportsGridContainer"></div>`;
     document.getElementById("reportsSection").innerHTML = html;
     if (filtered.length === 0) { document.getElementById("reportsGridContainer").innerHTML = '<div class="col-span-2 text-center py-12 text-gray-400">No reports found. Click "Add Report" to create one.</div>'; return; }
@@ -578,7 +622,7 @@ function exportSingleReportPDF(reportId) {
     if(r) { 
         let printWindow = window.open('', '_blank'); 
         printWindow.document.write(`<!DOCTYPE html><html><head><title>${escapeHtml(r.title)} - Report</title>
-        <style>body{font-family:Arial;padding:40px;max-width:800px;margin:0 auto;border:2px solid black;} h1{color:#b45309;text-align:center;} .content{background:#f5f5f5;padding:15px;border-radius:5px;white-space:pre-wrap;}</style>
+        <style>body{font-family:Arial;padding:40px;max-width:800px;margin:0 auto;border:2px solid #b45309;} h1{color:#b45309;text-align:center;} .content{background:#f5f5f5;padding:15px;border-radius:5px;white-space:pre-wrap;}</style>
         </head><body><h1>${escapeHtml(r.title)}</h1><p><strong>Period:</strong> ${r.period}</p><p><strong>Created:</strong> ${formatDate(r.created_at)}</p><hr/><div class="content">${escapeHtml(r.content)}</div>
         <div style="text-align:center;margin-top:30px;font-size:10px;">Generated: ${new Date().toLocaleString()} | GeoTraverse ERP System</div></body></html>`); 
         printWindow.document.close(); 
@@ -590,7 +634,7 @@ function exportAllReportsToPDF() {
     let printWindow = window.open('', '_blank'); 
     let reportsHtml = reportsList.map(r => `<div style="margin-bottom:30px; border-bottom:1px solid #ddd; padding-bottom:20px;"><h3 style="color:#b45309;">${escapeHtml(r.title)}</h3><p><strong>Period:</strong> ${r.period}</p><p><strong>Created:</strong> ${formatDate(r.created_at)}</p><div style="background:#f5f5f5; padding:10px; border-radius:5px;">${escapeHtml(r.content)}</div></div>`).join(''); 
     printWindow.document.write(`<!DOCTYPE html><html><head><title>All Reports</title>
-    <style>body{font-family:Arial;padding:40px;max-width:1000px;margin:0 auto;border:2px solid black;} h1{color:#b45309;text-align:center;} .content{background:#f5f5f5;padding:15px;}</style>
+    <style>body{font-family:Arial;padding:40px;max-width:1000px;margin:0 auto;border:2px solid #b45309;} h1{color:#b45309;text-align:center;} .content{background:#f5f5f5;padding:15px;}</style>
     </head><body><h1>All Reports</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/>${reportsHtml}<div style="text-align:center;margin-top:30px;">GeoTraverse ERP System</div></body></html>`); 
     printWindow.document.close(); 
     printWindow.print(); 
@@ -599,7 +643,7 @@ function exportAllReportsToPDF() {
 // ==================== SETTINGS ====================
 function renderSettings() {
     let logsHtml = activityLogs.slice(0, 15).map(l => `<div class="text-[10px] border-b py-1"><span>${escapeHtml(l.action)}</span><span class="float-right text-gray-400">${new Date(l.created_at).toLocaleString()}</span></div>`).join('');
-    let colors = [{ name: 'Amber', value: '#b45309' }, { name: 'Orange', value: '#ea580c' }, { name: 'Blue', value: '#2563eb' }, { name: 'Purple', value: '#7c3aed' }, { name: 'Green', value: '#065f46' }, { name: 'Red', value: '#dc2626' }];
+    let colors = [{ name: 'Amber', value: '#b45309' }, { name: 'Orange', value: '#ea580c' }, { name: 'Blue', value: '#2563eb' }, { name: 'Purple', value: '#7c3aed' }, { name: 'Green', value: '#065f46' }, { name: 'Red', value: '#dc2626' }, { name: 'Teal', value: '#0d9488' }, { name: 'Pink', value: '#db2777' }];
     let html = `<h2 class="text-xl font-bold mb-4"><i class="fas fa-cog mr-2"></i>Settings</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="bg-white rounded-xl p-4 shadow-sm"><h3 class="font-semibold text-sm mb-2"><i class="fas fa-palette mr-2 text-amber-600"></i>Sidebar Color</h3><div class="flex gap-2 flex-wrap">${colors.map(c => `<div class="color-option" style="background:${c.value}" onclick="changeColor('${c.value}', this)"></div>`).join('')}</div></div>
@@ -651,7 +695,6 @@ function searchAndHighlight(section, id, elementId) {
 }
 document.addEventListener("click", (e) => { let inp = document.getElementById("globalSearchInput"); let dd = document.getElementById("searchResultsDropdown"); if (inp && dd && !inp.contains(e.target) && !dd.contains(e.target)) dd.classList.remove("active"); });
 function toggleSendDropdown(dropdownId) { const dropdown = document.getElementById(dropdownId); document.querySelectorAll('.send-dropdown-content').forEach(d => { if (d.id !== dropdownId) d.style.display = 'none'; }); if (dropdown) dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block'; }
-document.addEventListener('click', (e) => { if (!e.target.closest('.send-dropdown')) document.querySelectorAll('.send-dropdown-content').forEach(d => d.style.display = 'none'); });
 
 function showSection(sectionId, highlightId = null) {
     let sections = ["dashboardSection","productionSection","budgetSection","messagesSection","reportsSection","settingsSection"];

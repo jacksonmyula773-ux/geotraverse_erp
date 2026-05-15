@@ -11,6 +11,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <style>
         * { font-family: 'Inter', sans-serif; }
@@ -154,7 +155,7 @@
         
         /* PDF Print Styles */
         @media print {
-            .no-print, .sidebar, header, .scroll-top, .connection-status, .auto-refresh-badge, button, .action-btn, .send-dropdown, .delete-conv-btn, .detail-buttons button { display: none !important; }
+            .no-print, .sidebar, header, .scroll-top, .connection-status, .auto-refresh-badge, button:not(.keep-print), .action-btn, .send-dropdown, .delete-conv-btn, .detail-buttons button:not(.keep-print) { display: none !important; }
             body { background: white; padding: 0; margin: 0; }
             .main-content { margin-left: 0 !important; }
             .project-card, .report-card, .stat-card, .dashboard-card { break-inside: avoid; page-break-inside: avoid; border: 1px solid #ddd; box-shadow: none; }
@@ -373,47 +374,186 @@
     function exportSingleProjectPDFWithImage(projectId) {
         const p = projectsData.find(p => p.id === projectId);
         if (!p) return;
+        
         let imageUrl = getProjectImageUrl(p);
-        let imageHtml = imageUrl ? `<div style="text-align: center; margin: 20px 0; border: 2px solid #ddd; border-radius: 12px; padding: 10px; background: #f9fafb;"><img src="${imageUrl}" style="max-width: 100%; max-height: 280px; object-fit: contain; border-radius: 8px;" onerror="this.style.display='none'"><p style="margin-top: 8px; font-size: 12px; color: #666;">Project Image</p></div>` : '<div style="text-align: center; margin: 20px 0; padding: 40px; background: #f3f4f6; border-radius: 12px; border: 2px solid #ddd;"><i class="fas fa-image" style="font-size: 48px; color: #9ca3af;"></i><p style="margin-top: 10px;">No Image Available</p></div>';
-        let html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${escapeHtml(p.name)} - Project Report</title><style>
-            body { font-family: 'Segoe UI', Arial, sans-serif; padding: 30px; max-width: 900px; margin: 0 auto; border: 3px solid black; border-radius: 4px; background: white; }
-            h1 { color: #4b5563; text-align: center; border-bottom: 3px solid #4b5563; padding-bottom: 15px; margin-bottom: 25px; }
-            .header-info { text-align: center; margin-bottom: 20px; color: #666; font-size: 12px; }
-            table { width: 100%; border-collapse: collapse; margin: 20px 0; border: 1px solid #000; }
-            th, td { border: 1px solid #000; padding: 10px 12px; text-align: left; vertical-align: top; }
-            th { background: #f5f5f5; width: 35%; font-weight: bold; }
-            .status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 500; }
-            .status-pending { background: #fef3c7; color: #d97706; }
-            .status-in_progress { background: #dbeafe; color: #2563eb; }
-            .status-completed { background: #d1fae5; color: #059669; }
-            .status-approved { background: #e9d5ff; color: #7e22ce; }
-            .footer { text-align: center; font-size: 10px; color: #999; margin-top: 30px; padding-top: 15px; border-top: 2px solid #ddd; }
-            .print-btn { text-align: center; margin-top: 25px; }
-            .print-btn button { padding: 12px 24px; background: #4b5563; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: bold; }
-            .print-btn button:hover { background: #374151; }
-            @media print { body { border: none; padding: 0; margin: 0; } .print-btn { display: none; } th, td { border-color: #000 !important; } }
-        </style></head><body>
-            <h1>${escapeHtml(p.name)}</h1>
-            <div class="header-info">Project Report - Generated: ${new Date().toLocaleString()} | Project ID: #${p.id}</div>
-            ${imageHtml}
-            <table><th>Project Name:</th><td style="font-weight: bold;">${escapeHtml(p.name)}</td></tr>
-            <tr><th>Client Name:</th><td>${escapeHtml(p.client_name || 'N/A')}</td></tr>
-            <tr><th>Amount:</th><td style="color:#059669; font-weight: bold;">${formatMoney(p.amount)}</td></tr>
-            <tr><th>Status:</th><td><span class="status-badge status-${p.status}">${p.status === 'in_progress' ? 'In Progress' : p.status}</span></td></tr>
-            <tr><th>Progress:</th><td><div style="background:#e5e7eb; border-radius:10px; height:8px; width:150px; display:inline-block; vertical-align:middle;"><div style="background:#4b5563; width:${p.progress || 0}%; height:8px; border-radius:10px;"></div></div> ${p.progress || 0}% Complete</td></tr>
-            <tr><th>Location:</th><td>${escapeHtml(p.location || 'N/A')}</td></tr>
-            <tr><th>Start Date:</th><td>${p.start_date || 'Not specified'}</td></tr>
-            <tr><th>End Date:</th><td>${p.end_date || 'Not specified'}</td></tr>
-            <tr><th>Description:</th><td>${escapeHtml(p.description || 'No description provided')}</td></tr>
-            </table>
-            <div class="footer">GeoTraverse ERP System - Official Project Document</div>
-            <div class="print-btn"><button onclick="window.print();"><i class="fas fa-print"></i> Print / Save as PDF</button></div>
-        </body></html>`;
+        
+        // Build HTML content with black border and image
+        let html = `<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>${escapeHtml(p.name)} - Project Report</title>
+            <style>
+                * { margin: 0; padding: 0; box-sizing: border-box; }
+                body { 
+                    font-family: 'Segoe UI', Arial, sans-serif; 
+                    padding: 40px; 
+                    max-width: 1000px; 
+                    margin: 0 auto; 
+                    border: 4px solid black; 
+                    border-radius: 8px;
+                    background: white;
+                }
+                .container { padding: 30px; }
+                h1 { 
+                    color: #4b5563; 
+                    text-align: center; 
+                    border-bottom: 3px solid #4b5563; 
+                    padding-bottom: 15px; 
+                    margin-bottom: 25px;
+                    font-size: 28px;
+                }
+                .header-info { 
+                    text-align: center; 
+                    margin-bottom: 25px; 
+                    color: #666; 
+                    font-size: 12px;
+                    display: flex;
+                    justify-content: space-between;
+                    border: 1px solid #ddd;
+                    padding: 8px 15px;
+                    background: #f9fafb;
+                }
+                .image-section { 
+                    text-align: center; 
+                    margin: 25px 0; 
+                    border: 2px solid #ddd; 
+                    border-radius: 12px; 
+                    padding: 20px;
+                    background: #f9fafb;
+                }
+                .image-section img { 
+                    max-width: 100%; 
+                    max-height: 350px; 
+                    object-fit: contain;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                }
+                .no-image { 
+                    text-align: center; 
+                    padding: 50px;
+                    color: #999;
+                    font-size: 16px;
+                }
+                .no-image i { font-size: 48px; margin-bottom: 10px; }
+                table { 
+                    width: 100%; 
+                    border-collapse: collapse; 
+                    margin: 25px 0; 
+                    border: 1px solid #000;
+                }
+                th, td { 
+                    border: 1px solid #000; 
+                    padding: 12px 15px; 
+                    text-align: left; 
+                    vertical-align: top;
+                }
+                th { 
+                    background: #f5f5f5; 
+                    width: 35%; 
+                    font-weight: bold;
+                }
+                .status-badge { 
+                    display: inline-block; 
+                    padding: 4px 12px; 
+                    border-radius: 20px; 
+                    font-size: 12px; 
+                    font-weight: 500;
+                }
+                .status-pending { background: #fef3c7; color: #d97706; }
+                .status-in_progress { background: #dbeafe; color: #2563eb; }
+                .status-completed { background: #d1fae5; color: #059669; }
+                .status-approved { background: #e9d5ff; color: #7e22ce; }
+                .progress-bar-container {
+                    width: 150px;
+                    background: #e5e7eb;
+                    border-radius: 10px;
+                    height: 8px;
+                    display: inline-block;
+                    vertical-align: middle;
+                    margin-right: 5px;
+                }
+                .progress-bar-fill {
+                    background: #4b5563;
+                    width: ${p.progress || 0}%;
+                    height: 8px;
+                    border-radius: 10px;
+                }
+                .footer { 
+                    text-align: center; 
+                    font-size: 10px; 
+                    color: #999; 
+                    margin-top: 30px; 
+                    padding-top: 15px; 
+                    border-top: 2px solid #ddd;
+                }
+                .print-btn { 
+                    text-align: center; 
+                    margin-top: 30px; 
+                    margin-bottom: 20px;
+                }
+                .print-btn button { 
+                    padding: 12px 28px; 
+                    background: #4b5563; 
+                    color: white; 
+                    border: none; 
+                    border-radius: 8px; 
+                    cursor: pointer; 
+                    font-size: 14px; 
+                    font-weight: bold;
+                    transition: background 0.2s;
+                }
+                .print-btn button:hover { background: #374151; }
+                @media print { 
+                    body { 
+                        border: none; 
+                        padding: 20px; 
+                        margin: 0; 
+                    }
+                    .print-btn { display: none; }
+                    th, td { border-color: #000 !important; }
+                    .header-info { background: none; }
+                    .image-section { border: 1px solid #ddd; }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>${escapeHtml(p.name)}</h1>
+                <div class="header-info">
+                    <span><strong>Project ID:</strong> #${p.id}</span>
+                    <span><strong>Generated:</strong> ${new Date().toLocaleString()}</span>
+                </div>
+                <div class="image-section">
+                    ${imageUrl ? `<img src="${imageUrl}" alt="Project Image" onerror="this.parentElement.innerHTML='<div class=\\'no-image\\'><i class=\\'fas fa-image\\'></i><p>Image failed to load</p></div>'">` : '<div class="no-image"><i class="fas fa-image"></i><p>No Image Available</p></div>'}
+                </div>
+                <table>
+                    <tr><th>Project Name:</th><td style="font-weight: bold;">${escapeHtml(p.name)}</td></tr>
+                    <tr><th>Client Name:</th><td>${escapeHtml(p.client_name || 'N/A')}</td></tr>
+                    <tr><th>Amount:</th><td style="color: #059669; font-weight: bold;">${formatMoney(p.amount)}</td></tr>
+                    <tr><th>Status:</th><td><span class="status-badge status-${p.status === 'in_progress' ? 'in_progress' : p.status}">${p.status === 'in_progress' ? 'In Progress' : p.status}</span></td></tr>
+                    <tr><th>Progress:</th><td><div class="progress-bar-container"><div class="progress-bar-fill"></div></div> ${p.progress || 0}% Complete</td></tr>
+                    <tr><th>Location:</th><td>${escapeHtml(p.location || 'N/A')}</td></tr>
+                    <tr><th>Start Date:</th><td>${p.start_date || 'Not specified'}</td></tr>
+                    <tr><th>End Date:</th><td>${p.end_date || 'Not specified'}</td></tr>
+                    <tr><th>Description:</th><td>${escapeHtml(p.description || 'No description provided')}</td></tr>
+                </table>
+                <div class="footer">
+                    GeoTraverse ERP System - Official Project Document<br>
+                    Aluminium Department
+                </div>
+                <div class="print-btn">
+                    <button onclick="window.print();"><i class="fas fa-print"></i> Print / Save as PDF</button>
+                </div>
+            </div>
+        </body>
+        </html>`;
+        
         let blob = new Blob([html], { type: 'text/html' });
         let url = URL.createObjectURL(blob);
-        window.open(url, '_blank');
+        let newWindow = window.open(url, '_blank');
         setTimeout(() => URL.revokeObjectURL(url), 1000);
-        showToast('PDF preview opened - Click Print to save');
+        showToast('PDF preview opened - Click Print to save with image');
     }
 
     async function sendProjectToDept(projectId, deptId) { let res = await sendProjectToDepartment(projectId, deptId); if (res.success) showToast(`Project sent to ${departmentNames[deptId] || 'Department'}`); else showToast(res.message || 'Failed', true); toggleSendDropdown(`projectSendDropdown-${projectId}`); }
@@ -524,7 +664,7 @@
         if (budgetsData.length === 0) { document.getElementById('budgetPage').innerHTML = `<div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold"><i class="fas fa-wallet text-gray-600 mr-2"></i>Budget (0)</h2><button onclick="openModal('budgetModal')" class="btn-primary"><i class="fas fa-plus mr-1"></i>Add Transaction</button></div><div class="bg-white rounded-xl p-8 text-center text-gray-400">No transactions found</div>`; return; }
         let html = `<div class="flex justify-between flex-wrap gap-3 mb-4"><h2 class="text-xl font-bold"><i class="fas fa-wallet text-gray-600 mr-2"></i>Budget Management (${budgetsData.length})</h2><div class="flex gap-2"><button onclick="openModal('budgetModal')" class="btn-primary"><i class="fas fa-plus mr-1"></i>Add Transaction</button><button onclick="exportBudgetToExcel()" class="btn-success"><i class="fas fa-file-excel mr-1"></i>Excel All</button><button onclick="exportBudgetToPDF()" class="btn-danger"><i class="fas fa-file-pdf mr-1"></i>PDF All</button></div></div>
         <div class="grid grid-cols-3 gap-3 mb-4"><div class="bg-green-50 rounded-xl p-3 text-center"><p class="text-xs text-gray-500">Total Income</p><p class="text-xl font-bold text-green-600">${formatMoney(totalIncome)}</p></div><div class="bg-red-50 rounded-xl p-3 text-center"><p class="text-xs text-gray-500">Total Expenses</p><p class="text-xl font-bold text-red-600">${formatMoney(totalExpenses)}</p></div><div class="bg-blue-50 rounded-xl p-3 text-center"><p class="text-xs text-gray-500">Remaining</p><p class="text-xl font-bold text-blue-600">${formatMoney(totalRemaining)}</p></div></div>
-        <div class="bg-white rounded-xl shadow-sm border overflow-hidden"><div class="overflow-x-auto"><table class="min-w-full"><thead><tr class="bg-gray-50 border-b"><th class="p-3">Date</th><th class="p-3">Type</th><th class="p-3">Source</th><th class="p-3 text-right">Amount</th><th class="p-3">Description</th><th class="p-3 text-center">Actions</th></tr></thead><tbody>`;
+        <div class="bg-white rounded-xl shadow-sm border overflow-hidden"><div class="overflow-x-auto"><table class="min-w-full"><thead><tr class="bg-gray-50 border-b"><th class="p-3">Date</th><th class="p-3">Type</th><th class="p-3">Source</th><th class="p-3 text-right">Amount</th><th class="p-3">Description</th><th class="p-3 text-center">Actions</th></table></thead><tbody>`;
         for (let b of budgetsData) {
             html += `<tr id="budget-row-${b.id}" class="border-b ${b.type === 'income' ? 'income-row' : 'expense-row'} hover:bg-gray-50"><td class="p-3">${b.transaction_date}</td><td class="p-3"><span class="status-badge ${b.type==='income'?'bg-green-100 text-green-700':'bg-red-100 text-red-700'}">${b.type}</span></td><td class="p-3 font-medium">${escapeHtml(b.source)}</td><td class="p-3 text-right ${b.type==='income'?'text-green-600':'text-red-600'} font-bold">${formatMoney(b.amount)}</td><td class="p-3 text-sm text-gray-500">${escapeHtml((b.description||'').substring(0,50))}</td><td class="p-3 text-center"><div class="flex gap-2 justify-center"><button onclick="viewBudgetItem(${b.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="editBudgetItem(${b.id})" class="action-btn edit"><i class="fas fa-edit"></i></button><button onclick="deleteBudgetItem(${b.id})" class="action-btn delete"><i class="fas fa-trash"></i></button></div></td></tr>`;
         }

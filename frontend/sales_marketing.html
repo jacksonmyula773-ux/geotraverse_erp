@@ -37,22 +37,29 @@
         .nav-item.active i { color: #fbbf24; }
         .nav-item:hover:not(.active) { background: rgba(255,255,255,0.08); }
         
-        .stat-card { transition: all 0.3s ease; background: white; border-radius: 20px; border: 1px solid #e5e7eb; cursor: pointer; }
+        .stat-card { transition: all 0.3s ease; background: white; border-radius: 20px; border: 1px solid #e5e7eb; cursor: pointer; text-align: center; padding: 20px; }
         .stat-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -12px rgba(0,0,0,0.15); border-color: #f97316; }
+        .stat-number { font-size: 28px; font-weight: 700; margin-top: 8px; margin-bottom: 4px; }
+        .stat-label { font-size: 12px; font-weight: 500; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-icon { width: 48px; height: 48px; border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto; }
         
-        .btn-primary { background: linear-gradient(135deg, #f97316, #ea580c); transition: all 0.2s; }
-        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 5px 15px rgba(249,115,22,0.3); }
+        .btn-primary { background: linear-gradient(135deg, #f97316, #ea580c); transition: all 0.2s; padding: 10px 18px; border-radius: 10px; border: none; cursor: pointer; font-weight: 500; color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(249,115,22,0.4); }
+        .btn-success { background: linear-gradient(135deg, #10b981, #059669); transition: all 0.2s; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 500; color: white; }
+        .btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); transition: all 0.2s; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 500; color: white; }
+        .btn-warning { background: linear-gradient(135deg, #f59e0b, #d97706); transition: all 0.2s; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 500; color: white; }
+        .btn-purple { background: linear-gradient(135deg, #8b5cf6, #7c3aed); transition: all 0.2s; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 500; color: white; }
         
-        .toast-notification { position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, #f97316, #ea580c); color: white; padding: 10px 16px; border-radius: 10px; z-index: 1000; animation: slideInRight 0.3s ease; font-size: 12px; }
-        .toast-notification.error { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .toast-notification { position: fixed; bottom: 20px; right: 20px; background: #10b981; color: white; padding: 10px 16px; border-radius: 10px; z-index: 1000; animation: slideInRight 0.3s ease; font-size: 12px; }
+        .toast-notification.error { background: #ef4444; }
         
         .main-content { margin-left: 280px; }
-        @media (max-width: 768px) { .sidebar { left: -280px; transition: left 0.3s; } .sidebar.mobile-open { left: 0; } .mobile-menu-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 99; display: none; } .mobile-menu-overlay.open { display: block; } .main-content { margin-left: 0; } }
+        @media (max-width: 768px) { .sidebar { left: -280px; } .sidebar.mobile-open { left: 0; } .main-content { margin-left: 0; } }
         
         .scroll-top { position: fixed; bottom: 20px; right: 20px; background: #f97316; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: all 0.3s; z-index: 99; color: white; }
         .scroll-top.visible { opacity: 1; }
         
-        .color-option { transition: all 0.2s; cursor: pointer; border: 2px solid transparent; width: 36px; height: 36px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; }
+        .color-option { transition: all 0.2s; cursor: pointer; border: 2px solid transparent; width: 36px; height: 36px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin: 5px; }
         .color-option:hover { transform: scale(1.1); }
         .color-option.selected { border-color: white; box-shadow: 0 0 0 2px #333; }
         
@@ -127,6 +134,9 @@
         
         .auto-refresh-badge { position: fixed; bottom: 20px; left: 20px; background: #1f2937; color: #60a5fa; padding: 8px 16px; border-radius: 20px; font-size: 11px; z-index: 9999; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
         .connection-status { position: fixed; bottom: 20px; right: 20px; background: #1f2937; color: #10b981; padding: 6px 12px; border-radius: 8px; font-size: 10px; z-index: 9999; display: flex; align-items: center; gap: 8px; }
+        
+        .amount-input { text-align: left; }
+        .text-right { text-align: right !important; }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -195,12 +205,12 @@
 </div>
 
 <!-- MARKETING MODALS -->
-<div id="marketingModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4" id="marketingModalTitle"><i class="fas fa-plus-circle text-orange-500 mr-2"></i>Add Marketing Activity</h3><input type="hidden" id="editActivityId"><div class="form-group"><label>Activity Title <span class="required">*</span></label><input type="text" id="adTitle" placeholder="e.g., Facebook Ads Campaign" required></div><div class="form-group"><label>Type</label><select id="adType"><option value="social_media">Social Media</option><option value="tv_radio">TV / Radio</option><option value="print">Print / Billboard</option><option value="digital">Digital Ads</option><option value="event">Event / Seminar</option></select></div><div class="form-group"><label>Location</label><input type="text" id="adLocation" placeholder="e.g., Dar es Salaam, Online"></div><div class="form-group"><label>Budget (TZS)</label><input type="number" id="adBudget" placeholder="0"></div><div class="form-group"><label>Date</label><input type="date" id="adDate"></div><div class="form-group"><label>Description</label><textarea id="adDescription" rows="3" placeholder="Activity description"></textarea></div><div class="form-group"><label>Status</label><select id="adStatus"><option value="planned">Planned</option><option value="active">Active</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select></div><div class="flex gap-3"><button onclick="saveMarketingActivity()" class="flex-1 btn-primary py-2 rounded-lg">Save</button><button onclick="closeModal('marketingModal')" class="flex-1 bg-gray-200 py-2 rounded-lg">Cancel</button></div></div></div>
+<div id="marketingModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4" id="marketingModalTitle"><i class="fas fa-plus-circle text-orange-500 mr-2"></i>Add Marketing Activity</h3><input type="hidden" id="editActivityId"><div class="form-group"><label>Activity Title <span class="required">*</span></label><input type="text" id="adTitle" placeholder="e.g., Facebook Ads Campaign" required></div><div class="form-group"><label>Type</label><select id="adType"><option value="social_media">Social Media</option><option value="tv_radio">TV / Radio</option><option value="print">Print / Billboard</option><option value="digital">Digital Ads</option><option value="event">Event / Seminar</option></select></div><div class="form-group"><label>Location</label><input type="text" id="adLocation" placeholder="e.g., Dar es Salaam, Online"></div><div class="form-group"><label>Budget (TZS)</label><input type="text" id="adBudget" placeholder="0" class="amount-input"></div><div class="form-group"><label>Date</label><input type="date" id="adDate"></div><div class="form-group"><label>Description</label><textarea id="adDescription" rows="3" placeholder="Activity description"></textarea></div><div class="form-group"><label>Status</label><select id="adStatus"><option value="planned">Planned</option><option value="active">Active</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select></div><div class="flex gap-3"><button onclick="saveMarketingActivity()" class="flex-1 btn-primary py-2 rounded-lg">Save</button><button onclick="closeModal('marketingModal')" class="flex-1 bg-gray-200 py-2 rounded-lg">Cancel</button></div></div></div>
 
 <div id="viewMarketingModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-chart-line text-orange-500 mr-2"></i>Marketing Activity Details</h3><div id="viewMarketingContent"></div><div id="viewMarketingButtons" class="detail-buttons flex gap-2 justify-center mt-3 flex-wrap"></div><button onclick="closeModal('viewMarketingModal')" class="w-full bg-gray-200 py-2 rounded-lg mt-3">Close</button></div></div>
 
 <!-- BUDGET MODALS -->
-<div id="budgetModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-plus-circle text-orange-500 mr-2"></i>Add Budget</h3><input type="hidden" id="editBudgetId"><div class="form-group"><label>Category</label><select id="budgetCategory"><option value="Overall">Overall Budget</option><option value="Advertising">Advertising</option><option value="Events">Events & Seminars</option><option value="Digital Marketing">Digital Marketing</option><option value="Print Media">Print Media</option><option value="TV & Radio">TV & Radio</option><option value="Social Media">Social Media</option><option value="Sales Commission">Sales Commission</option></select></div><div class="form-group"><label>Budget Amount (TZS)</label><input type="number" id="budgetAmount" placeholder="0"></div><div class="form-group"><label>Amount Spent (TZS)</label><input type="number" id="budgetSpent" placeholder="0"></div><div class="form-group"><label>Description</label><textarea id="budgetDescription" rows="3" placeholder="Description"></textarea></div><div class="flex gap-3"><button onclick="saveBudget()" class="flex-1 btn-primary py-2 rounded-lg">Save</button><button onclick="closeModal('budgetModal')" class="flex-1 bg-gray-200 py-2 rounded-lg">Cancel</button></div></div></div>
+<div id="budgetModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-plus-circle text-orange-500 mr-2"></i>Add Budget</h3><input type="hidden" id="editBudgetId"><div class="form-group"><label>Category</label><select id="budgetCategory"><option value="Overall">Overall Budget</option><option value="Advertising">Advertising</option><option value="Events">Events & Seminars</option><option value="Digital Marketing">Digital Marketing</option><option value="Print Media">Print Media</option><option value="TV & Radio">TV & Radio</option><option value="Social Media">Social Media</option><option value="Sales Commission">Sales Commission</option></select></div><div class="form-group"><label>Budget Amount (TZS)</label><input type="text" id="budgetAmount" placeholder="0" class="amount-input"></div><div class="form-group"><label>Amount Spent (TZS)</label><input type="text" id="budgetSpent" placeholder="0" class="amount-input"></div><div class="form-group"><label>Description</label><textarea id="budgetDescription" rows="3" placeholder="Description"></textarea></div><div class="flex gap-3"><button onclick="saveBudget()" class="flex-1 btn-primary py-2 rounded-lg">Save</button><button onclick="closeModal('budgetModal')" class="flex-1 bg-gray-200 py-2 rounded-lg">Cancel</button></div></div></div>
 
 <div id="viewBudgetModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-wallet text-orange-500 mr-2"></i>Budget Details</h3><div id="viewBudgetContent"></div><button onclick="closeModal('viewBudgetModal')" class="w-full bg-gray-200 py-2 rounded-lg mt-3">Close</button></div></div>
 
@@ -246,9 +256,38 @@
         9: "Architectural", 10: "Survey", 11: "Construction", 12: "Hatimiliki"
     };
     
+    // ==================== MONEY FORMAT FUNCTION ====================
+    function formatCurrency(amt) { 
+        let num = parseFloat(amt) || 0; 
+        return "TZS " + num.toLocaleString('en-US'); 
+    }
+    
+    function parseAmount(str) { 
+        return parseFloat(String(str).replace(/,/g, '')) || 0; 
+    }
+    
+    // Format all amount inputs with commas
+    function formatAmountInput(input) {
+        let value = input.value.replace(/,/g, '');
+        if (!isNaN(value) && value !== '') {
+            let num = parseFloat(value);
+            if (!isNaN(num)) input.value = num.toLocaleString('en-US');
+        }
+    }
+    
+    // ==================== CLOSE MODAL ON OUTSIDE CLICK ====================
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('modal')) {
+            closeModal(e.target.id);
+        }
+        // Close send dropdowns when clicking outside
+        if (!e.target.closest('.send-dropdown')) {
+            document.querySelectorAll('.send-dropdown-content').forEach(d => d.style.display = 'none');
+        }
+    });
+    
     // ==================== HELPER FUNCTIONS ====================
     function showToast(msg, isError) { let t = document.createElement("div"); t.className = "toast-notification" + (isError ? " error" : ""); t.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-circle' : 'fa-check-circle'} mr-1"></i>${msg}`; document.body.appendChild(t); setTimeout(() => t.remove(), 3000); }
-    function formatCurrency(amt) { return "TZS " + (parseFloat(amt) || 0).toLocaleString(); }
     function formatDate(dateStr) { if (!dateStr) return "N/A"; return new Date(dateStr).toLocaleDateString("en-GB"); }
     function escapeHtml(text) { if (!text) return ""; var div = document.createElement("div"); div.textContent = text; return div.innerHTML; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; document.body.style.overflow = 'auto'; }
@@ -256,6 +295,18 @@
     function closeMobileSidebar() { document.getElementById("mainSidebar").classList.remove("mobile-open"); document.getElementById("mobileMenuOverlay").classList.remove("open"); }
     function goToMainWebsite() { window.location.href = "index.html"; }
     function addLog(action) { activityLogs.unshift({ action: action, created_at: new Date().toISOString() }); if (activityLogs.length > 50) activityLogs.pop(); }
+    
+    // Add event listeners for amount inputs
+    document.addEventListener('DOMContentLoaded', function() {
+        const amountInputs = ['adBudget', 'budgetAmount', 'budgetSpent'];
+        amountInputs.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('input', function() { formatAmountInput(this); });
+                if (el.value) formatAmountInput(el);
+            }
+        });
+    });
     
     function getStatusClass(status) {
         switch(status) {
@@ -651,11 +702,11 @@
         
         let html = `<div class="mb-6"><h2 class="text-xl font-bold text-gray-800">Sales Dashboard</h2><p class="text-xs text-gray-500 mt-1">Marketing & Performance Management</p></div>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-                <div class="stat-card p-4" onclick="showSection('marketing')"><div class="text-center"><div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mx-auto mb-2"><i class="fas fa-chart-line text-orange-600 text-xl"></i></div><p class="text-gray-500 text-xs uppercase tracking-wide">Marketing</p><p class="text-2xl font-bold text-orange-600">${totalMarketing}</p><p class="text-xs text-gray-400">Total campaigns</p></div></div>
-                <div class="stat-card p-4" onclick="showSection('marketing')"><div class="text-center"><div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center mx-auto mb-2"><i class="fas fa-play-circle text-yellow-600 text-xl"></i></div><p class="text-gray-500 text-xs uppercase tracking-wide">Active</p><p class="text-2xl font-bold text-yellow-600">${activeMarketing}</p><p class="text-xs text-gray-400">Current campaigns</p></div></div>
-                <div class="stat-card p-4" onclick="showSection('budget')"><div class="text-center"><div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-2"><i class="fas fa-wallet text-green-600 text-xl"></i></div><p class="text-gray-500 text-xs uppercase tracking-wide">Budget Used</p><p class="text-2xl font-bold text-green-600">${budgetPercent}%</p><p class="text-xs text-gray-400">${formatCurrency(totalSpent)} / ${formatCurrency(totalBudget)}</p></div></div>
-                <div class="stat-card p-4" onclick="showSection('reports')"><div class="text-center"><div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-2"><i class="fas fa-chart-bar text-purple-600 text-xl"></i></div><p class="text-gray-500 text-xs uppercase tracking-wide">Reports</p><p class="text-2xl font-bold text-purple-600">${totalReports}</p><p class="text-xs text-gray-400">Generated</p></div></div>
-                <div class="stat-card p-4" onclick="showSection('messages')"><div class="text-center"><div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mx-auto mb-2"><i class="fas fa-envelope text-red-600 text-xl"></i></div><p class="text-gray-500 text-xs uppercase tracking-wide">Messages</p><p class="text-2xl font-bold text-red-600">${unreadMsgs}</p><p class="text-xs text-gray-400">Unread</p></div></div>
+                <div class="stat-card p-4" onclick="showSection('marketing')"><div class="stat-icon bg-orange-100 text-orange-600 mx-auto"><i class="fas fa-chart-line text-xl"></i></div><p class="stat-label">Marketing</p><p class="stat-number text-orange-600">${totalMarketing}</p><p class="text-xs text-gray-400">Total campaigns</p></div>
+                <div class="stat-card p-4" onclick="showSection('marketing')"><div class="stat-icon bg-yellow-100 text-yellow-600 mx-auto"><i class="fas fa-play-circle text-xl"></i></div><p class="stat-label">Active</p><p class="stat-number text-yellow-600">${activeMarketing}</p><p class="text-xs text-gray-400">Current campaigns</p></div>
+                <div class="stat-card p-4" onclick="showSection('budget')"><div class="stat-icon bg-green-100 text-green-600 mx-auto"><i class="fas fa-wallet text-xl"></i></div><p class="stat-label">Budget Used</p><p class="stat-number text-green-600">${budgetPercent}%</p><p class="text-xs text-gray-400">${formatCurrency(totalSpent)} / ${formatCurrency(totalBudget)}</p></div>
+                <div class="stat-card p-4" onclick="showSection('reports')"><div class="stat-icon bg-purple-100 text-purple-600 mx-auto"><i class="fas fa-chart-bar text-xl"></i></div><p class="stat-label">Reports</p><p class="stat-number text-purple-600">${totalReports}</p><p class="text-xs text-gray-400">Generated</p></div>
+                <div class="stat-card p-4" onclick="showSection('messages')"><div class="stat-icon bg-red-100 text-red-600 mx-auto"><i class="fas fa-envelope text-xl"></i></div><p class="stat-label">Messages</p><p class="stat-number text-red-600">${unreadMsgs}</p><p class="text-xs text-gray-400">Unread</p></div>
             </div>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                 <div class="bg-white rounded-xl p-5 shadow-sm"><h3 class="font-semibold mb-4"><i class="fas fa-chart-pie text-orange-500 mr-2"></i>Budget Overview</h3><canvas id="budgetChart" height="200"></canvas></div>
@@ -690,18 +741,18 @@
         let paginated = filtered.slice(start, start + rowsPerPage);
         
         let html = `<div class="flex justify-between items-center mb-4 flex-wrap gap-2"><h2 class="text-xl font-bold"><i class="fas fa-chart-line text-orange-600 mr-2"></i>Marketing Activities (${marketingActivities.length})</h2><div class="flex gap-2"><button onclick="openMarketingModal()" class="btn-primary text-white px-4 py-2 rounded-xl text-sm"><i class="fas fa-plus mr-1"></i>Add Activity</button><button onclick="exportMarketingToExcel()" class="bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-excel mr-1"></i>Excel</button><button onclick="exportMarketingToPDF()" class="bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-pdf mr-1"></i>PDF</button></div></div>
-            <div class="bg-white rounded-xl shadow-sm p-3"><div class="table-responsive"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th class="px-3 py-2">Title</th><th class="px-3 py-2">Type</th><th class="px-3 py-2">Location</th><th class="px-3 py-2 text-right">Budget</th><th class="px-3 py-2">Date</th><th class="px-3 py-2">Status</th><th class="px-3 py-2 text-center">Actions</th></tr></thead><tbody>`;
+            <div class="bg-white rounded-xl shadow-sm p-3"><div class="table-responsive"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th class="px-3 py-2">Title</th><th class="px-3 py-2">Type</th><th class="px-3 py-2">Location</th><th class="px-3 py-2">Budget</th><th class="px-3 py-2">Date</th><th class="px-3 py-2">Status</th><th class="px-3 py-2 text-center">Actions</th></tr></thead><tbody>`;
         
         for (let m of paginated) {
             html += `<tr class="border-b hover:bg-gray-50">
                 <td class="px-3 py-2 font-medium">${escapeHtml(m.title)}</td>
                 <td class="px-3 py-2"><span class="px-2 py-0.5 rounded-full text-xs bg-gray-100">${getAdTypeText(m.type)}</span></td>
                 <td class="px-3 py-2">${escapeHtml(m.location || '-')}</td>
-                <td class="px-3 py-2 text-right text-green-600 font-semibold">${formatCurrency(m.budget)}</td>
+                <td class="px-3 py-2 text-green-600 font-semibold">${formatCurrency(m.budget)}</td>
                 <td class="px-3 py-2">${m.date || '-'}</td>
                 <td class="px-3 py-2"><span class="px-2 py-0.5 rounded-full text-xs ${getStatusClass(m.status)}">${getStatusText(m.status)}</span></td>
                 <td class="px-3 py-2 text-center"><div class="flex gap-1 justify-center"><button onclick="viewMarketingActivity(${m.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="editMarketingActivity(${m.id})" class="action-btn edit"><i class="fas fa-edit"></i></button><button onclick="deleteMarketingActivity(${m.id})" class="action-btn delete"><i class="fas fa-trash"></i></button></div></td>
-            </table>`;
+            </tr>`;
         }
         html += `</tbody>}</div>${totalPages > 1 ? `<div class="flex justify-center gap-2 mt-3"><button onclick="changeMarketingPage(${currentMarketingPage - 1})" class="px-2 py-1 border rounded text-xs">Prev</button><span class="text-xs">Page ${currentMarketingPage} of ${totalPages}</span><button onclick="changeMarketingPage(${currentMarketingPage + 1})" class="px-2 py-1 border rounded text-xs">Next</button></div>` : ''}</div>`;
         document.getElementById("marketingSection").innerHTML = html;
@@ -715,7 +766,7 @@
         let id = document.getElementById("editActivityId").value;
         let title = document.getElementById("adTitle").value.trim(); 
         if (!title) { showToast("Enter activity title", true); return; } 
-        let data = { title: title, type: document.getElementById("adType").value, location: document.getElementById("adLocation").value, budget: parseFloat(document.getElementById("adBudget").value) || 0, date: document.getElementById("adDate").value, description: document.getElementById("adDescription").value, status: document.getElementById("adStatus").value };
+        let data = { title: title, type: document.getElementById("adType").value, location: document.getElementById("adLocation").value, budget: parseAmount(document.getElementById("adBudget").value), date: document.getElementById("adDate").value, description: document.getElementById("adDescription").value, status: document.getElementById("adStatus").value };
         let res = id ? await updateMarketingAPI(parseInt(id), data) : await addMarketingAPI(data);
         if (res.success) { showToast(id ? "Activity updated" : "Activity added"); addLog(`${id ? "Updated" : "Added"} marketing: ${title}`); closeModal('marketingModal'); await loadMarketing(); await loadDashboard(); } else showToast(res.message || "Failed", true); }
     
@@ -743,13 +794,13 @@
     }
     
     function exportSingleMarketingExcel(id) { let m = marketingActivities.find(m => m.id === id); if(m) { let ws = [["Title","Type","Location","Budget","Date","Status","Description"]]; ws.push([m.title, getAdTypeText(m.type), m.location, m.budget, m.date, m.status, m.description]); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), "Marketing"); XLSX.writeFile(wb, `marketing_${m.id}.xlsx`); showToast("Exported to Excel"); } }
-    function exportSingleMarketingPDF(id) { let m = marketingActivities.find(m => m.id === id); if(m) { let element = document.createElement("div"); element.innerHTML = `<div style="padding:20px"><h1>${escapeHtml(m.title)}</h1><p><strong>Type:</strong> ${getAdTypeText(m.type)}</p><p><strong>Location:</strong> ${escapeHtml(m.location || '-')}</p><p><strong>Budget:</strong> ${formatCurrency(m.budget)}</p><p><strong>Date:</strong> ${m.date}</p><p><strong>Status:</strong> ${m.status}</p><p><strong>Description:</strong> ${escapeHtml(m.description || '-')}</p><p>Generated: ${new Date().toLocaleString()}</p></div>`; html2pdf().set({ margin: 0.5, filename: `marketing_${m.id}.pdf` }).from(element).save(); showToast("Exported to PDF"); } }
+    function exportSingleMarketingPDF(id) { let m = marketingActivities.find(m => m.id === id); if(m) { let element = document.createElement("div"); element.innerHTML = `<div style="padding:20px; border:2px solid #f97316;"><h1 style="color:#f97316">${escapeHtml(m.title)}</h1><p><strong>Type:</strong> ${getAdTypeText(m.type)}</p><p><strong>Location:</strong> ${escapeHtml(m.location || '-')}</p><p><strong>Budget:</strong> ${formatCurrency(m.budget)}</p><p><strong>Date:</strong> ${m.date}</p><p><strong>Status:</strong> ${m.status}</p><p><strong>Description:</strong> ${escapeHtml(m.description || '-')}</p><p>Generated: ${new Date().toLocaleString()}</p></div>`; html2pdf().set({ margin: 0.5, filename: `marketing_${m.id}.pdf` }).from(element).save(); showToast("Exported to PDF"); } }
     
-    function editMarketingActivity(id) { let m = marketingActivities.find(m => m.id === id); if(m) { document.getElementById("editActivityId").value = m.id; document.getElementById("adTitle").value = m.title; document.getElementById("adType").value = m.type; document.getElementById("adLocation").value = m.location || ""; document.getElementById("adBudget").value = m.budget; document.getElementById("adDate").value = m.date || new Date().toISOString().split('T')[0]; document.getElementById("adDescription").value = m.description || ""; document.getElementById("adStatus").value = m.status; document.getElementById("marketingModalTitle").innerHTML = '<i class="fas fa-edit text-orange-500 mr-2"></i>Edit Marketing Activity'; openModal('marketingModal'); } }
+    function editMarketingActivity(id) { let m = marketingActivities.find(m => m.id === id); if(m) { document.getElementById("editActivityId").value = m.id; document.getElementById("adTitle").value = m.title; document.getElementById("adType").value = m.type; document.getElementById("adLocation").value = m.location || ""; document.getElementById("adBudget").value = formatCurrency(m.budget).replace('TZS ', ''); document.getElementById("adDate").value = m.date || new Date().toISOString().split('T')[0]; document.getElementById("adDescription").value = m.description || ""; document.getElementById("adStatus").value = m.status; document.getElementById("marketingModalTitle").innerHTML = '<i class="fas fa-edit text-orange-500 mr-2"></i>Edit Marketing Activity'; openModal('marketingModal'); } }
     async function deleteMarketingActivity(id) { if(confirm("Delete this activity?")) { let res = await deleteMarketingAPI(id); if(res.success) { showToast("Activity deleted"); addLog("Deleted marketing activity"); await loadMarketing(); await loadDashboard(); } else showToast(res.message || "Failed", true); } }
     
     function exportMarketingToExcel() { let ws = [["Title","Type","Location","Budget","Date","Status","Description"]]; marketingActivities.forEach(m => ws.push([m.title, getAdTypeText(m.type), m.location || '-', m.budget, m.date || '-', m.status, m.description || '-'])); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), "Marketing"); XLSX.writeFile(wb, `marketing_${new Date().toISOString().slice(0,10)}.xlsx`); showToast("Exported to Excel"); }
-    function exportMarketingToPDF() { let element = document.createElement("div"); element.innerHTML = `<div style="padding:20px"><h1 style="color:#f97316">Marketing Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><thead><tr><th>Title</th><th>Type</th><th>Location</th><th>Budget</th><th>Date</th><th>Status</th></tr></thead><tbody>${marketingActivities.map(m => `<tr><td>${escapeHtml(m.title)}</td><td>${getAdTypeText(m.type)}</td><td>${escapeHtml(m.location || '-')}</td><td>${formatCurrency(m.budget)}</td><td>${m.date || '-'}</td><td>${m.status}</td></tr>`).join('')}</tbody>}</div>`; html2pdf().set({ margin: 0.5, filename: `marketing_report.pdf` }).from(element).save(); showToast("Exported to PDF"); }
+    function exportMarketingToPDF() { let element = document.createElement("div"); element.innerHTML = `<div style="padding:20px"><h1 style="color:#f97316">Marketing Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><thead><tr><th>Title</th><th>Type</th><th>Location</th><th>Budget</th><th>Date</th><th>Status</th></tr></thead><tbody>${marketingActivities.map(m => `<tr><td class="px-2 py-1">${escapeHtml(m.title)}<\/td><td class="px-2 py-1">${getAdTypeText(m.type)}<\/td><td class="px-2 py-1">${escapeHtml(m.location || '-')}<\/td><td class="px-2 py-1">${formatCurrency(m.budget)}<\/td><td class="px-2 py-1">${m.date || '-'}<\/td><td class="px-2 py-1">${m.status}<\/td><\/tr>`).join('')}</tbody>}</div>`; html2pdf().set({ margin: 0.5, filename: `marketing_report.pdf` }).from(element).save(); showToast("Exported to PDF"); }
     
     // ==================== BUDGET SECTION ====================
     async function loadBudget() {
@@ -764,29 +815,28 @@
         let start = (currentBudgetPage - 1) * budgetRowsPerPage;
         let paginated = filtered.slice(start, start + budgetRowsPerPage);
         
-        let html = `<div class="mb-4"><div class="flex justify-between items-center flex-wrap gap-2"><h2 class="text-xl font-bold"><i class="fas fa-wallet text-orange-600 mr-2"></i>Budget Management</h2><button onclick="openModal('budgetModal')" class="btn-primary text-white px-4 py-2 rounded-xl text-sm"><i class="fas fa-plus mr-1"></i>Add Budget</button></div>
+        let html = `<div class="mb-4"><div class="flex justify-between items-center flex-wrap gap-2"><h2 class="text-xl font-bold"><i class="fas fa-wallet text-orange-600 mr-2"></i>Budget Management</h2><div class="flex gap-2"><button onclick="openModal('budgetModal')" class="btn-primary text-white px-4 py-2 rounded-xl text-sm"><i class="fas fa-plus mr-1"></i>Add Budget</button><button onclick="exportBudgetToExcel()" class="bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-excel mr-1"></i>Excel</button><button onclick="exportBudgetToPDF()" class="bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-pdf mr-1"></i>PDF</button></div></div>
             <div class="grid grid-cols-3 gap-3 mt-3"><div class="bg-green-50 rounded-xl p-2 text-center"><p class="text-[9px] text-gray-500">Total Budget</p><p class="text-base font-bold text-green-600">${formatCurrency(totalBudget)}</p></div><div class="bg-orange-50 rounded-xl p-2 text-center"><p class="text-[9px] text-gray-500">Total Spent</p><p class="text-base font-bold text-orange-600">${formatCurrency(totalSpent)}</p></div><div class="bg-blue-50 rounded-xl p-2 text-center"><p class="text-[9px] text-gray-500">Remaining</p><p class="text-base font-bold text-blue-600">${formatCurrency(totalRemaining)}</p></div></div>
             <div class="mt-3 w-full bg-gray-200 rounded-full h-2"><div class="${getProgressClass(percent)} h-2 rounded-full" style="width:${Math.min(percent,100)}%"></div></div><p class="text-[10px] text-gray-500 text-center mt-1">${percent}% of budget used</p></div>
-            <div class="bg-white rounded-xl shadow-sm p-3"><div class="table-responsive"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th class="px-3 py-2">Category</th><th class="px-3 py-2 text-right">Budget Amount</th><th class="px-3 py-2 text-right">Spent</th><th class="px-3 py-2 text-right">Remaining</th><th class="px-3 py-2">Usage</th><th class="px-3 py-2">Description</th><th class="px-3 py-2 text-center">Actions</th></tr></thead><tbody>`;
+            <div class="bg-white rounded-xl shadow-sm p-3"><div class="table-responsive"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th class="px-3 py-2">Category</th><th class="px-3 py-2">Budget Amount</th><th class="px-3 py-2">Spent</th><th class="px-3 py-2">Remaining</th><th class="px-3 py-2">Usage</th><th class="px-3 py-2">Description</th><th class="px-3 py-2 text-center">Actions</th></tr></thead><tbody>`;
         
         for (let b of paginated) {
             let remaining = b.amount - b.spent;
             let p = (b.spent / b.amount * 100).toFixed(1);
-            html += `<tr class="border-b hover:bg-gray-50"><td class="px-3 py-2 font-medium">${escapeHtml(b.category)}</td><td class="px-3 py-2 text-right text-green-600 font-semibold">${formatCurrency(b.amount)}</td><td class="px-3 py-2 text-right text-orange-600">${formatCurrency(b.spent)}</td><td class="px-3 py-2 text-right ${remaining<0?'text-red-600':'text-blue-600'}">${formatCurrency(remaining)}</td><td class="px-3 py-2"><div class="w-24"><div class="w-full bg-gray-200 rounded-full h-1.5"><div class="${getProgressClass(p)} h-1.5 rounded-full" style="width:${Math.min(p,100)}%"></div></div><span class="text-[9px]">${p}%</span></div></td><td class="px-3 py-2 text-xs text-gray-500 max-w-[200px] truncate" title="${escapeHtml(b.description || '')}">${escapeHtml(b.description?.substring(0,40) || '-')}</td><td class="px-3 py-2 text-center"><div class="flex gap-1 justify-center"><button onclick="viewBudget(${b.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="editBudget(${b.id})" class="action-btn edit"><i class="fas fa-edit"></i></button><button onclick="deleteBudget(${b.id})" class="action-btn delete"><i class="fas fa-trash"></i></button></div></td></tr>`;
+            html += `<tr class="border-b hover:bg-gray-50"><td class="px-3 py-2 font-medium">${escapeHtml(b.category)}<\/td><td class="px-3 py-2 text-green-600 font-semibold">${formatCurrency(b.amount)}<\/td><td class="px-3 py-2 text-orange-600">${formatCurrency(b.spent)}<\/td><td class="px-3 py-2 ${remaining<0?'text-red-600':'text-blue-600'}">${formatCurrency(remaining)}<\/td><td class="px-3 py-2"><div class="w-24"><div class="w-full bg-gray-200 rounded-full h-1.5"><div class="${getProgressClass(p)} h-1.5 rounded-full" style="width:${Math.min(p,100)}%"></div></div><span class="text-[9px]">${p}%</span></div><\/td><td class="px-3 py-2 text-xs text-gray-500 max-w-[200px] truncate" title="${escapeHtml(b.description || '')}">${escapeHtml(b.description?.substring(0,40) || '-')}<\/td><td class="px-3 py-2 text-center"><div class="flex gap-1 justify-center"><button onclick="viewBudget(${b.id})" class="action-btn view"><i class="fas fa-eye"></i><\/button><button onclick="editBudget(${b.id})" class="action-btn edit"><i class="fas fa-edit"></i><\/button><button onclick="deleteBudget(${b.id})" class="action-btn delete"><i class="fas fa-trash"></i><\/button><\/div><\/td><\/tr>`;
         }
-        html += `</tbody>}</div>${totalPages > 1 ? `<div class="flex justify-center gap-2 mt-3"><button onclick="changeBudgetPage(${currentBudgetPage - 1})" class="px-2 py-1 border rounded text-xs">Prev</button><span class="text-xs">Page ${currentBudgetPage} of ${totalPages}</span><button onclick="changeBudgetPage(${currentBudgetPage + 1})" class="px-2 py-1 border rounded text-xs">Next</button></div>` : ''}</div>
-            <div class="mt-3 flex gap-2"><button onclick="exportBudgetToExcel()" class="bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-excel mr-1"></i>Excel</button><button onclick="exportBudgetToPDF()" class="bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-pdf mr-1"></i>PDF</button></div>`;
+        html += `</tbody>}</div>${totalPages > 1 ? `<div class="flex justify-center gap-2 mt-3"><button onclick="changeBudgetPage(${currentBudgetPage - 1})" class="px-2 py-1 border rounded text-xs">Prev</button><span class="text-xs">Page ${currentBudgetPage} of ${totalPages}</span><button onclick="changeBudgetPage(${currentBudgetPage + 1})" class="px-2 py-1 border rounded text-xs">Next</button></div>` : ''}</div>`;
         document.getElementById("budgetSection").innerHTML = html;
     }
     
     function changeBudgetPage(page) { if (page > 0 && page <= Math.ceil(budgets.length / budgetRowsPerPage)) { currentBudgetPage = page; loadBudget(); } }
     function openBudgetModal() { document.getElementById("editBudgetId").value = ""; document.getElementById("budgetCategory").value = "Overall"; document.getElementById("budgetAmount").value = ""; document.getElementById("budgetSpent").value = "0"; document.getElementById("budgetDescription").value = ""; openModal('budgetModal'); }
-    async function saveBudget() { let id = document.getElementById("editBudgetId").value; let data = { category: document.getElementById("budgetCategory").value, amount: parseFloat(document.getElementById("budgetAmount").value) || 0, spent: parseFloat(document.getElementById("budgetSpent").value) || 0, description: document.getElementById("budgetDescription").value }; if(!data.category || data.amount <= 0) { showToast("Category and amount required", true); return; } let res = id ? await updateBudgetAPI(parseInt(id), data) : await addBudgetAPI(data); if(res.success) { showToast(id ? "Budget updated" : "Budget added"); addLog(`${id ? "Updated" : "Added"} budget: ${data.category}`); closeModal('budgetModal'); await loadBudget(); await loadDashboard(); } else showToast(res.message || "Failed", true); }
+    async function saveBudget() { let id = document.getElementById("editBudgetId").value; let data = { category: document.getElementById("budgetCategory").value, amount: parseAmount(document.getElementById("budgetAmount").value), spent: parseAmount(document.getElementById("budgetSpent").value), description: document.getElementById("budgetDescription").value }; if(!data.category || data.amount <= 0) { showToast("Category and amount required", true); return; } let res = id ? await updateBudgetAPI(parseInt(id), data) : await addBudgetAPI(data); if(res.success) { showToast(id ? "Budget updated" : "Budget added"); addLog(`${id ? "Updated" : "Added"} budget: ${data.category}`); closeModal('budgetModal'); await loadBudget(); await loadDashboard(); } else showToast(res.message || "Failed", true); }
     function viewBudget(id) { let b = budgets.find(b => b.id === id); if(b) { let remaining = b.amount - b.spent; let percent = (b.spent / b.amount * 100).toFixed(1); document.getElementById("viewBudgetContent").innerHTML = `<div class="space-y-2"><p><strong>Category:</strong> ${escapeHtml(b.category)}</p><p><strong>Budget Amount:</strong> ${formatCurrency(b.amount)}</p><p><strong>Amount Spent:</strong> ${formatCurrency(b.spent)}</p><p><strong>Remaining:</strong> ${formatCurrency(remaining)}</p><p><strong>Usage:</strong> ${percent}%</p><p><strong>Description:</strong> ${escapeHtml(b.description || '-')}</p></div>`; openModal('viewBudgetModal'); } }
-    function editBudget(id) { let b = budgets.find(b => b.id === id); if(b) { document.getElementById("editBudgetId").value = b.id; document.getElementById("budgetCategory").value = b.category; document.getElementById("budgetAmount").value = b.amount; document.getElementById("budgetSpent").value = b.spent; document.getElementById("budgetDescription").value = b.description || ""; openModal('budgetModal'); } }
+    function editBudget(id) { let b = budgets.find(b => b.id === id); if(b) { document.getElementById("editBudgetId").value = b.id; document.getElementById("budgetCategory").value = b.category; document.getElementById("budgetAmount").value = formatCurrency(b.amount).replace('TZS ', ''); document.getElementById("budgetSpent").value = formatCurrency(b.spent).replace('TZS ', ''); document.getElementById("budgetDescription").value = b.description || ""; openModal('budgetModal'); } }
     async function deleteBudget(id) { if(confirm("Delete this budget?")) { let res = await deleteBudgetAPI(id); if(res.success) { showToast("Budget deleted"); addLog("Deleted budget item"); await loadBudget(); await loadDashboard(); } else showToast(res.message || "Failed", true); } }
     function exportBudgetToExcel() { let ws = [["Category","Budget Amount","Spent","Remaining","Usage %","Description"]]; budgets.forEach(b => { let remaining = b.amount - b.spent; let p = (b.spent / b.amount * 100).toFixed(1); ws.push([b.category, b.amount, b.spent, remaining, p, b.description || ""]); }); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), "Budget"); XLSX.writeFile(wb, `budget_${new Date().toISOString().slice(0,10)}.xlsx`); showToast("Budget exported to Excel"); }
-    function exportBudgetToPDF() { let element = document.createElement("div"); element.innerHTML = `<div style="padding:20px"><h1 style="color:#f97316">Budget Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><thead><tr><th>Category</th><th>Budget</th><th>Spent</th><th>Remaining</th></tr></thead><tbody>${budgets.map(b => `<tr><td>${escapeHtml(b.category)}</td><td>${formatCurrency(b.amount)}</td><td>${formatCurrency(b.spent)}</td><td>${formatCurrency(b.amount - b.spent)}</td></tr>`).join('')}</tbody>}</div>`; html2pdf().set({ margin: 0.5, filename: `budget_report.pdf` }).from(element).save(); showToast("Budget exported to PDF"); }
+    function exportBudgetToPDF() { let element = document.createElement("div"); element.innerHTML = `<div style="padding:20px"><h1 style="color:#f97316">Budget Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><thead><tr><th>Category</th><th>Budget</th><th>Spent</th><th>Remaining</th></tr></thead><tbody>${budgets.map(b => `<tr><td class="px-2 py-1">${escapeHtml(b.category)}<\/td><td class="px-2 py-1">${formatCurrency(b.amount)}<\/td><td class="px-2 py-1">${formatCurrency(b.spent)}<\/td><td class="px-2 py-1">${formatCurrency(b.amount - b.spent)}<\/td><\/tr>`).join('')}</tbody>}</div>`; html2pdf().set({ margin: 0.5, filename: `budget_report.pdf` }).from(element).save(); showToast("Budget exported to PDF"); }
     
     // ==================== REPORTS SECTION ====================
     async function loadReports() {
@@ -817,7 +867,7 @@
     async function sendReportToDept(reportId, toDeptId) { let r = reportsList.find(r => r.id === reportId); if(r) { const res = await sendReportToDepartment(reportId, toDeptId); if(res.success) { showToast(`Report "${r.title}" sent to ${departmentNames[toDeptId]}`); r.status = 'sent'; await loadReports(); } else showToast(res.message || "Failed", true); } let dd = document.getElementById(`reportSendDropdown-${reportId}`); if(dd) dd.style.display = 'none'; }
     
     function exportSingleReportExcel(id) { let r = reportsList.find(r => r.id === id); if(r) { let ws = [["Title","Period","Content","Date","Status"]]; ws.push([r.title, r.period, r.content, r.created_at, r.status]); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), "Report"); XLSX.writeFile(wb, `report_${r.id}.xlsx`); showToast("Exported to Excel"); } }
-    function exportSingleReportPDF(id) { let r = reportsList.find(r => r.id === id); if(r) { let element = document.createElement("div"); element.innerHTML = `<div style="padding:20px"><h1>${escapeHtml(r.title)}</h1><p><strong>Period:</strong> ${r.period}</p><p><strong>Date:</strong> ${formatDate(r.created_at)}</p><p><strong>Status:</strong> ${r.status}</p><hr/><div>${escapeHtml(r.content)}</div><p>Generated: ${new Date().toLocaleString()}</p></div>`; html2pdf().set({ margin: 0.5, filename: `report_${r.id}.pdf` }).from(element).save(); showToast("Exported to PDF"); } }
+    function exportSingleReportPDF(id) { let r = reportsList.find(r => r.id === id); if(r) { let element = document.createElement("div"); element.innerHTML = `<div style="padding:20px; border:2px solid #f97316;"><h1 style="color:#f97316">${escapeHtml(r.title)}</h1><p><strong>Period:</strong> ${r.period}</p><p><strong>Date:</strong> ${formatDate(r.created_at)}</p><p><strong>Status:</strong> ${r.status}</p><hr/><div style="background:#f5f5f5; padding:10px;">${escapeHtml(r.content)}</div><p>Generated: ${new Date().toLocaleString()}</p></div>`; html2pdf().set({ margin: 0.5, filename: `report_${r.id}.pdf` }).from(element).save(); showToast("Exported to PDF"); } }
     
     function editReport(id) { let r = reportsList.find(r => r.id === id); if(r) { document.getElementById("editReportId").value = r.id; document.getElementById("editReportTitle").value = r.title; document.getElementById("editReportPeriod").value = r.period; document.getElementById("editReportContent").value = r.content; openModal('editReportModal'); } }
     async function updateReport() { let id = parseInt(document.getElementById("editReportId").value); let title = document.getElementById("editReportTitle").value; let period = document.getElementById("editReportPeriod").value; let content = document.getElementById("editReportContent").value; let res = await updateReportAPI(id, { title, period, content }); if(res.success) { showToast("Report updated"); addLog(`Updated report: ${title}`); closeModal('editReportModal'); await loadReports(); } else showToast(res.message || "Failed", true); }
@@ -837,7 +887,6 @@
     function clearLogs() { if(confirm("Clear all activity logs?")) { activityLogs = [{ action: "Logs cleared", created_at: new Date().toISOString() }]; renderSettings(); showToast("Logs cleared"); } }
     
     function toggleSendDropdown(dropdownId) { const dropdown = document.getElementById(dropdownId); document.querySelectorAll('.send-dropdown-content').forEach(d => { if(d.id !== dropdownId) d.style.display = 'none'; }); if(dropdown) dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block'; }
-    document.addEventListener('click', (e) => { if(!e.target.closest('.send-dropdown')) { document.querySelectorAll('.send-dropdown-content').forEach(d => d.style.display = 'none'); } });
     
     async function showSection(sectionId) {
         let sections = ["dashboardSection","budgetSection","marketingSection","messagesSection","reportsSection","settingsSection"];

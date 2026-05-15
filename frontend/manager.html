@@ -27,18 +27,21 @@
         .nav-item.active i { color: #60a5fa; }
         .nav-item:hover:not(.active) { background: rgba(255,255,255,0.08); }
         
-        .stat-card { transition: all 0.3s ease; background: white; border-radius: 20px; border: 1px solid #e5e7eb; cursor: pointer; }
+        .stat-card { transition: all 0.3s ease; background: white; border-radius: 20px; border: 1px solid #e5e7eb; cursor: pointer; text-align: center; }
         .stat-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -12px rgba(0,0,0,0.15); border-color: #1e40af; }
+        .stat-number { font-size: 28px; font-weight: 700; margin-top: 8px; margin-bottom: 4px; }
+        .stat-label { font-size: 12px; font-weight: 500; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-icon { width: 48px; height: 48px; border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto; }
         
-        .btn-primary { background: linear-gradient(135deg, #1e40af, #1e3a8a); transition: all 0.2s; padding: 10px 18px; border-radius: 10px; border: none; cursor: pointer; font-weight: 500; }
+        .btn-primary { background: linear-gradient(135deg, #1e40af, #1e3a8a); transition: all 0.2s; padding: 10px 18px; border-radius: 10px; border: none; cursor: pointer; font-weight: 500; color: white; }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(30,64,175,0.4); }
-        .btn-success { background: linear-gradient(135deg, #10b981, #059669); transition: all 0.2s; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 500; }
+        .btn-success { background: linear-gradient(135deg, #10b981, #059669); transition: all 0.2s; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 500; color: white; }
         .btn-success:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(16,185,129,0.4); }
-        .btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); transition: all 0.2s; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 500; }
+        .btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); transition: all 0.2s; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 500; color: white; }
         .btn-danger:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(239,68,68,0.4); }
-        .btn-warning { background: linear-gradient(135deg, #f59e0b, #d97706); transition: all 0.2s; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 500; }
+        .btn-warning { background: linear-gradient(135deg, #f59e0b, #d97706); transition: all 0.2s; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 500; color: white; }
         .btn-warning:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(245,158,11,0.4); }
-        .btn-purple { background: linear-gradient(135deg, #8b5cf6, #7c3aed); transition: all 0.2s; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 500; }
+        .btn-purple { background: linear-gradient(135deg, #8b5cf6, #7c3aed); transition: all 0.2s; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 500; color: white; }
         .btn-purple:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(139,92,246,0.4); }
         
         .toast-notification { position: fixed; bottom: 20px; right: 20px; background: #10b981; color: white; padding: 10px 16px; border-radius: 10px; z-index: 1000; animation: slideInRight 0.3s ease; font-size: 12px; }
@@ -54,12 +57,12 @@
         .color-option:hover { transform: scale(1.1); }
         .color-option.selected { border-color: white; box-shadow: 0 0 0 2px #333; }
         
-        .status-paid { background: #d1fae5; color: #059669; }
-        .status-partial { background: #fef3c7; color: #d97706; }
-        .status-pending { background: #fee2e2; color: #dc2626; }
-        .status-completed { background: #d1fae5; color: #059669; }
-        .status-progress { background: #dbeafe; color: #1e40af; }
-        .status-approved { background: #e9d5ff; color: #7e22ce; }
+        .status-paid { background: #d1fae5; color: #059669; padding: 4px 10px; border-radius: 20px; font-size: 11px; display: inline-block; }
+        .status-partial { background: #fef3c7; color: #d97706; padding: 4px 10px; border-radius: 20px; font-size: 11px; display: inline-block; }
+        .status-pending { background: #fee2e2; color: #dc2626; padding: 4px 10px; border-radius: 20px; font-size: 11px; display: inline-block; }
+        .status-completed { background: #d1fae5; color: #059669; padding: 4px 10px; border-radius: 20px; font-size: 11px; display: inline-block; }
+        .status-progress { background: #dbeafe; color: #1e40af; padding: 4px 10px; border-radius: 20px; font-size: 11px; display: inline-block; }
+        .status-approved { background: #e9d5ff; color: #7e22ce; padding: 4px 10px; border-radius: 20px; font-size: 11px; display: inline-block; }
         
         .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
         table { font-size: 13px; width: 100%; }
@@ -117,6 +120,8 @@
         .form-group label { display: block; font-size: 13px; font-weight: 500; color: #374151; margin-bottom: 6px; }
         .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 14px; font-size: 14px; border: 1.5px solid #e5e7eb; border-radius: 10px; background: white; transition: all 0.2s; }
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #1e40af; box-shadow: 0 0 0 3px rgba(30,64,175,0.1); }
+        body.dark-mode .form-group label { color: #94a3b8; }
+        body.dark-mode .form-group input, body.dark-mode .form-group select, body.dark-mode .form-group textarea { background: #0f172a; border-color: #334155; color: #f1f5f9; }
         
         .action-btn { padding: 5px 10px; font-size: 11px; border-radius: 5px; cursor: pointer; transition: all 0.2s; border: none; display: inline-flex; align-items: center; gap: 4px; }
         .action-btn.view { background: #3b82f6; color: white; }
@@ -125,19 +130,23 @@
         .action-btn.edit:hover { background: #d97706; transform: scale(1.05); }
         .action-btn.delete { background: #ef4444; color: white; }
         .action-btn.delete:hover { background: #dc2626; transform: scale(1.05); }
-        .action-btn.send { background: #8b5cf6; color: white; }
-        .action-btn.send:hover { background: #7c3aed; transform: scale(1.05); }
         
         .income-row { background-color: #f0fdf4; }
         .expense-row { background-color: #fef2f2; }
+        body.dark-mode .income-row { background-color: #064e3b20; }
+        body.dark-mode .expense-row { background-color: #7f1d1d20; }
         
         .image-upload-area { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s; }
         .image-upload-area:hover { border-color: #1e40af; background-color: #eff6ff; }
         
         .send-dropdown { position: relative; display: inline-block; }
         .send-dropdown-content { display: none; position: absolute; right: 0; top: 100%; background: white; min-width: 200px; border-radius: 8px; z-index: 100; border: 1px solid #e5e7eb; max-height: 300px; overflow-y: auto; margin-top: 5px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-        .send-dropdown-content a { display: block; padding: 10px 15px; text-decoration: none; color: #333; font-size: 13px; cursor: pointer; transition: background 0.2s; }
+        .send-dropdown-content a { display: block; padding: 10px 15px; text-decoration: none; color: #333; font-size: 13px; cursor: pointer; transition: background 0.2s; border-bottom: 1px solid #f3f4f6; }
+        .send-dropdown-content a:last-child { border-bottom: none; }
         .send-dropdown-content a:hover { background-color: #f3f4f6; }
+        body.dark-mode .send-dropdown-content { background-color: #1e293b; border-color: #334155; }
+        body.dark-mode .send-dropdown-content a { color: #f1f5f9; border-bottom-color: #334155; }
+        body.dark-mode .send-dropdown-content a:hover { background-color: #334155; }
         
         .auto-refresh-badge { position: fixed; bottom: 10px; left: 10px; background: #1f2937; color: #60a5fa; padding: 4px 12px; border-radius: 20px; font-size: 10px; z-index: 9999; display: flex; align-items: center; gap: 6px; }
         .connection-status { position: fixed; bottom: 10px; right: 10px; background: #1f2937; color: #10b981; padding: 6px 12px; border-radius: 8px; font-size: 10px; z-index: 9999; display: flex; align-items: center; gap: 8px; }
@@ -146,22 +155,17 @@
         .new-badge { position: absolute; top: -8px; right: -8px; background: #ef4444; color: white; border-radius: 50%; width: 22px; height: 22px; font-size: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.2); cursor: pointer; transition: transform 0.2s; }
         .new-badge:hover { transform: scale(1.1); }
         
-        .stat-number { font-size: 28px; font-weight: 700; }
-        .stat-label { font-size: 12px; font-weight: 500; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; }
-        .stat-icon { width: 48px; height: 48px; border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto; }
+        .detail-buttons { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 15px; padding-top: 15px; border-top: 1px solid #e5e7eb; }
         
-        .btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
-        .report-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; padding-top: 12px; border-top: 1px solid #e5e7eb; }
-        
-        .gradient-text { background: linear-gradient(135deg, #1e40af, #60a5fa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        
-        .card-hover { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .card-hover:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 20px 25px -12px rgba(0,0,0,0.15); }
+        /* Money field formatting - LEFT ALIGN */
+        .money-input { text-align: left; font-family: monospace; font-weight: 500; }
+        .money-display { text-align: left; font-family: monospace; font-weight: 500; }
+        .amount-cell { text-align: left !important; }
     </style>
 </head>
 <body class="bg-gray-100">
 
-<div id="mobileMenuOverlay" class="mobile-menu-overlay fixed inset-0 bg-black/50 z-40 hidden" onclick="closeMobileSidebar()"></div>
+<div id="mobileMenuOverlay" class="fixed inset-0 bg-black/50 z-40 hidden" onclick="closeMobileSidebar()"></div>
 <div id="connectionStatus" class="connection-status"><i class="fas fa-spinner fa-spin"></i> Connecting...</div>
 <div id="autoRefreshBadge" class="auto-refresh-badge"><i class="fas fa-sync-alt fa-fw"></i> <span id="refreshCountdown">5</span>s</div>
 
@@ -225,129 +229,75 @@
 </div>
 
 <!-- PROJECT MODALS -->
-<div id="projectModal" class="modal">
-    <div class="modal-content">
-        <h3 class="text-xl font-bold mb-4" id="projectModalTitle"><i class="fas fa-plus-circle text-blue-600 mr-2"></i>Add Project</h3>
-        <input type="hidden" id="editProjectId">
-        <div class="form-group"><label>Project Name <span class="required">*</span></label><input type="text" id="projectName" placeholder="Enter project name" required></div>
-        <div class="form-group"><label>Client Name</label><input type="text" id="projectClient" placeholder="Client name"></div>
-        <div class="form-group"><label>Amount (TZS)</label><input type="number" id="projectAmount" placeholder="0"></div>
-        <div class="form-group"><label>Location</label><input type="text" id="projectLocation" placeholder="Location"></div>
-        <div class="form-group"><label>Description</label><textarea id="projectDesc" rows="3" placeholder="Project description"></textarea></div>
-        <div class="form-group"><label>Status</label><select id="projectStatus"><option value="pending">Pending</option><option value="in_progress">In Progress</option><option value="completed">Completed</option><option value="approved">Approved</option></select></div>
-        <div class="form-group"><label>Progress (%)</label><input type="number" id="projectProgress" placeholder="0-100" min="0" max="100"></div>
-        <div class="form-group"><label>Start Date</label><input type="date" id="projectStartDate"></div>
-        <div class="form-group"><label>End Date</label><input type="date" id="projectEndDate"></div>
-        <div class="form-group"><label>Project Image</label>
-            <div id="projectImageUploadArea" class="image-upload-area text-sm" onclick="document.getElementById('projectImageFile').click()">
-                <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i><p>Click to upload project image</p>
-            </div>
-            <input type="file" id="projectImageFile" accept="image/*" class="hidden">
-            <div id="projectImagePreviewContainer" class="hidden mt-2"><img id="projectImagePreview" class="w-full h-24 object-cover rounded-lg border"><button type="button" onclick="removeProjectImage()" class="mt-1 text-red-500 text-sm w-full">Remove</button></div>
-        </div>
-        <div class="flex gap-3"><button onclick="saveProject()" class="flex-1 btn-primary py-2 rounded-lg">Save</button><button onclick="closeModal('projectModal')" class="flex-1 bg-gray-200 py-2 rounded-lg">Cancel</button></div>
-    </div>
-</div>
+<div id="projectModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4" id="projectModalTitle"><i class="fas fa-plus-circle text-blue-600 mr-2"></i>Add Project</h3><input type="hidden" id="editProjectId"><div class="form-group"><label>Project Name <span class="required">*</span></label><input type="text" id="projectName" placeholder="Enter project name" required></div><div class="form-group"><label>Client Name</label><input type="text" id="projectClient" placeholder="Client name"></div><div class="form-group"><label>Amount (TZS)</label><input type="text" id="projectAmount" placeholder="0" class="money-input"></div><div class="form-group"><label>Location</label><input type="text" id="projectLocation" placeholder="Location"></div><div class="form-group"><label>Description</label><textarea id="projectDesc" rows="3" placeholder="Project description"></textarea></div><div class="form-group"><label>Status</label><select id="projectStatus"><option value="pending">Pending</option><option value="in_progress">In Progress</option><option value="completed">Completed</option><option value="approved">Approved</option></select></div><div class="form-group"><label>Progress (%)</label><input type="number" id="projectProgress" placeholder="0-100" min="0" max="100" value="0"></div><div class="form-group"><label>Start Date</label><input type="date" id="projectStartDate"></div><div class="form-group"><label>End Date</label><input type="date" id="projectEndDate"></div><div class="form-group"><label>Project Image</label><div id="projectImageUploadArea" class="image-upload-area text-sm" onclick="document.getElementById('projectImageFile').click()"><i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i><p>Click to upload project image</p></div><input type="file" id="projectImageFile" accept="image/*" class="hidden"><div id="projectImagePreviewContainer" class="hidden mt-2"><img id="projectImagePreview" class="w-full h-24 object-cover rounded-lg border"><button type="button" onclick="removeProjectImage()" class="mt-1 text-red-500 text-sm w-full">Remove</button></div></div><div class="flex gap-3"><button onclick="saveProject()" class="flex-1 btn-primary py-2 rounded-lg">Save</button><button onclick="closeModal('projectModal')" class="flex-1 bg-gray-200 py-2 rounded-lg">Cancel</button></div></div></div>
 
-<div id="viewProjectModal" class="modal">
-    <div class="modal-content">
-        <h3 class="text-xl font-bold mb-4"><i class="fas fa-folder-open text-blue-600 mr-2"></i>Project Details</h3>
-        <div id="viewProjectContent"></div>
-        <div id="viewProjButtons" class="detail-buttons flex flex-wrap gap-2 justify-center mt-4 pt-3 border-t"></div>
-        <button onclick="closeModal('viewProjectModal')" class="w-full bg-gray-200 py-2 rounded-lg mt-3">Close</button>
-    </div>
-</div>
+<div id="viewProjectModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-folder-open text-blue-600 mr-2"></i>Project Details</h3><div id="viewProjectContent"></div><div id="viewProjButtons" class="detail-buttons"></div><button onclick="closeModal('viewProjectModal')" class="w-full bg-gray-200 py-2 rounded-lg mt-3">Close</button></div></div>
 
 <!-- BUDGET MODALS -->
-<div id="budgetModal" class="modal">
-    <div class="modal-content">
-        <h3 class="text-xl font-bold mb-4" id="budgetModalTitle"><i class="fas fa-plus-circle text-blue-600 mr-2"></i>Add Budget</h3>
-        <input type="hidden" id="editBudgetId">
-        <div class="form-group"><label>Project Name</label><input type="text" id="budgetProjectName" placeholder="Project Name"></div>
-        <div class="form-group"><label>Description</label><textarea id="budgetDescription" rows="2" placeholder="Budget Description"></textarea></div>
-        <div class="form-group"><label>Income Amount (TZS)</label><input type="number" id="budgetIncome" placeholder="0"></div>
-        <div class="form-group"><label>Expenses Amount (TZS)</label><input type="number" id="budgetExpenses" placeholder="0" value="0"></div>
-        <div class="bg-gray-50 p-3 rounded-xl"><p class="text-sm font-semibold">Remaining: <span id="budgetRemainingDisplay" class="text-green-600">TZS 0</span></p></div>
-        <div class="flex gap-3"><button onclick="saveBudget()" class="flex-1 btn-primary py-2 rounded-lg">Save</button><button onclick="closeModal('budgetModal')" class="flex-1 bg-gray-200 py-2 rounded-lg">Cancel</button></div>
-    </div>
-</div>
+<div id="budgetModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4" id="budgetModalTitle"><i class="fas fa-plus-circle text-blue-600 mr-2"></i>Add Budget</h3><input type="hidden" id="editBudgetId"><div class="form-group"><label>Project Name</label><input type="text" id="budgetProjectName" placeholder="Project Name"></div><div class="form-group"><label>Description</label><textarea id="budgetDescription" rows="2" placeholder="Budget Description"></textarea></div><div class="form-group"><label>Income Amount (TZS)</label><input type="text" id="budgetIncome" placeholder="0" class="money-input"></div><div class="form-group"><label>Expenses Amount (TZS)</label><input type="text" id="budgetExpenses" placeholder="0" class="money-input" value="0"></div><div class="bg-gray-50 p-3 rounded-xl"><p class="text-sm font-semibold">Remaining: <span id="budgetRemainingDisplay" class="text-green-600">TZS 0</span></p></div><div class="flex gap-3"><button onclick="saveBudget()" class="flex-1 btn-primary py-2 rounded-lg">Save</button><button onclick="closeModal('budgetModal')" class="flex-1 bg-gray-200 py-2 rounded-lg">Cancel</button></div></div></div>
 
-<div id="viewBudgetModal" class="modal">
-    <div class="modal-content">
-        <h3 class="text-xl font-bold mb-4"><i class="fas fa-wallet text-blue-600 mr-2"></i>Budget Details</h3>
-        <div id="viewBudgetContent"></div>
-        <button onclick="closeModal('viewBudgetModal')" class="w-full bg-gray-200 py-2 rounded-lg mt-3">Close</button>
-    </div>
-</div>
+<div id="viewBudgetModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-wallet text-blue-600 mr-2"></i>Budget Details</h3><div id="viewBudgetContent"></div><button onclick="closeModal('viewBudgetModal')" class="w-full bg-gray-200 py-2 rounded-lg mt-3">Close</button></div></div>
 
-<div id="editBudgetItemModal" class="modal">
-    <div class="modal-content">
-        <h3 class="text-xl font-bold mb-4"><i class="fas fa-edit text-blue-600 mr-2"></i>Edit Budget</h3>
-        <input type="hidden" id="editBudgetItemId">
-        <div class="form-group"><label>Project Name</label><input type="text" id="editBudgetProjectName" placeholder="Project Name"></div>
-        <div class="form-group"><label>Description</label><textarea id="editBudgetDesc" rows="2" placeholder="Description"></textarea></div>
-        <div class="form-group"><label>Income Amount (TZS)</label><input type="number" id="editBudgetIncome" placeholder="0"></div>
-        <div class="form-group"><label>Expenses Amount (TZS)</label><input type="number" id="editBudgetExpenses" placeholder="0"></div>
-        <div class="flex gap-3"><button onclick="updateBudgetItem()" class="flex-1 btn-primary py-2 rounded-lg">Update</button><button onclick="closeModal('editBudgetItemModal')" class="flex-1 bg-gray-200 py-2 rounded-lg">Cancel</button></div>
-    </div>
-</div>
+<div id="editBudgetItemModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-edit text-blue-600 mr-2"></i>Edit Budget</h3><input type="hidden" id="editBudgetItemId"><div class="form-group"><label>Project Name</label><input type="text" id="editBudgetProjectName" placeholder="Project Name"></div><div class="form-group"><label>Description</label><textarea id="editBudgetDesc" rows="2" placeholder="Description"></textarea></div><div class="form-group"><label>Income Amount (TZS)</label><input type="text" id="editBudgetIncome" placeholder="0" class="money-input"></div><div class="form-group"><label>Expenses Amount (TZS)</label><input type="text" id="editBudgetExpenses" placeholder="0" class="money-input"></div><div class="flex gap-3"><button onclick="updateBudgetItem()" class="flex-1 btn-primary py-2 rounded-lg">Update</button><button onclick="closeModal('editBudgetItemModal')" class="flex-1 bg-gray-200 py-2 rounded-lg">Cancel</button></div></div></div>
 
 <!-- REPORTS MODALS -->
-<div id="addReportModal" class="modal">
-    <div class="modal-content">
-        <h3 class="text-xl font-bold mb-4"><i class="fas fa-chart-line text-purple-600 mr-2"></i>Add Report</h3>
-        <div class="form-group"><label>Title <span class="required">*</span></label><input type="text" id="newReportTitle" placeholder="Report title" required></div>
-        <div class="form-group"><label>Period</label><select id="newReportPeriod"><option value="weekly">Weekly Report</option><option value="monthly">Monthly Report</option><option value="quarterly">Quarterly Report</option><option value="annual">Annual Report</option></select></div>
-        <div class="form-group"><label>Content <span class="required">*</span></label><textarea id="newReportContent" rows="6" placeholder="Report content..." required></textarea></div>
-        <div class="flex gap-3"><button onclick="addReport()" class="flex-1 btn-primary py-2 rounded-lg">Add</button><button onclick="closeModal('addReportModal')" class="flex-1 bg-gray-200 py-2 rounded-lg">Cancel</button></div>
-    </div>
-</div>
+<div id="addReportModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-chart-line text-purple-600 mr-2"></i>Add Report</h3><div class="form-group"><label>Title <span class="required">*</span></label><input type="text" id="newReportTitle" placeholder="Report title" required></div><div class="form-group"><label>Period</label><select id="newReportPeriod"><option value="weekly">Weekly Report</option><option value="monthly">Monthly Report</option><option value="quarterly">Quarterly Report</option><option value="annual">Annual Report</option></select></div><div class="form-group"><label>Content <span class="required">*</span></label><textarea id="newReportContent" rows="6" placeholder="Report content..." required></textarea></div><div class="flex gap-3"><button onclick="addReport()" class="flex-1 btn-primary py-2 rounded-lg">Add</button><button onclick="closeModal('addReportModal')" class="flex-1 bg-gray-200 py-2 rounded-lg">Cancel</button></div></div></div>
 
-<div id="editReportModal" class="modal">
-    <div class="modal-content">
-        <h3 class="text-xl font-bold mb-4"><i class="fas fa-edit text-purple-600 mr-2"></i>Edit Report</h3>
-        <input type="hidden" id="editReportId">
-        <div class="form-group"><label>Title</label><input type="text" id="editReportTitle" required></div>
-        <div class="form-group"><label>Period</label><select id="editReportPeriod"><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="quarterly">Quarterly</option><option value="annual">Annual</option></select></div>
-        <div class="form-group"><label>Content</label><textarea id="editReportContent" rows="6" required></textarea></div>
-        <div class="flex gap-3"><button onclick="updateReport()" class="flex-1 btn-primary py-2 rounded-lg">Update</button><button onclick="closeModal('editReportModal')" class="flex-1 bg-gray-200 py-2 rounded-lg">Cancel</button></div>
-    </div>
-</div>
+<div id="editReportModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-edit text-purple-600 mr-2"></i>Edit Report</h3><input type="hidden" id="editReportId"><div class="form-group"><label>Title</label><input type="text" id="editReportTitle" required></div><div class="form-group"><label>Period</label><select id="editReportPeriod"><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="quarterly">Quarterly</option><option value="annual">Annual</option></select></div><div class="form-group"><label>Content</label><textarea id="editReportContent" rows="6" required></textarea></div><div class="flex gap-3"><button onclick="updateReport()" class="flex-1 btn-primary py-2 rounded-lg">Update</button><button onclick="closeModal('editReportModal')" class="flex-1 bg-gray-200 py-2 rounded-lg">Cancel</button></div></div></div>
 
 <!-- MESSAGES MODALS -->
-<div id="chatModal" class="modal">
-    <div class="modal-content" style="max-width:750px;">
-        <div class="flex justify-between items-center mb-4"><h3 id="chatModalTitle" class="text-xl font-bold"><i class="fas fa-comments text-blue-600 mr-2"></i>Chat</h3><button onclick="closeModal('chatModal')" class="text-gray-400 text-2xl">&times;</button></div>
-        <div class="chat-container">
-            <div id="chatMessagesArea" class="chat-messages h-96 overflow-y-auto bg-gray-50 rounded-xl p-4"></div>
-            <div class="chat-input-area flex gap-2 mt-4">
-                <textarea id="chatInput" rows="2" placeholder="Type your message..." class="flex-1 p-2 border rounded-xl text-sm resize-none"></textarea>
-                <button onclick="sendChatMessage()" class="btn-primary px-4 py-2 rounded-xl">Send</button>
-            </div>
-        </div>
-    </div>
-</div>
+<div id="chatModal" class="modal"><div class="modal-content" style="max-width:750px;"><div class="flex justify-between items-center mb-4"><h3 id="chatModalTitle" class="text-xl font-bold"><i class="fas fa-comments text-blue-600 mr-2"></i>Chat</h3><button onclick="closeModal('chatModal')" class="text-gray-400 text-2xl">&times;</button></div><div class="chat-container"><div id="chatMessagesArea" class="chat-messages h-96 overflow-y-auto bg-gray-50 rounded-xl p-4"></div><div class="chat-input-area flex gap-2 mt-4"><textarea id="chatInput" rows="2" placeholder="Type your message..." class="flex-1 p-2 border rounded-xl text-sm resize-none"></textarea><button onclick="sendChatMessage()" class="btn-primary px-4 py-2 rounded-xl">Send</button></div></div></div></div>
 
-<div id="startChatModal" class="modal">
-    <div class="modal-content">
-        <h3 class="text-xl font-bold mb-4"><i class="fas fa-plus-circle text-blue-600 mr-2"></i>Start New Chat</h3>
-        <div class="form-group"><label>Select Department</label><select id="chatRecipientSelect" class="w-full p-2 border rounded-xl"><option value="">Select Department</option></select></div>
-        <div class="form-group"><label>Message</label><textarea id="newChatMsg" rows="4" placeholder="Type your message..."></textarea></div>
-        <div class="flex gap-3"><button onclick="sendNewChat()" class="flex-1 btn-primary py-2 rounded-lg">Send</button><button onclick="closeModal('startChatModal')" class="flex-1 bg-gray-200 py-2 rounded-lg">Cancel</button></div>
-    </div>
-</div>
+<div id="startChatModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-plus-circle text-blue-600 mr-2"></i>Start New Chat</h3><div class="form-group"><label>Select Department</label><select id="chatRecipientSelect" class="w-full p-2 border rounded-xl"><option value="">Select Department</option></select></div><div class="form-group"><label>Message</label><textarea id="newChatMsg" rows="4" placeholder="Type your message..."></textarea></div><div class="flex gap-3"><button onclick="sendNewChat()" class="flex-1 btn-primary py-2 rounded-lg">Send</button><button onclick="closeModal('startChatModal')" class="flex-1 bg-gray-200 py-2 rounded-lg">Cancel</button></div></div></div>
 
 <!-- SETTINGS MODALS -->
-<div id="backupRestoreModal" class="modal">
-    <div class="modal-content">
-        <h3 class="text-xl font-bold mb-4"><i class="fas fa-database text-green-600 mr-2"></i>Backup & Restore</h3>
-        <p class="text-sm text-gray-600 mb-4">Backup includes all system data</p>
-        <div class="flex gap-3"><button onclick="createBackup()" class="flex-1 bg-green-600 text-white py-2 rounded-lg text-sm"><i class="fas fa-download mr-2"></i>Backup</button><button onclick="restoreBackup()" class="flex-1 bg-orange-600 text-white py-2 rounded-lg text-sm"><i class="fas fa-upload mr-2"></i>Restore</button></div>
-        <button onclick="closeModal('backupRestoreModal')" class="w-full bg-gray-200 py-2 rounded-lg mt-3">Close</button>
-    </div>
-</div>
+<div id="backupRestoreModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-database text-green-600 mr-2"></i>Backup & Restore</h3><p class="text-sm text-gray-600 mb-4">Backup includes all system data</p><div class="flex gap-3"><button onclick="createBackup()" class="flex-1 bg-green-600 text-white py-2 rounded-lg text-sm"><i class="fas fa-download mr-2"></i>Backup</button><button onclick="restoreBackup()" class="flex-1 bg-orange-600 text-white py-2 rounded-lg text-sm"><i class="fas fa-upload mr-2"></i>Restore</button></div><button onclick="closeModal('backupRestoreModal')" class="w-full bg-gray-200 py-2 rounded-lg mt-3">Close</button></div></div>
 
 <script>
+    // ==================== MONEY FORMATTING FUNCTIONS ====================
+    function formatMoneyInput(input) {
+        let value = input.value.replace(/,/g, '');
+        if (!isNaN(value) && value !== '') {
+            let num = parseFloat(value);
+            if (!isNaN(num)) {
+                input.value = num.toLocaleString('en-US');
+            }
+        }
+    }
+    
+    function parseMoneyValue(value) {
+        if (!value) return 0;
+        return parseFloat(String(value).replace(/,/g, '')) || 0;
+    }
+    
+    function formatMoney(amt) {
+        let num = parseFloat(amt) || 0;
+        return "TZS " + num.toLocaleString('en-US');
+    }
+    
+    // Setup money inputs on page load
+    function setupMoneyInputs() {
+        const moneyFields = ['projectAmount', 'budgetIncome', 'budgetExpenses', 'editBudgetIncome', 'editBudgetExpenses'];
+        moneyFields.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('input', function() { formatMoneyInput(this); });
+            }
+        });
+    }
+    
+    // ==================== MODAL CLOSE ON OUTSIDE CLICK ====================
+    function setupModalCloseOnOutsideClick() {
+        const modals = document.querySelectorAll('.modal');
+        modals.forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeModal(modal.id);
+                }
+            });
+        });
+    }
+    
     // ==================== CONFIGURATION ====================
     const API_BASE = '../backend/api/';
     const DEPARTMENT_ID = 4;
@@ -388,10 +338,11 @@
         10: "fa-drafting-compass", 11: "fa-hard-hat", 12: "fa-file-contract"
     };
     
+    // ==================== HELPER FUNCTIONS ====================
     function showToast(msg, isError) { let t = document.createElement("div"); t.className = "toast-notification" + (isError ? " error" : ""); t.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-circle' : 'fa-check-circle'} mr-1"></i>${msg}`; document.body.appendChild(t); setTimeout(() => t.remove(), 3000); }
-    function formatCurrency(amt) { return "TZS " + (parseFloat(amt) || 0).toLocaleString(); }
-    function formatDate(dateStr) { if (!dateStr) return "N/A"; return new Date(dateStr).toLocaleDateString("en-GB"); }
+    function formatCurrency(amt) { return formatMoney(amt); }
     function escapeHtml(text) { if (!text) return ""; var div = document.createElement("div"); div.textContent = text; return div.innerHTML; }
+    function formatDate(dateStr) { if (!dateStr) return "N/A"; return new Date(dateStr).toLocaleDateString("en-GB"); }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; document.body.style.overflow = 'auto'; }
     function openModal(id) { document.getElementById(id).style.display = 'flex'; document.body.style.overflow = 'hidden'; }
     function closeMobileSidebar() { document.getElementById("mainSidebar").classList.remove("mobile-open"); document.getElementById("mobileMenuOverlay").classList.add("hidden"); }
@@ -425,6 +376,7 @@
         else { badge.style.display = 'none'; }
     }
     
+    // ==================== AUTO REFRESH ====================
     function startAutoRefresh() {
         if (refreshInterval) clearInterval(refreshInterval);
         refreshInterval = setInterval(() => {
@@ -452,6 +404,7 @@
     }
     function resetCountdown() { countdownSeconds = 5; }
     
+    // ==================== API CALLS ====================
     async function apiCall(endpoint, method = 'GET', data = null) {
         try {
             const url = API_BASE + endpoint;
@@ -478,6 +431,7 @@
         if (chatSelect) { chatSelect.innerHTML = '<option value="">Select Department</option>' + departmentsList.map(d => `<option value="${d.id}">${escapeHtml(d.name)}</option>`).join(''); }
     }
     
+    // ==================== GLOBAL SEARCH ====================
     function performGlobalSearch() {
         let term = document.getElementById("globalSearchInput").value.toLowerCase().trim();
         let dropdown = document.getElementById("searchResultsDropdown");
@@ -518,6 +472,7 @@
     
     document.addEventListener("click", (e) => { let inp = document.getElementById("globalSearchInput"); let dd = document.getElementById("searchResultsDropdown"); if (inp && dd && !inp.contains(e.target) && !dd.contains(e.target)) dd.classList.remove("active"); });
     
+    // ==================== DASHBOARD ====================
     async function loadDashboard() {
         const [projectsRes, budgetsRes, reportsRes] = await Promise.all([
             apiCall(`get_projects.php?department_id=${DEPARTMENT_ID}`),
@@ -544,10 +499,10 @@
         
         let html = `<div class="mb-4"><h2 class="text-xl font-bold text-gray-800">Manager Dashboard</h2><p class="text-xs text-gray-500">Project & Financial Management Overview</p></div>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
-                <div class="stat-card p-4 text-center cursor-pointer" onclick="showSection('projects')"><div class="stat-icon bg-blue-100 text-blue-600"><i class="fas fa-tasks text-xl"></i></div><p class="stat-label">Projects</p><p class="stat-number text-blue-600">${totalProjects}</p></div>
-                <div class="stat-card p-4 text-center cursor-pointer" onclick="showSection('projects')"><div class="stat-icon bg-yellow-100 text-yellow-600"><i class="fas fa-spinner text-xl"></i></div><p class="stat-label">In Progress</p><p class="stat-number text-yellow-600">${inProgress}</p></div>
-                <div class="stat-card p-4 text-center cursor-pointer" onclick="showSection('projects')"><div class="stat-icon bg-green-100 text-green-600"><i class="fas fa-check-circle text-xl"></i></div><p class="stat-label">Completed</p><p class="stat-number text-green-600">${completed}</p></div>
-                <div class="stat-card p-4 text-center cursor-pointer" onclick="showSection('budget')"><div class="stat-icon bg-purple-100 text-purple-600"><i class="fas fa-chart-line text-xl"></i></div><p class="stat-label">Remaining</p><p class="stat-number text-purple-600">${formatCurrency(totalRemaining).substring(0,12)}</p></div>
+                <div class="stat-card p-4 text-center cursor-pointer" onclick="showSection('projects')"><div class="stat-icon bg-blue-100 text-blue-600 mx-auto"><i class="fas fa-tasks text-xl"></i></div><p class="stat-label">Projects</p><p class="stat-number text-blue-600">${totalProjects}</p></div>
+                <div class="stat-card p-4 text-center cursor-pointer" onclick="showSection('projects')"><div class="stat-icon bg-yellow-100 text-yellow-600 mx-auto"><i class="fas fa-spinner text-xl"></i></div><p class="stat-label">In Progress</p><p class="stat-number text-yellow-600">${inProgress}</p></div>
+                <div class="stat-card p-4 text-center cursor-pointer" onclick="showSection('projects')"><div class="stat-icon bg-green-100 text-green-600 mx-auto"><i class="fas fa-check-circle text-xl"></i></div><p class="stat-label">Completed</p><p class="stat-number text-green-600">${completed}</p></div>
+                <div class="stat-card p-4 text-center cursor-pointer" onclick="showSection('budget')"><div class="stat-icon bg-purple-100 text-purple-600 mx-auto"><i class="fas fa-chart-line text-xl"></i></div><p class="stat-label">Remaining</p><p class="stat-number text-purple-600">${formatCurrency(totalRemaining)}</p></div>
             </div>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-5">
                 <div class="bg-white rounded-xl p-5 shadow-sm"><h3 class="font-semibold mb-4"><i class="fas fa-chart-pie text-blue-600 mr-2"></i>Budget Distribution</h3><canvas id="budgetChart" height="200"></canvas></div>
@@ -567,6 +522,7 @@
         if (ctx2) new Chart(ctx2, { type: "bar", data: { labels: budgetsData.map(b => (b.project_name || "Unknown").substring(0,10)), datasets: [{ label: "Income (M)", data: budgetsData.map(b => (b.income || 0)/1000000), backgroundColor: "#10b981", borderRadius: 8 }, { label: "Expenses (M)", data: budgetsData.map(b => (b.expenses || 0)/1000000), backgroundColor: "#ef4444", borderRadius: 8 }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top' } } } });
     }
     
+    // ==================== PROJECTS SECTION ====================
     async function loadProjects() {
         const res = await apiCall(`get_projects.php?department_id=${DEPARTMENT_ID}`);
         projectsData = res.success ? res.data.sort((a,b) => b.id - a.id) : [];
@@ -590,7 +546,7 @@
                         <span class="px-1.5 py-0.5 text-[8px] rounded-full ${getProjectStatusClass(p.status)}">${getProjectStatusText(p.status)}</span>
                     </div>
                     <p class="text-xs text-gray-500 mt-1">Client: ${escapeHtml(p.client_name)}</p>
-                    <p class="text-sm font-semibold text-purple-600 mt-1">${formatCurrency(p.amount)}</p>
+                    <p class="text-sm font-semibold text-purple-600 mt-1 text-left">${formatCurrency(p.amount)}</p>
                     <p class="text-xs text-gray-500">Location: ${escapeHtml(p.location)}</p>
                     <div class="mt-2"><div class="flex justify-between text-xs"><span>Progress</span><span>${p.progress}%</span></div><div class="w-full bg-gray-200 rounded-full h-1.5"><div class="bg-blue-600 h-1.5 rounded-full" style="width:${p.progress}%"></div></div></div>
                     <div class="flex flex-wrap gap-1 mt-2">
@@ -602,6 +558,17 @@
             </div>`;
         }
         document.getElementById('projectsGrid').innerHTML = projectsHtml;
+    }
+    
+    function showFullImage(src) {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black/90 z-[2000] flex items-center justify-center cursor-pointer';
+        modal.onclick = () => modal.remove();
+        const img = document.createElement('img');
+        img.src = src;
+        img.className = 'max-w-[90%] max-h-[90%] object-contain';
+        modal.appendChild(img);
+        document.body.appendChild(modal);
     }
     
     async function markProjectAsViewed(projectId) {
@@ -633,7 +600,19 @@
         if (!name) { showToast('Project name required', true); return; }
         let img = await getImageAsBase64(currentProjectImageFile);
         let id = document.getElementById('editProjectId').value;
-        let data = { name: name, client_name: document.getElementById('projectClient').value, amount: parseFloat(document.getElementById('projectAmount').value) || 0, status: document.getElementById('projectStatus').value, progress: parseInt(document.getElementById('projectProgress').value) || 0, location: document.getElementById('projectLocation').value, description: document.getElementById('projectDesc').value, image: img, start_date: document.getElementById('projectStartDate').value, end_date: document.getElementById('projectEndDate').value, department_id: DEPARTMENT_ID };
+        let data = { 
+            name: name, 
+            client_name: document.getElementById('projectClient').value, 
+            amount: parseMoneyValue(document.getElementById('projectAmount').value), 
+            status: document.getElementById('projectStatus').value, 
+            progress: parseInt(document.getElementById('projectProgress').value) || 0, 
+            location: document.getElementById('projectLocation').value, 
+            description: document.getElementById('projectDesc').value, 
+            image: img, 
+            start_date: document.getElementById('projectStartDate').value, 
+            end_date: document.getElementById('projectEndDate').value, 
+            department_id: DEPARTMENT_ID 
+        };
         let res = id ? await apiCall('update_project.php', 'POST', { ...data, id: parseInt(id) }) : await apiCall('add_project.php', 'POST', data);
         if (res && res.success) { showToast(id ? 'Project updated' : 'Project added'); closeModal('projectModal'); await loadProjects(); await loadDashboard(); }
         else showToast(res?.message || 'Failed', true);
@@ -646,22 +625,11 @@
         return UPLOAD_PATH + imagePath;
     }
     
-    function showFullImage(src) {
-        const modal = document.createElement('div');
-        modal.className = 'fixed inset-0 bg-black/90 z-[2000] flex items-center justify-center cursor-pointer';
-        modal.onclick = () => modal.remove();
-        const img = document.createElement('img');
-        img.src = src;
-        img.className = 'max-w-[90%] max-h-[90%] object-contain';
-        modal.appendChild(img);
-        document.body.appendChild(modal);
-    }
-    
     async function viewProject(id) {
         let p = projectsData.find(p => p.id === id);
         if (p) {
             let imageUrl = getFullImageUrl(p.image);
-            let imageHtml = imageUrl ? `<img src="${imageUrl}" class="w-full h-48 object-cover rounded-lg mb-3 cursor-pointer hover:opacity-90 transition" onclick="showFullImage('${imageUrl}')" title="Click to view full size">` : '<div class="w-full h-48 bg-gray-100 rounded-lg mb-3 flex items-center justify-center text-gray-400"><i class="fas fa-image text-4xl"></i><p class="text-sm mt-2">No image</p></div>';
+            let imageHtml = imageUrl ? `<img src="${imageUrl}" class="w-full h-48 object-cover rounded-lg mb-3 cursor-pointer hover:opacity-90 transition" onclick="event.stopPropagation(); showFullImage('${imageUrl}')" title="Click to view full size">` : '<div class="w-full h-48 bg-gray-100 rounded-lg mb-3 flex items-center justify-center text-gray-400"><i class="fas fa-image text-4xl"></i><p class="text-sm mt-2">No image</p></div>';
             document.getElementById('viewProjectContent').innerHTML = `${imageHtml}<div class="space-y-2"><p><strong>Name:</strong> ${escapeHtml(p.name)}</p><p><strong>Client:</strong> ${escapeHtml(p.client_name)}</p><p><strong>Amount:</strong> ${formatCurrency(p.amount)}</p><p><strong>Status:</strong> ${p.status}</p><p><strong>Progress:</strong> ${p.progress}%</p><p><strong>Location:</strong> ${escapeHtml(p.location)}</p><p><strong>Start Date:</strong> ${p.start_date}</p><p><strong>End Date:</strong> ${p.end_date}</p><p><strong>Description:</strong> ${escapeHtml(p.description)}</p></div>`;
             
             let deptOptions = '';
@@ -669,7 +637,7 @@
             
             document.getElementById('viewProjButtons').innerHTML = `
                 <button onclick="exportSingleProjectExcel(${p.id})" class="btn-success text-white px-3 py-1.5 rounded text-sm"><i class="fas fa-file-excel"></i> Excel</button>
-                <button onclick="exportSingleProjectPDF(${p.id})" class="btn-danger text-white px-3 py-1.5 rounded text-sm"><i class="fas fa-file-pdf"></i> PDF</button>
+                <button onclick="exportSingleProjectPDFWithImage(${p.id})" class="btn-danger text-white px-3 py-1.5 rounded text-sm"><i class="fas fa-file-pdf"></i> PDF</button>
                 ${imageUrl ? `<button onclick="showFullImage('${imageUrl}')" class="btn-primary text-white px-3 py-1.5 rounded text-sm"><i class="fas fa-image"></i> View Image</button>` : ''}
                 <div class="send-dropdown relative inline-block"><button class="btn-warning text-white px-3 py-1.5 rounded text-sm" onclick="toggleSendDropdown('projSendDropdown-${p.id}')"><i class="fas fa-paper-plane"></i> Send</button><div id="projSendDropdown-${p.id}" class="send-dropdown-content absolute right-0 mt-1 bg-white border rounded shadow-lg hidden z-50">${deptOptions}</div></div>
             `;
@@ -679,6 +647,167 @@
         }
     }
     
+    function exportSingleProjectPDFWithImage(projectId) {
+        const p = projectsData.find(p => p.id === projectId);
+        if (!p) return;
+        
+        let imageUrl = getFullImageUrl(p.image);
+        let imageHtml = imageUrl ? `<div style="text-align: center; margin: 25px 0; border: 2px solid #ddd; border-radius: 12px; padding: 20px; background: #f9fafb;">
+            <img src="${imageUrl}" style="max-width: 100%; max-height: 350px; object-fit: contain; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" onerror="this.parentElement.innerHTML='<div style=\\'text-align:center; padding:50px;\\'><i class=\\'fas fa-image\\' style=\\'font-size:48px; color:#999;\\'></i><p style=\\'margin-top:10px;\\'>No Image Available</p></div>'">
+            <p style="margin-top: 8px; font-size: 12px; color: #666;">Project Image</p>
+        </div>` : '<div style="text-align: center; margin: 25px 0; padding: 50px; background: #f3f4f6; border-radius: 12px; border: 2px solid #ddd;"><i class="fas fa-image" style="font-size: 48px; color: #9ca3af;"></i><p style="margin-top: 10px;">No Image Available</p></div>';
+        
+        let html = `<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>${escapeHtml(p.name)} - Project Report</title>
+            <style>
+                * { margin: 0; padding: 0; box-sizing: border-box; }
+                body { 
+                    font-family: 'Segoe UI', Arial, sans-serif; 
+                    padding: 30px; 
+                    max-width: 1000px; 
+                    margin: 0 auto; 
+                    border: 3px solid #1e40af; 
+                    border-radius: 8px;
+                    background: white;
+                }
+                .container { padding: 25px; }
+                h1 { 
+                    color: #1e40af; 
+                    text-align: center; 
+                    border-bottom: 3px solid #1e40af; 
+                    padding-bottom: 15px; 
+                    margin-bottom: 25px;
+                    font-size: 26px;
+                }
+                .header-info { 
+                    text-align: center; 
+                    margin-bottom: 20px; 
+                    color: #666; 
+                    font-size: 12px;
+                    display: flex;
+                    justify-content: space-between;
+                    border: 1px solid #ddd;
+                    padding: 8px 15px;
+                    background: #f9fafb;
+                }
+                table { 
+                    width: 100%; 
+                    border-collapse: collapse; 
+                    margin: 20px 0; 
+                    border: 1px solid #000;
+                }
+                th, td { 
+                    border: 1px solid #000; 
+                    padding: 10px 12px; 
+                    text-align: left; 
+                    vertical-align: top;
+                }
+                th { 
+                    background: #f5f5f5; 
+                    width: 35%; 
+                    font-weight: bold;
+                }
+                td.amount { text-align: left; }
+                .status-badge { 
+                    display: inline-block; 
+                    padding: 4px 12px; 
+                    border-radius: 20px; 
+                    font-size: 12px; 
+                    font-weight: 500;
+                }
+                .status-pending { background: #fef3c7; color: #d97706; }
+                .status-in_progress { background: #dbeafe; color: #2563eb; }
+                .status-completed { background: #d1fae5; color: #059669; }
+                .status-approved { background: #e9d5ff; color: #7e22ce; }
+                .progress-bar-container {
+                    width: 150px;
+                    background: #e5e7eb;
+                    border-radius: 10px;
+                    height: 8px;
+                    display: inline-block;
+                    vertical-align: middle;
+                    margin-right: 5px;
+                }
+                .progress-bar-fill {
+                    background: #1e40af;
+                    width: ${p.progress || 0}%;
+                    height: 8px;
+                    border-radius: 10px;
+                }
+                .footer { 
+                    text-align: center; 
+                    font-size: 10px; 
+                    color: #999; 
+                    margin-top: 25px; 
+                    padding-top: 12px; 
+                    border-top: 2px solid #ddd;
+                }
+                .print-btn { 
+                    text-align: center; 
+                    margin-top: 25px; 
+                }
+                .print-btn button { 
+                    padding: 10px 24px; 
+                    background: #1e40af; 
+                    color: white; 
+                    border: none; 
+                    border-radius: 6px; 
+                    cursor: pointer; 
+                    font-size: 14px; 
+                    font-weight: bold;
+                }
+                @media print { 
+                    body { 
+                        border: none; 
+                        padding: 15px; 
+                    }
+                    .print-btn { display: none; }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>${escapeHtml(p.name)}</h1>
+                <div class="header-info">
+                    <span><strong>Project ID:</strong> #${p.id}</span>
+                    <span><strong>Generated:</strong> ${new Date().toLocaleString()}</span>
+                </div>
+                ${imageHtml}
+                <table>
+                    <tr><th>Project Name:</th><td style="font-weight: bold;">${escapeHtml(p.name)}<\/td><\/tr>
+                    <tr><th>Client Name:</th><td>${escapeHtml(p.client_name || 'N/A')}<\/td><\/tr>
+                    <tr><th>Amount:</th><td class="amount" style="color: #059669; font-weight: bold;">${formatCurrency(p.amount)}<\/td><\/tr>
+                    <tr><th>Status:</th><td><span class="status-badge status-${p.status === 'in_progress' ? 'in_progress' : p.status}">${p.status === 'in_progress' ? 'In Progress' : p.status}<\/span><\/td><\/tr>
+                    <tr><th>Progress:</th><td><div class="progress-bar-container"><div class="progress-bar-fill"></div></div> ${p.progress || 0}% Complete<\/td><\/tr>
+                    <tr><th>Location:</th><td>${escapeHtml(p.location || 'N/A')}<\/td><\/tr>
+                    <tr><th>Start Date:</th><td>${p.start_date || 'Not specified'}<\/td><\/tr>
+                    <tr><th>End Date:</th><td>${p.end_date || 'Not specified'}<\/td><\/tr>
+                    <tr><th>Description:</th><td>${escapeHtml(p.description || 'No description provided')}<\/td><\/tr>
+                </table>
+                <div class="footer">GeoTraverse ERP System - Manager Department | Official Project Document</div>
+                <div class="print-btn"><button onclick="window.print();"><i class="fas fa-print"></i> Print / Save as PDF</button></div>
+            </div>
+        </body>
+        </html>`;
+        
+        let blob = new Blob([html], { type: 'text/html' });
+        let url = URL.createObjectURL(blob);
+        window.open(url, '_blank');
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        showToast('PDF preview opened - Click Print to save');
+    }
+    
+    function exportSingleProjectExcel(projectId) {
+        let p = projectsData.find(p => p.id === projectId);
+        if (!p) return;
+        let ws = [["Name","Client","Amount","Status","Progress","Location","Start Date","End Date","Description"]];
+        ws.push([p.name, p.client_name, p.amount, p.status, p.progress, p.location, p.start_date, p.end_date, p.description]);
+        let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), "Project"); XLSX.writeFile(wb, `project_${p.id}.xlsx`); showToast("Exported to Excel");
+    }
+    
     function editProject(id) {
         let p = projectsData.find(p => p.id === id);
         if (p) {
@@ -686,15 +815,23 @@
             document.getElementById('editProjectId').value = p.id;
             document.getElementById('projectName').value = p.name;
             document.getElementById('projectClient').value = p.client_name;
-            document.getElementById('projectAmount').value = p.amount;
+            let amountVal = p.amount;
+            document.getElementById('projectAmount').value = amountVal.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             document.getElementById('projectLocation').value = p.location;
             document.getElementById('projectDesc').value = p.description || '';
             document.getElementById('projectStatus').value = p.status;
             document.getElementById('projectProgress').value = p.progress;
             document.getElementById('projectStartDate').value = p.start_date;
             document.getElementById('projectEndDate').value = p.end_date;
-            if (p.image) { let imgUrl = getFullImageUrl(p.image); document.getElementById('projectImagePreview').src = imgUrl; document.getElementById('projectImagePreviewContainer').classList.remove('hidden'); document.getElementById('projectImageUploadArea').classList.add('hidden'); }
-            else { document.getElementById('projectImagePreviewContainer').classList.add('hidden'); document.getElementById('projectImageUploadArea').classList.remove('hidden'); }
+            let imageUrl = getFullImageUrl(p.image);
+            if (imageUrl) { 
+                document.getElementById('projectImagePreview').src = imageUrl; 
+                document.getElementById('projectImagePreviewContainer').classList.remove('hidden'); 
+                document.getElementById('projectImageUploadArea').classList.add('hidden'); 
+            } else { 
+                document.getElementById('projectImagePreviewContainer').classList.add('hidden'); 
+                document.getElementById('projectImageUploadArea').classList.remove('hidden'); 
+            }
             openModal('projectModal');
         }
     }
@@ -718,23 +855,7 @@
         }
     }
     
-    function exportSingleProjectExcel(projectId) {
-        let p = projectsData.find(p => p.id === projectId);
-        if (!p) return;
-        let ws = [["Name","Client","Amount","Status","Progress","Location","Start Date","End Date","Description"]];
-        ws.push([p.name, p.client_name, p.amount, p.status, p.progress, p.location, p.start_date, p.end_date, p.description]);
-        let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), "Project"); XLSX.writeFile(wb, `project_${p.id}.xlsx`); showToast("Exported to Excel");
-    }
-    
-    function exportSingleProjectPDF(projectId) {
-        let p = projectsData.find(p => p.id === projectId);
-        if (!p) return;
-        let imageUrl = getFullImageUrl(p.image);
-        let element = document.createElement("div");
-        element.innerHTML = `<div style="padding:20px; border:2px solid #1e40af;"><h1 style="color:#1e40af">${escapeHtml(p.name)}</h1><p><strong>Client:</strong> ${escapeHtml(p.client_name)}</p><p><strong>Amount:</strong> ${formatCurrency(p.amount)}</p><p><strong>Status:</strong> ${p.status}</p><p><strong>Progress:</strong> ${p.progress}%</p><p><strong>Location:</strong> ${escapeHtml(p.location)}</p><p><strong>Start Date:</strong> ${p.start_date}</p><p><strong>End Date:</strong> ${p.end_date}</p><p><strong>Description:</strong> ${escapeHtml(p.description)}</p>${imageUrl ? `<p><img src="${imageUrl}" style="max-width:100%; margin-top:10px;"></p>` : ''}<p>Generated: ${new Date().toLocaleString()}</p></div>`;
-        html2pdf().set({ margin: 0.5, filename: `project_${p.id}.pdf` }).from(element).save(); showToast("Exported to PDF");
-    }
-    
+    // ==================== BUDGET SECTION ====================
     async function loadBudget() {
         const res = await apiCall(`get_budgets.php?department_id=${DEPARTMENT_ID}`);
         budgetsData = res.success ? res.data.sort((a,b) => b.id - a.id) : [];
@@ -751,22 +872,22 @@
         for (let b of budgetsData) {
             let percent = ((b.expenses || 0) / (b.income || 1) * 100).toFixed(1);
             let remClass = (b.remaining || 0) <= (b.income || 0) * 0.1 ? 'text-red-600 font-bold' : ((b.remaining || 0) <= (b.income || 0) * 0.3 ? 'text-orange-600' : 'text-green-600');
-            html += `<tr class="border-b hover:bg-gray-50" id="budget-item-${b.id}"><td class="px-3 py-2 font-medium">${escapeHtml(b.project_name)}<\/td><td class="px-3 py-2 text-xs text-gray-500 max-w-[200px] truncate" title="${escapeHtml(b.description)}">${escapeHtml((b.description || '').substring(0,40))}${(b.description || '').length>40?'...':''}<\/td><td class="px-3 py-2 text-green-600 font-semibold">${formatCurrency(b.income)}<\/td><td class="px-3 py-2 text-red-600">${formatCurrency(b.expenses)}<\/td><td class="px-3 py-2 ${remClass} font-semibold">${formatCurrency(b.remaining || 0)}<\/td>
+            html += `<tr class="border-b hover:bg-gray-50" id="budget-item-${b.id}"><td class="px-3 py-2 font-medium">${escapeHtml(b.project_name)}<\/td><td class="px-3 py-2 text-xs text-gray-500 max-w-[200px] truncate" title="${escapeHtml(b.description)}">${escapeHtml((b.description || '').substring(0,40))}${(b.description || '').length>40?'...':''}<\/td><td class="px-3 py-2 text-green-600 font-semibold text-left">${formatCurrency(b.income)}<\/td><td class="px-3 py-2 text-red-600 text-left">${formatCurrency(b.expenses)}<\/td><td class="px-3 py-2 ${remClass} font-semibold text-left">${formatCurrency(b.remaining || 0)}<\/td>
             <td class="px-3 py-2"><div class="w-20"><div class="w-full bg-gray-200 rounded-full h-1.5"><div class="${getProgressClass(percent)} h-1.5 rounded-full" style="width:${Math.min(percent,100)}%"></div></div><span class="text-[9px]">${percent}%</span></div><\/td><td class="px-3 py-2"><div class="flex gap-1"><button onclick="viewBudgetItem(${b.id})" class="action-btn view"><i class="fas fa-eye"></i><\/button><button onclick="editBudgetItem(${b.id})" class="action-btn edit"><i class="fas fa-edit"></i><\/button><button onclick="deleteBudgetItem(${b.id})" class="action-btn delete"><i class="fas fa-trash"></i><\/button><\/div><\/td><\/tr>`;
         }
-        html += `</tbody>}</div>`;
+        html += `</tbody></div>`;
         document.getElementById("budgetSection").innerHTML = html;
     }
     
     function openBudgetModal() { document.getElementById("editBudgetId").value = ""; document.getElementById("budgetProjectName").value = ""; document.getElementById("budgetDescription").value = ""; document.getElementById("budgetIncome").value = ""; document.getElementById("budgetExpenses").value = "0"; document.getElementById("budgetRemainingDisplay").innerText = "TZS 0"; openModal('budgetModal'); }
-    document.getElementById("budgetIncome")?.addEventListener("input", function() { let income = parseFloat(this.value) || 0; let expenses = parseFloat(document.getElementById("budgetExpenses").value) || 0; document.getElementById("budgetRemainingDisplay").innerText = formatCurrency(income - expenses); });
-    document.getElementById("budgetExpenses")?.addEventListener("input", function() { let income = parseFloat(document.getElementById("budgetIncome").value) || 0; let expenses = parseFloat(this.value) || 0; document.getElementById("budgetRemainingDisplay").innerText = formatCurrency(income - expenses); });
+    document.getElementById("budgetIncome")?.addEventListener("input", function() { let income = parseMoneyValue(this.value) || 0; let expenses = parseMoneyValue(document.getElementById("budgetExpenses").value) || 0; document.getElementById("budgetRemainingDisplay").innerText = formatCurrency(income - expenses); });
+    document.getElementById("budgetExpenses")?.addEventListener("input", function() { let income = parseMoneyValue(document.getElementById("budgetIncome").value) || 0; let expenses = parseMoneyValue(this.value) || 0; document.getElementById("budgetRemainingDisplay").innerText = formatCurrency(income - expenses); });
     
     async function saveBudget() {
         let projectName = document.getElementById("budgetProjectName").value.trim();
         if (!projectName) { showToast("Enter project name", true); return; }
-        let income = parseFloat(document.getElementById("budgetIncome").value) || 0;
-        let expenses = parseFloat(document.getElementById("budgetExpenses").value) || 0;
+        let income = parseMoneyValue(document.getElementById("budgetIncome").value) || 0;
+        let expenses = parseMoneyValue(document.getElementById("budgetExpenses").value) || 0;
         let id = document.getElementById("editBudgetId").value;
         let data = { project_name: projectName, description: document.getElementById("budgetDescription").value, income: income, expenses: expenses, remaining: income - expenses, department_id: DEPARTMENT_ID };
         let res = id ? await apiCall('update_budget.php', 'POST', { ...data, id: parseInt(id) }) : await apiCall('add_budget.php', 'POST', data);
@@ -774,13 +895,14 @@
         else showToast(res.message || "Failed", true);
     }
     
-    function viewBudgetItem(id) { let b = budgetsData.find(b => b.id === id); if (b) { let percent = ((b.expenses || 0) / (b.income || 1) * 100).toFixed(1); document.getElementById("viewBudgetContent").innerHTML = `<div class="space-y-3"><div class="border-b pb-2"><h4 class="font-bold text-base">${escapeHtml(b.project_name)}</h4><p class="text-xs text-gray-500">Created: ${b.created_at || '-'}</p></div><div class="grid grid-cols-2 gap-2 text-sm"><div><strong>Description:</strong></div><div>${escapeHtml(b.description || '')}</div><div><strong>Income:</strong></div><div class="text-green-600 font-semibold">${formatCurrency(b.income)}</div><div><strong>Expenses:</strong></div><div class="text-red-600">${formatCurrency(b.expenses)}</div><div><strong>Remaining:</strong></div><div class="text-blue-600 font-semibold">${formatCurrency(b.remaining || 0)}</div><div><strong>Usage:</strong></div><div><div class="w-full bg-gray-200 rounded-full h-1.5 mt-1"><div class="${getProgressClass(percent)} h-1.5 rounded-full" style="width:${Math.min(percent,100)}%"></div></div><span class="text-[10px]">${percent}% used</span></div></div></div>`; openModal('viewBudgetModal'); } }
-    function editBudgetItem(id) { let b = budgetsData.find(b => b.id === id); if (b) { document.getElementById("editBudgetItemId").value = b.id; document.getElementById("editBudgetProjectName").value = b.project_name; document.getElementById("editBudgetDesc").value = b.description || ""; document.getElementById("editBudgetIncome").value = b.income; document.getElementById("editBudgetExpenses").value = b.expenses; openModal('editBudgetItemModal'); } }
-    async function updateBudgetItem() { let id = parseInt(document.getElementById("editBudgetItemId").value); let income = parseFloat(document.getElementById("editBudgetIncome").value) || 0; let expenses = parseFloat(document.getElementById("editBudgetExpenses").value) || 0; let data = { id: id, project_name: document.getElementById("editBudgetProjectName").value, description: document.getElementById("editBudgetDesc").value, income: income, expenses: expenses, remaining: income - expenses }; let res = await apiCall('update_budget.php', 'POST', data); if (res.success) { showToast("Budget updated"); closeModal('editBudgetItemModal'); await loadBudget(); await loadDashboard(); } else showToast(res.message || "Failed", true); }
+    function viewBudgetItem(id) { let b = budgetsData.find(b => b.id === id); if (b) { let percent = ((b.expenses || 0) / (b.income || 1) * 100).toFixed(1); document.getElementById("viewBudgetContent").innerHTML = `<div class="space-y-3"><div class="border-b pb-2"><h4 class="font-bold text-base">${escapeHtml(b.project_name)}</h4><p class="text-xs text-gray-500">Created: ${b.created_at || '-'}</p></div><div class="grid grid-cols-2 gap-2 text-sm"><div><strong>Description:</strong></div><div>${escapeHtml(b.description || '')}</div><div><strong>Income:</strong></div><div class="text-green-600 font-semibold text-left">${formatCurrency(b.income)}</div><div><strong>Expenses:</strong></div><div class="text-red-600 text-left">${formatCurrency(b.expenses)}</div><div><strong>Remaining:</strong></div><div class="text-blue-600 font-semibold text-left">${formatCurrency(b.remaining || 0)}</div><div><strong>Usage:</strong></div><div><div class="w-full bg-gray-200 rounded-full h-1.5 mt-1"><div class="${getProgressClass(percent)} h-1.5 rounded-full" style="width:${Math.min(percent,100)}%"></div></div><span class="text-[10px]">${percent}% used</span></div></div></div>`; openModal('viewBudgetModal'); } }
+    function editBudgetItem(id) { let b = budgetsData.find(b => b.id === id); if (b) { document.getElementById("editBudgetItemId").value = b.id; document.getElementById("editBudgetProjectName").value = b.project_name; document.getElementById("editBudgetDesc").value = b.description || ""; let incomeVal = b.income; let expensesVal = b.expenses; document.getElementById("editBudgetIncome").value = incomeVal.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); document.getElementById("editBudgetExpenses").value = expensesVal.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); openModal('editBudgetItemModal'); } }
+    async function updateBudgetItem() { let id = parseInt(document.getElementById("editBudgetItemId").value); let income = parseMoneyValue(document.getElementById("editBudgetIncome").value) || 0; let expenses = parseMoneyValue(document.getElementById("editBudgetExpenses").value) || 0; let data = { id: id, project_name: document.getElementById("editBudgetProjectName").value, description: document.getElementById("editBudgetDesc").value, income: income, expenses: expenses, remaining: income - expenses }; let res = await apiCall('update_budget.php', 'POST', data); if (res.success) { showToast("Budget updated"); closeModal('editBudgetItemModal'); await loadBudget(); await loadDashboard(); } else showToast(res.message || "Failed", true); }
     async function deleteBudgetItem(id) { if (confirm("Delete this budget item?")) { let res = await apiCall('delete_budget.php', 'POST', { id }); if (res.success) { budgetsData = budgetsData.filter(b => b.id !== id); showToast("Budget deleted"); await loadBudget(); await loadDashboard(); } else showToast(res.message || "Failed", true); } }
     function exportBudgetToExcel() { let ws = [["Project Name","Description","Income","Expenses","Remaining"]]; budgetsData.forEach(b => ws.push([b.project_name, b.description, b.income, b.expenses, b.remaining])); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), "Budget"); XLSX.writeFile(wb, `budget_${new Date().toISOString().slice(0,10)}.xlsx`); showToast("Budget exported to Excel"); }
-    function exportBudgetToPDF() { let element = document.createElement("div"); element.innerHTML = `<div style="padding:20px"><h1 style="color:#1e40af">Budget Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr><table border="1" cellpadding="8">${budgetsData.map(b => `<tr><td class="px-2 py-1">${escapeHtml(b.project_name)}<\/td><td class="px-2 py-1">${formatCurrency(b.income)}<\/td><td class="px-2 py-1">${formatCurrency(b.expenses)}<\/td><td class="px-2 py-1">${formatCurrency(b.remaining)}<\/td><\/tr>`).join('')}<\/table><\/div>`; html2pdf().set({ margin: 0.5, filename: `budget_report.pdf` }).from(element).save(); showToast("Budget exported to PDF"); }
+    function exportBudgetToPDF() { let element = document.createElement("div"); element.innerHTML = `<div style="padding:20px"><h1 style="color:#1e40af">Budget Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr><table border="1" cellpadding="8">${budgetsData.map(b => `<tr><td class="px-2 py-1">${escapeHtml(b.project_name)}<\/td><td class="px-2 py-1 text-left">${formatCurrency(b.income)}<\/td><td class="px-2 py-1 text-left">${formatCurrency(b.expenses)}<\/td><td class="px-2 py-1 text-left">${formatCurrency(b.remaining)}<\/td><\/tr>`).join('')}<\/table><\/div>`; html2pdf().set({ margin: 0.5, filename: `budget_report.pdf` }).from(element).save(); showToast("Budget exported to PDF"); }
     
+    // ==================== MESSAGES SECTION ====================
     async function loadMessages() {
         const res = await apiCall(`get_conversations.php?user_id=${currentUserId}`);
         messagesData = res.success && res.data ? res.data : [];
@@ -868,6 +990,7 @@
         else showToast(res?.message || 'Failed', true);
     }
     
+    // ==================== REPORTS SECTION ====================
     async function loadReports() {
         const res = await apiCall(`get_reports.php?department_id=${DEPARTMENT_ID}`);
         reportsData = res.success && res.data ? res.data.sort((a,b) => b.id - a.id) : [];
@@ -915,7 +1038,6 @@
             let deptOptions = '';
             departmentsList.forEach(d => { deptOptions += `<a onclick="sendReportToDept(${r.id}, ${d.id})">${escapeHtml(d.name)}</a>`; });
             
-            // Create a styled modal for report details
             const modalHtml = `
                 <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-[1000] p-4" id="reportDetailModal" onclick="if(event.target===this) this.remove()">
                     <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto shadow-2xl">
@@ -972,7 +1094,7 @@
         const r = reportsData.find(r => r.id === reportId);
         if(r) {
             let element = document.createElement('div');
-            element.innerHTML = `<div style="padding:20px; border:2px solid #1e40af;"><h1 style="color:#1e40af">${escapeHtml(r.title)}</h1><p><strong>Period:</strong> ${r.period}</p><p><strong>Created:</strong> ${formatDate(r.created_at)}</p><p><strong>Department:</strong> ${departmentNames[r.department_id] || 'Admin'}</p><hr/><div style="background:#f5f5f5; padding:15px; white-space:pre-wrap; font-family:monospace;">${escapeHtml(r.content)}</div><p>Generated: ${new Date().toLocaleString()}</p></div>`;
+            element.innerHTML = `<div style="padding:20px; border:2px solid #1e40af;"><h1 style="color:#1e40af">${escapeHtml(r.title)}</h1><p><strong>Period:</strong> ${r.period}</p><p><strong>Created:</strong> ${formatDate(r.created_at)}</p><p><strong>Department:</strong> ${departmentNames[r.department_id] || 'Admin'}</p><hr/><div style="background:#f5f5f5; padding:15px; white-space:pre-wrap;">${escapeHtml(r.content)}</div><p>Generated: ${new Date().toLocaleString()}</p></div>`;
             html2pdf().set({ margin: 0.5, filename: `report_${r.id}.pdf` }).from(element).save(); showToast('Exported to PDF');
         }
     }
@@ -985,6 +1107,7 @@
     function exportAllReportsToExcel() { let ws = [["Title","Period","Content","Created","Status"]]; reportsData.forEach(r => ws.push([r.title, r.period, r.content, r.created_at, r.status])); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), "Reports"); XLSX.writeFile(wb, `reports_${new Date().toISOString().slice(0,10)}.xlsx`); showToast("Reports exported to Excel"); }
     function exportAllReportsToPDF() { let element = document.createElement("div"); element.innerHTML = `<div style="padding:20px"><h1 style="color:#1e40af">Reports</h1><p>Generated: ${new Date().toLocaleString()}</p><hr>${reportsData.map(r => `<div style="margin-bottom:20px; border-bottom:1px solid #ddd; padding-bottom:15px;"><h3>${r.title}</h3><p><strong>Period:</strong> ${r.period}</p><p><strong>Created:</strong> ${formatDate(r.created_at)}</p><div style="background:#f5f5f5; padding:10px;">${escapeHtml(r.content)}</div></div>`).join('')}</div>`; html2pdf().set({ margin: 0.5, filename: `reports.pdf` }).from(element).save(); showToast("Reports exported to PDF"); }
     
+    // ==================== SETTINGS SECTION ====================
     function loadSettings() {
         let colors = [{ name: 'Blue Dark', value: '#1e40af' }, { name: 'Blue Light', value: '#2563eb' }, { name: 'Purple', value: '#7c3aed' }, { name: 'Green', value: '#065f46' }, { name: 'Orange', value: '#ea580c' }, { name: 'Red', value: '#dc2626' }, { name: 'Teal', value: '#0d9488' }, { name: 'Pink', value: '#db2777' }, { name: 'Indigo', value: '#6366f1' }];
         let html = `<h2 class="text-xl font-bold mb-4"><i class="fas fa-cog mr-2"></i>Settings</h2><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div class="bg-white rounded-xl p-4 shadow-sm"><h3 class="font-semibold text-sm mb-2"><i class="fas fa-palette mr-2 text-blue-600"></i>Dashboard Color (9 Colors)</h3><div class="flex gap-2 flex-wrap" id="colorOptionsContainer"></div></div><div class="bg-white rounded-xl p-4 shadow-sm"><h3 class="font-semibold text-sm mb-2"><i class="fas fa-database mr-2 text-green-600"></i>Backup & Restore</h3><div class="flex gap-2"><button onclick="openBackupRestoreModal()" class="flex-1 bg-green-600 text-white py-2 rounded-lg text-xs"><i class="fas fa-download mr-1"></i>Backup</button><button onclick="restoreBackup()" class="flex-1 bg-orange-600 text-white py-2 rounded-lg text-xs"><i class="fas fa-upload mr-1"></i>Restore</button></div></div><div class="bg-white rounded-xl p-4 shadow-sm"><h3 class="font-semibold text-sm mb-2"><i class="fas fa-info-circle mr-2 text-purple-600"></i>System Info</h3><p class="text-xs"><strong>Version:</strong> 2.0.0</p><p class="text-xs mt-1"><strong>Projects:</strong> ${projectsData.length}</p><p class="text-xs mt-1"><strong>Budget Items:</strong> ${budgetsData.length}</p><p class="text-xs mt-1"><strong>Reports:</strong> ${reportsData.length}</p></div></div>`;
@@ -1019,9 +1142,12 @@
         try { const response = await fetch(API_BASE + 'get_departments.php'); const data = await response.json(); if (data.success) { statusDiv.innerHTML = `<i class="fas fa-check-circle"></i> Connected`; } else { statusDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> API Error`; } } catch (error) { statusDiv.innerHTML = `<i class="fas fa-plug"></i> Offline`; }
     }
     
+    function openStartChatModal() { openModal('startChatModal'); }
+    
     function logout() { if (confirm('Are you sure you want to logout?')) { if (refreshInterval) clearInterval(refreshInterval); if (countdownInterval) clearInterval(countdownInterval); localStorage.clear(); sessionStorage.clear(); window.location.href = 'login_system.html'; } }
     
     async function init() {
+        setupMoneyInputs();
         await loadDepartments();
         startAutoRefresh();
         startCountdownDisplay();
@@ -1049,10 +1175,11 @@
         
         let scrollBtn = document.createElement("div"); scrollBtn.className = "scroll-top"; scrollBtn.innerHTML = '<i class="fas fa-arrow-up"></i>'; document.body.appendChild(scrollBtn); scrollBtn.onclick = () => window.scrollTo({ top: 0, behavior: "smooth" }); window.addEventListener("scroll", () => scrollBtn.classList.toggle("visible", window.scrollY > 300));
         
+        setupModalCloseOnOutsideClick();
         showSection('dashboard');
     }
     
-    window.showSection = showSection; window.toggleSendDropdown = toggleSendDropdown; window.openStartChatModal = () => openModal('startChatModal'); window.sendNewChat = sendNewChat; window.openChat = openChat; window.sendChatMessage = sendChatMessage;
+    window.showSection = showSection; window.toggleSendDropdown = toggleSendDropdown; window.openStartChatModal = openStartChatModal; window.sendNewChat = sendNewChat; window.openChat = openChat; window.sendChatMessage = sendChatMessage;
     window.openAddProjectModal = openAddProjectModal; window.saveProject = saveProject; window.viewProject = viewProject; window.editProject = editProject; window.deleteProject = deleteProject; window.markProjectAsViewed = markProjectAsViewed;
     window.openBudgetModal = openBudgetModal; window.saveBudget = saveBudget; window.viewBudgetItem = viewBudgetItem; window.editBudgetItem = editBudgetItem; window.updateBudgetItem = updateBudgetItem; window.deleteBudgetItem = deleteBudgetItem;
     window.openAddReportModal = openAddReportModal; window.addReport = addReport; window.viewReportDetail = viewReportDetail; window.editReport = editReport; window.updateReport = updateReport; window.deleteReport = deleteReport; window.sendReportToDept = sendReportToDept;
