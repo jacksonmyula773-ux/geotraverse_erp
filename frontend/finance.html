@@ -16,25 +16,16 @@
         * { font-family: 'Inter', sans-serif; }
         body { background: #f0f2f5; transition: background 0.3s; font-size: 14px; }
         
-        .sidebar { background: linear-gradient(180deg, #059669 0%, #047857 100%); position: fixed; width: 260px; height: 100vh; overflow-y: auto; z-index: 30; transition: left 0.3s; }
+        /* SOLID COLOR - No gradients */
+        .sidebar { background: #059669; position: fixed; width: 260px; height: 100vh; overflow-y: auto; z-index: 30; transition: left 0.3s; }
         .main-content { margin-left: 260px; }
         @media (max-width: 768px) { .sidebar { left: -260px; } .sidebar.mobile-open { left: 0; } .main-content { margin-left: 0; } }
         
         .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 10px; color: white; cursor: pointer; transition: all 0.2s; }
-        .nav-item:hover { background: rgba(255,255,255,0.1); }
-        .nav-item.active { background: rgba(255,255,255,0.15); border-left: 3px solid #6ee7b7; }
+        .nav-item:hover { background: rgba(255,255,255,0.15); }
+        .nav-item.active { background: rgba(255,255,255,0.25); border-left: 3px solid #6ee7b7; }
         
-        /* Notification badge styles */
-        .nav-item .badge {
-            background: #ef4444;
-            color: white;
-            font-size: 10px;
-            border-radius: 20px;
-            padding: 2px 8px;
-            margin-left: auto;
-            min-width: 20px;
-            text-align: center;
-        }
+        .nav-item .badge { background: #ef4444; color: white; font-size: 10px; border-radius: 20px; padding: 2px 8px; margin-left: auto; min-width: 20px; text-align: center; }
         .nav-item .badge.hidden { display: none; }
         
         .stat-card { background: white; border-radius: 16px; border: 1px solid #e5e7eb; padding: 20px; transition: all 0.2s; cursor: pointer; }
@@ -85,7 +76,14 @@
         
         body.dark-mode { background: #0f172a; }
         body.dark-mode .bg-white, body.dark-mode .stat-card, body.dark-mode .modal-content,
-        body.dark-mode .message-item, body.dark-mode .dept-budget-card, body.dark-mode .report-card { background: #1e293b; border-color: #334155; color: #f1f5f9; }
+        body.dark-mode .message-item, body.dark-mode .dept-budget-card, body.dark-mode .report-card,
+        body.dark-mode .dashboard-card { background: #1e293b; border-color: #334155; color: #f1f5f9; }
+        body.dark-mode header { background: #1e293b; border-bottom-color: #334155; }
+        body.dark-mode .bg-gray-50, body.dark-mode .bg-gray-100 { background: #0f172a; }
+        
+        .auto-refresh-badge { position: fixed; bottom: 10px; left: 10px; background: #1f2937; color: #60a5fa; padding: 4px 12px; border-radius: 20px; font-size: 10px; z-index: 9999; display: flex; align-items: center; gap: 6px; }
+        .connection-status { position: fixed; bottom: 10px; right: 10px; background: #1f2937; color: #10b981; padding: 6px 12px; border-radius: 8px; font-size: 10px; font-family: monospace; z-index: 9999; display: flex; align-items: center; gap: 8px; }
+        .connection-status.error { color: #ef4444; }
         
         .scroll-top { position: fixed; bottom: 20px; right: 20px; background: #059669; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: all 0.3s; z-index: 99; color: white; }
         .scroll-top.visible { opacity: 1; }
@@ -102,12 +100,36 @@
         body.dark-mode .pending-row { background-color: #78350f20; }
         body.dark-mode .partial-row { background-color: #451a0320; }
         
-        .search-results-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: white; border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); z-index: 50; max-height: 350px; overflow-y: auto; display: none; }
-        .search-results-dropdown.active { display: block; }
-        .search-highlight { background: #fef3c7 !important; border-left: 3px solid #f59e0b !important; transition: background 0.3s; }
-        body.dark-mode .search-highlight { background: #451a03 !important; border-left-color: #fbbf24 !important; }
+        .trans-table-container { overflow-x: auto; border-radius: 12px; }
+        .trans-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 800px; }
+        .trans-table th, .trans-table td { padding: 12px 10px; text-align: left; border-bottom: 1px solid #e5e7eb; vertical-align: middle; }
+        .trans-table th { background: #f8fafc; font-weight: 600; position: sticky; top: 0; }
+        .trans-table .text-right { text-align: right; }
+        body.dark-mode .trans-table th { background: #1e293b; border-bottom-color: #334155; }
         
-        /* Chat Styles */
+        .messages-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        @media (max-width: 1024px) { .messages-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 640px) { .messages-grid { grid-template-columns: 1fr; } }
+        
+        .message-item { background: white; border: 1px solid #e5e7eb; border-radius: 16px; overflow: hidden; cursor: pointer; transition: all 0.2s; position: relative; }
+        .message-item:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); border-color: #059669; }
+        .message-unread { background: #ecfdf5; border-left: 4px solid #059669; }
+        body.dark-mode .message-unread { background: #064e3b20; border-left-color: #34d399; }
+        .message-header { padding: 14px 16px 8px 16px; display: flex; justify-content: space-between; align-items: center; }
+        .message-preview { padding: 0 16px 12px 16px; font-size: 13px; color: #6b7280; }
+        .delete-conv-btn { position: absolute; top: 10px; right: 10px; background: #ef4444; color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: all 0.2s; z-index: 15; }
+        .message-item:hover .delete-conv-btn { opacity: 0.7; }
+        .delete-conv-btn:hover { background: #dc2626; transform: scale(1.05); opacity: 1; }
+        .dept-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+        
+        .report-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; }
+        .report-card { background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 16px; transition: all 0.2s; position: relative; cursor: pointer; }
+        .report-card:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); border-color: #059669; }
+        .report-unviewed { background: #ecfdf5; border-left: 4px solid #059669; }
+        body.dark-mode .report-unviewed { background: #064e3b20; border-left-color: #34d399; }
+        .new-badge { position: absolute; top: -8px; right: -8px; background: #ef4444; color: white; border-radius: 50%; width: 22px; height: 22px; font-size: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; z-index: 10; }
+        .report-preview { font-size: 12px; color: #6b7280; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; }
+        
         .chat-container { display: flex; flex-direction: column; height: 500px; }
         .chat-messages { flex: 1; overflow-y: auto; padding: 16px; background: #f9fafb; border-radius: 12px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 12px; }
         body.dark-mode .chat-messages { background: #1e293b; }
@@ -126,39 +148,6 @@
         .chat-input-area { display: flex; gap: 10px; margin-top: 12px; }
         .chat-input-area textarea { flex: 1; margin: 0; resize: none; }
         
-        .messages-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-        @media (max-width: 1024px) { .messages-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 640px) { .messages-grid { grid-template-columns: 1fr; } }
-        
-        .message-item { background: white; border: 1px solid #e5e7eb; border-radius: 16px; overflow: hidden; cursor: pointer; transition: all 0.2s; position: relative; }
-        .message-item:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); border-color: #059669; }
-        .message-unread { background: #ecfdf5; border-left: 4px solid #059669; }
-        body.dark-mode .message-unread { background: #064e3b20; border-left-color: #34d399; }
-        .message-header { padding: 14px 16px 8px 16px; display: flex; justify-content: space-between; align-items: center; }
-        .message-preview { padding: 0 16px 12px 16px; font-size: 13px; color: #6b7280; }
-        .delete-conv-btn { position: absolute; top: 10px; right: 10px; background: #ef4444; color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: all 0.2s; z-index: 15; }
-        .message-item:hover .delete-conv-btn { opacity: 0.7; }
-        .delete-conv-btn:hover { background: #dc2626; transform: scale(1.05); opacity: 1; }
-        .dept-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
-        
-        .trans-table-container { overflow-x: auto; border-radius: 12px; }
-        .trans-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 800px; }
-        .trans-table th, .trans-table td { padding: 12px 10px; text-align: left; border-bottom: 1px solid #e5e7eb; vertical-align: middle; }
-        .trans-table th { background: #f8fafc; font-weight: 600; position: sticky; top: 0; }
-        .trans-table .text-right { text-align: right; }
-        .trans-table .text-center { text-align: center; }
-        body.dark-mode .trans-table th { background: #1e293b; border-bottom-color: #334155; }
-        
-        .report-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; }
-        .report-card { background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 16px; transition: all 0.2s; position: relative; cursor: pointer; }
-        .report-card:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); border-color: #059669; }
-        .report-unviewed { background: #ecfdf5; border-left: 4px solid #059669; }
-        body.dark-mode .report-unviewed { background: #064e3b20; border-left-color: #34d399; }
-        .new-badge { position: absolute; top: -8px; right: -8px; background: #ef4444; color: white; border-radius: 50%; width: 22px; height: 22px; font-size: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; z-index: 10; }
-        
-        .report-content-dark { background: #1e1e2f; color: #f1f5f9; padding: 20px; border-radius: 12px; white-space: pre-wrap; font-family: monospace; font-size: 13px; line-height: 1.6; }
-        body.dark-mode .report-content-dark { background: #0f0f1a; color: #e2e8f0; }
-        
         .dept-budget-card { background: white; border-radius: 16px; border: 1px solid #e5e7eb; margin-bottom: 20px; overflow: hidden; }
         .dept-budget-header { padding: 15px 20px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; cursor: pointer; background: #f9fafb; }
         body.dark-mode .dept-budget-header { background: #0f172a; border-bottom-color: #334155; }
@@ -170,19 +159,6 @@
         .budget-table th { background: #f8fafc; font-weight: 600; }
         body.dark-mode .budget-table th { background: #1e293b; border-bottom-color: #334155; }
         
-        .color-option { width: 42px; height: 42px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: all 0.2s; display: inline-block; margin: 5px; }
-        .color-option:hover { transform: scale(1.1); }
-        .color-option.selected { border-color: white; box-shadow: 0 0 0 2px #333; }
-        
-        .connection-status { position: fixed; bottom: 10px; right: 10px; background: #1f2937; color: #10b981; padding: 6px 12px; border-radius: 8px; font-size: 10px; font-family: monospace; z-index: 9999; display: flex; align-items: center; gap: 8px; }
-        .connection-status.error { color: #ef4444; }
-        
-        .progress-bar { height: 6px; border-radius: 3px; }
-        .progress-low { background: #ef4444; }
-        .progress-medium { background: #f59e0b; }
-        .progress-high { background: #10b981; }
-        
-        .detail-buttons { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 15px; padding-top: 15px; border-top: 1px solid #e5e7eb; }
         .send-dropdown { position: relative; display: inline-block; }
         .send-dropdown-content { display: none; position: absolute; right: 0; top: 100%; background: white; min-width: 180px; border-radius: 8px; z-index: 100; border: 1px solid #e5e7eb; max-height: 300px; overflow-y: auto; margin-top: 5px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
         .send-dropdown-content a { display: block; padding: 8px 12px; text-decoration: none; color: #333; font-size: 13px; cursor: pointer; }
@@ -190,6 +166,23 @@
         body.dark-mode .send-dropdown-content { background: #1e293b; border-color: #334155; }
         body.dark-mode .send-dropdown-content a { color: #f1f5f9; }
         body.dark-mode .send-dropdown-content a:hover { background: #334155; }
+        
+        .detail-buttons { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 15px; padding-top: 15px; border-top: 1px solid #e5e7eb; }
+        .report-content-dark { background: #1e1e2f; color: #f1f5f9; padding: 20px; border-radius: 12px; white-space: pre-wrap; font-family: monospace; font-size: 13px; line-height: 1.6; }
+        
+        .progress-bar { height: 6px; border-radius: 3px; }
+        .progress-low { background: #ef4444; }
+        .progress-medium { background: #f59e0b; }
+        .progress-high { background: #10b981; }
+        
+        .color-option { width: 42px; height: 42px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: all 0.2s; display: inline-block; margin: 5px; }
+        .color-option:hover { transform: scale(1.1); }
+        .color-option.selected { border-color: white; box-shadow: 0 0 0 2px #333; }
+        
+        .search-results-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: white; border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); z-index: 50; max-height: 350px; overflow-y: auto; display: none; }
+        .search-results-dropdown.active { display: block; }
+        .search-highlight { background: #fef3c7 !important; border-left: 3px solid #f59e0b !important; transition: background 0.3s; }
+        body.dark-mode .search-highlight { background: #451a03 !important; border-left-color: #fbbf24 !important; }
         
         .file-upload-area { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s; margin-top: 10px; }
         .file-upload-area:hover { border-color: #059669; background-color: #ecfdf5; }
@@ -201,6 +194,7 @@
 
 <div id="mobileMenuOverlay" class="fixed inset-0 bg-black/50 z-20 hidden" onclick="closeMobileSidebar()"></div>
 <div id="connectionStatus" class="connection-status"><i class="fas fa-spinner fa-spin"></i> Connecting...</div>
+<div id="autoRefreshBadge" class="auto-refresh-badge"><i class="fas fa-sync-alt fa-fw"></i> <span id="refreshCountdown">5</span>s</div>
 
 <div class="flex">
     <aside id="mainSidebar" class="sidebar text-white">
@@ -314,6 +308,8 @@ const DEPARTMENT_ID = 2; // Finance Department ID
 let searchTimeout = null;
 let revenueChart = null;
 let refreshInterval = null;
+let countdownInterval = null;
+let countdownSeconds = 5;
 
 let transactionsData = [], reportsData = [], messagesData = [], departmentsList = [], allBudgets = [];
 let currentConversationId = null;
@@ -341,7 +337,42 @@ document.addEventListener('DOMContentLoaded', function() {
         const el = document.getElementById(id);
         if (el) el.addEventListener('input', function() { formatAmountInput(this); });
     });
+    startAutoRefresh();
+    startCountdownDisplay();
 });
+
+// ==================== AUTO REFRESH EVERY 5 SECONDS ====================
+function startAutoRefresh() { 
+    if (refreshInterval) clearInterval(refreshInterval); 
+    refreshInterval = setInterval(() => { 
+        const page = document.querySelector('.nav-item.active')?.getAttribute('data-page') || 'dashboard'; 
+        if (!document.querySelector('.modal[style*="display: flex"]')) { 
+            refreshCurrentPage(page); 
+        } 
+        resetCountdown(); 
+    }, 5000); 
+}
+
+function refreshCurrentPage(page) { 
+    if (page === 'dashboard') loadDashboard(); 
+    else if (page === 'transactions') loadTransactions(); 
+    else if (page === 'dept-budgets') loadDeptBudgets(); 
+    else if (page === 'messages') loadMessages(); 
+    else if (page === 'reports') loadReports(); 
+    else if (page === 'settings') loadSettings(); 
+}
+
+function startCountdownDisplay() { 
+    if (countdownInterval) clearInterval(countdownInterval); 
+    countdownInterval = setInterval(() => { 
+        if (countdownSeconds <= 1) countdownSeconds = 5; 
+        else countdownSeconds--; 
+        const span = document.getElementById('refreshCountdown'); 
+        if (span) span.innerText = countdownSeconds; 
+    }, 1000); 
+}
+
+function resetCountdown() { countdownSeconds = 5; }
 
 // ==================== API CALLS ====================
 async function apiCall(endpoint, method = 'GET', data = null) {
@@ -388,7 +419,7 @@ async function getCurrentUserId() {
     return null;
 }
 
-async function logout() { if (confirm('Logout?')) { if(refreshInterval) clearInterval(refreshInterval); localStorage.clear(); sessionStorage.clear(); window.location.href = 'login_system.html'; } }
+async function logout() { if (confirm('Logout?')) { if(refreshInterval) clearInterval(refreshInterval); if(countdownInterval) clearInterval(countdownInterval); localStorage.clear(); sessionStorage.clear(); window.location.href = 'login_system.html'; } }
 
 async function loadDepartmentsForDropdowns() {
     const res = await apiCall('get_departments.php');
@@ -406,8 +437,6 @@ async function loadDepartmentsForDropdowns() {
         ];
     }
     
-    // Add "Super Admin" as a special option (not from departments table)
-    // Super Admin will be handled separately in send_message.php
     const msgTo = document.getElementById('msgTo');
     if (msgTo) {
         msgTo.innerHTML = '<option value="">Select Department</option>' + 
@@ -415,102 +444,6 @@ async function loadDepartmentsForDropdowns() {
             '<option disabled>──────────</option>' +
             departments.map(d => `<option value="${d.id}">${escapeHtml(d.name)}</option>`).join('');
     }
-}
-
-// Add this function to load departments for send report dropdown
-async function loadDepartmentsForSendReport() {
-    const userId = await getCurrentUserId();
-    let url = 'get_departments.php';
-    if (userId) {
-        url += `?user_id=${userId}`;
-    }
-    
-    const res = await apiCall(url);
-    let departments = [];
-    
-    if (res.success && res.data) {
-        // Finance should see ALL departments EXCEPT Finance itself (ID=2)
-        departments = res.data.filter(d => d.id !== DEPARTMENT_ID);
-    } else {
-        departments = [
-            { id: 1, name: "Super Admin" },
-            { id: 3, name: "Sales & Marketing" }, { id: 4, name: "Manager" },
-            { id: 5, name: "Secretary" }, { id: 6, name: "Bricks & Timber" },
-            { id: 7, name: "Aluminium" }, { id: 8, name: "Town Planning" },
-            { id: 9, name: "Architectural" }, { id: 10, name: "Survey" },
-            { id: 11, name: "Construction" }, { id: 12, name: "Hatimiliki" }
-        ];
-    }
-    
-    // Store for later use
-    window.sendReportDepartments = departments;
-    
-    // Update any send report dropdowns that might be opened
-    const dropdowns = document.querySelectorAll('.send-dropdown-content');
-    dropdowns.forEach(dropdown => {
-        if (dropdown.id && dropdown.id.includes('reportSendDropdown')) {
-            let options = '';
-            departments.forEach(d => {
-                options += `<a onclick="sendReportToDept(${dropdown.id.split('-')[1]}, ${d.id})">${escapeHtml(d.name)}</a>`;
-            });
-            dropdown.innerHTML = options;
-        }
-    });
-}
-
-// Update viewReportDetails function to use loaded departments
-function viewReportDetails(id) {
-    const r = reportsData.find(r => r.id === id);
-    if (r) {
-        if (r.is_viewed_by_admin === 0 && r.department_id !== 1) markReportAsViewed(id);
-        
-        document.getElementById('viewReportContent').innerHTML = `
-            <div class="report-meta"><strong>Department:</strong> ${departmentNames[r.department_id] || 'Admin'}</div>
-            <div class="report-meta"><strong>Period:</strong> ${r.period}</div>
-            <div class="report-meta"><strong>Created:</strong> ${formatDate(r.created_at)}</div>
-            <div class="report-meta"><strong>Status:</strong> ${r.status === 'sent' ? 'Sent' : 'Draft'}</div>
-            <div class="report-content-view">${escapeHtml(r.content)}</div>
-        `;
-        
-        // Use stored departments or load them
-        let deptOptions = '';
-        if (window.sendReportDepartments) {
-            window.sendReportDepartments.forEach(d => {
-                deptOptions += `<a onclick="sendReportToDept(${r.id}, ${d.id})">${escapeHtml(d.name)}</a>`;
-            });
-        } else {
-            // Fallback: show loading and fetch
-            deptOptions = '<a>Loading departments...</a>';
-            loadDepartmentsForSendReport().then(() => {
-                if (window.sendReportDepartments) {
-                    const newOptions = window.sendReportDepartments.map(d => `<a onclick="sendReportToDept(${r.id}, ${d.id})">${escapeHtml(d.name)}</a>`).join('');
-                    document.getElementById(`reportSendDropdown-${r.id}`).innerHTML = newOptions;
-                }
-            });
-        }
-        
-        document.getElementById('viewReportButtons').innerHTML = `
-            <button onclick="exportSingleReportExcel(${r.id})" class="btn-success text-white px-3 py-1.5 rounded text-sm"><i class="fas fa-file-excel"></i> Excel</button>
-            <button onclick="exportSingleReportPDF(${r.id})" class="btn-danger text-white px-3 py-1.5 rounded text-sm"><i class="fas fa-file-pdf"></i> PDF</button>
-            <div class="send-dropdown">
-                <button class="btn-warning text-white px-3 py-1.5 rounded text-sm" onclick="toggleSendDropdown('reportSendDropdown-${r.id}')">
-                    <i class="fas fa-paper-plane"></i> Send to Department
-                </button>
-                <div id="reportSendDropdown-${r.id}" class="send-dropdown-content">${deptOptions}</div>
-            </div>
-        `;
-        openModal('viewReportModal');
-    }
-}
-
-// Update init function to load departments for send report
-async function init() {
-    await loadDepartmentsForDropdowns();
-    await loadDepartmentsForSendReport(); // Add this line
-    await loadAllBudgets();
-    await getCurrentUserId();
-    
-    // Rest of init function...
 }
 
 async function loadAllBudgets() {
@@ -627,8 +560,8 @@ async function loadTransactions(highlightId = null) {
             <td class="text-center"><div class="flex gap-1 justify-center"><button onclick="viewTransaction(${t.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="editTransaction(${t.id})" class="action-btn edit"><i class="fas fa-edit"></i></button><button onclick="deleteTransaction(${t.id})" class="action-btn delete"><i class="fas fa-trash"></i></button></div></td>
             </tr>`; 
     });
-    if(transactionsData.length === 0) html += `</table><td colspan="8" class="text-center py-8 text-gray-400">No transactions found</td></tr>`;
-    html += `</tbody></div>`;
+    if(transactionsData.length === 0) html += `<tr><td colspan="8" class="text-center py-8 text-gray-400">No transactions found</td></tr>`;
+    html += `</tbody></table></div>`;
     document.getElementById('transactionsPage').innerHTML = html;
     if (highlightId) { const el = document.getElementById(`trans-row-${highlightId}`); if(el) { el.classList.add('search-highlight'); el.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => el.classList.remove('search-highlight'), 2000); } }
 }
@@ -656,7 +589,7 @@ function exportTransactionsToPDF() {
         let pending = (t.type === 'income' && t.status !== 'paid') ? amount - paid : 0;
         rows += `<tr><td class="px-2 py-1">${t.transaction_date}</td><td class="px-2 py-1">${t.type}</td><td class="px-2 py-1">${escapeHtml(t.source)}</td><td class="px-2 py-1 text-right">${formatMoney(amount)}</td><td class="px-2 py-1 text-right">${formatMoney(paid)}</td><td class="px-2 py-1 text-right">${formatMoney(pending)}</td><td class="px-2 py-1">${t.status}</td></tr>`;
     });
-    element.innerHTML = `<div style="padding:20px"><h1 style="color:#059669">Transactions Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8" style="width:100%; border-collapse:collapse;"><thead><tr style="background:#f3f4f6"><th>Date</th><th>Type</th><th>Source</th><th class="text-right">Amount</th><th class="text-right">Paid</th><th class="text-right">Pending</th><th>Status</th></td></thead><tbody>${rows}</tbody></table><p style="margin-top:20px; font-size:10px; color:#999;">GeoTraverse ERP System - Finance Department Report</p></div>`;
+    element.innerHTML = `<div style="padding:20px"><h1 style="color:#059669">Transactions Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8" style="width:100%; border-collapse:collapse;"><thead><tr style="background:#f3f4f6"><th>Date</th><th>Type</th><th>Source</th><th class="text-right">Amount</th><th class="text-right">Paid</th><th class="text-right">Pending</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table><p style="margin-top:20px; font-size:10px; color:#999;">GeoTraverse ERP System - Finance Department Report</p></div>`;
     html2pdf().set({ margin: 0.5, filename: `transactions_report.pdf` }).from(element).save();
     showToast('Transactions exported to PDF');
 }
@@ -715,11 +648,10 @@ async function loadDeptBudgets(highlightId = null) {
             let remaining = parseFloat(b.allocated_amount || 0) - parseFloat(b.used_amount || 0);
             let percent = b.allocated_amount > 0 ? (b.used_amount / b.allocated_amount * 100).toFixed(1) : 0;
             let rowClass = remaining < 0 ? 'text-red-600' : (remaining < b.allocated_amount * 0.2 ? 'text-orange-600' : 'text-green-600');
-            html += `<tr><td class="text-left">${escapeHtml(b.category)}</td><td class="text-right">${formatMoney(b.allocated_amount)}</td><td class="text-right">${formatMoney(b.used_amount)}</td><td class="text-right ${rowClass}">${formatMoney(remaining)}                        </td>
-                         <td><div class="w-24"><div class="w-full bg-gray-200 rounded-full h-1.5"><div class="${percent < 50 ? 'progress-high' : (percent < 80 ? 'progress-medium' : 'progress-low')} h-1.5 rounded-full" style="width: ${Math.min(percent, 100)}%"></div></div><span class="text-[9px]">${percent}%</span></div></td>
-                        </tr>`;
+            html += `<tr><td class="text-left">${escapeHtml(b.category)}</td><td class="text-right">${formatMoney(b.allocated_amount)}</td><td class="text-right">${formatMoney(b.used_amount)}</td><td class="text-right ${rowClass}">${formatMoney(remaining)}</td>
+                          <td><div class="w-24"><div class="w-full bg-gray-200 rounded-full h-1.5"><div class="${percent < 50 ? 'progress-high' : (percent < 80 ? 'progress-medium' : 'progress-low')} h-1.5 rounded-full" style="width: ${Math.min(percent, 100)}%"></div></div><span class="text-[9px]">${percent}%</span></div></td></tr>`;
         }
-        html += `</tbody>}</div></div></div>`;
+        html += `</tbody></table></div></div></div>`;
     }
     html += `</div><div class="mt-5 flex gap-2"><button onclick="exportBudgetsToExcel()" class="btn-success"><i class="fas fa-file-excel mr-1"></i> Excel All</button><button onclick="exportBudgetsToPDF()" class="btn-danger"><i class="fas fa-file-pdf mr-1"></i> PDF All</button></div>`;
     
@@ -729,9 +661,9 @@ async function loadDeptBudgets(highlightId = null) {
 
 function toggleDeptBudget(deptId) { const content = document.getElementById(`dept-content-${deptId}`); const icon = document.getElementById(`dept-icon-${deptId}`); if (content.classList.contains('hidden')) { content.classList.remove('hidden'); icon.style.transform = 'rotate(180deg)'; } else { content.classList.add('hidden'); icon.style.transform = 'rotate(0deg)'; } }
 function exportBudgetsToExcel() { let ws = [['Department', 'Category', 'Allocated', 'Used', 'Remaining', 'Usage %']]; allBudgets.forEach(b => { let remaining = parseFloat(b.allocated_amount || 0) - parseFloat(b.used_amount || 0); let percent = b.allocated_amount > 0 ? (b.used_amount / b.allocated_amount * 100).toFixed(1) : 0; ws.push([departmentNames[b.department_id], b.category, b.allocated_amount, b.used_amount, remaining, percent]); }); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), 'Budgets'); XLSX.writeFile(wb, `budgets_${new Date().toISOString().slice(0,10)}.xlsx`); showToast('Exported to Excel'); }
-function exportBudgetsToPDF() { let element = document.createElement('div'); let rows = ''; for (let b of allBudgets) { let remaining = parseFloat(b.allocated_amount || 0) - parseFloat(b.used_amount || 0); let percent = b.allocated_amount > 0 ? (b.used_amount / b.allocated_amount * 100).toFixed(1) : 0; rows += `<tr><td class="px-2 py-1">${departmentNames[b.department_id]}</td><td class="px-2 py-1">${b.category}</td><td class="px-2 py-1">${formatMoney(b.allocated_amount)}</td><td class="px-2 py-1">${formatMoney(b.used_amount)}</td><td class="px-2 py-1">${formatMoney(remaining)}</td><td class="px-2 py-1">${percent}%</td><tr>`; } element.innerHTML = `<div style="padding:20px"><h1>Department Budgets Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><thead><tr><th>Department</th><th>Category</th><th>Allocated</th><th>Used</th><th>Remaining</th><th>Usage</th></tr></thead><tbody>${rows}</tbody></table></div>`; html2pdf().set({ margin: 0.5, filename: `budgets_report.pdf` }).from(element).save(); showToast('Exported to PDF'); }
+function exportBudgetsToPDF() { let element = document.createElement('div'); let rows = ''; for (let b of allBudgets) { let remaining = parseFloat(b.allocated_amount || 0) - parseFloat(b.used_amount || 0); let percent = b.allocated_amount > 0 ? (b.used_amount / b.allocated_amount * 100).toFixed(1) : 0; rows += `<tr><td class="px-2 py-1">${departmentNames[b.department_id]}</td><td class="px-2 py-1">${b.category}</td><td class="px-2 py-1">${formatMoney(b.allocated_amount)}</td><td class="px-2 py-1">${formatMoney(b.used_amount)}</td><td class="px-2 py-1">${formatMoney(remaining)}</td><td class="px-2 py-1">${percent}%</tr>`; } element.innerHTML = `<div style="padding:20px"><h1>Department Budgets Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><thead><tr><th>Department</th><th>Category</th><th>Allocated</th><th>Used</th><th>Remaining</th><th>Usage</th></tr></thead><tbody>${rows}</tbody></table></div>`; html2pdf().set({ margin: 0.5, filename: `budgets_report.pdf` }).from(element).save(); showToast('Exported to PDF'); }
 
-// ==================== MESSAGES (FIXED) ====================
+// ==================== MESSAGES ====================
 async function loadMessages(highlightId = null) {
     const userId = await getCurrentUserId();
     if (!userId) {
@@ -752,7 +684,7 @@ async function loadMessages(highlightId = null) {
     updateMessageBadge();
     
     let html = `<div class="flex flex-wrap justify-between gap-3 mb-4">
-        <h2 class="text-xl font-bold"><i class="fas fa-envelope text-green-600 mr-2"></i>Messages (${messagesData.length})</h2>
+        <h2 class="text-xl font-bold"><i class="fas fa-envelope text-green-600 mr-2"></i>Messages (${messagesData.length} conversations)</h2>
         <button onclick="openModal('msgModal')" class="btn-primary"><i class="fas fa-paper-plane mr-1"></i> New Message</button>
     </div>
     <div class="messages-grid" id="messagesGridContainer"></div>`;
@@ -767,11 +699,8 @@ async function loadMessages(highlightId = null) {
     for (let conv of messagesData) {
         const isUnread = conv.unread_count > 0;
         const preview = conv.last_message ? (conv.last_message.substring(0, 70) + (conv.last_message.length > 70 ? '...' : '')) : 'No messages';
-        
-        // Get other department name
         let otherDeptName = conv.other_department_name || "Super Admin";
         let otherDeptId = conv.other_department_id || 1;
-        
         const icon = departmentIcons[otherDeptId] || 'fa-building';
         const color = departmentColors[otherDeptId] || '#059669';
         
@@ -793,6 +722,7 @@ async function loadMessages(highlightId = null) {
         </div>`;
     }
     document.getElementById('messagesGridContainer').innerHTML = msgsHtml;
+    if (highlightId) { const el = document.getElementById(`conv-${highlightId}`); if(el) { el.classList.add('search-highlight'); el.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => el.classList.remove('search-highlight'), 2000); } }
 }
 
 async function deleteConversation(conversationId) {
@@ -803,7 +733,7 @@ async function deleteConversation(conversationId) {
         const res = await apiCall('delete_conversation.php', 'POST', { conversation_id: conversationId, user_id: userId });
         if (res && res.success) { 
             showToast('Conversation deleted from your view'); 
-            messagesData = messagesData.filter(c => c.id !== conversationId);
+            messagesData = messagesData.filter(c => c.conversation_id !== conversationId);
             await loadMessages(); 
             if (currentConversationId === conversationId) { 
                 closeModal('chatModal'); 
@@ -885,14 +815,10 @@ async function loadChatMessages(conversationId) {
         const msgs = res.data;
         let chatHtml = '';
         
-        const conv = messagesData.find(c => c.id === conversationId);
+        const conv = messagesData.find(c => c.conversation_id === conversationId);
         let otherDeptName = "Department";
         if (conv) {
-            if (conv.user_department_id === DEPARTMENT_ID) {
-                otherDeptName = conv.admin_department_name || "Super Admin";
-            } else {
-                otherDeptName = conv.user_department_name || conv.user_name || "Department";
-            }
+            otherDeptName = conv.other_department_name || "Super Admin";
         }
         document.getElementById('chatModalTitle').innerHTML = `<i class="fas fa-comments text-green-500 mr-2"></i>Chat with ${escapeHtml(otherDeptName)}`;
         
@@ -960,13 +886,12 @@ async function sendChatMessage() {
     finally { sendBtn.innerHTML = originalText; sendBtn.disabled = false; }
 }
 
-// ==================== REPORTS SECTION (FIXED WITH NOTIFICATION BADGE) ====================
+// ==================== REPORTS SECTION ====================
 async function loadReports(highlightId = null) {
     const userId = await getCurrentUserId();
     console.log('Finance - Loading reports for user ID:', userId);
     
-    const departmentId = DEPARTMENT_ID; // 2
-    
+    const departmentId = DEPARTMENT_ID;
     const url = `get_reports.php?department_id=${departmentId}&user_id=${userId}`;
     console.log('Fetching reports from:', url);
     
@@ -976,12 +901,6 @@ async function loadReports(highlightId = null) {
     if (res.success && res.data) {
         reportsData = res.data;
         console.log('Reports loaded successfully:', reportsData.length, 'reports');
-        
-        // Log each report for debugging
-        reportsData.forEach(r => {
-            console.log(`Report: ID=${r.id}, Title=${r.title}, Dept=${r.department_id}, SentTo=${r.sent_to_department}`);
-        });
-        
         unviewedReportsCount = res.unviewed_count || 0;
     } else {
         console.warn('No reports data or error:', res);
@@ -1027,7 +946,7 @@ async function loadReports(highlightId = null) {
                 </div>
                 <span class="status-badge ${r.status === 'sent' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'} text-xs">${r.status === 'sent' ? 'Sent' : 'Draft'}</span>
             </div>
-            <div class="report-preview text-xs text-gray-600 line-clamp-2 mt-2">${escapeHtml(r.content.substring(0, 120))}${r.content.length > 120 ? '...' : ''}</div>
+            <div class="report-preview mt-2">${escapeHtml(r.content.substring(0, 100))}${r.content.length > 100 ? '...' : ''}</div>
             <div class="flex justify-between items-center mt-3 pt-2 border-t border-gray-100">
                 <span class="text-xs text-gray-400"><i class="far fa-calendar-alt mr-1"></i>${formatDate(r.created_at)}</span>
                 <div class="flex gap-2">
@@ -1048,6 +967,7 @@ async function loadReports(highlightId = null) {
         } 
     }
 }
+
 async function markReportAsViewed(reportId) {
     const userId = await getCurrentUserId();
     const res = await apiCall('mark_report_viewed.php', 'POST', { report_id: reportId, is_admin: 0, user_id: userId });
@@ -1076,8 +996,11 @@ function viewReportDetail(id) {
         </div>`;
         
         let deptOptions = '';
-        departmentsList.forEach(d => { 
-            deptOptions += `<a onclick="sendReportToDept(${r.id}, ${d.id})">${escapeHtml(d.name)}</a>`; 
+        const sendDepts = [1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+        sendDepts.forEach(deptId => {
+            if (deptId !== DEPARTMENT_ID) {
+                deptOptions += `<a onclick="sendReportToDept(${r.id}, ${deptId})">${escapeHtml(departmentNames[deptId])}</a>`;
+            }
         });
         
         document.getElementById('viewReportButtons').innerHTML = `
@@ -1109,7 +1032,6 @@ async function deleteReportDetail(id) {
         
         if(res && res.success) { 
             showToast('Report deleted from your view'); 
-            // Remove from local array to update UI immediately
             reportsData = reportsData.filter(r => r.id !== id);
             await loadReports(); 
             await loadDashboard(); 
@@ -1129,8 +1051,8 @@ async function sendReportToDept(reportId, deptId) { const r = reportsData.find(r
 function loadSettings() {
     const darkMode = document.body.classList.contains('dark-mode');
     let html = `<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-        <div class="bg-white rounded-xl p-5"><h3 class="font-semibold mb-4"><i class="fas fa-palette text-purple-500 mr-2"></i>Appearance</h3><div class="space-y-4"><div class="flex justify-between items-center"><span><i class="fas fa-moon mr-2 text-blue-500"></i> Dark Mode</span><label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" id="darkModeToggle" class="sr-only peer" ${darkMode ? 'checked' : ''}><div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div></label></div><div><span class="text-sm font-medium"><i class="fas fa-palette mr-2 text-green-500"></i> Sidebar Color</span><div class="flex flex-wrap gap-2 mt-2" id="colorOptionsContainer"></div></div></div></div>
-        <div class="bg-white rounded-xl p-5"><h3 class="font-semibold mb-4"><i class="fas fa-database text-green-500 mr-2"></i>Data Management</h3><button onclick="openModal('backupModal')" class="w-full bg-green-600 text-white py-2 rounded text-sm">Backup & Restore Database</button></div>
+        <div class="bg-white rounded-xl p-5 border"><h3 class="font-semibold mb-4"><i class="fas fa-palette text-purple-500 mr-2"></i>Appearance</h3><div class="space-y-4"><div class="flex justify-between items-center"><span><i class="fas fa-moon mr-2 text-blue-500"></i> Dark Mode</span><label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" id="darkModeToggle" class="sr-only peer" ${darkMode ? 'checked' : ''}><div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div></label></div><div><span class="text-sm font-medium"><i class="fas fa-palette mr-2 text-green-500"></i> Sidebar Color</span><div class="flex flex-wrap gap-2 mt-2" id="colorOptionsContainer"></div></div></div></div>
+        <div class="bg-white rounded-xl p-5 border"><h3 class="font-semibold mb-4"><i class="fas fa-database text-green-500 mr-2"></i>Data Management</h3><button onclick="openModal('backupModal')" class="w-full bg-green-600 text-white py-2 rounded text-sm">Backup & Restore Database</button></div>
     </div>`;
     document.getElementById('settingsPage').innerHTML = html;
     const container = document.getElementById('colorOptionsContainer');
@@ -1138,7 +1060,7 @@ function loadSettings() {
     document.getElementById('darkModeToggle')?.addEventListener('change', e => { document.body.classList.toggle('dark-mode', e.target.checked); localStorage.setItem('dark_mode', e.target.checked); const icon = document.getElementById('darkIcon'); if (icon) { if (e.target.checked) { icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); } else { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); } } });
 }
 
-function changeSidebarColor(color, el) { document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected')); el.classList.add('selected'); document.getElementById('mainSidebar').style.background = `linear-gradient(180deg, ${color} 0%, ${color}cc 100%)`; localStorage.setItem('sidebar_color', color); showToast('Sidebar color changed'); }
+function changeSidebarColor(color, el) { document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected')); el.classList.add('selected'); document.getElementById('mainSidebar').style.background = color; localStorage.setItem('sidebar_color', color); showToast('Sidebar color changed'); }
 function createBackup() { const data = { transactions: transactionsData, reports: reportsData, timestamp: new Date().toISOString() }; const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `finance_backup_${new Date().toISOString().slice(0,19)}.json`; a.click(); showToast('Backup created'); closeModal('backupModal'); }
 function restoreBackup() { showToast('Restore feature - Upload backup JSON file', false); closeModal('backupModal'); }
 
@@ -1179,48 +1101,15 @@ function showPage(pageId, highlightId = null) {
 
 function toggleSendDropdown(dropdownId) {
     const dropdown = document.getElementById(dropdownId);
-    // Close all other dropdowns
     document.querySelectorAll('.send-dropdown-content').forEach(d => {
         if (d.id !== dropdownId) d.style.display = 'none';
     });
-    // Toggle current dropdown
     if (dropdown) {
         if (dropdown.style.display === 'block') {
             dropdown.style.display = 'none';
         } else {
-            // Refresh departments before showing
-            refreshSendReportDepartments(dropdownId);
             dropdown.style.display = 'block';
         }
-    }
-}
-
-async function refreshSendReportDepartments(dropdownId) {
-    const userId = await getCurrentUserId();
-    const res = await apiCall(`get_departments.php?user_id=${userId}`);
-    let departments = [];
-    
-    if (res.success && res.data) {
-        departments = res.data.filter(d => d.id !== DEPARTMENT_ID);
-    } else {
-        departments = [
-            { id: 1, name: "Super Admin" }, { id: 3, name: "Sales & Marketing" },
-            { id: 4, name: "Manager" }, { id: 5, name: "Secretary" },
-            { id: 6, name: "Bricks & Timber" }, { id: 7, name: "Aluminium" },
-            { id: 8, name: "Town Planning" }, { id: 9, name: "Architectural" },
-            { id: 10, name: "Survey" }, { id: 11, name: "Construction" },
-            { id: 12, name: "Hatimiliki" }
-        ];
-    }
-    
-    const reportId = dropdownId.split('-')[1];
-    const dropdown = document.getElementById(dropdownId);
-    if (dropdown) {
-        let options = '';
-        departments.forEach(d => {
-            options += `<a onclick="sendReportToDept(${reportId}, ${d.id})">${escapeHtml(d.name)}</a>`;
-        });
-        dropdown.innerHTML = options;
     }
 }
 document.addEventListener('click', (e) => { if (!e.target.closest('.send-dropdown')) { document.querySelectorAll('.send-dropdown-content').forEach(d => d.style.display = 'none'); } });
@@ -1236,17 +1125,17 @@ async function init() {
     document.getElementById('searchInput')?.addEventListener('input', performGlobalSearch);
     document.getElementById('mobileMenuBtn')?.addEventListener('click', () => { document.getElementById('mainSidebar').classList.add('mobile-open'); document.getElementById('mobileMenuOverlay').classList.remove('hidden'); });
     document.getElementById('logoutBtn')?.addEventListener('click', logout);
-    const savedColor = localStorage.getItem('sidebar_color'); if (savedColor) document.getElementById('mainSidebar').style.background = `linear-gradient(180deg, ${savedColor} 0%, ${savedColor}cc 100%)`;
+    const savedColor = localStorage.getItem('sidebar_color'); if (savedColor) document.getElementById('mainSidebar').style.background = savedColor;
     if (localStorage.getItem('dark_mode') === 'true') { document.body.classList.add('dark-mode'); const icon = document.getElementById('darkIcon'); if (icon) { icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); } }
     initScrollTop();
     showPage('dashboard');
     updateConnectionStatus();
     setInterval(updateConnectionStatus, 30000);
     
-    // Refresh badges periodically
     refreshInterval = setInterval(async () => {
         if (document.getElementById('reportsPage').classList.contains('hidden')) {
-            const reportRes = await apiCall(`get_reports.php?department_id=${DEPARTMENT_ID}`);
+            const userId = await getCurrentUserId();
+            const reportRes = await apiCall(`get_reports.php?department_id=${DEPARTMENT_ID}&user_id=${userId}`);
             if (reportRes.success) {
                 const newUnviewed = reportRes.unviewed_count || 0;
                 if (newUnviewed !== unviewedReportsCount) {

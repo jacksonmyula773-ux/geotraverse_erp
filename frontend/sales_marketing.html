@@ -14,22 +14,11 @@
     
     <style>
         * { font-family: 'Inter', sans-serif; }
+        body { background: #f0f2f5; transition: background 0.3s ease; font-size: 14px; }
+        
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #e2e8f0; border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: #f97316; border-radius: 10px; }
-        
-        body.dark-mode { background: #0f172a; }
-        body.dark-mode .bg-white { background-color: #1e293b; }
-        body.dark-mode .bg-gray-50 { background-color: #0f172a; }
-        body.dark-mode .text-gray-600, body.dark-mode .text-gray-500 { color: #94a3b8; }
-        body.dark-mode .text-gray-700, body.dark-mode .text-gray-800 { color: #f1f5f9; }
-        body.dark-mode .border-gray-200, body.dark-mode .border-gray-100 { border-color: #334155; }
-        body.dark-mode .sidebar { background: #ea580c; }
-        body.dark-mode .stat-card { background-color: #1e293b; border-color: #334155; }
-        body.dark-mode .lead-card, body.dark-mode .ad-card, body.dark-mode .budget-card, body.dark-mode .report-card { background-color: #1e293b; border-color: #334155; }
-        body.dark-mode .chat-sent { background-color: #c2410c; }
-        body.dark-mode .chat-received { background-color: #334155; }
-        body.dark-mode .chat-conversation:hover { background-color: #334155; }
         
         .sidebar {
             background: #ea580c;
@@ -40,6 +29,7 @@
             width: 280px;
             z-index: 30;
         }
+        
         .sidebar-logo { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
         .sidebar-logo img { width: 100%; height: 100%; object-fit: contain; border-radius: 10px; }
         .nav-item { transition: all 0.2s ease; border-left: 3px solid transparent; cursor: pointer; }
@@ -49,9 +39,6 @@
         
         .stat-card { transition: all 0.3s ease; background: white; border-radius: 20px; border: 1px solid #e5e7eb; cursor: pointer; }
         .stat-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -12px rgba(0,0,0,0.15); border-color: #f97316; }
-        
-        .lead-card, .ad-card, .budget-card, .report-card { background: white; border-radius: 12px; padding: 12px; margin-bottom: 8px; border-left: 3px solid #f97316; transition: all 0.2s; cursor: pointer; }
-        .lead-card:hover, .ad-card:hover, .budget-card:hover, .report-card:hover { transform: translateX(5px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         
         .btn-primary { background: linear-gradient(135deg, #f97316, #ea580c); transition: all 0.2s; }
         .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 5px 15px rgba(249,115,22,0.3); }
@@ -69,46 +56,43 @@
         .color-option:hover { transform: scale(1.1); }
         .color-option.selected { border-color: white; box-shadow: 0 0 0 2px #333; }
         
-        .status-new { background: #dbeafe; color: #2563eb; }
-        .status-contacted { background: #fef3c7; color: #d97706; }
-        .status-negotiation { background: #e9d5ff; color: #7e22ce; }
-        .status-won { background: #d1fae5; color: #059669; }
-        .status-lost { background: #fee2e2; color: #dc2626; }
+        .status-planned { background: #dbeafe; color: #2563eb; }
+        .status-active { background: #fef3c7; color: #d97706; }
+        .status-completed { background: #d1fae5; color: #059669; }
+        .status-cancelled { background: #fee2e2; color: #dc2626; }
         
-        body.dark-mode .status-new { background: #1e3a5f; color: #60a5fa; }
-        body.dark-mode .status-contacted { background: #451a03; color: #fbbf24; }
-        body.dark-mode .status-negotiation { background: #3b0764; color: #c084fc; }
-        body.dark-mode .status-won { background: #064e3b; color: #34d399; }
-        body.dark-mode .status-lost { background: #7f1d1d; color: #f87171; }
+        .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        table { font-size: 13px; width: 100%; }
+        th, td { padding: 12px 10px; }
         
-        .table-responsive { overflow-x: auto; }
-        .modal-overlay { backdrop-filter: blur(4px); }
-        .fade-in { animation: fadeIn 0.2s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .message-item, .report-card { background: white; border-radius: 16px; border: 1px solid #e5e7eb; overflow: hidden; cursor: pointer; transition: all 0.2s; position: relative; }
+        .message-item:hover, .report-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); border-color: #f97316; }
+        .message-unread { background: #fff7ed; border-left: 4px solid #f97316; }
+        body.dark-mode .message-unread { background: #431407; border-left-color: #f97316; }
+        
+        .messages-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .report-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; }
+        @media (max-width: 1024px) { .messages-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 640px) { .messages-grid { grid-template-columns: 1fr; } }
         
         .chat-bubble { max-width: 80%; padding: 10px 14px; border-radius: 12px; margin-bottom: 8px; }
         .chat-sent { background-color: #fff7ed; margin-left: auto; }
         .chat-received { background-color: #e5e7eb; }
         
-        .chat-conversation { cursor: pointer; transition: all 0.2s; }
-        .chat-conversation:hover { background-color: #f3f4f6; }
-        body.dark-mode .chat-conversation:hover { background-color: #334155; }
-        .chat-conversation-unread { background-color: #fff7ed; border-left: 3px solid #f97316; }
-        body.dark-mode .chat-conversation-unread { background-color: #431407; }
+        body.dark-mode { background: #0f172a; }
+        body.dark-mode .bg-white { background-color: #1e293b; }
+        body.dark-mode .bg-gray-50 { background-color: #0f172a; }
+        body.dark-mode .text-gray-600, body.dark-mode .text-gray-500 { color: #94a3b8; }
+        body.dark-mode .text-gray-700, body.dark-mode .text-gray-800 { color: #f1f5f9; }
+        body.dark-mode .border-gray-200, body.dark-mode .border-gray-100 { border-color: #334155; }
+        body.dark-mode .sidebar { background: #ea580c; }
+        body.dark-mode .stat-card { background-color: #1e293b; border-color: #334155; }
+        body.dark-mode .message-item { background-color: #1e293b; border-color: #334155; }
+        body.dark-mode .report-card { background-color: #1e293b; border-color: #334155; }
+        body.dark-mode .chat-sent { background-color: #c2410c; color: white; }
+        body.dark-mode .chat-received { background-color: #334155; }
         
-        .search-results-dropdown {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
-            z-index: 50;
-            max-height: 400px;
-            overflow-y: auto;
-            display: none;
-        }
+        .search-results-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: white; border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); z-index: 50; max-height: 400px; overflow-y: auto; display: none; }
         .search-results-dropdown.active { display: block; }
         .search-result-item { padding: 12px 16px; border-bottom: 1px solid #e5e7eb; cursor: pointer; transition: background 0.2s; }
         .search-result-item:hover { background-color: #f3f4f6; }
@@ -116,17 +100,40 @@
         body.dark-mode .search-result-item { border-bottom-color: #334155; }
         body.dark-mode .search-result-item:hover { background-color: #334155; }
         
-        .progress-bar { height: 6px; border-radius: 3px; }
-        .progress-low { background: #ef4444; }
-        .progress-medium { background: #f59e0b; }
-        .progress-high { background: #10b981; }
+        .send-dropdown { position: relative; display: inline-block; }
+        .send-dropdown-content { display: none; position: absolute; right: 0; top: 100%; background: white; min-width: 200px; border-radius: 8px; z-index: 100; border: 1px solid #e5e7eb; max-height: 300px; overflow-y: auto; margin-top: 5px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .send-dropdown-content a { display: block; padding: 10px 15px; text-decoration: none; color: #333; font-size: 13px; cursor: pointer; border-bottom: 1px solid #f3f4f6; }
+        .send-dropdown-content a:last-child { border-bottom: none; }
+        .send-dropdown-content a:hover { background-color: #f3f4f6; }
+        body.dark-mode .send-dropdown-content { background-color: #1e293b; border-color: #334155; }
+        body.dark-mode .send-dropdown-content a { color: #f1f5f9; border-bottom-color: #334155; }
+        body.dark-mode .send-dropdown-content a:hover { background-color: #334155; }
         
-        .color-palette { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
+        .modal-content { background: white; border-radius: 20px; width: 90%; max-width: 650px; max-height: 85vh; overflow-y: auto; padding: 25px; animation: fadeIn 0.2s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 500; color: #374151; margin-bottom: 6px; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 14px; font-size: 14px; border: 1.5px solid #e5e7eb; border-radius: 10px; background: white; transition: all 0.2s; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #f97316; box-shadow: 0 0 0 3px rgba(249,115,22,0.1); }
+        body.dark-mode .form-group label { color: #94a3b8; }
+        body.dark-mode .form-group input, body.dark-mode .form-group select, body.dark-mode .form-group textarea { background: #0f172a; border-color: #334155; color: #f1f5f9; }
+        
+        .action-btn { padding: 5px 10px; font-size: 11px; border-radius: 5px; cursor: pointer; transition: all 0.2s; border: none; }
+        .action-btn.view { background: #3b82f6; color: white; }
+        .action-btn.edit { background: #f59e0b; color: white; }
+        .action-btn.delete { background: #ef4444; color: white; }
+        
+        .auto-refresh-badge { position: fixed; bottom: 20px; left: 20px; background: #1f2937; color: #60a5fa; padding: 8px 16px; border-radius: 20px; font-size: 11px; z-index: 9999; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+        .connection-status { position: fixed; bottom: 20px; right: 20px; background: #1f2937; color: #10b981; padding: 6px 12px; border-radius: 8px; font-size: 10px; z-index: 9999; display: flex; align-items: center; gap: 8px; }
     </style>
 </head>
 <body class="bg-gray-100">
 
 <div id="mobileMenuOverlay" class="mobile-menu-overlay" onclick="closeMobileSidebar()"></div>
+<div id="autoRefreshBadge" class="auto-refresh-badge"><i class="fas fa-sync-alt fa-fw"></i> <span id="refreshCountdown">5</span>s</div>
+<div id="connectionStatus" class="connection-status"><i class="fas fa-spinner fa-spin"></i> Connecting...</div>
 
 <div class="flex h-screen overflow-hidden">
     <!-- SIDEBAR -->
@@ -141,12 +148,10 @@
             <nav class="space-y-1">
                 <div class="text-white/40 text-[10px] px-3 py-2 uppercase font-semibold">MAIN</div>
                 <a href="#" class="nav-item active flex items-center gap-3 px-3 py-2.5 rounded-xl text-white text-sm" data-section="dashboard"><i class="fas fa-tachometer-alt w-4"></i><span>Dashboard</span></a>
-                <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-white text-sm" data-section="leads"><i class="fas fa-users w-4"></i><span>Leads</span></a>
-                <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-white text-sm" data-section="budget"><i class="fas fa-wallet w-4"></i><span>Budget</span><span class="ml-auto bg-green-500 text-white text-[9px] px-1.5 py-0.5 rounded-full">CRUD</span></a>
+                <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-white text-sm" data-section="budget"><i class="fas fa-wallet w-4"></i><span>Budget</span></a>
                 <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-white text-sm" data-section="marketing"><i class="fas fa-chart-line w-4"></i><span>Marketing</span></a>
                 <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-white text-sm" data-section="messages"><i class="fas fa-envelope w-4"></i><span>Messages</span><span class="ml-auto bg-red-500 text-white text-[9px] px-1.5 py-0.5 rounded-full" id="msgBadge">0</span></a>
-                <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-white text-sm" data-section="reports"><i class="fas fa-chart-bar w-4"></i><span>Reports</span><span class="ml-auto bg-blue-500 text-white text-[9px] px-1.5 py-0.5 rounded-full" id="reportBadge">0</span></a>
-                <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-white text-sm" data-section="targets"><i class="fas fa-bullseye w-4"></i><span>Targets</span></a>
+                <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-white text-sm" data-section="reports"><i class="fas fa-chart-bar w-4"></i><span>Reports</span></a>
                 <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-white text-sm" data-section="settings"><i class="fas fa-cog w-4"></i><span>Settings</span></a>
             </nav>
         </div>
@@ -165,11 +170,11 @@
             <div class="flex items-center justify-between flex-wrap gap-3">
                 <div class="flex items-center gap-3">
                     <button id="mobileMenuBtn" class="md:hidden text-gray-600 hover:text-orange-600 text-xl"><i class="fas fa-bars"></i></button>
-                    <div><h1 class="text-lg font-bold text-gray-800">Sales Dashboard</h1><p class="text-xs text-gray-400">Lead Management & Performance</p></div>
+                    <div><h1 class="text-lg font-bold text-gray-800">Sales Dashboard</h1><p class="text-xs text-gray-400">Marketing & Performance Management</p></div>
                 </div>
                 <div class="flex-1 max-w-md relative">
                     <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
-                    <input type="text" id="globalSearchInput" placeholder="Search leads, budget, marketing, reports..." class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-orange-500">
+                    <input type="text" id="globalSearchInput" placeholder="Search marketing, budget, reports..." class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-orange-500">
                     <div id="searchResultsDropdown" class="search-results-dropdown"></div>
                 </div>
                 <div class="flex items-center gap-3">
@@ -189,267 +194,85 @@
     </main>
 </div>
 
-<!-- Add Lead Modal -->
-<div id="leadModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
-    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
-        <div class="px-5 py-3 border-b flex justify-between items-center"><h3 class="text-lg font-bold"><i class="fas fa-plus-circle text-orange-500 mr-2"></i>Add New Lead</h3><button onclick="closeLeadModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button></div>
-        <div class="p-5 space-y-3">
-            <input type="hidden" id="editLeadId">
-            <input type="text" id="leadName" placeholder="Customer Name" class="w-full p-2 border rounded-xl text-sm">
-            <input type="text" id="leadPhone" placeholder="Phone Number" class="w-full p-2 border rounded-xl text-sm">
-            <input type="email" id="leadEmail" placeholder="Email Address" class="w-full p-2 border rounded-xl text-sm">
-            <select id="leadStatus" class="w-full p-2 border rounded-xl text-sm"><option value="new">New Lead</option><option value="contacted">Contacted</option><option value="negotiation">Negotiation</option><option value="won">Won</option><option value="lost">Lost</option></select>
-            <input type="number" id="leadValue" placeholder="Expected Value (TZS)" class="w-full p-2 border rounded-xl text-sm">
-            <textarea id="leadNotes" rows="2" placeholder="Additional Notes" class="w-full p-2 border rounded-xl text-sm"></textarea>
-            <div class="flex gap-3"><button onclick="saveLead()" class="flex-1 bg-orange-600 text-white py-2 rounded-xl text-sm">Save</button><button onclick="closeLeadModal()" class="flex-1 bg-gray-100 py-2 rounded-xl text-sm">Cancel</button></div>
-        </div>
-    </div>
-</div>
+<!-- MARKETING MODALS -->
+<div id="marketingModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4" id="marketingModalTitle"><i class="fas fa-plus-circle text-orange-500 mr-2"></i>Add Marketing Activity</h3><input type="hidden" id="editActivityId"><div class="form-group"><label>Activity Title <span class="required">*</span></label><input type="text" id="adTitle" placeholder="e.g., Facebook Ads Campaign" required></div><div class="form-group"><label>Type</label><select id="adType"><option value="social_media">Social Media</option><option value="tv_radio">TV / Radio</option><option value="print">Print / Billboard</option><option value="digital">Digital Ads</option><option value="event">Event / Seminar</option></select></div><div class="form-group"><label>Location</label><input type="text" id="adLocation" placeholder="e.g., Dar es Salaam, Online"></div><div class="form-group"><label>Budget (TZS)</label><input type="number" id="adBudget" placeholder="0"></div><div class="form-group"><label>Date</label><input type="date" id="adDate"></div><div class="form-group"><label>Description</label><textarea id="adDescription" rows="3" placeholder="Activity description"></textarea></div><div class="form-group"><label>Status</label><select id="adStatus"><option value="planned">Planned</option><option value="active">Active</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select></div><div class="flex gap-3"><button onclick="saveMarketingActivity()" class="flex-1 btn-primary py-2 rounded-lg">Save</button><button onclick="closeModal('marketingModal')" class="flex-1 bg-gray-200 py-2 rounded-lg">Cancel</button></div></div></div>
 
-<!-- Add Budget Modal -->
-<div id="budgetModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
-    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
-        <div class="px-5 py-3 border-b flex justify-between items-center"><h3 class="text-lg font-bold" id="budgetModalTitle"><i class="fas fa-plus-circle text-orange-500 mr-2"></i>Add Budget</h3><button onclick="closeBudgetModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button></div>
-        <div class="p-5 space-y-3">
-            <input type="hidden" id="editBudgetId">
-            <select id="budgetCategory" class="w-full p-2 border rounded-xl text-sm">
-                <option value="Overall">Overall Budget</option>
-                <option value="Advertising">Advertising</option>
-                <option value="Events">Events & Seminars</option>
-                <option value="Digital Marketing">Digital Marketing</option>
-                <option value="Print Media">Print Media</option>
-                <option value="TV & Radio">TV & Radio</option>
-                <option value="Social Media">Social Media</option>
-                <option value="Sales Commission">Sales Commission</option>
-                <option value="Travel">Travel & Transport</option>
-                <option value="Training">Training</option>
-                <option value="Office Supplies">Office Supplies</option>
-            </select>
-            <input type="number" id="budgetAmount" placeholder="Budget Amount (TZS)" class="w-full p-2 border rounded-xl text-sm">
-            <input type="number" id="budgetSpent" placeholder="Amount Spent (TZS)" class="w-full p-2 border rounded-xl text-sm" value="0">
-            <textarea id="budgetDescription" rows="2" placeholder="Description (optional)" class="w-full p-2 border rounded-xl text-sm"></textarea>
-            <div class="flex gap-3"><button onclick="saveBudget()" class="flex-1 bg-orange-600 text-white py-2 rounded-xl text-sm">Save</button><button onclick="closeBudgetModal()" class="flex-1 bg-gray-100 py-2 rounded-xl text-sm">Cancel</button></div>
-        </div>
-    </div>
-</div>
+<div id="viewMarketingModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-chart-line text-orange-500 mr-2"></i>Marketing Activity Details</h3><div id="viewMarketingContent"></div><div id="viewMarketingButtons" class="detail-buttons flex gap-2 justify-center mt-3 flex-wrap"></div><button onclick="closeModal('viewMarketingModal')" class="w-full bg-gray-200 py-2 rounded-lg mt-3">Close</button></div></div>
 
-<!-- View Budget Modal -->
-<div id="viewBudgetModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
-    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
-        <div class="px-5 py-3 border-b flex justify-between items-center"><h3 class="text-lg font-bold">Budget Details</h3><button onclick="closeViewBudgetModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button></div>
-        <div class="p-5" id="viewBudgetContent"></div>
-        <div class="px-5 pb-5"><button onclick="closeViewBudgetModal()" class="w-full bg-gray-100 py-2 rounded-xl text-sm">Close</button></div>
-    </div>
-</div>
+<!-- BUDGET MODALS -->
+<div id="budgetModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-plus-circle text-orange-500 mr-2"></i>Add Budget</h3><input type="hidden" id="editBudgetId"><div class="form-group"><label>Category</label><select id="budgetCategory"><option value="Overall">Overall Budget</option><option value="Advertising">Advertising</option><option value="Events">Events & Seminars</option><option value="Digital Marketing">Digital Marketing</option><option value="Print Media">Print Media</option><option value="TV & Radio">TV & Radio</option><option value="Social Media">Social Media</option><option value="Sales Commission">Sales Commission</option></select></div><div class="form-group"><label>Budget Amount (TZS)</label><input type="number" id="budgetAmount" placeholder="0"></div><div class="form-group"><label>Amount Spent (TZS)</label><input type="number" id="budgetSpent" placeholder="0"></div><div class="form-group"><label>Description</label><textarea id="budgetDescription" rows="3" placeholder="Description"></textarea></div><div class="flex gap-3"><button onclick="saveBudget()" class="flex-1 btn-primary py-2 rounded-lg">Save</button><button onclick="closeModal('budgetModal')" class="flex-1 bg-gray-200 py-2 rounded-lg">Cancel</button></div></div></div>
 
-<!-- Add Marketing Activity Modal -->
-<div id="marketingModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
-    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
-        <div class="px-5 py-3 border-b"><h3 class="text-lg font-bold"><i class="fas fa-plus-circle text-orange-500 mr-2"></i>Add Marketing Activity</h3></div>
-        <div class="p-5 space-y-3">
-            <input type="hidden" id="editActivityId">
-            <input type="text" id="adTitle" placeholder="Activity Title" class="w-full p-2 border rounded-xl text-sm">
-            <select id="adType" class="w-full p-2 border rounded-xl text-sm"><option value="social_media">Social Media</option><option value="tv_radio">TV / Radio</option><option value="print">Print / Billboard</option><option value="digital">Digital Ads</option><option value="event">Event / Seminar</option></select>
-            <input type="number" id="adBudget" placeholder="Budget (TZS)" class="w-full p-2 border rounded-xl text-sm">
-            <input type="date" id="adDate" class="w-full p-2 border rounded-xl text-sm">
-            <textarea id="adDescription" rows="2" placeholder="Activity Description" class="w-full p-2 border rounded-xl text-sm"></textarea>
-            <input type="text" id="adResults" placeholder="Results (optional)" class="w-full p-2 border rounded-xl text-sm">
-            <select id="adStatus" class="w-full p-2 border rounded-xl text-sm"><option value="planned">Planned</option><option value="active">Active</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select>
-            <div class="flex gap-3"><button onclick="saveMarketingActivity()" class="flex-1 bg-orange-600 text-white py-2 rounded-xl text-sm">Save</button><button onclick="closeMarketingModal()" class="flex-1 bg-gray-100 py-2 rounded-xl text-sm">Cancel</button></div>
-        </div>
-    </div>
-</div>
+<div id="viewBudgetModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-wallet text-orange-500 mr-2"></i>Budget Details</h3><div id="viewBudgetContent"></div><button onclick="closeModal('viewBudgetModal')" class="w-full bg-gray-200 py-2 rounded-lg mt-3">Close</button></div></div>
 
-<!-- Marketing Details Modal -->
-<div id="marketingDetailsModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
-    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
-        <div class="px-5 py-3 border-b flex justify-between items-center"><h3 class="text-lg font-bold">Marketing Activity Details</h3><button onclick="closeMarketingDetailsModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button></div>
-        <div class="p-5" id="marketingDetailsContent"></div>
-        <div class="px-5 pb-5"><button onclick="closeMarketingDetailsModal()" class="w-full bg-gray-100 py-2 rounded-xl text-sm">Close</button></div>
-    </div>
-</div>
+<!-- MESSAGES MODALS -->
+<div id="chatModal" class="modal"><div class="modal-content" style="max-width:750px;"><div class="flex justify-between items-center mb-4"><h3 id="chatModalTitle" class="text-xl font-bold"><i class="fas fa-comments text-orange-500 mr-2"></i>Chat</h3><button onclick="closeModal('chatModal')" class="text-gray-400 text-2xl">&times;</button></div><div class="chat-container"><div id="chatMessagesArea" class="h-96 overflow-y-auto p-4 bg-gray-50 rounded-xl mb-3"></div><div class="flex gap-2"><textarea id="chatInput" rows="2" placeholder="Type your message..." class="flex-1 p-2 border rounded-xl text-sm resize-none"></textarea><button onclick="sendChatMessage()" class="btn-primary px-4 py-2 rounded-xl">Send</button></div></div></div></div>
 
-<!-- Chat Modal -->
-<div id="chatModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
-    <div class="bg-white rounded-2xl w-full max-w-2xl fade-in">
-        <div class="px-5 py-3 border-b flex justify-between items-center"><h3 class="text-lg font-bold" id="chatModalTitle">Chat</h3><button onclick="closeChatModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button></div>
-        <div class="h-96 overflow-y-auto p-4 bg-gray-50" id="chatMessagesArea"></div>
-        <div class="p-4 border-t"><div class="flex gap-2"><textarea id="chatInput" rows="2" placeholder="Type your message..." class="flex-1 p-2 border rounded-xl text-sm resize-none"></textarea><button onclick="sendChatMessage()" class="px-4 py-2 rounded-xl text-white bg-orange-600 text-sm">Send</button></div></div>
-    </div>
-</div>
+<div id="startChatModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-plus-circle text-orange-500 mr-2"></i>Start New Chat</h3><div class="form-group"><label>Select Department</label><select id="chatRecipientSelect" class="w-full p-2 border rounded-xl"><option value="Admin">Admin</option><option value="Finance">Finance Department</option><option value="Manager">Manager Department</option><option value="Secretary">Secretary Department</option></select></div><div class="form-group"><label>Message</label><textarea id="newChatMsg" rows="4" placeholder="Type your message..."></textarea></div><div class="flex gap-3"><button onclick="sendNewChat()" class="flex-1 btn-primary py-2 rounded-lg">Send</button><button onclick="closeModal('startChatModal')" class="flex-1 bg-gray-200 py-2 rounded-lg">Cancel</button></div></div></div>
 
-<!-- Start Chat Modal -->
-<div id="startChatModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
-    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
-        <div class="px-5 py-3 border-b"><h3 class="text-lg font-bold">Start New Chat</h3></div>
-        <div class="p-5 space-y-3">
-            <select id="chatRecipientSelect" class="w-full p-2 border rounded-xl text-sm">
-                <option value="Finance">Finance Department</option>
-                <option value="Manager">Manager Department</option>
-                <option value="Secretary">Secretary Department</option>
-                <option value="Admin">Admin</option>
-            </select>
-            <textarea id="newChatMsg" rows="3" placeholder="Type your message..." class="w-full p-2 border rounded-xl text-sm"></textarea>
-            <div class="flex gap-3"><button onclick="sendNewChat()" class="flex-1 bg-orange-600 text-white py-2 rounded-xl text-sm">Send</button><button onclick="closeStartChatModal()" class="flex-1 bg-gray-100 py-2 rounded-xl text-sm">Cancel</button></div>
-        </div>
-    </div>
-</div>
+<!-- REPORTS MODALS -->
+<div id="addReportModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-chart-line text-orange-500 mr-2"></i>Add Report</h3><div class="form-group"><label>Title <span class="required">*</span></label><input type="text" id="newReportTitle" placeholder="Report title" required></div><div class="form-group"><label>Period</label><select id="newReportPeriod"><option value="weekly">Weekly Report</option><option value="monthly">Monthly Report</option><option value="quarterly">Quarterly Report</option><option value="annual">Annual Report</option></select></div><div class="form-group"><label>Content <span class="required">*</span></label><textarea id="newReportContent" rows="6" placeholder="Report content..." required></textarea></div><div class="flex gap-3"><button onclick="addReport()" class="flex-1 btn-primary py-2 rounded-lg">Add</button><button onclick="closeModal('addReportModal')" class="flex-1 bg-gray-200 py-2 rounded-lg">Cancel</button></div></div></div>
 
-<!-- Report Modals -->
-<div id="addReportModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
-    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
-        <div class="px-5 py-3 border-b"><h3 class="text-lg font-bold">Add New Report</h3></div>
-        <div class="p-5 space-y-3">
-            <input type="text" id="newReportTitle" placeholder="Report Title" class="w-full p-2 border rounded-xl text-sm">
-            <select id="newReportPeriod" class="w-full p-2 border rounded-xl text-sm"><option value="daily">Daily Report</option><option value="weekly">Weekly Report</option><option value="monthly">Monthly Report</option><option value="quarterly">Quarterly Report</option><option value="annual">Annual Report</option></select>
-            <textarea id="newReportContent" rows="4" placeholder="Report Content..." class="w-full p-2 border rounded-xl text-sm"></textarea>
-            <div class="flex gap-3"><button onclick="addReport()" class="flex-1 bg-orange-600 text-white py-2 rounded-xl text-sm">Add</button><button onclick="closeAddReportModal()" class="flex-1 bg-gray-100 py-2 rounded-xl text-sm">Cancel</button></div>
-        </div>
-    </div>
-</div>
+<div id="editReportModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-edit text-orange-500 mr-2"></i>Edit Report</h3><input type="hidden" id="editReportId"><div class="form-group"><label>Title</label><input type="text" id="editReportTitle" required></div><div class="form-group"><label>Period</label><select id="editReportPeriod"><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="quarterly">Quarterly</option><option value="annual">Annual</option></select></div><div class="form-group"><label>Content</label><textarea id="editReportContent" rows="6" required></textarea></div><div class="flex gap-3"><button onclick="updateReport()" class="flex-1 btn-primary py-2 rounded-lg">Update</button><button onclick="closeModal('editReportModal')" class="flex-1 bg-gray-200 py-2 rounded-lg">Cancel</button></div></div></div>
 
-<div id="editReportModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
-    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
-        <div class="px-5 py-3 border-b"><h3 class="text-lg font-bold">Edit Report</h3></div>
-        <div class="p-5 space-y-3">
-            <input type="hidden" id="editReportId">
-            <input type="text" id="editReportTitle" placeholder="Report Title" class="w-full p-2 border rounded-xl text-sm">
-            <select id="editReportPeriod" class="w-full p-2 border rounded-xl text-sm"><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="quarterly">Quarterly</option><option value="annual">Annual</option></select>
-            <textarea id="editReportContent" rows="4" placeholder="Report Content..." class="w-full p-2 border rounded-xl text-sm"></textarea>
-            <div class="flex gap-3"><button onclick="updateReport()" class="flex-1 bg-orange-600 text-white py-2 rounded-xl text-sm">Update</button><button onclick="closeEditReportModal()" class="flex-1 bg-gray-100 py-2 rounded-xl text-sm">Cancel</button></div>
-        </div>
-    </div>
-</div>
+<div id="viewReportModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-file-alt text-orange-500 mr-2"></i>Report Details</h3><div id="viewReportContent"></div><div id="viewReportButtons" class="detail-buttons flex gap-2 justify-center mt-3 flex-wrap"></div><button onclick="closeModal('viewReportModal')" class="w-full bg-gray-200 py-2 rounded-lg mt-3">Close</button></div></div>
 
-<div id="sendReportModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
-    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
-        <div class="px-5 py-3 border-b"><h3 class="text-lg font-bold"><i class="fas fa-paper-plane text-orange-500 mr-2"></i>Send Report</h3></div>
-        <div class="p-5 space-y-3">
-            <input type="hidden" id="sendReportId">
-            <div class="p-3 bg-orange-50 rounded-xl"><p class="text-sm" id="sendReportInfo"></p></div>
-            <select id="sendToDepartment" class="w-full p-2 border rounded-xl text-sm">
-                <option value="">Select Department</option>
-                <option value="Admin">Admin</option>
-                <option value="Finance">Finance Department</option>
-                <option value="Manager">Manager Department</option>
-                <option value="Secretary">Secretary Department</option>
-            </select>
-            <textarea id="sendAdditionalMessage" rows="3" placeholder="Additional message (optional)" class="w-full p-2 border rounded-xl text-sm"></textarea>
-            <div class="flex gap-3"><button onclick="confirmSendReport()" class="flex-1 bg-orange-600 text-white py-2 rounded-xl text-sm">Send</button><button onclick="closeSendReportModal()" class="flex-1 bg-gray-100 py-2 rounded-xl text-sm">Cancel</button></div>
-        </div>
-    </div>
-</div>
-
-<!-- Set Target Modal -->
-<div id="targetModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 modal-overlay">
-    <div class="bg-white rounded-2xl max-w-md w-full fade-in">
-        <div class="px-5 py-3 border-b"><h3 class="text-lg font-bold"><i class="fas fa-bullseye text-orange-500 mr-2"></i>Set Monthly Target</h3></div>
-        <div class="p-5 space-y-3">
-            <select id="targetMonth" class="w-full p-2 border rounded-xl text-sm"><option value="January">January</option><option value="February">February</option><option value="March">March</option><option value="April">April</option><option value="May">May</option><option value="June">June</option><option value="July">July</option><option value="August">August</option><option value="September">September</option><option value="October">October</option><option value="November">November</option><option value="December">December</option></select>
-            <input type="number" id="targetAmount" placeholder="Target Amount (TZS)" class="w-full p-2 border rounded-xl text-sm">
-            <div class="flex gap-3"><button onclick="setTarget()" class="flex-1 bg-orange-600 text-white py-2 rounded-xl text-sm">Set Target</button><button onclick="closeTargetModal()" class="flex-1 bg-gray-100 py-2 rounded-xl text-sm">Cancel</button></div>
-        </div>
-    </div>
-</div>
+<!-- SETTINGS MODALS -->
+<div id="backupRestoreModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4"><i class="fas fa-database text-orange-500 mr-2"></i>Backup & Restore</h3><p class="text-sm text-gray-600 mb-4">Backup includes all system data</p><div class="flex gap-3"><button onclick="createBackup()" class="flex-1 bg-green-600 text-white py-2 rounded-lg text-sm"><i class="fas fa-download mr-2"></i>Backup</button><button onclick="restoreBackup()" class="flex-1 bg-orange-600 text-white py-2 rounded-lg text-sm"><i class="fas fa-upload mr-2"></i>Restore</button></div><button onclick="closeModal('backupRestoreModal')" class="w-full bg-gray-200 py-2 rounded-lg mt-3">Close</button></div></div>
 
 <script>
-    // ==================== CENTRALIZED MESSAGES ====================
-    function getCentralMessages() {
-        let messages = localStorage.getItem('geotraverse_central_messages');
-        if (!messages) {
-            let defaultMessages = [
-                { id: 1, from: "Admin", to: "Sales", message: "Welcome to the ERP system!", read: false, created_at: new Date(Date.now() - 5*24*60*60*1000).toISOString() },
-                { id: 2, from: "Finance", to: "Sales", message: "Please provide Q2 sales forecast", read: false, created_at: new Date(Date.now() - 2*24*60*60*1000).toISOString() },
-                { id: 3, from: "Manager", to: "Sales", message: "Great job on the Q1 performance!", read: false, created_at: new Date(Date.now() - 1*24*60*60*1000).toISOString() }
-            ];
-            localStorage.setItem('geotraverse_central_messages', JSON.stringify(defaultMessages));
-            return defaultMessages;
-        }
-        return JSON.parse(messages);
-    }
+    // ==================== API CONFIGURATION ====================
+    const API_BASE = '../backend/api/';
+    const DEPARTMENT_ID = 3; // Sales & Marketing department ID
     
-    function saveCentralMessages(messages) { localStorage.setItem('geotraverse_central_messages', JSON.stringify(messages)); }
-    function addCentralMessage(from, to, message) { let messages = getCentralMessages(); messages.push({ id: Date.now(), from: from, to: to, message: message, read: false, created_at: new Date().toISOString() }); saveCentralMessages(messages); }
-    function markMessageAsRead(messageId) { let messages = getCentralMessages(); let msg = messages.find(m => m.id === messageId); if (msg && msg.to === "Sales") { msg.read = true; saveCentralMessages(messages); } }
-    function getUnreadMessagesCountForSales() { return getCentralMessages().filter(m => m.to === "Sales" && !m.read).length; }
-    function getConversationsForSales() { let conv = {}; getCentralMessages().forEach(msg => { if (msg.from === "Sales" || msg.to === "Sales") { let other = msg.from === "Sales" ? msg.to : msg.from; if (!conv[other]) conv[other] = []; conv[other].push(msg); } }); return conv; }
-    function deleteMessageFromCentral(messageId) { let messages = getCentralMessages().filter(m => m.id !== messageId); saveCentralMessages(messages); }
-    
-    // ==================== SALES DATA ====================
-    let leads = [
-        { id: 1, name: "Tanzania Breweries Ltd", phone: "+255 712 345 678", email: "procurement@tbl.co.tz", status: "negotiation", value: 450000000, notes: "Interested in commercial complex", created_at: "2024-03-01" },
-        { id: 2, name: "Vodacom Tanzania", phone: "+255 713 456 789", email: "facilities@vodacom.co.tz", status: "contacted", value: 280000000, notes: "Looking for office space", created_at: "2024-03-10" },
-        { id: 3, name: "CRDB Bank", phone: "+255 714 567 890", email: "properties@crdb.com", status: "new", value: 620000000, notes: "Potential residential project", created_at: "2024-03-15" },
-        { id: 4, name: "NMB Bank", phone: "+255 715 678 901", email: "realestate@nmb.co.tz", status: "won", value: 380000000, notes: "Signed contract", created_at: "2024-02-20" },
-        { id: 5, name: "ABC Construction", phone: "+255 716 789 012", email: "info@abcconstruction.com", status: "new", value: 150000000, notes: "New client inquiry", created_at: "2024-04-01" }
-    ];
-    
-    // Budget table with description column
-    let budgets = [
-        { id: 1, category: "Overall Budget", amount: 50000000, spent: 25000000, description: "Total marketing budget for Q2 2024", created_at: "2024-04-01" },
-        { id: 2, category: "Advertising", amount: 15000000, spent: 8000000, description: "Digital and print advertising campaigns", created_at: "2024-04-01" },
-        { id: 3, category: "Events & Seminars", amount: 10000000, spent: 4000000, description: "Industry events, trade shows, and customer seminars", created_at: "2024-04-05" },
-        { id: 4, category: "Digital Marketing", amount: 8000000, spent: 3000000, description: "Google Ads, SEO optimization, social media ads", created_at: "2024-04-10" },
-        { id: 5, category: "Sales Commission", amount: 12000000, spent: 6000000, description: "Sales team commissions and bonuses", created_at: "2024-04-01" },
-        { id: 6, category: "Travel & Transport", amount: 5000000, spent: 2000000, description: "Client visits, meetings, and travel expenses", created_at: "2024-04-01" }
-    ];
-    
-    let marketingActivities = [
-        { id: 1, title: "Facebook Ads Campaign", type: "social_media", budget: 5000000, date: "2024-03-01", description: "Targeted ads for young professionals", status: "completed", results: "Reached 50,000 people, 200+ clicks", created_at: "2024-03-01" },
-        { id: 2, title: "Radio Jingle - Clouds FM", type: "tv_radio", budget: 8000000, date: "2024-03-15", description: "30 seconds radio advertisement", status: "active", results: "Increased inquiries by 30%", created_at: "2024-03-10" },
-        { id: 3, title: "Billboard - Morogoro Road", type: "print", budget: 12000000, date: "2024-04-01", description: "Large billboard near TSN", status: "planned", results: "", created_at: "2024-03-20" }
-    ];
-    
-    let reportsList = [
-        { id: 1, title: "March Sales Report", period: "monthly", content: "Total sales: TZS 450M. Target: TZS 500M. Achievement: 90%", status: "sent", created_at: new Date(Date.now() - 10*24*60*60*1000).toISOString() },
-        { id: 2, title: "Q1 Performance Summary", period: "quarterly", content: "Q1 Revenue: TZS 1.2B, Won deals: 4, New leads: 15", status: "draft", created_at: new Date(Date.now() - 5*24*60*60*1000).toISOString() }
-    ];
-    
-    let targets = [
-        { month: "January", target: 500000000, achieved: 420000000 },
-        { month: "February", target: 550000000, achieved: 580000000 },
-        { month: "March", target: 600000000, achieved: 450000000 },
-        { month: "April", target: 650000000, achieved: 0 }
-    ];
-    
+    let marketingActivities = [];
+    let budgets = [];
+    let reportsList = [];
+    let messagesData = [];
     let activityLogs = [{ action: "Sales Dashboard initialized", created_at: new Date().toISOString() }];
-    
-    let revenueChart, statusChart;
-    let currentPage = 1;
-    let rowsPerPage = 5;
-    let currentBudgetPage = 1;
-    let budgetRowsPerPage = 5;
     let currentChatWith = null;
     let searchTimeout = null;
-    let pendingSendReportId = null;
+    let pendingSendId = null;
+    let refreshInterval = null;
+    let countdownSeconds = 5;
     
-    function getProgressClass(percent) { if (percent < 50) return 'progress-low'; if (percent < 80) return 'progress-medium'; return 'progress-high'; }
+    let currentMarketingPage = 1;
+    let currentBudgetPage = 1;
+    let rowsPerPage = 10;
+    let budgetRowsPerPage = 5;
+    
+    const departmentNames = {
+        1: "Super Admin", 2: "Finance", 3: "Sales & Marketing", 4: "Manager",
+        5: "Secretary", 6: "Bricks & Timber", 7: "Aluminium", 8: "Town Planning",
+        9: "Architectural", 10: "Survey", 11: "Construction", 12: "Hatimiliki"
+    };
     
     // ==================== HELPER FUNCTIONS ====================
     function showToast(msg, isError) { let t = document.createElement("div"); t.className = "toast-notification" + (isError ? " error" : ""); t.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-circle' : 'fa-check-circle'} mr-1"></i>${msg}`; document.body.appendChild(t); setTimeout(() => t.remove(), 3000); }
-    function formatCurrency(amt) { return "TZS " + parseFloat(amt).toLocaleString(); }
+    function formatCurrency(amt) { return "TZS " + (parseFloat(amt) || 0).toLocaleString(); }
+    function formatDate(dateStr) { if (!dateStr) return "N/A"; return new Date(dateStr).toLocaleDateString("en-GB"); }
     function escapeHtml(text) { if (!text) return ""; var div = document.createElement("div"); div.textContent = text; return div.innerHTML; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; document.body.style.overflow = 'auto'; }
+    function openModal(id) { document.getElementById(id).style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+    function closeMobileSidebar() { document.getElementById("mainSidebar").classList.remove("mobile-open"); document.getElementById("mobileMenuOverlay").classList.remove("open"); }
+    function goToMainWebsite() { window.location.href = "index.html"; }
     function addLog(action) { activityLogs.unshift({ action: action, created_at: new Date().toISOString() }); if (activityLogs.length > 50) activityLogs.pop(); }
-    function logout() { if (confirm("Are you sure you want to logout?")) { window.location.href = "department_login.html"; } }
     
     function getStatusClass(status) {
         switch(status) {
-            case "new": return "status-new";
-            case "contacted": return "status-contacted";
-            case "negotiation": return "status-negotiation";
-            case "won": return "status-won";
-            case "lost": return "status-lost";
-            default: return "status-new";
+            case "planned": return "status-planned";
+            case "active": return "status-active";
+            case "completed": return "status-completed";
+            case "cancelled": return "status-cancelled";
+            default: return "status-planned";
         }
     }
     
     function getStatusText(status) {
         switch(status) {
-            case "new": return "New";
-            case "contacted": return "Contacted";
-            case "negotiation": return "Negotiation";
-            case "won": return "Won";
-            case "lost": return "Lost";
+            case "planned": return "Planned";
+            case "active": return "Active";
+            case "completed": return "Completed";
+            case "cancelled": return "Cancelled";
             default: return status;
         }
     }
@@ -465,6 +288,179 @@
         }
     }
     
+    function getProgressClass(percent) { if (percent < 50) return 'progress-low'; if (percent < 80) return 'progress-medium'; return 'progress-high'; }
+    
+    // ==================== API CALLS ====================
+    async function apiCall(endpoint, method = 'GET', data = null) {
+        try { 
+            const opts = { method, headers: { 'Content-Type': 'application/json' }, credentials: 'include' }; 
+            if (data && method !== 'GET') opts.body = JSON.stringify(data);
+            const res = await fetch(API_BASE + endpoint, opts); 
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return await res.json();
+        } catch(e) { console.error('API Error:', endpoint, e); return { success: false, message: e.message, data: [] }; }
+    }
+    
+    // ==================== MARKETING API ====================
+    async function fetchMarketing() {
+        const res = await apiCall('get_marketing.php');
+        if (res.success && res.data) {
+            marketingActivities = res.data.filter(m => m.department_id === DEPARTMENT_ID);
+        } else {
+            marketingActivities = [];
+        }
+        return true;
+    }
+    
+    async function addMarketingAPI(data) {
+        data.department_id = DEPARTMENT_ID;
+        const res = await apiCall('add_marketing.php', 'POST', data);
+        if (res.success) await fetchMarketing();
+        return res;
+    }
+    
+    async function updateMarketingAPI(id, data) {
+        data.id = id;
+        data.department_id = DEPARTMENT_ID;
+        const res = await apiCall('update_marketing.php', 'POST', data);
+        if (res.success) await fetchMarketing();
+        return res;
+    }
+    
+    async function deleteMarketingAPI(id) {
+        const res = await apiCall('delete_marketing.php', 'DELETE', { id, department_id: DEPARTMENT_ID });
+        if (res.success) await fetchMarketing();
+        return res;
+    }
+    
+    async function sendMarketingToDepartment(activityId, toDeptId) {
+        return await apiCall('send_marketing.php', 'POST', { activity_id: activityId, to_department_id: toDeptId, from_department_id: DEPARTMENT_ID });
+    }
+    
+    // ==================== BUDGET API ====================
+    async function fetchBudgets() {
+        const res = await apiCall('get_budgets.php');
+        if (res.success && res.data) {
+            budgets = res.data.filter(b => b.department_id === DEPARTMENT_ID);
+        } else {
+            budgets = [];
+        }
+        return true;
+    }
+    
+    async function addBudgetAPI(data) {
+        data.department_id = DEPARTMENT_ID;
+        const res = await apiCall('add_budget.php', 'POST', data);
+        if (res.success) await fetchBudgets();
+        return res;
+    }
+    
+    async function updateBudgetAPI(id, data) {
+        data.id = id;
+        data.department_id = DEPARTMENT_ID;
+        const res = await apiCall('update_budget.php', 'POST', data);
+        if (res.success) await fetchBudgets();
+        return res;
+    }
+    
+    async function deleteBudgetAPI(id) {
+        const res = await apiCall('delete_budget.php', 'DELETE', { id, department_id: DEPARTMENT_ID });
+        if (res.success) await fetchBudgets();
+        return res;
+    }
+    
+    // ==================== REPORTS API ====================
+    async function fetchReports() {
+        const res = await apiCall('get_reports.php');
+        if (res.success && res.data) {
+            reportsList = res.data.filter(r => r.department_id === DEPARTMENT_ID);
+        } else {
+            reportsList = [];
+        }
+        return true;
+    }
+    
+    async function addReportAPI(data) {
+        data.department_id = DEPARTMENT_ID;
+        const res = await apiCall('add_report.php', 'POST', data);
+        if (res.success) await fetchReports();
+        return res;
+    }
+    
+    async function updateReportAPI(id, data) {
+        data.id = id;
+        data.department_id = DEPARTMENT_ID;
+        const res = await apiCall('update_report.php', 'POST', data);
+        if (res.success) await fetchReports();
+        return res;
+    }
+    
+    async function deleteReportAPI(id) {
+        const res = await apiCall('delete_report.php', 'DELETE', { id, department_id: DEPARTMENT_ID });
+        if (res.success) await fetchReports();
+        return res;
+    }
+    
+    async function sendReportToDepartment(reportId, toDeptId) {
+        return await apiCall('send_report.php', 'POST', { report_id: reportId, to_department_id: toDeptId, from_department_id: DEPARTMENT_ID });
+    }
+    
+    // ==================== MESSAGES API ====================
+    async function fetchMessages() {
+        const res = await apiCall('get_messages.php');
+        if (res.success && res.data) {
+            return res.data;
+        }
+        return [];
+    }
+    
+    async function sendMessageAPI(toDepartment, message) {
+        return await apiCall('send_message.php', 'POST', { to_department_id: toDepartment, message: message, from_department_id: DEPARTMENT_ID });
+    }
+    
+    async function markMessageAsRead(messageId) {
+        return await apiCall('mark_message_read.php', 'POST', { message_id: messageId });
+    }
+    
+    async function deleteMessageAPI(messageId) {
+        return await apiCall('delete_message.php', 'DELETE', { message_id: messageId });
+    }
+    
+    async function deleteConversationAPI(departmentId) {
+        return await apiCall('delete_conversation.php', 'POST', { department_id: departmentId, user_department_id: DEPARTMENT_ID });
+    }
+    
+    // ==================== AUTO REFRESH ====================
+    function startAutoRefresh() {
+        if (refreshInterval) clearInterval(refreshInterval);
+        refreshInterval = setInterval(() => {
+            const activeSection = document.querySelector('.nav-item.active')?.getAttribute('data-section') || 'dashboard';
+            if (activeSection === 'dashboard') loadDashboard();
+            else if (activeSection === 'marketing') loadMarketing();
+            else if (activeSection === 'budget') loadBudget();
+            else if (activeSection === 'messages') loadMessages();
+            else if (activeSection === 'reports') loadReports();
+            resetCountdown();
+        }, 5000);
+    }
+    
+    function resetCountdown() { countdownSeconds = 5; }
+    
+    function startCountdownDisplay() {
+        setInterval(() => {
+            if (countdownSeconds <= 1) countdownSeconds = 5;
+            else countdownSeconds--;
+            const span = document.getElementById('refreshCountdown');
+            if (span) span.innerText = countdownSeconds;
+        }, 1000);
+    }
+    
+    async function updateBadges() {
+        const messages = await fetchMessages();
+        const unreadCount = messages.filter(m => m.receiver_dept === DEPARTMENT_ID && m.is_read === 0).length;
+        document.getElementById("msgBadge").innerText = unreadCount;
+    }
+    
     // ==================== GLOBAL SEARCH ====================
     function performGlobalSearch() {
         let term = document.getElementById("globalSearchInput").value.toLowerCase().trim();
@@ -472,374 +468,419 @@
         if (searchTimeout) clearTimeout(searchTimeout);
         if (term === "") { dropdown.classList.remove("active"); dropdown.innerHTML = ""; return; }
         searchTimeout = setTimeout(() => {
-            let leadResults = leads.filter(l => l.name.toLowerCase().includes(term));
-            let budgetResults = budgets.filter(b => b.category.toLowerCase().includes(term));
-            let marketingResults = marketingActivities.filter(m => m.title.toLowerCase().includes(term));
-            let reportResults = reportsList.filter(r => r.title.toLowerCase().includes(term));
+            let marketingResults = marketingActivities.filter(m => m.title?.toLowerCase().includes(term) || (m.location && m.location.toLowerCase().includes(term)));
+            let budgetResults = budgets.filter(b => b.category?.toLowerCase().includes(term));
+            let reportResults = reportsList.filter(r => r.title?.toLowerCase().includes(term));
             let html = "";
-            if (leadResults.length) html += '<div class="p-2 bg-gray-50"><span class="text-xs font-semibold text-orange-600">Leads</span></div>';
-            leadResults.slice(0,5).forEach(l => html += `<div class="search-result-item" onclick="goToSectionAndSearch('leads','${l.name}')"><div class="font-medium">${l.name}</div><div class="text-xs text-gray-500">${formatCurrency(l.value)}</div></div>`);
-            if (budgetResults.length) html += '<div class="p-2 bg-gray-50"><span class="text-xs font-semibold text-green-600">Budget</span></div>';
-            budgetResults.slice(0,5).forEach(b => html += `<div class="search-result-item" onclick="goToSectionAndSearch('budget','${b.category}')"><div class="font-medium">${b.category}</div><div class="text-xs text-gray-500">${formatCurrency(b.amount)}</div></div>`);
-            if (marketingResults.length) html += '<div class="p-2 bg-gray-50"><span class="text-xs font-semibold text-blue-600">Marketing</span></div>';
-            marketingResults.slice(0,5).forEach(m => html += `<div class="search-result-item" onclick="goToSectionAndSearch('marketing','${m.title}')"><div class="font-medium">${m.title}</div><div class="text-xs text-gray-500">${formatCurrency(m.budget)}</div></div>`);
+            if (marketingResults.length) html += '<div class="p-2 bg-gray-50"><span class="text-xs font-semibold text-green-600">Marketing</span></div>';
+            marketingResults.slice(0,3).forEach(m => html += `<div class="search-result-item" onclick="goToSectionAndSearch(\'marketing\', \'${m.title}\')"><div class="font-medium">${escapeHtml(m.title)}</div><div class="text-xs text-gray-500">${formatCurrency(m.budget)}</div></div>`);
+            if (budgetResults.length) html += '<div class="p-2 bg-gray-50"><span class="text-xs font-semibold text-blue-600">Budget</span></div>';
+            budgetResults.slice(0,3).forEach(b => html += `<div class="search-result-item" onclick="goToSectionAndSearch(\'budget\', \'${b.category}\')"><div class="font-medium">${b.category}</div><div class="text-xs text-gray-500">${formatCurrency(b.amount)}</div></div>`);
             if (reportResults.length) html += '<div class="p-2 bg-gray-50"><span class="text-xs font-semibold text-purple-600">Reports</span></div>';
-            reportResults.slice(0,5).forEach(r => html += `<div class="search-result-item" onclick="goToSectionAndSearch('reports','${r.title}')"><div class="font-medium">${r.title}</div><div class="text-xs text-gray-500">${r.period}</div></div>`);
+            reportResults.slice(0,3).forEach(r => html += `<div class="search-result-item" onclick="goToSectionAndSearch(\'reports\', \'${r.title}\')"><div class="font-medium">${r.title}</div><div class="text-xs text-gray-500">${r.period}</div></div>`);
             if (!html) html = '<div class="p-4 text-center text-gray-400">No results</div>';
             dropdown.innerHTML = html; dropdown.classList.add("active");
         }, 300);
     }
     
-    function goToSectionAndSearch(section, val) { let dd = document.getElementById("searchResultsDropdown"); if (dd) dd.classList.remove("active"); document.getElementById("globalSearchInput").value = val; showSection(section); showToast(`Showing results for "${val}"`); }
-    document.addEventListener("click", (e) => { let inp = document.getElementById("globalSearchInput"); let dd = document.getElementById("searchResultsDropdown"); if (inp && dd && !inp.contains(e.target) && !dd.contains(e.target)) dd.classList.remove("active"); });
-    
-    // ==================== MESSAGES ====================
-    function renderMessages() {
-        let conv = getConversationsForSales(); let unread = getUnreadMessagesCountForSales();
-        document.getElementById("msgBadge").innerText = unread;
-        let html = `<div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold"><i class="fas fa-envelope text-orange-500 mr-2"></i>Messages</h2><button onclick="openStartChatModal()" class="btn-primary text-white px-4 py-2 rounded-xl text-sm">+ New Chat</button></div><div class="bg-white rounded-xl p-3"><div class="space-y-2">`;
-        let has = false;
-        for (let d in conv) { has = true; let last = conv[d][conv[d].length-1]; let un = conv[d].filter(m => m.to === "Sales" && !m.read).length; html += `<div class="chat-conversation ${un>0?'chat-conversation-unread':''} border rounded-lg p-3 mb-2 flex justify-between items-center" onclick="openChatWith('${d}')"><div><p class="font-semibold text-sm">${d}</p><p class="text-xs text-gray-500 truncate w-48">${escapeHtml(last.message.substring(0,50))}</p></div><div class="text-right"><span class="text-[10px] text-gray-400">${new Date(last.created_at).toLocaleTimeString()}</span>${un>0?`<span class="ml-2 bg-red-500 text-white text-[9px] px-1.5 rounded-full">${un}</span>`:''}</div></div>`; }
-        html += (has?"":'<p class="text-gray-400 text-center py-6">No messages</p>')+"</div></div>";
-        document.getElementById("messagesSection").innerHTML = html;
+    function goToSectionAndSearch(section, val) { 
+        let dd = document.getElementById("searchResultsDropdown"); 
+        if (dd) dd.classList.remove("active"); 
+        document.getElementById("globalSearchInput").value = val; 
+        showSection(section); 
+        showToast(`Showing "${val}"`); 
     }
-    function openStartChatModal() { document.getElementById("startChatModal").classList.remove("hidden"); document.getElementById("startChatModal").classList.add("flex"); }
-    function closeStartChatModal() { document.getElementById("startChatModal").classList.add("hidden"); document.getElementById("startChatModal").classList.remove("flex"); }
-    function sendNewChat() { let to = document.getElementById("chatRecipientSelect").value; let msg = document.getElementById("newChatMsg").value.trim(); if(!msg){ showToast("Enter message",true); return; } addCentralMessage("Sales", to, msg); addLog(`Sent message to ${to}`); showToast(`Sent to ${to}`); closeStartChatModal(); document.getElementById("newChatMsg").value=""; renderMessages(); document.getElementById("msgBadge").innerText=getUnreadMessagesCountForSales(); }
-    function openChatWith(dept) { currentChatWith=dept; let msgs=getCentralMessages().filter(m=>(m.from==="Sales"&&m.to===dept)||(m.from===dept&&m.to==="Sales")); msgs.forEach(m=>{ if(m.to==="Sales"&&!m.read) markMessageAsRead(m.id); }); renderMessages(); document.getElementById("msgBadge").innerText=getUnreadMessagesCountForSales(); let chatHtml=""; for(let m of msgs){ chatHtml+=`<div class="chat-bubble ${m.from==="Sales"?"chat-sent":"chat-received"}"><p class="text-[9px] text-gray-500">${m.from==="Sales"?"You":dept} · ${new Date(m.created_at).toLocaleTimeString()}</p><p class="text-sm">${escapeHtml(m.message)}</p><button onclick="deleteMessageFromChat(${m.id})" class="text-red-500 text-[9px] mt-1">Delete</button></div>`; } document.getElementById("chatModalTitle").innerHTML=`Chat with ${dept}`; document.getElementById("chatMessagesArea").innerHTML=chatHtml||'<div class="text-center text-gray-400 py-6">No messages</div>'; document.getElementById("chatModal").classList.remove("hidden"); document.getElementById("chatModal").classList.add("flex"); }
-    function sendChatMessage() { let msg=document.getElementById("chatInput").value.trim(); if(!msg||!currentChatWith) return; addCentralMessage("Sales", currentChatWith, msg); document.getElementById("chatInput").value=""; openChatWith(currentChatWith); }
-    function deleteMessageFromChat(id) { deleteMessageFromCentral(id); showToast("Message deleted"); openChatWith(currentChatWith); renderMessages(); document.getElementById("msgBadge").innerText=getUnreadMessagesCountForSales(); }
-    function closeChatModal() { document.getElementById("chatModal").classList.add("hidden"); document.getElementById("chatModal").classList.remove("flex"); renderMessages(); }
+    
+    document.addEventListener("click", (e) => { 
+        let inp = document.getElementById("globalSearchInput"); 
+        let dd = document.getElementById("searchResultsDropdown"); 
+        if (inp && dd && !inp.contains(e.target) && !dd.contains(e.target)) dd.classList.remove("active"); 
+    });
+    
+    // ==================== MESSAGES SECTION ====================
+    async function loadMessages() {
+        const messages = await fetchMessages();
+        let conversations = {};
+        for (let msg of messages) {
+            let otherDept = msg.sender_dept === DEPARTMENT_ID ? msg.receiver_dept : msg.sender_dept;
+            if (!conversations[otherDept]) conversations[otherDept] = [];
+            conversations[otherDept].push(msg);
+        }
+        
+        let unread = messages.filter(m => m.receiver_dept === DEPARTMENT_ID && m.is_read === 0).length;
+        document.getElementById("msgBadge").innerText = unread;
+        
+        let html = `<div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold"><i class="fas fa-envelope text-orange-500 mr-2"></i>Messages</h2><button onclick="openModal('startChatModal')" class="btn-primary text-white px-4 py-2 rounded-xl text-sm">+ New Chat</button></div>
+            <div class="messages-grid" id="messagesGridContainer"></div>`;
+        document.getElementById("messagesSection").innerHTML = html;
+        
+        let gridHtml = '';
+        for (let deptId in conversations) {
+            let deptName = departmentNames[deptId] || 'Department';
+            let lastMsg = conversations[deptId][conversations[deptId].length - 1];
+            let unreadCount = conversations[deptId].filter(m => m.receiver_dept === DEPARTMENT_ID && m.is_read === 0).length;
+            let preview = lastMsg.message ? lastMsg.message.substring(0, 70) + (lastMsg.message.length > 70 ? '...' : '') : 'No messages';
+            
+            gridHtml += `<div class="message-item ${unreadCount > 0 ? 'message-unread' : ''}" onclick="openChatWith(${deptId})">
+                <div class="p-4">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="font-semibold">${escapeHtml(deptName)}</span>
+                            ${unreadCount > 0 ? `<span class="bg-red-500 text-white text-[9px] px-1.5 py-0.5 rounded-full ml-2">${unreadCount}</span>` : ''}
+                        </div>
+                        <span class="text-[10px] text-gray-400">${formatDate(lastMsg.created_at)}</span>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">${escapeHtml(preview)}</p>
+                    <div class="flex justify-end mt-2">
+                        <button onclick="event.stopPropagation(); deleteConversation(${deptId})" class="text-red-400 text-xs hover:text-red-600"><i class="fas fa-trash-alt mr-1"></i>Delete Chat</button>
+                    </div>
+                </div>
+            </div>`;
+        }
+        document.getElementById("messagesGridContainer").innerHTML = gridHtml || '<div class="col-span-3 text-center py-12 text-gray-400 bg-white rounded-xl">No messages yet. Start a new chat!</div>';
+    }
+    
+    function openStartChatModal() { openModal('startChatModal'); }
+    function closeStartChatModal() { closeModal('startChatModal'); }
+    
+    async function sendNewChat() {
+        let to = document.getElementById("chatRecipientSelect").value;
+        let msg = document.getElementById("newChatMsg").value.trim();
+        if (!msg) { showToast("Enter message", true); return; }
+        
+        const res = await sendMessageAPI(to, msg);
+        if (res.success) {
+            showToast(`Sent to ${to}`);
+            closeModal('startChatModal');
+            document.getElementById("newChatMsg").value = "";
+            await loadMessages();
+            await updateBadges();
+        } else {
+            showToast("Failed to send message", true);
+        }
+    }
+    
+    async function openChatWith(deptId) {
+        currentChatWith = deptId;
+        const messages = await fetchMessages();
+        let conversationMessages = messages.filter(m => 
+            (m.sender_dept === DEPARTMENT_ID && m.receiver_dept === deptId) || 
+            (m.sender_dept === deptId && m.receiver_dept === DEPARTMENT_ID)
+        );
+        
+        for (let msg of conversationMessages) {
+            if (msg.receiver_dept === DEPARTMENT_ID && msg.is_read === 0) {
+                await markMessageAsRead(msg.id);
+            }
+        }
+        
+        let deptName = departmentNames[deptId] || 'Department';
+        document.getElementById("chatModalTitle").innerHTML = `Chat with ${escapeHtml(deptName)}`;
+        
+        let chatHtml = "";
+        for (let m of conversationMessages) {
+            let isSent = m.sender_dept === DEPARTMENT_ID;
+            chatHtml += `<div class="chat-bubble ${isSent ? 'chat-sent' : 'chat-received'}">
+                <p class="text-[9px] text-gray-500">${isSent ? "You" : deptName} · ${new Date(m.created_at).toLocaleTimeString()}</p>
+                <p class="text-sm">${escapeHtml(m.message)}</p>
+                <button onclick="deleteSingleMessage(${m.id})" class="text-red-500 text-[9px] mt-1 hover:text-red-700">Delete</button>
+            </div>`;
+        }
+        chatHtml = chatHtml || '<div class="text-center text-gray-400 py-6">No messages</div>';
+        document.getElementById("chatMessagesArea").innerHTML = chatHtml;
+        openModal('chatModal');
+        await loadMessages();
+        await updateBadges();
+    }
+    
+    async function sendChatMessage() {
+        let msg = document.getElementById("chatInput").value.trim();
+        if (!msg || !currentChatWith) return;
+        const res = await sendMessageAPI(currentChatWith, msg);
+        if (res.success) {
+            document.getElementById("chatInput").value = "";
+            await openChatWith(currentChatWith);
+        } else {
+            showToast("Failed to send", true);
+        }
+    }
+    
+    async function deleteSingleMessage(messageId) {
+        if (confirm("Delete this message?")) {
+            const res = await deleteMessageAPI(messageId);
+            if (res.success) {
+                showToast("Message deleted");
+                await openChatWith(currentChatWith);
+                await loadMessages();
+                await updateBadges();
+            } else {
+                showToast("Failed to delete", true);
+            }
+        }
+    }
+    
+    async function deleteConversation(deptId) {
+        if (confirm(`Delete entire conversation with ${departmentNames[deptId] || 'Department'}?`)) {
+            const res = await deleteConversationAPI(deptId);
+            if (res.success) {
+                showToast("Conversation deleted");
+                await loadMessages();
+                await updateBadges();
+            } else {
+                showToast("Failed to delete conversation", true);
+            }
+        }
+    }
+    
+    function closeChatModal() { closeModal('chatModal'); }
     
     // ==================== DASHBOARD ====================
-    function renderDashboard() {
-        let totalPipeline = leads.reduce((s, l) => s + parseFloat(l.value || 0), 0);
-        let wonValue = leads.filter(l => l.status === "won").reduce((s, l) => s + parseFloat(l.value || 0), 0);
-        let activeLeads = leads.filter(l => l.status !== "won" && l.status !== "lost").length;
-        let totalMarketingBudget = marketingActivities.reduce((s, a) => s + parseFloat(a.budget || 0), 0);
-        let activeAds = marketingActivities.filter(a => a.status === "active").length;
-        let totalBudget = budgets.reduce((s, b) => s + b.amount, 0);
-        let totalSpent = budgets.reduce((s, b) => s + b.spent, 0);
-        let budgetPercent = totalBudget > 0 ? (totalSpent / totalBudget * 100).toFixed(1) : 0;
-        let currentMonth = new Date().toLocaleString("default", { month: "long" });
-        let currentTarget = targets.find(t => t.month === currentMonth)?.target || 0;
-        let currentAchieved = targets.find(t => t.month === currentMonth)?.achieved || 0;
-        let targetPercent = currentTarget > 0 ? (currentAchieved / currentTarget * 100).toFixed(1) : 0;
+    async function loadDashboard() {
+        await fetchMarketing();
+        await fetchBudgets();
+        await fetchReports();
+        const messages = await fetchMessages();
+        let unreadMsgs = messages.filter(m => m.receiver_dept === DEPARTMENT_ID && m.is_read === 0).length;
         
-        let html = `<div class="mb-4"><h2 class="text-xl font-bold text-gray-800">Sales Dashboard</h2><p class="text-xs text-gray-500">Track leads, budget, marketing, and performance</p></div>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
-                <div class="stat-card p-3 cursor-pointer" onclick="showSection('leads')"><div class="flex justify-between"><div><p class="text-gray-400 text-[9px] uppercase">Pipeline Value</p><p class="text-lg font-bold text-orange-600">${formatCurrency(totalPipeline)}</p><p class="text-[9px] text-gray-400">Active Leads: ${activeLeads}</p></div><div class="w-8 h-8 bg-orange-100 rounded-xl flex items-center justify-center"><i class="fas fa-chart-line text-orange-500 text-sm"></i></div></div></div>
-                <div class="stat-card p-3 cursor-pointer" onclick="showSection('leads')"><div class="flex justify-between"><div><p class="text-gray-400 text-[9px] uppercase">Won Deals</p><p class="text-lg font-bold text-green-600">${formatCurrency(wonValue)}</p><p class="text-[9px] text-gray-400">Closed won</p></div><div class="w-8 h-8 bg-green-100 rounded-xl flex items-center justify-center"><i class="fas fa-trophy text-green-500 text-sm"></i></div></div></div>
-                <div class="stat-card p-3 cursor-pointer" onclick="showSection('budget')"><div class="flex justify-between"><div><p class="text-gray-400 text-[9px] uppercase">Budget Usage</p><p class="text-lg font-bold text-blue-600">${budgetPercent}%</p><p class="text-[9px] text-gray-400">Spent: ${formatCurrency(totalSpent)}</p></div><div class="w-8 h-8 bg-blue-100 rounded-xl flex items-center justify-center"><i class="fas fa-wallet text-blue-500 text-sm"></i></div></div></div>
-                <div class="stat-card p-3 cursor-pointer" onclick="showSection('targets')"><div class="flex justify-between"><div><p class="text-gray-400 text-[9px] uppercase">Target Progress</p><p class="text-lg font-bold text-purple-600">${targetPercent}%</p><p class="text-[9px] text-gray-400">${currentMonth} target</p></div><div class="w-8 h-8 bg-purple-100 rounded-xl flex items-center justify-center"><i class="fas fa-bullseye text-purple-500 text-sm"></i></div></div></div>
+        let totalMarketing = marketingActivities.length;
+        let activeMarketing = marketingActivities.filter(m => m.status === 'active').length;
+        let totalBudget = budgets.reduce((s, b) => s + (b.amount || 0), 0);
+        let totalSpent = budgets.reduce((s, b) => s + (b.spent || 0), 0);
+        let budgetPercent = totalBudget > 0 ? (totalSpent / totalBudget * 100).toFixed(1) : 0;
+        let totalReports = reportsList.length;
+        
+        let html = `<div class="mb-6"><h2 class="text-xl font-bold text-gray-800">Sales Dashboard</h2><p class="text-xs text-gray-500 mt-1">Marketing & Performance Management</p></div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+                <div class="stat-card p-4" onclick="showSection('marketing')"><div class="text-center"><div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mx-auto mb-2"><i class="fas fa-chart-line text-orange-600 text-xl"></i></div><p class="text-gray-500 text-xs uppercase tracking-wide">Marketing</p><p class="text-2xl font-bold text-orange-600">${totalMarketing}</p><p class="text-xs text-gray-400">Total campaigns</p></div></div>
+                <div class="stat-card p-4" onclick="showSection('marketing')"><div class="text-center"><div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center mx-auto mb-2"><i class="fas fa-play-circle text-yellow-600 text-xl"></i></div><p class="text-gray-500 text-xs uppercase tracking-wide">Active</p><p class="text-2xl font-bold text-yellow-600">${activeMarketing}</p><p class="text-xs text-gray-400">Current campaigns</p></div></div>
+                <div class="stat-card p-4" onclick="showSection('budget')"><div class="text-center"><div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-2"><i class="fas fa-wallet text-green-600 text-xl"></i></div><p class="text-gray-500 text-xs uppercase tracking-wide">Budget Used</p><p class="text-2xl font-bold text-green-600">${budgetPercent}%</p><p class="text-xs text-gray-400">${formatCurrency(totalSpent)} / ${formatCurrency(totalBudget)}</p></div></div>
+                <div class="stat-card p-4" onclick="showSection('reports')"><div class="text-center"><div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-2"><i class="fas fa-chart-bar text-purple-600 text-xl"></i></div><p class="text-gray-500 text-xs uppercase tracking-wide">Reports</p><p class="text-2xl font-bold text-purple-600">${totalReports}</p><p class="text-xs text-gray-400">Generated</p></div></div>
+                <div class="stat-card p-4" onclick="showSection('messages')"><div class="text-center"><div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mx-auto mb-2"><i class="fas fa-envelope text-red-600 text-xl"></i></div><p class="text-gray-500 text-xs uppercase tracking-wide">Messages</p><p class="text-2xl font-bold text-red-600">${unreadMsgs}</p><p class="text-xs text-gray-400">Unread</p></div></div>
             </div>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-5">
-                <div class="bg-white rounded-xl p-3 shadow-sm"><h3 class="text-xs font-semibold mb-2"><i class="fas fa-chart-line text-orange-500 mr-1"></i>Monthly Sales Performance</h3><canvas id="salesChart" height="140"></canvas></div>
-                <div class="bg-white rounded-xl p-3 shadow-sm"><h3 class="text-xs font-semibold mb-2"><i class="fas fa-chart-pie text-purple-500 mr-1"></i>Lead Status Distribution</h3><canvas id="statusChart" height="140"></canvas></div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <div class="bg-white rounded-xl p-5 shadow-sm"><h3 class="font-semibold mb-4"><i class="fas fa-chart-pie text-orange-500 mr-2"></i>Budget Overview</h3><canvas id="budgetChart" height="200"></canvas></div>
+                <div class="bg-white rounded-xl p-5 shadow-sm"><h3 class="font-semibold mb-4"><i class="fas fa-chart-line text-green-500 mr-2"></i>Marketing Activity Status</h3><canvas id="marketingChart" height="200"></canvas></div>
             </div>
-            <div class="bg-white rounded-xl p-3 shadow-sm"><div class="flex justify-between items-center mb-2"><h3 class="text-xs font-semibold"><i class="fas fa-chart-simple text-orange-500 mr-1"></i>Budget Summary</h3><button onclick="showSection('budget')" class="text-[10px] text-orange-500">View All →</button></div><div class="space-y-2 max-h-48 overflow-y-auto">${budgets.slice(0,4).map(b=>{ let p=(b.spent/b.amount)*100; return `<div><div class="flex justify-between text-[10px] mb-0.5"><span>${b.category}</span><span>${formatCurrency(b.spent)} / ${formatCurrency(b.amount)}</span></div><div class="w-full bg-gray-200 rounded-full h-1"><div class="${getProgressClass(p)} h-1 rounded-full" style="width:${Math.min(p,100)}%"></div></div></div>`; }).join('')}</div></div>`;
+            <div class="bg-white rounded-xl p-5 shadow-sm">
+                <div class="flex justify-between items-center mb-3"><h3 class="text-sm font-semibold"><i class="fas fa-history text-orange-600 mr-1"></i>Recent Activity</h3></div>
+                <div id="activityFeed" class="space-y-1 max-h-32 overflow-y-auto">${activityLogs.slice(0,5).map(l => `<div class="text-[10px] py-1 border-b flex justify-between"><span>${escapeHtml(l.action)}</span><span class="text-gray-400">${new Date(l.created_at).toLocaleString()}</span></div>`).join('')}</div>
+            </div>`;
         document.getElementById("dashboardSection").innerHTML = html;
         
-        let monthlyData = {}; leads.forEach(l => { if (l.status === "won") { let m = new Date(l.created_at).toLocaleString("default", { month: "short" }); monthlyData[m] = (monthlyData[m] || 0) + parseFloat(l.value || 0); } });
-        let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"]; let chartData = months.map(m => (monthlyData[m] || 0) / 1000000);
-        let rc = document.getElementById("salesChart")?.getContext("2d"); if (rc) { if (revenueChart) revenueChart.destroy(); revenueChart = new Chart(rc, { type: "line", data: { labels: months, datasets: [{ label: "Won Deals (TZS M)", data: chartData, borderColor: "#f97316", fill: true, tension: 0.3 }] }, options: { responsive: true, maintainAspectRatio: true } }); }
+        let totalIncome = budgets.reduce((s, b) => s + (b.amount || 0), 0);
+        let totalExpense = budgets.reduce((s, b) => s + (b.spent || 0), 0);
+        let ctx1 = document.getElementById('budgetChart')?.getContext('2d');
+        if (ctx1) new Chart(ctx1, { type: 'doughnut', data: { labels: ['Remaining', 'Spent'], datasets: [{ data: [totalIncome - totalExpense, totalExpense], backgroundColor: ['#10b981', '#ef4444'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom' } } } });
         
-        let statusCount = { new: 0, contacted: 0, negotiation: 0, won: 0, lost: 0 };
-        leads.forEach(l => statusCount[l.status] = (statusCount[l.status] || 0) + 1);
-        let sc = document.getElementById("statusChart")?.getContext("2d"); if (sc) { if (statusChart) statusChart.destroy(); statusChart = new Chart(sc, { type: "doughnut", data: { labels: ["New", "Contacted", "Negotiation", "Won", "Lost"], datasets: [{ data: [statusCount.new, statusCount.contacted, statusCount.negotiation, statusCount.won, statusCount.lost], backgroundColor: ["#3b82f6", "#f59e0b", "#8b5cf6", "#10b981", "#ef4444"] }] }, options: { responsive: true, maintainAspectRatio: true } }); }
-        document.getElementById("msgBadge").innerText = getUnreadMessagesCountForSales();
+        let statusCount = { planned: 0, active: 0, completed: 0, cancelled: 0 };
+        marketingActivities.forEach(m => statusCount[m.status] = (statusCount[m.status] || 0) + 1);
+        let ctx2 = document.getElementById('marketingChart')?.getContext('2d');
+        if (ctx2) new Chart(ctx2, { type: 'bar', data: { labels: ['Planned', 'Active', 'Completed', 'Cancelled'], datasets: [{ label: 'Activities', data: [statusCount.planned, statusCount.active, statusCount.completed, statusCount.cancelled], backgroundColor: '#f97316', borderRadius: 8 }] }, options: { responsive: true, maintainAspectRatio: true } });
+        
+        await updateBadges();
     }
     
-    // ==================== LEADS SECTION ====================
-    function renderLeads() {
+    // ==================== MARKETING SECTION ====================
+    async function loadMarketing() {
+        await fetchMarketing();
         let search = document.getElementById("globalSearchInput")?.value.toLowerCase() || "";
-        let filtered = leads.filter(l => l.name.toLowerCase().includes(search));
+        let filtered = marketingActivities.filter(m => m.title?.toLowerCase().includes(search) || (m.location && m.location.toLowerCase().includes(search)));
         let totalPages = Math.ceil(filtered.length / rowsPerPage);
-        let start = (currentPage - 1) * rowsPerPage;
+        let start = (currentMarketingPage - 1) * rowsPerPage;
         let paginated = filtered.slice(start, start + rowsPerPage);
         
-        let html = `<div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold"><i class="fas fa-users text-orange-500 mr-2"></i>Leads Management</h2><button onclick="openLeadModal()" class="btn-primary text-white px-4 py-2 rounded-xl text-sm"><i class="fas fa-plus mr-1"></i>Add Lead</button></div>
-            <div class="bg-white rounded-xl shadow-sm p-3"><div class="table-responsive"><table class="w-full text-xs"><thead class="bg-gray-50"><tr><th class="px-2 py-2">Name</th><th class="px-2 py-2">Contact</th><th class="px-2 py-2">Value</th><th class="px-2 py-2">Status</th><th class="px-2 py-2">Date</th><th class="px-2 py-2">Actions</th></tr></thead><tbody>
-            ${paginated.map(l => `<tr class="border-b"><td class="px-2 py-2 font-medium">${escapeHtml(l.name)}<br><span class="text-[9px] text-gray-400">${escapeHtml(l.email || "-")}</span></td><td class="px-2 py-2 text-xs">${escapeHtml(l.phone || "-")}</td><td class="px-2 py-2 text-orange-600 font-semibold">${formatCurrency(l.value)}</td><td class="px-2 py-2"><span class="px-1.5 py-0.5 text-[8px] rounded-full ${getStatusClass(l.status)}">${getStatusText(l.status)}</span></td><td class="px-2 py-2 text-gray-400">${l.created_at}</td><td class="px-2 py-2"><button onclick="editLead(${l.id})" class="text-green-500 mr-1"><i class="fas fa-edit"></i></button><button onclick="deleteLead(${l.id})" class="text-red-500"><i class="fas fa-trash"></i></button></td></tr>`).join('')}
-            </tbody></table></div>${totalPages > 1 ? `<div class="flex justify-center gap-2 mt-3"><button onclick="changePage(${currentPage - 1})" class="px-2 py-1 border rounded text-xs">Prev</button><span class="text-xs">Page ${currentPage} of ${totalPages}</span><button onclick="changePage(${currentPage + 1})" class="px-2 py-1 border rounded text-xs">Next</button></div>` : ''}</div>
-            <div class="mt-3 flex gap-2"><button onclick="exportLeadsToExcel()" class="bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-excel mr-1"></i>Excel</button><button onclick="exportLeadsToPDF()" class="bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-pdf mr-1"></i>PDF</button></div>`;
-        document.getElementById("leadsSection").innerHTML = html;
+        let html = `<div class="flex justify-between items-center mb-4 flex-wrap gap-2"><h2 class="text-xl font-bold"><i class="fas fa-chart-line text-orange-600 mr-2"></i>Marketing Activities (${marketingActivities.length})</h2><div class="flex gap-2"><button onclick="openMarketingModal()" class="btn-primary text-white px-4 py-2 rounded-xl text-sm"><i class="fas fa-plus mr-1"></i>Add Activity</button><button onclick="exportMarketingToExcel()" class="bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-excel mr-1"></i>Excel</button><button onclick="exportMarketingToPDF()" class="bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-pdf mr-1"></i>PDF</button></div></div>
+            <div class="bg-white rounded-xl shadow-sm p-3"><div class="table-responsive"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th class="px-3 py-2">Title</th><th class="px-3 py-2">Type</th><th class="px-3 py-2">Location</th><th class="px-3 py-2 text-right">Budget</th><th class="px-3 py-2">Date</th><th class="px-3 py-2">Status</th><th class="px-3 py-2 text-center">Actions</th></tr></thead><tbody>`;
+        
+        for (let m of paginated) {
+            html += `<tr class="border-b hover:bg-gray-50">
+                <td class="px-3 py-2 font-medium">${escapeHtml(m.title)}</td>
+                <td class="px-3 py-2"><span class="px-2 py-0.5 rounded-full text-xs bg-gray-100">${getAdTypeText(m.type)}</span></td>
+                <td class="px-3 py-2">${escapeHtml(m.location || '-')}</td>
+                <td class="px-3 py-2 text-right text-green-600 font-semibold">${formatCurrency(m.budget)}</td>
+                <td class="px-3 py-2">${m.date || '-'}</td>
+                <td class="px-3 py-2"><span class="px-2 py-0.5 rounded-full text-xs ${getStatusClass(m.status)}">${getStatusText(m.status)}</span></td>
+                <td class="px-3 py-2 text-center"><div class="flex gap-1 justify-center"><button onclick="viewMarketingActivity(${m.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="editMarketingActivity(${m.id})" class="action-btn edit"><i class="fas fa-edit"></i></button><button onclick="deleteMarketingActivity(${m.id})" class="action-btn delete"><i class="fas fa-trash"></i></button></div></td>
+            </table>`;
+        }
+        html += `</tbody>}</div>${totalPages > 1 ? `<div class="flex justify-center gap-2 mt-3"><button onclick="changeMarketingPage(${currentMarketingPage - 1})" class="px-2 py-1 border rounded text-xs">Prev</button><span class="text-xs">Page ${currentMarketingPage} of ${totalPages}</span><button onclick="changeMarketingPage(${currentMarketingPage + 1})" class="px-2 py-1 border rounded text-xs">Next</button></div>` : ''}</div>`;
+        document.getElementById("marketingSection").innerHTML = html;
     }
     
-    function openLeadModal() { document.getElementById("leadModal").classList.remove("hidden"); document.getElementById("leadModal").classList.add("flex"); document.getElementById("editLeadId").value = ""; document.getElementById("leadName").value = ""; document.getElementById("leadPhone").value = ""; document.getElementById("leadEmail").value = ""; document.getElementById("leadStatus").value = "new"; document.getElementById("leadValue").value = ""; document.getElementById("leadNotes").value = ""; }
-    function closeLeadModal() { document.getElementById("leadModal").classList.add("hidden"); document.getElementById("leadModal").classList.remove("flex"); }
-    function saveLead() { let name = document.getElementById("leadName").value.trim(); if (!name) { showToast("Enter customer name", true); return; } let id = document.getElementById("editLeadId").value; if (id) { let idx = leads.findIndex(l => l.id == id); if (idx !== -1) { leads[idx].name = name; leads[idx].phone = document.getElementById("leadPhone").value; leads[idx].email = document.getElementById("leadEmail").value; leads[idx].status = document.getElementById("leadStatus").value; leads[idx].value = parseFloat(document.getElementById("leadValue").value) || 0; leads[idx].notes = document.getElementById("leadNotes").value; addLog(`Updated lead: ${name}`); showToast("Lead updated"); } } else { leads.unshift({ id: Date.now(), name: name, phone: document.getElementById("leadPhone").value, email: document.getElementById("leadEmail").value, status: document.getElementById("leadStatus").value, value: parseFloat(document.getElementById("leadValue").value) || 0, notes: document.getElementById("leadNotes").value, created_at: new Date().toISOString().split("T")[0] }); addLog(`Added lead: ${name}`); showToast("Lead added"); } closeLeadModal(); renderLeads(); renderDashboard(); }
-    function editLead(id) { let lead = leads.find(l => l.id === id); if (lead) { document.getElementById("editLeadId").value = lead.id; document.getElementById("leadName").value = lead.name; document.getElementById("leadPhone").value = lead.phone || ""; document.getElementById("leadEmail").value = lead.email || ""; document.getElementById("leadStatus").value = lead.status; document.getElementById("leadValue").value = lead.value; document.getElementById("leadNotes").value = lead.notes || ""; document.getElementById("leadModal").classList.remove("hidden"); document.getElementById("leadModal").classList.add("flex"); } }
-    function deleteLead(id) { if (confirm("Delete this lead?")) { leads = leads.filter(l => l.id !== id); addLog("Deleted lead"); showToast("Lead deleted"); renderLeads(); renderDashboard(); } }
-    function changePage(page) { if (page > 0 && page <= Math.ceil(leads.length / rowsPerPage)) { currentPage = page; renderLeads(); } }
-    function exportLeadsToExcel() { let ws = [["Name","Phone","Email","Status","Value","Date"]]; leads.forEach(l => ws.push([l.name, l.phone || "", l.email || "", l.status, l.value, l.created_at])); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), "Leads"); XLSX.writeFile(wb, `leads_${new Date().toISOString().slice(0,10)}.xlsx`); showToast("Leads exported to Excel"); }
-    function exportLeadsToPDF() { let element = document.createElement("div"); element.innerHTML = `<div style="padding:15px"><h1 style="color:#f97316">Sales Leads Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr>${leads.map(l => `<div><strong>${l.name}</strong><br>Value: ${formatCurrency(l.value)}<br>Status: ${l.status}</div><hr>`).join("")}</div>`; html2pdf().set({ margin: 0.5, filename: `leads_report.pdf` }).from(element).save(); showToast("Leads exported to PDF"); }
+    function changeMarketingPage(page) { if (page > 0 && page <= Math.ceil(marketingActivities.length / rowsPerPage)) { currentMarketingPage = page; loadMarketing(); } }
     
-    // ==================== BUDGET SECTION (with Description Column) ====================
-    function renderBudget() {
+    function openMarketingModal() { document.getElementById("editActivityId").value = ""; document.getElementById("adTitle").value = ""; document.getElementById("adType").value = "social_media"; document.getElementById("adLocation").value = ""; document.getElementById("adBudget").value = ""; document.getElementById("adDate").value = new Date().toISOString().split('T')[0]; document.getElementById("adDescription").value = ""; document.getElementById("adStatus").value = "planned"; document.getElementById("marketingModalTitle").innerHTML = '<i class="fas fa-plus-circle text-orange-500 mr-2"></i>Add Marketing Activity'; openModal('marketingModal'); }
+    
+    async function saveMarketingActivity() { 
+        let id = document.getElementById("editActivityId").value;
+        let title = document.getElementById("adTitle").value.trim(); 
+        if (!title) { showToast("Enter activity title", true); return; } 
+        let data = { title: title, type: document.getElementById("adType").value, location: document.getElementById("adLocation").value, budget: parseFloat(document.getElementById("adBudget").value) || 0, date: document.getElementById("adDate").value, description: document.getElementById("adDescription").value, status: document.getElementById("adStatus").value };
+        let res = id ? await updateMarketingAPI(parseInt(id), data) : await addMarketingAPI(data);
+        if (res.success) { showToast(id ? "Activity updated" : "Activity added"); addLog(`${id ? "Updated" : "Added"} marketing: ${title}`); closeModal('marketingModal'); await loadMarketing(); await loadDashboard(); } else showToast(res.message || "Failed", true); }
+    
+    async function viewMarketingActivity(id) { 
+        let m = marketingActivities.find(m => m.id === id); 
+        if (m) { 
+            document.getElementById('viewMarketingContent').innerHTML = `<div class="space-y-2"><p><strong>Title:</strong> ${escapeHtml(m.title)}</p><p><strong>Type:</strong> ${getAdTypeText(m.type)}</p><p><strong>Location:</strong> ${escapeHtml(m.location || '-')}</p><p><strong>Budget:</strong> ${formatCurrency(m.budget)}</p><p><strong>Date:</strong> ${m.date || '-'}</p><p><strong>Status:</strong> ${getStatusText(m.status)}</p><p><strong>Description:</strong> ${escapeHtml(m.description || '-')}</p><p><strong>Created:</strong> ${formatDate(m.created_at)}</p></div>`; 
+            let deptOptions = '';
+            const departments = [1,2,4,5,6,7,8,9,10,11,12];
+            departments.forEach(dept => { if (dept !== DEPARTMENT_ID) deptOptions += `<a onclick="sendMarketingToDept(${m.id}, ${dept})">${escapeHtml(departmentNames[dept] || 'Department')}</a>`; });
+            document.getElementById('viewMarketingButtons').innerHTML = `<button onclick="exportSingleMarketingExcel(${m.id})" class="bg-green-600 text-white px-3 py-1 rounded text-sm"><i class="fas fa-file-excel"></i> Export Excel</button><button onclick="exportSingleMarketingPDF(${m.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm"><i class="fas fa-file-pdf"></i> Export PDF</button><div class="send-dropdown"><button class="bg-purple-600 text-white px-3 py-1 rounded text-sm" onclick="toggleSendDropdown('marketingSendDropdown-${m.id}')"><i class="fas fa-paper-plane"></i> Send to Department</button><div id="marketingSendDropdown-${m.id}" class="send-dropdown-content">${deptOptions}</div></div>`;
+            openModal('viewMarketingModal'); 
+        } 
+    }
+    
+    async function sendMarketingToDept(activityId, toDeptId) {
+        let m = marketingActivities.find(m => m.id === activityId);
+        if (m) {
+            const res = await sendMarketingToDepartment(activityId, toDeptId);
+            if (res.success) showToast(`Marketing activity "${m.title}" sent to ${departmentNames[toDeptId]}`);
+            else showToast(res.message || "Failed", true);
+        }
+        let dd = document.getElementById(`marketingSendDropdown-${activityId}`);
+        if (dd) dd.style.display = 'none';
+    }
+    
+    function exportSingleMarketingExcel(id) { let m = marketingActivities.find(m => m.id === id); if(m) { let ws = [["Title","Type","Location","Budget","Date","Status","Description"]]; ws.push([m.title, getAdTypeText(m.type), m.location, m.budget, m.date, m.status, m.description]); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), "Marketing"); XLSX.writeFile(wb, `marketing_${m.id}.xlsx`); showToast("Exported to Excel"); } }
+    function exportSingleMarketingPDF(id) { let m = marketingActivities.find(m => m.id === id); if(m) { let element = document.createElement("div"); element.innerHTML = `<div style="padding:20px"><h1>${escapeHtml(m.title)}</h1><p><strong>Type:</strong> ${getAdTypeText(m.type)}</p><p><strong>Location:</strong> ${escapeHtml(m.location || '-')}</p><p><strong>Budget:</strong> ${formatCurrency(m.budget)}</p><p><strong>Date:</strong> ${m.date}</p><p><strong>Status:</strong> ${m.status}</p><p><strong>Description:</strong> ${escapeHtml(m.description || '-')}</p><p>Generated: ${new Date().toLocaleString()}</p></div>`; html2pdf().set({ margin: 0.5, filename: `marketing_${m.id}.pdf` }).from(element).save(); showToast("Exported to PDF"); } }
+    
+    function editMarketingActivity(id) { let m = marketingActivities.find(m => m.id === id); if(m) { document.getElementById("editActivityId").value = m.id; document.getElementById("adTitle").value = m.title; document.getElementById("adType").value = m.type; document.getElementById("adLocation").value = m.location || ""; document.getElementById("adBudget").value = m.budget; document.getElementById("adDate").value = m.date || new Date().toISOString().split('T')[0]; document.getElementById("adDescription").value = m.description || ""; document.getElementById("adStatus").value = m.status; document.getElementById("marketingModalTitle").innerHTML = '<i class="fas fa-edit text-orange-500 mr-2"></i>Edit Marketing Activity'; openModal('marketingModal'); } }
+    async function deleteMarketingActivity(id) { if(confirm("Delete this activity?")) { let res = await deleteMarketingAPI(id); if(res.success) { showToast("Activity deleted"); addLog("Deleted marketing activity"); await loadMarketing(); await loadDashboard(); } else showToast(res.message || "Failed", true); } }
+    
+    function exportMarketingToExcel() { let ws = [["Title","Type","Location","Budget","Date","Status","Description"]]; marketingActivities.forEach(m => ws.push([m.title, getAdTypeText(m.type), m.location || '-', m.budget, m.date || '-', m.status, m.description || '-'])); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), "Marketing"); XLSX.writeFile(wb, `marketing_${new Date().toISOString().slice(0,10)}.xlsx`); showToast("Exported to Excel"); }
+    function exportMarketingToPDF() { let element = document.createElement("div"); element.innerHTML = `<div style="padding:20px"><h1 style="color:#f97316">Marketing Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><thead><tr><th>Title</th><th>Type</th><th>Location</th><th>Budget</th><th>Date</th><th>Status</th></tr></thead><tbody>${marketingActivities.map(m => `<tr><td>${escapeHtml(m.title)}</td><td>${getAdTypeText(m.type)}</td><td>${escapeHtml(m.location || '-')}</td><td>${formatCurrency(m.budget)}</td><td>${m.date || '-'}</td><td>${m.status}</td></tr>`).join('')}</tbody>}</div>`; html2pdf().set({ margin: 0.5, filename: `marketing_report.pdf` }).from(element).save(); showToast("Exported to PDF"); }
+    
+    // ==================== BUDGET SECTION ====================
+    async function loadBudget() {
+        await fetchBudgets();
         let search = document.getElementById("globalSearchInput")?.value.toLowerCase() || "";
-        let filtered = budgets.filter(b => b.category.toLowerCase().includes(search));
-        let totalBudget = filtered.reduce((s, b) => s + b.amount, 0);
-        let totalSpent = filtered.reduce((s, b) => s + b.spent, 0);
+        let filtered = budgets.filter(b => b.category?.toLowerCase().includes(search));
+        let totalBudget = filtered.reduce((s, b) => s + (b.amount || 0), 0);
+        let totalSpent = filtered.reduce((s, b) => s + (b.spent || 0), 0);
         let totalRemaining = totalBudget - totalSpent;
         let percent = totalBudget > 0 ? (totalSpent / totalBudget * 100).toFixed(1) : 0;
-        
         let totalPages = Math.ceil(filtered.length / budgetRowsPerPage);
         let start = (currentBudgetPage - 1) * budgetRowsPerPage;
         let paginated = filtered.slice(start, start + budgetRowsPerPage);
         
-        let html = `<div class="mb-4"><div class="flex justify-between items-center flex-wrap gap-2"><h2 class="text-xl font-bold"><i class="fas fa-wallet text-orange-500 mr-2"></i>Budget Management</h2><button onclick="openBudgetModal()" class="btn-primary text-white px-4 py-2 rounded-xl text-sm"><i class="fas fa-plus mr-1"></i>Add Budget</button></div>
+        let html = `<div class="mb-4"><div class="flex justify-between items-center flex-wrap gap-2"><h2 class="text-xl font-bold"><i class="fas fa-wallet text-orange-600 mr-2"></i>Budget Management</h2><button onclick="openModal('budgetModal')" class="btn-primary text-white px-4 py-2 rounded-xl text-sm"><i class="fas fa-plus mr-1"></i>Add Budget</button></div>
             <div class="grid grid-cols-3 gap-3 mt-3"><div class="bg-green-50 rounded-xl p-2 text-center"><p class="text-[9px] text-gray-500">Total Budget</p><p class="text-base font-bold text-green-600">${formatCurrency(totalBudget)}</p></div><div class="bg-orange-50 rounded-xl p-2 text-center"><p class="text-[9px] text-gray-500">Total Spent</p><p class="text-base font-bold text-orange-600">${formatCurrency(totalSpent)}</p></div><div class="bg-blue-50 rounded-xl p-2 text-center"><p class="text-[9px] text-gray-500">Remaining</p><p class="text-base font-bold text-blue-600">${formatCurrency(totalRemaining)}</p></div></div>
             <div class="mt-3 w-full bg-gray-200 rounded-full h-2"><div class="${getProgressClass(percent)} h-2 rounded-full" style="width:${Math.min(percent,100)}%"></div></div><p class="text-[10px] text-gray-500 text-center mt-1">${percent}% of budget used</p></div>
-            <div class="bg-white rounded-xl shadow-sm p-3"><div class="table-responsive"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th class="px-3 py-2 text-left">Category</th><th class="px-3 py-2 text-left">Budget Amount</th><th class="px-3 py-2 text-left">Amount Spent</th><th class="px-3 py-2 text-left">Remaining</th><th class="px-3 py-2 text-left">Usage</th><th class="px-3 py-2 text-left">Description</th><th class="px-3 py-2 text-left">Actions</th></tr></thead><tbody>
-            ${paginated.map(b => { let remaining = b.amount - b.spent; let p = (b.spent / b.amount * 100).toFixed(1); return `<tr class="border-b hover:bg-gray-50"><td class="px-3 py-2 font-medium">${escapeHtml(b.category)}</td><td class="px-3 py-2 text-green-600 font-semibold">${formatCurrency(b.amount)}</td><td class="px-3 py-2 text-orange-600">${formatCurrency(b.spent)}</td><td class="px-3 py-2 ${remaining<0?'text-red-600':'text-blue-600'}">${formatCurrency(remaining)}</td><td class="px-3 py-2"><div class="w-24"><div class="w-full bg-gray-200 rounded-full h-1.5"><div class="${getProgressClass(p)} h-1.5 rounded-full" style="width:${Math.min(p,100)}%"></div></div><span class="text-[9px]">${p}%</span></div></td><td class="px-3 py-2 text-xs text-gray-500 max-w-[200px] truncate" title="${escapeHtml(b.description || '')}">${escapeHtml(b.description || '-')}</td><td class="px-3 py-2"><div class="flex gap-1"><button onclick="viewBudget(${b.id})" class="text-blue-500 text-sm p-1"><i class="fas fa-eye"></i></button><button onclick="editBudget(${b.id})" class="text-green-500 text-sm p-1"><i class="fas fa-edit"></i></button><button onclick="deleteBudget(${b.id})" class="text-red-500 text-sm p-1"><i class="fas fa-trash"></i></button></div></td></tr>`; }).join('')}
-            </tbody>}></div>${totalPages > 1 ? `<div class="flex justify-center gap-2 mt-3"><button onclick="changeBudgetPage(${currentBudgetPage - 1})" class="px-2 py-1 border rounded text-xs">Prev</button><span class="text-xs">Page ${currentBudgetPage} of ${totalPages}</span><button onclick="changeBudgetPage(${currentBudgetPage + 1})" class="px-2 py-1 border rounded text-xs">Next</button></div>` : ''}</div>
+            <div class="bg-white rounded-xl shadow-sm p-3"><div class="table-responsive"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th class="px-3 py-2">Category</th><th class="px-3 py-2 text-right">Budget Amount</th><th class="px-3 py-2 text-right">Spent</th><th class="px-3 py-2 text-right">Remaining</th><th class="px-3 py-2">Usage</th><th class="px-3 py-2">Description</th><th class="px-3 py-2 text-center">Actions</th></tr></thead><tbody>`;
+        
+        for (let b of paginated) {
+            let remaining = b.amount - b.spent;
+            let p = (b.spent / b.amount * 100).toFixed(1);
+            html += `<tr class="border-b hover:bg-gray-50"><td class="px-3 py-2 font-medium">${escapeHtml(b.category)}</td><td class="px-3 py-2 text-right text-green-600 font-semibold">${formatCurrency(b.amount)}</td><td class="px-3 py-2 text-right text-orange-600">${formatCurrency(b.spent)}</td><td class="px-3 py-2 text-right ${remaining<0?'text-red-600':'text-blue-600'}">${formatCurrency(remaining)}</td><td class="px-3 py-2"><div class="w-24"><div class="w-full bg-gray-200 rounded-full h-1.5"><div class="${getProgressClass(p)} h-1.5 rounded-full" style="width:${Math.min(p,100)}%"></div></div><span class="text-[9px]">${p}%</span></div></td><td class="px-3 py-2 text-xs text-gray-500 max-w-[200px] truncate" title="${escapeHtml(b.description || '')}">${escapeHtml(b.description?.substring(0,40) || '-')}</td><td class="px-3 py-2 text-center"><div class="flex gap-1 justify-center"><button onclick="viewBudget(${b.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="editBudget(${b.id})" class="action-btn edit"><i class="fas fa-edit"></i></button><button onclick="deleteBudget(${b.id})" class="action-btn delete"><i class="fas fa-trash"></i></button></div></td></tr>`;
+        }
+        html += `</tbody>}</div>${totalPages > 1 ? `<div class="flex justify-center gap-2 mt-3"><button onclick="changeBudgetPage(${currentBudgetPage - 1})" class="px-2 py-1 border rounded text-xs">Prev</button><span class="text-xs">Page ${currentBudgetPage} of ${totalPages}</span><button onclick="changeBudgetPage(${currentBudgetPage + 1})" class="px-2 py-1 border rounded text-xs">Next</button></div>` : ''}</div>
             <div class="mt-3 flex gap-2"><button onclick="exportBudgetToExcel()" class="bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-excel mr-1"></i>Excel</button><button onclick="exportBudgetToPDF()" class="bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-pdf mr-1"></i>PDF</button></div>`;
         document.getElementById("budgetSection").innerHTML = html;
     }
     
-    function changeBudgetPage(page) { if (page > 0 && page <= Math.ceil(budgets.length / budgetRowsPerPage)) { currentBudgetPage = page; renderBudget(); } }
+    function changeBudgetPage(page) { if (page > 0 && page <= Math.ceil(budgets.length / budgetRowsPerPage)) { currentBudgetPage = page; loadBudget(); } }
+    function openBudgetModal() { document.getElementById("editBudgetId").value = ""; document.getElementById("budgetCategory").value = "Overall"; document.getElementById("budgetAmount").value = ""; document.getElementById("budgetSpent").value = "0"; document.getElementById("budgetDescription").value = ""; openModal('budgetModal'); }
+    async function saveBudget() { let id = document.getElementById("editBudgetId").value; let data = { category: document.getElementById("budgetCategory").value, amount: parseFloat(document.getElementById("budgetAmount").value) || 0, spent: parseFloat(document.getElementById("budgetSpent").value) || 0, description: document.getElementById("budgetDescription").value }; if(!data.category || data.amount <= 0) { showToast("Category and amount required", true); return; } let res = id ? await updateBudgetAPI(parseInt(id), data) : await addBudgetAPI(data); if(res.success) { showToast(id ? "Budget updated" : "Budget added"); addLog(`${id ? "Updated" : "Added"} budget: ${data.category}`); closeModal('budgetModal'); await loadBudget(); await loadDashboard(); } else showToast(res.message || "Failed", true); }
+    function viewBudget(id) { let b = budgets.find(b => b.id === id); if(b) { let remaining = b.amount - b.spent; let percent = (b.spent / b.amount * 100).toFixed(1); document.getElementById("viewBudgetContent").innerHTML = `<div class="space-y-2"><p><strong>Category:</strong> ${escapeHtml(b.category)}</p><p><strong>Budget Amount:</strong> ${formatCurrency(b.amount)}</p><p><strong>Amount Spent:</strong> ${formatCurrency(b.spent)}</p><p><strong>Remaining:</strong> ${formatCurrency(remaining)}</p><p><strong>Usage:</strong> ${percent}%</p><p><strong>Description:</strong> ${escapeHtml(b.description || '-')}</p></div>`; openModal('viewBudgetModal'); } }
+    function editBudget(id) { let b = budgets.find(b => b.id === id); if(b) { document.getElementById("editBudgetId").value = b.id; document.getElementById("budgetCategory").value = b.category; document.getElementById("budgetAmount").value = b.amount; document.getElementById("budgetSpent").value = b.spent; document.getElementById("budgetDescription").value = b.description || ""; openModal('budgetModal'); } }
+    async function deleteBudget(id) { if(confirm("Delete this budget?")) { let res = await deleteBudgetAPI(id); if(res.success) { showToast("Budget deleted"); addLog("Deleted budget item"); await loadBudget(); await loadDashboard(); } else showToast(res.message || "Failed", true); } }
+    function exportBudgetToExcel() { let ws = [["Category","Budget Amount","Spent","Remaining","Usage %","Description"]]; budgets.forEach(b => { let remaining = b.amount - b.spent; let p = (b.spent / b.amount * 100).toFixed(1); ws.push([b.category, b.amount, b.spent, remaining, p, b.description || ""]); }); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), "Budget"); XLSX.writeFile(wb, `budget_${new Date().toISOString().slice(0,10)}.xlsx`); showToast("Budget exported to Excel"); }
+    function exportBudgetToPDF() { let element = document.createElement("div"); element.innerHTML = `<div style="padding:20px"><h1 style="color:#f97316">Budget Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr/><table border="1" cellpadding="8"><thead><tr><th>Category</th><th>Budget</th><th>Spent</th><th>Remaining</th></tr></thead><tbody>${budgets.map(b => `<tr><td>${escapeHtml(b.category)}</td><td>${formatCurrency(b.amount)}</td><td>${formatCurrency(b.spent)}</td><td>${formatCurrency(b.amount - b.spent)}</td></tr>`).join('')}</tbody>}</div>`; html2pdf().set({ margin: 0.5, filename: `budget_report.pdf` }).from(element).save(); showToast("Budget exported to PDF"); }
     
-    function openBudgetModal() { document.getElementById("editBudgetId").value = ""; document.getElementById("budgetCategory").value = "Overall"; document.getElementById("budgetAmount").value = ""; document.getElementById("budgetSpent").value = "0"; document.getElementById("budgetDescription").value = ""; document.getElementById("budgetModalTitle").innerHTML = '<i class="fas fa-plus-circle text-orange-500 mr-2"></i>Add Budget'; document.getElementById("budgetModal").classList.remove("hidden"); document.getElementById("budgetModal").classList.add("flex"); }
-    function closeBudgetModal() { document.getElementById("budgetModal").classList.add("hidden"); document.getElementById("budgetModal").classList.remove("flex"); }
-    
-    function saveBudget() { let id = document.getElementById("editBudgetId").value; let category = document.getElementById("budgetCategory").value; let amount = parseFloat(document.getElementById("budgetAmount").value); let spent = parseFloat(document.getElementById("budgetSpent").value) || 0; let description = document.getElementById("budgetDescription").value; if (!category || !amount) { showToast("Please fill category and amount", true); return; } if (id) { let idx = budgets.findIndex(b => b.id == id); if (idx !== -1) { budgets[idx] = { ...budgets[idx], category, amount, spent, description }; addLog(`Updated budget: ${category}`); showToast("Budget updated"); } } else { budgets.push({ id: Date.now(), category, amount, spent, description, created_at: new Date().toISOString().split("T")[0] }); addLog(`Added budget: ${category}`); showToast("Budget added"); } closeBudgetModal(); renderBudget(); renderDashboard(); }
-    
-    function editBudget(id) { let b = budgets.find(b => b.id === id); if (b) { document.getElementById("editBudgetId").value = b.id; document.getElementById("budgetCategory").value = b.category; document.getElementById("budgetAmount").value = b.amount; document.getElementById("budgetSpent").value = b.spent; document.getElementById("budgetDescription").value = b.description || ""; document.getElementById("budgetModalTitle").innerHTML = '<i class="fas fa-edit text-orange-500 mr-2"></i>Edit Budget'; document.getElementById("budgetModal").classList.remove("hidden"); document.getElementById("budgetModal").classList.add("flex"); } }
-    
-    function viewBudget(id) { let b = budgets.find(b => b.id === id); if (b) { let remaining = b.amount - b.spent; let percent = (b.spent / b.amount * 100).toFixed(1); document.getElementById("viewBudgetContent").innerHTML = `<div class="space-y-3"><div class="border-b pb-2"><h4 class="font-bold text-base">${escapeHtml(b.category)}</h4><p class="text-xs text-gray-500">Created: ${b.created_at || 'N/A'}</p></div><div class="grid grid-cols-2 gap-3 text-sm"><div><strong>Budget Amount:</strong></div><div class="text-green-600 font-semibold">${formatCurrency(b.amount)}</div><div><strong>Amount Spent:</strong></div><div class="text-orange-600">${formatCurrency(b.spent)}</div><div><strong>Remaining:</strong></div><div class="${remaining<0?'text-red-600':'text-blue-600'} font-semibold">${formatCurrency(remaining)}</div><div><strong>Usage:</strong></div><div><div class="w-full bg-gray-200 rounded-full h-1.5 mt-1"><div class="${getProgressClass(percent)} h-1.5 rounded-full" style="width:${Math.min(percent,100)}%"></div></div><span class="text-[10px]">${percent}% used</span></div></div>${b.description ? `<div class="border-t pt-2"><strong>Description:</strong><p class="text-sm mt-1">${escapeHtml(b.description)}</p></div>` : ''}</div>`; document.getElementById("viewBudgetModal").classList.remove("hidden"); document.getElementById("viewBudgetModal").classList.add("flex"); } }
-    function closeViewBudgetModal() { document.getElementById("viewBudgetModal").classList.add("hidden"); document.getElementById("viewBudgetModal").classList.remove("flex"); }
-    
-    function deleteBudget(id) { if (confirm("Delete this budget item?")) { budgets = budgets.filter(b => b.id !== id); addLog("Deleted budget item"); showToast("Budget deleted"); renderBudget(); renderDashboard(); } }
-    
-    function exportBudgetToExcel() { let ws = [["Category","Budget Amount","Amount Spent","Remaining","Usage %","Description"]]; budgets.forEach(b => { let remaining = b.amount - b.spent; let p = (b.spent / b.amount * 100).toFixed(1); ws.push([b.category, b.amount, b.spent, remaining, p, b.description || ""]); }); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), "Budget"); XLSX.writeFile(wb, `budget_${new Date().toISOString().slice(0,10)}.xlsx`); showToast("Budget exported to Excel"); }
-    function exportBudgetToPDF() { let element = document.createElement("div"); let rows = budgets.map(b => { let remaining = b.amount - b.spent; let p = (b.spent / b.amount * 100).toFixed(1); return `<tr><td>${b.category}</td><td>${formatCurrency(b.amount)}</td><td>${formatCurrency(b.spent)}</td><td>${formatCurrency(remaining)}</td><td>${p}%</td><td>${b.description || '-'}</td>`; }).join(''); element.innerHTML = `<div style="padding:20px"><h1 style="color:#f97316">Sales Budget Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr><table border="1" cellpadding="8"><thead><tr style="background:#f97316;color:white"><th>Category</th><th>Budget</th><th>Spent</th><th>Remaining</th><th>Usage</th><th>Description</th></tr></thead><tbody>${rows}</tbody>}</div>`; html2pdf().set({ margin: 0.5, filename: `budget_report.pdf` }).from(element).save(); showToast("Budget exported to PDF"); }
-    
-    // ==================== MARKETING SECTION (with Export) ====================
-    function renderMarketing() {
-        let html = `<div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold"><i class="fas fa-chart-line text-orange-500 mr-2"></i>Marketing Activities</h2><button onclick="openMarketingModal()" class="btn-primary text-white px-4 py-2 rounded-xl text-sm"><i class="fas fa-plus mr-1"></i>Add Activity</button></div>
-            <div class="grid gap-3 max-h-96 overflow-y-auto" id="marketingGrid"></div>
-            <div class="mt-3 bg-white rounded-xl p-3"><canvas id="marketingChart" height="120"></canvas></div>
-            <div class="mt-3 flex gap-2"><button onclick="exportMarketingToExcel()" class="bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-excel mr-1"></i>Excel</button><button onclick="exportMarketingToPDF()" class="bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-file-pdf mr-1"></i>PDF</button><button onclick="printMarketing()" class="bg-gray-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-print mr-1"></i>Print</button></div>`;
-        document.getElementById("marketingSection").innerHTML = html;
-        
-        let gridHtml = ""; marketingActivities.forEach(a => { gridHtml += `<div class="ad-card p-3 cursor-pointer" onclick="viewMarketingDetails(${a.id})"><div class="flex justify-between items-start"><div><div class="flex items-center gap-2"><i class="fas fa-${a.type === "social_media" ? "facebook" : a.type === "tv_radio" ? "tv" : a.type === "print" ? "newspaper" : a.type === "digital" ? "google" : "calendar-alt"} text-orange-500 text-sm"></i><h4 class="font-semibold text-sm">${escapeHtml(a.title)}</h4><span class="px-1.5 py-0.5 text-[8px] rounded-full ${getStatusClass(a.status)}">${getStatusText(a.status)}</span></div><p class="text-xs text-gray-500 mt-1"><i class="far fa-calendar-alt mr-1"></i>${a.date} | Budget: ${formatCurrency(a.budget)}</p><p class="text-xs text-gray-600 mt-1">${escapeHtml(a.description.substring(0, 80))}${a.description.length > 80 ? "..." : ""}</p>${a.results ? `<p class="text-[10px] text-green-600 mt-1"><i class="fas fa-chart-line"></i> Results: ${escapeHtml(a.results)}</p>` : ""}</div><div class="flex gap-1"><button onclick="event.stopPropagation(); editMarketingActivity(${a.id})" class="text-green-500 text-xs p-1"><i class="fas fa-edit"></i></button><button onclick="event.stopPropagation(); deleteMarketingActivity(${a.id})" class="text-red-500 text-xs p-1"><i class="fas fa-trash"></i></button><button onclick="event.stopPropagation(); viewMarketingDetails(${a.id})" class="text-blue-500 text-xs p-1"><i class="fas fa-eye"></i></button></div></div></div>`; });
-        document.getElementById("marketingGrid").innerHTML = gridHtml || "<p class='text-gray-400 text-center py-6 text-sm'>No marketing activities yet</p>";
-        
-        let budgetByType = {}; marketingActivities.forEach(a => { budgetByType[a.type] = (budgetByType[a.type] || 0) + parseFloat(a.budget); });
-        let mc = document.getElementById("marketingChart")?.getContext("2d"); if (mc) { new Chart(mc, { type: "bar", data: { labels: Object.keys(budgetByType).map(t => getAdTypeText(t)), datasets: [{ label: "Budget (TZS M)", data: Object.values(budgetByType).map(v => v / 1000000), backgroundColor: "#f97316", borderRadius: 8 }] }, options: { responsive: true, maintainAspectRatio: true } }); }
-    }
-    
-    function openMarketingModal() { document.getElementById("marketingModal").classList.remove("hidden"); document.getElementById("marketingModal").classList.add("flex"); document.getElementById("editActivityId").value = ""; document.getElementById("adTitle").value = ""; document.getElementById("adType").value = "social_media"; document.getElementById("adBudget").value = ""; document.getElementById("adDate").value = new Date().toISOString().split("T")[0]; document.getElementById("adDescription").value = ""; document.getElementById("adResults").value = ""; document.getElementById("adStatus").value = "planned"; }
-    function closeMarketingModal() { document.getElementById("marketingModal").classList.add("hidden"); document.getElementById("marketingModal").classList.remove("flex"); }
-    
-    function saveMarketingActivity() { let title = document.getElementById("adTitle").value.trim(); if (!title) { showToast("Please enter activity title", true); return; } let id = document.getElementById("editActivityId").value; if (id) { let idx = marketingActivities.findIndex(a => a.id == id); if (idx !== -1) { marketingActivities[idx].title = title; marketingActivities[idx].type = document.getElementById("adType").value; marketingActivities[idx].budget = parseFloat(document.getElementById("adBudget").value) || 0; marketingActivities[idx].date = document.getElementById("adDate").value; marketingActivities[idx].description = document.getElementById("adDescription").value; marketingActivities[idx].results = document.getElementById("adResults").value; marketingActivities[idx].status = document.getElementById("adStatus").value; addLog(`Updated marketing: ${title}`); showToast("Activity updated"); } } else { marketingActivities.unshift({ id: Date.now(), title: title, type: document.getElementById("adType").value, budget: parseFloat(document.getElementById("adBudget").value) || 0, date: document.getElementById("adDate").value, description: document.getElementById("adDescription").value, results: document.getElementById("adResults").value, status: document.getElementById("adStatus").value, created_at: new Date().toISOString().split("T")[0] }); addLog(`Added marketing: ${title}`); showToast("Activity added"); } closeMarketingModal(); renderMarketing(); renderDashboard(); }
-    
-    function editMarketingActivity(id) { let a = marketingActivities.find(a => a.id === id); if (a) { document.getElementById("editActivityId").value = a.id; document.getElementById("adTitle").value = a.title; document.getElementById("adType").value = a.type; document.getElementById("adBudget").value = a.budget; document.getElementById("adDate").value = a.date; document.getElementById("adDescription").value = a.description; document.getElementById("adResults").value = a.results || ""; document.getElementById("adStatus").value = a.status; document.getElementById("marketingModal").classList.remove("hidden"); document.getElementById("marketingModal").classList.add("flex"); } }
-    function deleteMarketingActivity(id) { if (confirm("Delete this activity?")) { marketingActivities = marketingActivities.filter(a => a.id !== id); addLog("Deleted marketing activity"); showToast("Activity deleted"); renderMarketing(); renderDashboard(); } }
-    function viewMarketingDetails(id) { let a = marketingActivities.find(a => a.id === id); if (a) { document.getElementById("marketingDetailsContent").innerHTML = `<div class="space-y-3"><div class="flex items-center gap-2"><i class="fas fa-${a.type === "social_media" ? "facebook" : a.type === "tv_radio" ? "tv" : a.type === "print" ? "newspaper" : a.type === "digital" ? "google" : "calendar-alt"} text-orange-500 text-xl"></i><h4 class="text-lg font-bold">${escapeHtml(a.title)}</h4></div><div class="grid grid-cols-2 gap-2 text-sm"><div><strong>Type:</strong> ${getAdTypeText(a.type)}</div><div><strong>Budget:</strong> ${formatCurrency(a.budget)}</div><div><strong>Date:</strong> ${a.date}</div><div><strong>Status:</strong> ${a.status}</div></div><div><strong>Description:</strong><p class="text-sm mt-1">${escapeHtml(a.description)}</p></div>${a.results ? `<div><strong>Results:</strong><p class="text-sm text-green-600 mt-1">${escapeHtml(a.results)}</p></div>` : ""}</div>`; document.getElementById("marketingDetailsModal").classList.remove("hidden"); document.getElementById("marketingDetailsModal").classList.add("flex"); } }
-    function closeMarketingDetailsModal() { document.getElementById("marketingDetailsModal").classList.add("hidden"); document.getElementById("marketingDetailsModal").classList.remove("flex"); }
-    function exportMarketingToExcel() { let ws = [["Title","Type","Budget","Date","Status","Description","Results"]]; marketingActivities.forEach(a => ws.push([a.title, getAdTypeText(a.type), a.budget, a.date, a.status, a.description, a.results || ""])); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), "Marketing"); XLSX.writeFile(wb, `marketing_${new Date().toISOString().slice(0,10)}.xlsx`); showToast("Marketing exported to Excel"); }
-    function exportMarketingToPDF() { let element = document.createElement("div"); element.innerHTML = `<div style="padding:15px"><h1 style="color:#f97316">Marketing Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr>${marketingActivities.map(a => `<div><strong>${a.title}</strong><br>Budget: ${formatCurrency(a.budget)}<br>Date: ${a.date}<br>Status: ${a.status}<br>${a.results ? `Results: ${a.results}` : ''}</div><hr>`).join("")}</div>`; html2pdf().set({ margin: 0.5, filename: `marketing_report.pdf` }).from(element).save(); showToast("Marketing exported to PDF"); }
-    function printMarketing() { window.print(); }
-    
-    // ==================== REPORTS SECTION (with View, Edit, Delete, Export, Send) ====================
-    function renderReports() {
-        let html = `<div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold"><i class="fas fa-chart-bar text-orange-500 mr-2"></i>Reports</h2><button onclick="openAddReportModal()" class="btn-primary text-white px-4 py-2 rounded-xl text-sm"><i class="fas fa-plus mr-1"></i>Add Report</button></div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
-                <div class="bg-white rounded-xl p-3 shadow-sm"><h3 class="text-xs font-semibold mb-2">Generate Report</h3><div class="grid grid-cols-2 gap-2 mb-3"><button onclick="generateReport('daily')" class="bg-orange-500 text-white py-1 rounded text-xs">Daily</button><button onclick="generateReport('weekly')" class="bg-orange-500 text-white py-1 rounded text-xs">Weekly</button><button onclick="generateReport('monthly')" class="bg-orange-500 text-white py-1 rounded text-xs">Monthly</button><button onclick="generateReport('yearly')" class="bg-orange-500 text-white py-1 rounded text-xs">Yearly</button></div><div class="flex gap-2"><button onclick="exportSalesToExcel()" class="flex-1 bg-green-600 text-white py-1.5 rounded text-xs"><i class="fas fa-file-excel mr-1"></i>Excel</button><button onclick="exportSalesToPDF()" class="flex-1 bg-red-600 text-white py-1.5 rounded text-xs"><i class="fas fa-file-pdf mr-1"></i>PDF</button><button onclick="window.print()" class="flex-1 bg-gray-600 text-white py-1.5 rounded text-xs"><i class="fas fa-print mr-1"></i>Print</button></div></div>
-                <div class="bg-white rounded-xl p-3 shadow-sm"><h3 class="text-xs font-semibold mb-2">Sales Summary</h3><div class="grid grid-cols-2 gap-2 text-sm"><div><p class="text-gray-400 text-[9px]">Total Leads</p><p class="font-bold">${leads.length}</p></div><div><p class="text-gray-400 text-[9px]">Pipeline Value</p><p class="font-bold text-orange-600">${formatCurrency(leads.reduce((s,l) => s + parseFloat(l.value), 0))}</p></div><div><p class="text-gray-400 text-[9px]">Won Deals</p><p class="font-bold text-green-600">${leads.filter(l => l.status === "won").length}</p></div><div><p class="text-gray-400 text-[9px]">Budget Used</p><p class="font-bold text-blue-600">${formatCurrency(budgets.reduce((s,b) => s + b.spent, 0))}</p></div></div></div>
-            </div>
-            <div class="bg-white rounded-xl p-3 shadow-sm"><h3 class="text-xs font-semibold mb-2">Saved Reports</h3><div class="space-y-2">${reportsList.map(r => `<div class="border rounded-lg p-3"><div class="flex justify-between items-start"><div><h4 class="font-semibold text-sm">${escapeHtml(r.title)}</h4><span class="text-[9px] px-1.5 py-0.5 rounded-full bg-${r.period === 'daily' ? 'blue' : r.period === 'weekly' ? 'green' : r.period === 'monthly' ? 'purple' : 'orange'}-100">${r.period}</span><p class="text-[10px] text-gray-500 mt-1">${escapeHtml(r.content.substring(0, 80))}...</p></div><div class="flex gap-1"><button onclick="viewReportDetail(${r.id})" class="text-blue-500 text-sm p-1" title="View"><i class="fas fa-eye"></i></button><button onclick="editReportDetail(${r.id})" class="text-green-500 text-sm p-1" title="Edit"><i class="fas fa-edit"></i></button><button onclick="deleteReportDetail(${r.id})" class="text-red-500 text-sm p-1" title="Delete"><i class="fas fa-trash"></i></button><button onclick="exportSingleReport(${r.id}, 'excel')" class="text-green-600 text-sm p-1" title="Export Excel"><i class="fas fa-file-excel"></i></button><button onclick="exportSingleReport(${r.id}, 'pdf')" class="text-red-600 text-sm p-1" title="Export PDF"><i class="fas fa-file-pdf"></i></button><button onclick="openSendReportModal(${r.id})" class="text-purple-600 text-sm p-1" title="Send"><i class="fas fa-paper-plane"></i></button></div></div></div>`).join('') || '<p class="text-gray-400 text-center py-4 text-sm">No reports yet</p>'}</div></div>`;
+    // ==================== REPORTS SECTION ====================
+    async function loadReports() {
+        await fetchReports();
+        let html = `<div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold"><i class="fas fa-chart-bar text-orange-600 mr-2"></i>Reports (${reportsList.length})</h2><button onclick="openModal('addReportModal')" class="btn-primary text-white px-4 py-2 rounded-xl text-sm"><i class="fas fa-plus mr-1"></i>Add Report</button></div>
+            <div class="report-grid" id="reportsGrid"></div>`;
         document.getElementById("reportsSection").innerHTML = html;
-    }
-    
-    function openAddReportModal() { document.getElementById("addReportModal").classList.remove("hidden"); document.getElementById("addReportModal").classList.add("flex"); document.getElementById("newReportTitle").value = ""; document.getElementById("newReportPeriod").value = "monthly"; document.getElementById("newReportContent").value = ""; }
-    function closeAddReportModal() { document.getElementById("addReportModal").classList.add("hidden"); document.getElementById("addReportModal").classList.remove("flex"); }
-    function addReport() { let title = document.getElementById("newReportTitle").value.trim(); let period = document.getElementById("newReportPeriod").value; let content = document.getElementById("newReportContent").value.trim(); if (!title || !content) { showToast("Please fill title and content", true); return; } reportsList.unshift({ id: Date.now(), title, period, content, status: "draft", created_at: new Date().toISOString() }); addLog(`Added report: ${title}`); showToast("Report added"); closeAddReportModal(); renderReports(); renderDashboard(); }
-    
-    function viewReportDetail(id) { let r = reportsList.find(r => r.id === id); if (r) { alert(`📄 ${r.title}\n\nPeriod: ${r.period}\nDate: ${new Date(r.created_at).toLocaleString()}\n\nContent:\n${r.content}`); } }
-    function editReportDetail(id) { let r = reportsList.find(r => r.id === id); if (r) { document.getElementById("editReportId").value = r.id; document.getElementById("editReportTitle").value = r.title; document.getElementById("editReportPeriod").value = r.period; document.getElementById("editReportContent").value = r.content; document.getElementById("editReportModal").classList.remove("hidden"); document.getElementById("editReportModal").classList.add("flex"); } }
-    function closeEditReportModal() { document.getElementById("editReportModal").classList.add("hidden"); document.getElementById("editReportModal").classList.remove("flex"); }
-    function updateReport() { let id = parseInt(document.getElementById("editReportId").value); let idx = reportsList.findIndex(r => r.id === id); if (idx !== -1) { reportsList[idx].title = document.getElementById("editReportTitle").value; reportsList[idx].period = document.getElementById("editReportPeriod").value; reportsList[idx].content = document.getElementById("editReportContent").value; addLog(`Updated report: ${reportsList[idx].title}`); showToast("Report updated"); closeEditReportModal(); renderReports(); } }
-    function deleteReportDetail(id) { if (confirm("Delete this report?")) { reportsList = reportsList.filter(r => r.id !== id); addLog("Deleted report"); showToast("Report deleted"); renderReports(); } }
-    
-    function exportSingleReport(reportId, format) {
-        let report = reportsList.find(r => r.id === reportId);
-        if (!report) return;
-        let title = report.title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-        let filename = `${title}_${new Date().toISOString().slice(0,10)}`;
-        if (format === 'excel') {
-            let ws = [["Title","Period","Content","Date","Status"]];
-            ws.push([report.title, report.period, report.content, report.created_at, report.status]);
-            let wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), "Report");
-            XLSX.writeFile(wb, `${filename}.xlsx`);
-            showToast("Report exported to Excel");
-        } else if (format === 'pdf') {
-            let element = document.createElement("div");
-            element.innerHTML = `<div style="padding:20px"><h1 style="color:#f97316">${escapeHtml(report.title)}</h1><p><strong>Period:</strong> ${report.period}</p><p><strong>Date:</strong> ${new Date(report.created_at).toLocaleString()}</p><hr><div style="margin-top:15px">${escapeHtml(report.content)}</div><p style="margin-top:20px">Generated: ${new Date().toLocaleString()}</p></div>`;
-            html2pdf().set({ margin: 0.5, filename: `${filename}.pdf` }).from(element).save();
-            showToast("Report exported to PDF");
+        
+        let gridHtml = '';
+        for (let r of reportsList) {
+            let statusClass = r.status === 'sent' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700';
+            let statusText = r.status === 'sent' ? 'Sent' : 'Draft';
+            gridHtml += `<div class="report-card" onclick="viewReport(${r.id})"><div class="p-4"><div class="flex justify-between items-start"><div><h4 class="font-semibold">${escapeHtml(r.title)}</h4><div class="flex items-center gap-2 mt-1"><span class="text-[9px] px-1.5 py-0.5 rounded-full bg-gray-100">${r.period}</span><span class="text-[9px] px-1.5 py-0.5 rounded-full ${statusClass}">${statusText}</span></div></div><div class="flex gap-1"><button onclick="event.stopPropagation(); viewReport(${r.id})" class="action-btn view"><i class="fas fa-eye"></i></button><button onclick="event.stopPropagation(); editReport(${r.id})" class="action-btn edit"><i class="fas fa-edit"></i></button><button onclick="event.stopPropagation(); deleteReport(${r.id})" class="action-btn delete"><i class="fas fa-trash"></i></button></div></div><p class="text-xs text-gray-500 mt-2">${formatDate(r.created_at)}</p><p class="text-sm text-gray-600 mt-2 line-clamp-2">${escapeHtml(r.content?.substring(0, 100))}${r.content?.length > 100 ? '...' : ''}</p></div></div>`;
         }
+        document.getElementById("reportsGrid").innerHTML = gridHtml || '<div class="col-span-3 text-center py-12 text-gray-400">No reports found</div>';
     }
     
-    function openSendReportModal(reportId) {
-        let report = reportsList.find(r => r.id === reportId);
-        if (report) {
-            pendingSendReportId = reportId;
-            document.getElementById("sendReportId").value = reportId;
-            document.getElementById("sendReportInfo").innerHTML = `<strong>${escapeHtml(report.title)}</strong><br>Period: ${report.period}`;
-            document.getElementById("sendToDepartment").value = "";
-            document.getElementById("sendAdditionalMessage").value = "";
-            document.getElementById("sendReportModal").classList.remove("hidden");
-            document.getElementById("sendReportModal").classList.add("flex");
-        }
+    async function addReport() { let title = document.getElementById("newReportTitle").value.trim(); let period = document.getElementById("newReportPeriod").value; let content = document.getElementById("newReportContent").value.trim(); if(!title||!content) { showToast("Title and content required", true); return; } let res = await addReportAPI({ title, period, content }); if(res.success) { showToast("Report added"); addLog(`Added report: ${title}`); closeModal('addReportModal'); document.getElementById("newReportTitle").value = ""; document.getElementById("newReportContent").value = ""; await loadReports(); await loadDashboard(); } else showToast(res.message || "Failed", true); }
+    
+    async function viewReport(id) { let r = reportsList.find(r => r.id === id); if(r) { document.getElementById('viewReportContent').innerHTML = `<div class="space-y-2"><p><strong>Title:</strong> ${escapeHtml(r.title)}</p><p><strong>Period:</strong> ${r.period}</p><p><strong>Date:</strong> ${formatDate(r.created_at)}</p><p><strong>Status:</strong> ${r.status === 'sent' ? 'Sent' : 'Draft'}</p><div class="bg-gray-100 p-4 rounded-lg whitespace-pre-wrap">${escapeHtml(r.content)}</div></div>`; 
+            let deptOptions = ''; const departments = [1,2,4,5,6,7,8,9,10,11,12];
+            departments.forEach(dept => { if (dept !== DEPARTMENT_ID) deptOptions += `<a onclick="sendReportToDept(${r.id}, ${dept})">${escapeHtml(departmentNames[dept] || 'Department')}</a>`; });
+            document.getElementById('viewReportButtons').innerHTML = `<button onclick="exportSingleReportExcel(${r.id})" class="bg-green-600 text-white px-3 py-1 rounded text-sm"><i class="fas fa-file-excel"></i> Export Excel</button><button onclick="exportSingleReportPDF(${r.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm"><i class="fas fa-file-pdf"></i> Export PDF</button><div class="send-dropdown"><button class="bg-purple-600 text-white px-3 py-1 rounded text-sm" onclick="toggleSendDropdown('reportSendDropdown-${r.id}')"><i class="fas fa-paper-plane"></i> Send to Department</button><div id="reportSendDropdown-${r.id}" class="send-dropdown-content">${deptOptions}</div></div>`;
+            openModal('viewReportModal'); 
+        } 
     }
     
-    function closeSendReportModal() { document.getElementById("sendReportModal").classList.add("hidden"); document.getElementById("sendReportModal").classList.remove("flex"); pendingSendReportId = null; }
+    async function sendReportToDept(reportId, toDeptId) { let r = reportsList.find(r => r.id === reportId); if(r) { const res = await sendReportToDepartment(reportId, toDeptId); if(res.success) { showToast(`Report "${r.title}" sent to ${departmentNames[toDeptId]}`); r.status = 'sent'; await loadReports(); } else showToast(res.message || "Failed", true); } let dd = document.getElementById(`reportSendDropdown-${reportId}`); if(dd) dd.style.display = 'none'; }
     
-    function confirmSendReport() {
-        let toDept = document.getElementById("sendToDepartment").value;
-        if (!toDept) { showToast("Please select department", true); return; }
-        let report = reportsList.find(r => r.id === pendingSendReportId);
-        if (report) {
-            let message = `REPORT FROM SALES:\nTitle: ${report.title}\nPeriod: ${report.period}\nDate: ${new Date(report.created_at).toLocaleString()}\n\n${report.content}`;
-            let extra = document.getElementById("sendAdditionalMessage").value.trim();
-            if (extra) message += `\n\nAdditional message: ${extra}`;
-            addCentralMessage("Sales", toDept, message);
-            addLog(`Sent report "${report.title}" to ${toDept}`);
-            showToast(`Report sent to ${toDept}`);
-            closeSendReportModal();
-            renderMessages();
-        }
-    }
+    function exportSingleReportExcel(id) { let r = reportsList.find(r => r.id === id); if(r) { let ws = [["Title","Period","Content","Date","Status"]]; ws.push([r.title, r.period, r.content, r.created_at, r.status]); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), "Report"); XLSX.writeFile(wb, `report_${r.id}.xlsx`); showToast("Exported to Excel"); } }
+    function exportSingleReportPDF(id) { let r = reportsList.find(r => r.id === id); if(r) { let element = document.createElement("div"); element.innerHTML = `<div style="padding:20px"><h1>${escapeHtml(r.title)}</h1><p><strong>Period:</strong> ${r.period}</p><p><strong>Date:</strong> ${formatDate(r.created_at)}</p><p><strong>Status:</strong> ${r.status}</p><hr/><div>${escapeHtml(r.content)}</div><p>Generated: ${new Date().toLocaleString()}</p></div>`; html2pdf().set({ margin: 0.5, filename: `report_${r.id}.pdf` }).from(element).save(); showToast("Exported to PDF"); } }
     
-    function generateReport(period) { alert(`📊 ${period.toUpperCase()} REPORT\n\nTotal Leads: ${leads.length}\nPipeline Value: ${formatCurrency(leads.reduce((s,l) => s + parseFloat(l.value), 0))}\nWon Deals: ${leads.filter(l => l.status === "won").length}\nBudget Used: ${formatCurrency(budgets.reduce((s,b)=>s+b.spent,0))} / ${formatCurrency(budgets.reduce((s,b)=>s+b.amount,0))}\n\nGenerated: ${new Date().toLocaleString()}`); showToast(`${period} report generated`); }
-    function exportSalesToExcel() { let ws = [["Lead Name","Phone","Email","Status","Value","Date"]]; leads.forEach(l => ws.push([l.name, l.phone || "", l.email || "", l.status, l.value, l.created_at])); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws), "Sales Data"); XLSX.writeFile(wb, `sales_data_${new Date().toISOString().slice(0,10)}.xlsx`); showToast("Sales data exported to Excel"); }
-    function exportSalesToPDF() { let element = document.createElement("div"); element.innerHTML = `<div style="padding:15px"><h1 style="color:#f97316">Sales Report</h1><p>Generated: ${new Date().toLocaleString()}</p><hr><h3>Leads Summary</h3>${leads.map(l => `<div>${l.name} - ${formatCurrency(l.value)} - ${l.status}</div>`).join("")}<hr><h3>Budget Summary</h3>${budgets.map(b => `<div>${b.category}: ${formatCurrency(b.spent)} / ${formatCurrency(b.amount)}</div>`).join("")}</div>`; html2pdf().set({ margin: 0.5, filename: `sales_report.pdf` }).from(element).save(); showToast("Sales data exported to PDF"); }
+    function editReport(id) { let r = reportsList.find(r => r.id === id); if(r) { document.getElementById("editReportId").value = r.id; document.getElementById("editReportTitle").value = r.title; document.getElementById("editReportPeriod").value = r.period; document.getElementById("editReportContent").value = r.content; openModal('editReportModal'); } }
+    async function updateReport() { let id = parseInt(document.getElementById("editReportId").value); let title = document.getElementById("editReportTitle").value; let period = document.getElementById("editReportPeriod").value; let content = document.getElementById("editReportContent").value; let res = await updateReportAPI(id, { title, period, content }); if(res.success) { showToast("Report updated"); addLog(`Updated report: ${title}`); closeModal('editReportModal'); await loadReports(); } else showToast(res.message || "Failed", true); }
+    async function deleteReport(id) { if(confirm("Delete this report?")) { let res = await deleteReportAPI(id); if(res.success) { showToast("Report deleted"); addLog("Deleted report"); await loadReports(); await loadDashboard(); } else showToast(res.message || "Failed", true); } }
     
-    // ==================== TARGETS SECTION ====================
-    function renderTargets() {
-        let html = `<div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold"><i class="fas fa-bullseye text-orange-500 mr-2"></i>Sales Targets</h2><button onclick="openTargetModal()" class="btn-primary text-white px-4 py-2 rounded-xl text-sm"><i class="fas fa-plus mr-1"></i>Set Target</button></div>
-            <div class="bg-white rounded-xl p-4 shadow-sm"><div class="space-y-4">${targets.map(t => { let p = (t.achieved / t.target) * 100; return `<div><div class="flex justify-between text-sm mb-1"><span class="font-medium">${t.month}</span><span>${formatCurrency(t.achieved)} / ${formatCurrency(t.target)}</span></div><div class="w-full bg-gray-200 rounded-full h-2"><div class="${getProgressClass(p)} h-2 rounded-full" style="width: ${Math.min(p, 100)}%"></div></div><p class="text-[10px] text-gray-400 mt-0.5">${p.toFixed(1)}% achieved</p></div>`; }).join('')}</div></div>`;
-        document.getElementById("targetsSection").innerHTML = html;
-    }
-    function openTargetModal() { document.getElementById("targetModal").classList.remove("hidden"); document.getElementById("targetModal").classList.add("flex"); document.getElementById("targetAmount").value = ""; }
-    function closeTargetModal() { document.getElementById("targetModal").classList.add("hidden"); document.getElementById("targetModal").classList.remove("flex"); }
-    function setTarget() { let month = document.getElementById("targetMonth").value; let amount = parseFloat(document.getElementById("targetAmount").value); if (!amount) { showToast("Enter target amount", true); return; } let existing = targets.find(t => t.month === month); if (existing) existing.target = amount; else targets.push({ month: month, target: amount, achieved: 0 }); addLog(`Set target for ${month}: ${formatCurrency(amount)}`); showToast(`Target set for ${month}`); closeTargetModal(); renderTargets(); renderDashboard(); }
-    
-    // ==================== SETTINGS SECTION (with more color options) ====================
+    // ==================== SETTINGS ====================
     function renderSettings() {
         let logsHtml = activityLogs.slice(0, 15).map(l => `<div class="text-[10px] border-b py-1"><span>${escapeHtml(l.action)}</span><span class="float-right text-gray-400">${new Date(l.created_at).toLocaleString()}</span></div>`).join('');
-        let html = `<h2 class="text-xl font-bold mb-4"><i class="fas fa-cog mr-2"></i>Settings</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="bg-white rounded-xl p-4 shadow-sm"><h3 class="font-semibold text-sm mb-2"><i class="fas fa-palette mr-2 text-orange-500"></i>Dashboard Color</h3><div class="color-palette"><div class="color-option" style="background:#ea580c" onclick="changeColor('#ea580c', this)"></div><div class="color-option" style="background:#f97316" onclick="changeColor('#f97316', this)"></div><div class="color-option" style="background:#3b82f6" onclick="changeColor('#3b82f6', this)"></div><div class="color-option" style="background:#10b981" onclick="changeColor('#10b981', this)"></div><div class="color-option" style="background:#8b5cf6" onclick="changeColor('#8b5cf6', this)"></div><div class="color-option" style="background:#ef4444" onclick="changeColor('#ef4444', this)"></div><div class="color-option" style="background:#06b6d4" onclick="changeColor('#06b6d4', this)"></div><div class="color-option" style="background:#ec4899" onclick="changeColor('#ec4899', this)"></div><div class="color-option" style="background:#84cc16" onclick="changeColor('#84cc16', this)"></div><div class="color-option" style="background:#6366f1" onclick="changeColor('#6366f1', this)"></div></div><p class="text-xs text-gray-400 mt-2">Click any color to change sidebar</p></div>
-                <div class="bg-white rounded-xl p-4 shadow-sm"><h3 class="font-semibold text-sm mb-2"><i class="fas fa-database mr-2 text-green-500"></i>Backup & Restore</h3><div class="flex gap-2"><button onclick="createBackup()" class="flex-1 bg-green-600 text-white py-2 rounded-lg text-xs"><i class="fas fa-download mr-1"></i>Backup</button><button onclick="restoreBackup()" class="flex-1 bg-orange-600 text-white py-2 rounded-lg text-xs"><i class="fas fa-upload mr-1"></i>Restore</button></div></div>
-                <div class="bg-white rounded-xl p-4 shadow-sm"><h3 class="font-semibold text-sm mb-2"><i class="fas fa-history mr-2 text-blue-500"></i>Activity Logs</h3><div class="max-h-32 overflow-y-auto text-xs border rounded-lg p-2 bg-gray-50">${logsHtml}</div><button onclick="clearLogs()" class="w-full mt-2 bg-red-600 text-white py-1.5 rounded-lg text-xs"><i class="fas fa-trash mr-1"></i>Clear Logs</button></div>
-                <div class="bg-white rounded-xl p-4 shadow-sm"><h3 class="font-semibold text-sm mb-2"><i class="fas fa-info-circle mr-2 text-purple-500"></i>System Info</h3><p class="text-xs"><strong>Version:</strong> 2.0.0</p><p class="text-xs mt-1"><strong>Leads:</strong> ${leads.length}</p><p class="text-xs mt-1"><strong>Budget Items:</strong> ${budgets.length}</p><p class="text-xs mt-1"><strong>Marketing:</strong> ${marketingActivities.length}</p><p class="text-xs mt-1"><strong>Reports:</strong> ${reportsList.length}</p></div>
-            </div>`;
+        let colors = [{ name: 'Orange', value: '#ea580c' }, { name: 'Blue', value: '#3b82f6' }, { name: 'Green', value: '#10b981' }, { name: 'Purple', value: '#8b5cf6' }, { name: 'Red', value: '#ef4444' }, { name: 'Teal', value: '#0d9488' }, { name: 'Pink', value: '#ec4899' }, { name: 'Indigo', value: '#6366f1' }];
+        let html = `<h2 class="text-xl font-bold mb-4"><i class="fas fa-cog mr-2"></i>Settings</h2><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div class="bg-white rounded-xl p-4 shadow-sm"><h3 class="font-semibold text-sm mb-2"><i class="fas fa-palette mr-2 text-orange-500"></i>Dashboard Color</h3><div class="flex gap-2 flex-wrap">${colors.map(c => `<div class="color-option" style="background:${c.value}" onclick="changeColor('${c.value}', this)" title="${c.name}"></div>`).join('')}</div></div><div class="bg-white rounded-xl p-4 shadow-sm"><h3 class="font-semibold text-sm mb-2"><i class="fas fa-database mr-2 text-green-500"></i>Backup & Restore</h3><div class="flex gap-2"><button onclick="openModal('backupRestoreModal')" class="flex-1 bg-green-600 text-white py-2 rounded-lg text-xs"><i class="fas fa-download mr-1"></i>Backup</button><button onclick="restoreBackup()" class="flex-1 bg-orange-600 text-white py-2 rounded-lg text-xs"><i class="fas fa-upload mr-1"></i>Restore</button></div></div><div class="bg-white rounded-xl p-4 shadow-sm"><h3 class="font-semibold text-sm mb-2"><i class="fas fa-history mr-2 text-blue-500"></i>Activity Logs</h3><div class="max-h-32 overflow-y-auto text-xs border rounded-lg p-2 bg-gray-50">${logsHtml}</div><button onclick="clearLogs()" class="w-full mt-2 bg-red-600 text-white py-1.5 rounded-lg text-xs"><i class="fas fa-trash mr-1"></i>Clear Logs</button></div><div class="bg-white rounded-xl p-4 shadow-sm"><h3 class="font-semibold text-sm mb-2"><i class="fas fa-info-circle mr-2 text-purple-500"></i>System Info</h3><p class="text-xs"><strong>Version:</strong> 2.1.0</p><p class="text-xs mt-1"><strong>Marketing:</strong> ${marketingActivities.length}</p><p class="text-xs mt-1"><strong>Budget Items:</strong> ${budgets.length}</p><p class="text-xs mt-1"><strong>Reports:</strong> ${reportsList.length}</p></div></div>`;
         document.getElementById("settingsSection").innerHTML = html;
     }
     
     function changeColor(color, el) { document.querySelectorAll(".color-option").forEach(opt => opt.classList.remove("selected")); el.classList.add("selected"); document.getElementById("mainSidebar").style.background = color; localStorage.setItem("sidebar_color", color); showToast("Sidebar color changed"); }
-    function createBackup() { let backup = { leads, budgets, marketingActivities, reportsList, targets, activityLogs, timestamp: new Date().toISOString() }; let blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" }); let url = URL.createObjectURL(blob); let a = document.createElement("a"); a.href = url; a.download = `sales_backup_${new Date().toISOString().slice(0,19)}.json`; a.click(); URL.revokeObjectURL(url); addLog("Created backup"); showToast("Backup created"); }
-    function restoreBackup() { let inp = document.createElement("input"); inp.type = "file"; inp.accept = "application/json"; inp.onchange = (e) => { let file = e.target.files[0]; if (!file) return; let reader = new FileReader(); reader.onload = (evt) => { try { let data = JSON.parse(evt.target.result); if (data.leads) leads = data.leads; if (data.budgets) budgets = data.budgets; if (data.marketingActivities) marketingActivities = data.marketingActivities; if (data.reportsList) reportsList = data.reportsList; if (data.targets) targets = data.targets; addLog("Restored from backup"); showToast("Backup restored! Reloading..."); setTimeout(() => location.reload(), 1500); } catch(err) { showToast("Invalid backup file", true); } }; reader.readAsText(file); }; inp.click(); }
-    function clearLogs() { if (confirm("Clear all activity logs?")) { activityLogs = [{ action: "Logs cleared", created_at: new Date().toISOString() }]; renderSettings(); showToast("Logs cleared"); } }
+    function createBackup() { let backup = { marketingActivities, budgets, reportsList, activityLogs, timestamp: new Date().toISOString() }; let blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" }); let url = URL.createObjectURL(blob); let a = document.createElement("a"); a.href = url; a.download = `sales_backup_${new Date().toISOString().slice(0,19)}.json`; a.click(); URL.revokeObjectURL(url); addLog("Created backup"); showToast("Backup created"); closeModal('backupRestoreModal'); }
+    function restoreBackup() { let inp = document.createElement("input"); inp.type = "file"; inp.accept = "application/json"; inp.onchange = async (e) => { let file = e.target.files[0]; if(!file) return; let reader = new FileReader(); reader.onload = async (evt) => { try { let data = JSON.parse(evt.target.result); if(data.marketingActivities) marketingActivities = data.marketingActivities; if(data.budgets) budgets = data.budgets; if(data.reportsList) reportsList = data.reportsList; addLog("Restored from backup"); showToast("Backup restored! Reloading..."); setTimeout(() => location.reload(), 1500); } catch(err) { showToast("Invalid backup file", true); } }; reader.readAsText(file); }; inp.click(); closeModal('backupRestoreModal'); }
+    function clearLogs() { if(confirm("Clear all activity logs?")) { activityLogs = [{ action: "Logs cleared", created_at: new Date().toISOString() }]; renderSettings(); showToast("Logs cleared"); } }
     
-    // ==================== NAVIGATION ====================
-    function showSection(sectionId) {
-        let sections = ["dashboardSection","leadsSection","budgetSection","marketingSection","messagesSection","reportsSection","targetsSection","settingsSection"];
+    function toggleSendDropdown(dropdownId) { const dropdown = document.getElementById(dropdownId); document.querySelectorAll('.send-dropdown-content').forEach(d => { if(d.id !== dropdownId) d.style.display = 'none'; }); if(dropdown) dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block'; }
+    document.addEventListener('click', (e) => { if(!e.target.closest('.send-dropdown')) { document.querySelectorAll('.send-dropdown-content').forEach(d => d.style.display = 'none'); } });
+    
+    async function showSection(sectionId) {
+        let sections = ["dashboardSection","budgetSection","marketingSection","messagesSection","reportsSection","settingsSection"];
         sections.forEach(s => { let el = document.getElementById(s); if (el) el.classList.add("hidden"); });
         document.getElementById(`${sectionId}Section`).classList.remove("hidden");
         document.querySelectorAll(".nav-item").forEach(nav => nav.classList.remove("active"));
         document.querySelector(`.nav-item[data-section="${sectionId}"]`)?.classList.add("active");
-        if (sectionId === "dashboard") renderDashboard();
-        else if (sectionId === "leads") renderLeads();
-        else if (sectionId === "budget") renderBudget();
-        else if (sectionId === "marketing") renderMarketing();
-        else if (sectionId === "messages") renderMessages();
-        else if (sectionId === "reports") renderReports();
-        else if (sectionId === "targets") renderTargets();
+        if (sectionId === "dashboard") await loadDashboard();
+        else if (sectionId === "budget") await loadBudget();
+        else if (sectionId === "marketing") await loadMarketing();
+        else if (sectionId === "messages") await loadMessages();
+        else if (sectionId === "reports") await loadReports();
         else if (sectionId === "settings") renderSettings();
     }
     
-    // ==================== INIT ====================
-    function init() {
+    async function logout() { if(confirm('Logout?')) { localStorage.clear(); sessionStorage.clear(); if(refreshInterval) clearInterval(refreshInterval); window.location.href = 'login_system.html'; } }
+    
+    async function init() {
         let container = document.getElementById("mainContentContainer");
-        container.innerHTML = `<div id="dashboardSection"></div><div id="leadsSection" class="hidden"></div><div id="budgetSection" class="hidden"></div><div id="marketingSection" class="hidden"></div><div id="messagesSection" class="hidden"></div><div id="reportsSection" class="hidden"></div><div id="targetsSection" class="hidden"></div><div id="settingsSection" class="hidden"></div>`;
-        renderDashboard();
-        
+        container.innerHTML = `<div id="dashboardSection"></div><div id="budgetSection" class="hidden"></div><div id="marketingSection" class="hidden"></div><div id="messagesSection" class="hidden"></div><div id="reportsSection" class="hidden"></div><div id="settingsSection" class="hidden"></div>`;
+        await loadDashboard();
         document.querySelectorAll(".nav-item").forEach(nav => nav.addEventListener("click", (e) => { e.preventDefault(); showSection(nav.dataset.section); }));
         document.getElementById("mobileMenuBtn")?.addEventListener("click", () => { document.getElementById("mainSidebar").classList.add("mobile-open"); document.getElementById("mobileMenuOverlay").classList.add("open"); });
         document.getElementById("logoutBtn")?.addEventListener("click", logout);
         document.getElementById("profileBtn")?.addEventListener("click", () => document.getElementById("profileDropdown")?.classList.toggle("hidden"));
-        document.addEventListener("click", (e) => { if (!document.getElementById("profileBtn")?.contains(e.target)) document.getElementById("profileDropdown")?.classList.add("hidden"); });
-        
-        let searchInput = document.getElementById("globalSearchInput"); if (searchInput) searchInput.addEventListener("input", performGlobalSearch);
-        
-        let savedDark = localStorage.getItem("sales_dark_mode");
-        if (savedDark === "true") document.body.classList.add("dark-mode");
-        document.getElementById("darkModeToggle")?.addEventListener("click", () => { document.body.classList.toggle("dark-mode"); localStorage.setItem("sales_dark_mode", document.body.classList.contains("dark-mode")); let icon = document.getElementById("darkModeIcon"); if (document.body.classList.contains("dark-mode")) { icon.classList.remove("fa-moon"); icon.classList.add("fa-sun"); } else { icon.classList.remove("fa-sun"); icon.classList.add("fa-moon"); } showToast(document.body.classList.contains("dark-mode") ? "Dark mode enabled" : "Light mode enabled"); });
-        
-        let savedColor = localStorage.getItem("sidebar_color");
-        if (savedColor) document.getElementById("mainSidebar").style.background = savedColor;
-        
+        document.addEventListener("click", (e) => { if(!document.getElementById("profileBtn")?.contains(e.target)) document.getElementById("profileDropdown")?.classList.add("hidden"); });
+        let searchInput = document.getElementById("globalSearchInput"); if(searchInput) searchInput.addEventListener("input", performGlobalSearch);
+        let savedDark = localStorage.getItem("sales_dark_mode"); if(savedDark === "true") document.body.classList.add("dark-mode");
+        document.getElementById("darkModeToggle")?.addEventListener("click", () => { document.body.classList.toggle("dark-mode"); localStorage.setItem("sales_dark_mode", document.body.classList.contains("dark-mode")); let icon = document.getElementById("darkModeIcon"); if(document.body.classList.contains("dark-mode")) { icon.classList.remove("fa-moon"); icon.classList.add("fa-sun"); } else { icon.classList.remove("fa-sun"); icon.classList.add("fa-moon"); } });
+        let savedColor = localStorage.getItem("sidebar_color"); if(savedColor) document.getElementById("mainSidebar").style.background = savedColor;
         let scrollBtn = document.createElement("div"); scrollBtn.className = "scroll-top"; scrollBtn.innerHTML = '<i class="fas fa-arrow-up"></i>'; document.body.appendChild(scrollBtn); scrollBtn.onclick = () => window.scrollTo({ top: 0, behavior: "smooth" }); window.addEventListener("scroll", () => scrollBtn.classList.toggle("visible", window.scrollY > 300));
-        
-        addLog("Sales Dashboard initialized");
+        startAutoRefresh(); startCountdownDisplay(); addLog("Sales Dashboard initialized");
+        const statusDiv = document.getElementById('connectionStatus'); statusDiv.innerHTML = '<i class="fas fa-check-circle"></i> Connected';
     }
     
-    // ==================== LOGOUT FUNCTION (Works for ALL Dashboards) ====================
-function logout() {
-    if (confirm('Are you sure you want to logout?')) {
-        // Clear all session data from localStorage
-        localStorage.removeItem('geotraverse_logged_in');
-        localStorage.removeItem('geotraverse_user_type');
-        localStorage.removeItem('geotraverse_user_email');
-        localStorage.removeItem('geotraverse_department');
-        
-        // Optional: Clear sessionStorage if used
-        sessionStorage.clear();
-        
-        // Redirect to login page
-        window.location.href = 'login_system.html';
-    }
-}
-
-// Make sure logout button works when page loads
-document.addEventListener('DOMContentLoaded', function() {
-    const logoutBtn = document.getElementById('logoutBtn');
-    if (logoutBtn) {
-        logoutBtn.onclick = logout;
-    }
-});
-
-    window.closeMobileSidebar = () => { document.getElementById("mainSidebar").classList.remove("mobile-open"); document.getElementById("mobileMenuOverlay").classList.remove("open"); };
-    window.goToMainWebsite = () => window.location.href = "index.html";
-    window.showSection = showSection;
-    window.openLeadModal = openLeadModal; window.closeLeadModal = closeLeadModal; window.saveLead = saveLead;
-    window.editLead = editLead; window.deleteLead = deleteLead; window.changePage = changePage;
-    window.exportLeadsToExcel = exportLeadsToExcel; window.exportLeadsToPDF = exportLeadsToPDF;
-    window.openBudgetModal = openBudgetModal; window.closeBudgetModal = closeBudgetModal; window.saveBudget = saveBudget;
-    window.editBudget = editBudget; window.viewBudget = viewBudget; window.closeViewBudgetModal = closeViewBudgetModal;
-    window.deleteBudget = deleteBudget; window.changeBudgetPage = changeBudgetPage;
-    window.exportBudgetToExcel = exportBudgetToExcel; window.exportBudgetToPDF = exportBudgetToPDF;
-    window.openMarketingModal = openMarketingModal; window.closeMarketingModal = closeMarketingModal; window.saveMarketingActivity = saveMarketingActivity;
-    window.editMarketingActivity = editMarketingActivity; window.deleteMarketingActivity = deleteMarketingActivity;
-    window.viewMarketingDetails = viewMarketingDetails; window.closeMarketingDetailsModal = closeMarketingDetailsModal;
-    window.exportMarketingToExcel = exportMarketingToExcel; window.exportMarketingToPDF = exportMarketingToPDF; window.printMarketing = printMarketing;
-    window.openStartChatModal = openStartChatModal; window.closeStartChatModal = closeStartChatModal; window.sendNewChat = sendNewChat;
-    window.openChatWith = openChatWith; window.sendChatMessage = sendChatMessage; window.deleteMessageFromChat = deleteMessageFromChat; window.closeChatModal = closeChatModal;
-    window.openAddReportModal = openAddReportModal; window.closeAddReportModal = closeAddReportModal; window.addReport = addReport;
-    window.viewReportDetail = viewReportDetail; window.editReportDetail = editReportDetail; window.closeEditReportModal = closeEditReportModal;
-    window.updateReport = updateReport; window.deleteReportDetail = deleteReportDetail;
-    window.exportSingleReport = exportSingleReport;
-    window.openSendReportModal = openSendReportModal; window.closeSendReportModal = closeSendReportModal; window.confirmSendReport = confirmSendReport;
-    window.generateReport = generateReport; window.exportSalesToExcel = exportSalesToExcel; window.exportSalesToPDF = exportSalesToPDF;
-    window.openTargetModal = openTargetModal; window.closeTargetModal = closeTargetModal; window.setTarget = setTarget;
-    window.changeColor = changeColor; window.createBackup = createBackup; window.restoreBackup = restoreBackup; window.clearLogs = clearLogs;
-    window.logout = logout;
+    document.addEventListener('DOMContentLoaded', () => { const logoutBtn = document.getElementById('logoutBtn'); if(logoutBtn) logoutBtn.onclick = logout; });
+    
+    window.closeMobileSidebar = closeMobileSidebar; window.goToMainWebsite = goToMainWebsite; window.showSection = showSection; window.closeModal = closeModal; window.openModal = openModal;
+    window.openMarketingModal = openMarketingModal; window.saveMarketingActivity = saveMarketingActivity; window.viewMarketingActivity = viewMarketingActivity; window.editMarketingActivity = editMarketingActivity; window.deleteMarketingActivity = deleteMarketingActivity;
+    window.loadBudget = loadBudget; window.openBudgetModal = openBudgetModal; window.saveBudget = saveBudget; window.viewBudget = viewBudget; window.editBudget = editBudget; window.deleteBudget = deleteBudget;
+    window.openStartChatModal = openStartChatModal; window.sendNewChat = sendNewChat; window.openChatWith = openChatWith; window.sendChatMessage = sendChatMessage; window.deleteSingleMessage = deleteSingleMessage; window.deleteConversation = deleteConversation;
+    window.addReport = addReport; window.viewReport = viewReport; window.editReport = editReport; window.updateReport = updateReport; window.deleteReport = deleteReport;
+    window.toggleSendDropdown = toggleSendDropdown; window.changeColor = changeColor; window.createBackup = createBackup; window.restoreBackup = restoreBackup; window.clearLogs = clearLogs; window.logout = logout;
     
     init();
 </script>
