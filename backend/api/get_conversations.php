@@ -32,7 +32,13 @@ if ($user_id === 0) {
     exit();
 }
 
-// Simple query to get conversations
+// Get user's department
+$userDeptQuery = $pdo->prepare("SELECT department_id FROM users WHERE id = ?");
+$userDeptQuery->execute([$user_id]);
+$userDept = $userDeptQuery->fetch(PDO::FETCH_ASSOC);
+$user_department_id = $userDept ? $userDept['department_id'] : 1;
+
+// Get conversations where user is involved
 $query = "
     SELECT 
         c.id as conversation_id,
@@ -40,47 +46,65 @@ $query = "
         c.updated_at,
         c.user_id,
         c.admin_id,
-        (SELECT message FROM messages 
-         WHERE conversation_id = c.id 
-         ORDER BY created_at DESC LIMIT 1) as last_message,
-        (SELECT created_at FROM messages 
-         WHERE conversation_id = c.id 
-         ORDER BY created_at DESC LIMIT 1) as last_message_time,
-        (SELECT COUNT(*) FROM messages 
-         WHERE conversation_id = c.id AND receiver_id = ? AND is_read = 0) as unread_count
+        u1.name as user_name,
+        u1.department_id as user_department_id,
+        d1.name as user_department_name,
+        u2.name as admin_name,
+        u2.department_id as admin_department_id,
+        d2.name as admin_department_name
     FROM conversations c
     WHERE (c.user_id = ? OR c.admin_id = ?)
+    AND c.status = 'active'
     ORDER BY c.updated_at DESC
 ";
 
 $stmt = $pdo->prepare($query);
-$stmt->execute([$user_id, $user_id, $user_id]);
+$stmt->execute([$user_id, $user_id]);
 $conversations = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $result = [];
 
 foreach ($conversations as $conv) {
-    // Get other user info
-    $otherUserId = ($conv['user_id'] == $user_id) ? $conv['admin_id'] : $conv['user_id'];
+    $conversation_id = $conv['conversation_id'];
     
-    $otherUserQuery = $pdo->prepare("
-        SELECT u.department_id, d.name as department_name, u.name as user_name
-        FROM users u 
-        LEFT JOIN departments d ON u.department_id = d.id 
-        WHERE u.id = ?
+    // Get last message that is NOT deleted by this user
+    $lastMsgQuery = $pdo->prepare("
+        SELECT message, created_at FROM messages 
+        WHERE conversation_id = ? 
+        AND ((sender_id = ? AND sender_deleted = 0) OR (receiver_id = ? AND receiver_deleted = 0))
+        ORDER BY created_at DESC LIMIT 1
     ");
-    $otherUserQuery->execute([$otherUserId]);
-    $otherUser = $otherUserQuery->fetch(PDO::FETCH_ASSOC);
+    $lastMsgQuery->execute([$conversation_id, $user_id, $user_id]);
+    $lastMsg = $lastMsgQuery->fetch(PDO::FETCH_ASSOC);
+    
+    // Count unread messages for this user
+    $unreadQuery = $pdo->prepare("
+        SELECT COUNT(*) as unread_count FROM messages 
+        WHERE conversation_id = ? 
+        AND receiver_id = ? 
+        AND is_read = 0 
+        AND receiver_deleted = 0
+    ");
+    $unreadQuery->execute([$conversation_id, $user_id]);
+    $unread = $unreadQuery->fetch(PDO::FETCH_ASSOC);
+    
+    // Get other department info
+    $otherUserId = ($conv['user_id'] == $user_id) ? $conv['admin_id'] : $conv['user_id'];
+    $otherDeptQuery = $pdo->prepare("SELECT u.department_id, d.name as department_name 
+                                     FROM users u 
+                                     LEFT JOIN departments d ON u.department_id = d.id 
+                                     WHERE u.id = ?");
+    $otherDeptQuery->execute([$otherUserId]);
+    $otherDept = $otherDeptQuery->fetch(PDO::FETCH_ASSOC);
     
     $result[] = [
-        'conversation_id' => $conv['conversation_id'],
+        'conversation_id' => $conversation_id,
         'subject' => $conv['subject'],
-        'last_message' => $conv['last_message'],
-        'last_message_time' => $conv['last_message_time'],
-        'unread_count' => (int)$conv['unread_count'],
-        'other_department_id' => $otherUser ? (int)$otherUser['department_id'] : 1,
-        'other_department_name' => $otherUser ? $otherUser['department_name'] : 'Super Admin',
-        'other_user_name' => $otherUser ? $otherUser['user_name'] : 'Super Admin'
+        'last_message' => $lastMsg ? $lastMsg['message'] : null,
+        'last_message_time' => $lastMsg ? $lastMsg['created_at'] : $conv['updated_at'],
+        'unread_count' => $unread ? (int)$unread['unread_count'] : 0,
+        'other_department_id' => $otherDept ? (int)$otherDept['department_id'] : 1,
+        'other_department_name' => $otherDept ? $otherDept['department_name'] : 'Super Admin'
     ];
 }
 
